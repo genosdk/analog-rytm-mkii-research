@@ -1,0 +1,68 @@
+name: Build AR MKII QEMU m68k
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-qemu-m68k.yml'
+      - 'qemu/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout AR research
+        uses: actions/checkout@v4
+        with:
+          path: research
+
+      - name: Checkout upstream QEMU
+        uses: actions/checkout@v4
+        with:
+          repository: qemu/qemu
+          path: qemu-src
+          fetch-depth: 1
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential ninja-build python3-venv libglib2.0-dev libpixman-1-dev zlib1g-dev
+
+      - name: Inject AR MKII research machine
+        run: |
+          cp research/qemu/hw/m68k/elektron_ar_mk2.c qemu-src/hw/m68k/
+          printf "\nm68k_ss.add(files('elektron_ar_mk2.c'))\n" >> qemu-src/hw/m68k/meson.build
+
+      - name: Configure m68k-softmmu only
+        working-directory: qemu-src
+        run: |
+          ./configure \
+            --target-list=m68k-softmmu \
+            --disable-werror \
+            --disable-docs \
+            --disable-gtk \
+            --disable-sdl
+
+      - name: Build
+        working-directory: qemu-src
+        run: ninja -C build qemu-system-m68k
+
+      - name: Verify custom machine
+        working-directory: qemu-src
+        run: |
+          build/qemu-system-m68k -machine help | grep elektron-ar-mk2
+          build/qemu-system-m68k -cpu help | head -80
+
+      - name: Package binary
+        run: |
+          mkdir -p artifact
+          cp qemu-src/build/qemu-system-m68k artifact/
+          sha256sum artifact/qemu-system-m68k | tee artifact/SHA256SUMS
+
+      - name: Upload QEMU artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ar-mk2-qemu-m68k
+          path: artifact/
+          retention-days: 30
