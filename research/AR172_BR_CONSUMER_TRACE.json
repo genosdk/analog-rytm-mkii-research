@@ -1,0 +1,39 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "control_smoother": {
+    "address": "0x4011C69E",
+    "record_count": 13,
+    "longwords_per_record": 21,
+    "words_per_record": 42,
+    "first_record": "0x8000F7A8",
+    "emac_load": "0x4011C6C0",
+    "srr_br_pair_address_track_0": "0x8000F7F4",
+    "br_address_track_0": "0x8000F7F6",
+    "br_pair_iteration_zero_based": 19,
+    "classification": "control-rate EMAC smoothing; not the audio quantizer"
+  },
+  "downstream_smoke_calls": {
+    "voice_bridge_0x40108944": {
+      "result": "PASS",
+      "instructions": 780,
+      "emac_instructions": 24
+    },
+    "control_converter_0x40105188": {
+      "result": "PASS",
+      "instructions": 1139,
+      "emac_instructions": 48
+    },
+    "interpretation": "Both routines now return under emulation, but neither directly reads record word 39. The sample quantizer remains downstream of the post-smoothing descriptor pass and audio-render dispatch."
+  },
+  "resolved_blockers": [
+    "descriptor mapping no longer requires project ingestion",
+    "ColdFire EMAC and SATS instructions needed by the control path execute",
+    "the first packed SRR/BR consumer is proven"
+  ],
+  "next_target": "Model the three audio-interface ready polls at 0x40117F16, 0x40118396 and 0x40118518 plus the DMA busy bit at 0xFC0453DE, then trace word 39 beyond 0x40117F00 into sample quantization.",
+  "safety": "Static analysis and emulation only; firmware bytes were not modified."
+}
