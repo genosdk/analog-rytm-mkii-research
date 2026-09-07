@@ -1,0 +1,65 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "size": 2903032,
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "base_address": "0x40000400"
+  },
+  "control_frame": {
+    "base": "0x8000F774",
+    "word_count": 572,
+    "byte_count": 1144,
+    "layout_equation": "572 = 26 + 13 * 42 words",
+    "prefix_words": 26,
+    "record_count": 13,
+    "record_words": 42,
+    "record_bytes": 84,
+    "first_record": "0x8000F7A8",
+    "sound_subview_offset_bytes": "0x12",
+    "first_sound_subview": "0x8000F7BA"
+  },
+  "bit_reduction": {
+    "logical_parameter_id": 20,
+    "sound_subview_word_index": 30,
+    "packed_record_word_index": 39,
+    "packed_record_byte_offset": "0x4E",
+    "first_track_field": "0x8000F7F6",
+    "track_count": 12,
+    "descriptor_initializer": "0x4011AE52",
+    "converter": "0x40119672",
+    "bank_a_base": "0x8000EA3C",
+    "bank_b_base": "0x8000EA4C",
+    "bank_bytes_per_track": 32,
+    "entries_per_bank": 4,
+    "banks_per_track": 2,
+    "frame_destinations_per_track": 8,
+    "bank_a_coefficient_sources": [
+      "+0x70",
+      "+0x73",
+      "+0x76",
+      "+0x79"
+    ],
+    "bank_a_destination_index_sources": [
+      "+0x72",
+      "+0x75",
+      "+0x78",
+      "+0x7B"
+    ],
+    "bank_b_coefficient_sources": [
+      "+0x8C",
+      "+0x8F",
+      "+0x92",
+      "+0x95"
+    ],
+    "bank_b_destination_index_sources": [
+      "+0x8E",
+      "+0x91",
+      "+0x94",
+      "+0x97"
+    ],
+    "destination_values": "runtime machine-dependent; not yet recovered"
+  },
+  "conclusion": "BR is packed record word 39 (sound subview word 30), and each track update feeds eight descriptor-selected control-frame words.",
+  "safety": "Static analysis only; no firmware was modified or repacked."
+}
