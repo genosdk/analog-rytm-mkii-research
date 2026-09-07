@@ -1,0 +1,94 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "emulator": {
+    "path": "recovered_library/minicoldfire.py"
+  },
+  "boot": {
+    "pc": "0x400FCECC",
+    "steps": 12000000,
+    "stop": null
+  },
+  "pit0": {
+    "vector": 205,
+    "enabled": true,
+    "fires": 1,
+    "work_steps": 1324506,
+    "return_pc": "0x400FCECC"
+  },
+  "descriptor_initializer": "0x4011AE52",
+  "capture_count": 0,
+  "captures": [],
+  "descriptor_bank_nonzero_bytes": {
+    "0x8000EA00": 0,
+    "0x8000EA3C": 0
+  },
+  "project_capture_status": "NOT_LOADED_OPTIONAL",
+  "synthetic_descriptor_proof": {
+    "result": "PASS",
+    "track": 0,
+    "instructions": 154,
+    "input_destinations": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "input_coefficients": [
+      4096,
+      4097,
+      4098,
+      4099,
+      8192,
+      8193,
+      8194,
+      8195
+    ],
+    "packed_bank_hex": "1000002710010028100200291003002a2000002b2001002c2002002d2003002e",
+    "entries": [
+      {
+        "coefficient": 4096,
+        "frame_word_index": 39
+      },
+      {
+        "coefficient": 4097,
+        "frame_word_index": 40
+      },
+      {
+        "coefficient": 4098,
+        "frame_word_index": 41
+      },
+      {
+        "coefficient": 4099,
+        "frame_word_index": 42
+      },
+      {
+        "coefficient": 8192,
+        "frame_word_index": 43
+      },
+      {
+        "coefficient": 8193,
+        "frame_word_index": 44
+      },
+      {
+        "coefficient": 8194,
+        "frame_word_index": 45
+      },
+      {
+        "coefficient": 8195,
+        "frame_word_index": 46
+      }
+    ],
+    "proven_equation": "frame_word_index = 26 + 42 * track + sound_local_destination"
+  },
+  "resolved_blocker": "The descriptor inputs are per-sound modulation destinations rather than fixed hidden machine values. Synthetic execution proves their frame mapping, so project ingestion is no longer required for the BR quantizer trace.",
+  "remaining_emulator_gap": "A project/storage loader is still required for full GUI/project emulation.",
+  "safety": "Emulation and RAM observation only; firmware bytes were not modified."
+}
