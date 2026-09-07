@@ -150,13 +150,17 @@ Only after those gates pass should an isolated LFO2 bypass canary be packaged.
 
 ## Immediate next target
 
-Model the audio-interface ready transitions used by `0x40117F00`. Three poll
-sites (`0x40117F16`, `0x40118396`, `0x40118518`) wait for bit `0x80` in status
-word `+0x1E` of the objects referenced by `0x80005820`/`0x80005824`; the render
-path also waits for DMA busy bit `0x10` at `0xFC0453DE` to clear. Then trace the post-descriptor BR
-value beyond the render dispatch until the sample word is quantized. That
-point—not the control smoother, mixer, or unclassified `0x81`/`0x82` streams—is
-the preferred Filter 2 insertion boundary. In parallel, LFO2 should reuse the
+The audio-interface transition model is now implemented. All three poll sites
+(`0x40117F16`, `0x40118396`, `0x40118518`) observe bit `0x80` in status word
+`+0x1E` of the objects referenced by `0x80005820`/`0x80005824`, and
+`0x40117F00` returns in a 17,109-instruction smoke call. The render-side poll at
+`0x40109FFE` observes and clears mask `0x10` in TCD30 CSR word `0xFC0453DE`;
+the exact peripheral meaning of that bit remains hardware-unproven.
+
+Next, execute the terminal BR read at `0x4011870E` through the stock 32-sample
+render loop and capture input/output sample provenance. That point—not the
+control smoother, mixer, or unclassified `0x81`/`0x82` streams—is the preferred
+Filter 2 insertion boundary. In parallel, LFO2 should reuse the
 proven destination equation and update machinery via shadow state; the stock
 42-word record remains frozen until persistence and SysEx compatibility are
 mapped.

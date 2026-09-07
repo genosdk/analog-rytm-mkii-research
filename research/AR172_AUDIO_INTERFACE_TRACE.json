@@ -1,0 +1,48 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "interface_status": {
+    "pointer_globals": [
+      "0x80005820",
+      "0x80005824"
+    ],
+    "status_offset": "+0x1E",
+    "ready_bit": "0x80",
+    "poll_sites": [
+      "0x40117F16",
+      "0x40118396",
+      "0x40118518"
+    ]
+  },
+  "pre_render_runtime": {
+    "result": "PASS",
+    "instructions": 17109,
+    "return_pc": "0x400FCECC",
+    "objects": [
+      "0x80007000",
+      "0x80007100"
+    ],
+    "poll_sites_executed": [
+      "0x40117F16",
+      "0x40118396",
+      "0x40118518"
+    ],
+    "command_events": 29,
+    "ready_events": 15
+  },
+  "tcd30_poll_runtime": {
+    "result": "PASS",
+    "poll_site": "0x40109FFE",
+    "csr_address": "0xFC0453DE",
+    "polled_bit": "0x10",
+    "busy_observations": 1,
+    "final_polled_bit": 0,
+    "classification": "TCD30 CSR bit 0x10; exact peripheral semantics not yet hardware-proven"
+  },
+  "resolved_blocker": "0x40117F00 now returns under the board model without manually forcing status words.",
+  "next_target": "Execute the 0x4011870E terminal BR read and 32-sample render loop with provenance on input/output sample words.",
+  "safety": "Static analysis and emulation only; firmware bytes were not modified."
+}

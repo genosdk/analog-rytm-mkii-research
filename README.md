@@ -45,6 +45,8 @@ and reproducible tooling.
 - BR physical parameter: `0x15`.
 - BR terminal render read: `0x4011870E`.
 - Stock 32-sample render loop: `0x4011877A..0x401187A0`.
+- All three audio-interface READY polls execute and return under MiniColdFire.
+- The TCD30 CSR `0x10` poll executes through a modeled one-observation transition.
 - Functional SRR research image SHA-256: `ac077fe3d2262494265a12f1b8264e53e637091323c2306cf90573560b06a82e`.
 
 See `docs/REVERSE_ENGINEERING_MAP.md`, `docs/AR172_LFO2_FILTER2_RESEARCH.md`,
@@ -64,8 +66,9 @@ unless you intentionally want the research dashboard exposed.
 
 ## Active reverse-engineering target
 
-The current target is the sample quantization operation downstream of `0x40117F00`.
-The next emulator step is to model the ready polls at `0x40117F16`, `0x40118396`,
-and `0x40118518`, plus DMA busy bit `0x10` at `0xFC0453DE`, then trace packed
-record word 39 into the audio sample transformation.
-
+The audio-interface blocker is resolved: `0x40117F00` now traverses the READY
+polls at `0x40117F16`, `0x40118396`, and `0x40118518` and returns under the
+board model. The exact TCD30 CSR bit `0x10` poll at `0xFC0453DE` also exits;
+its stronger peripheral meaning remains hardware-unproven. The active target is
+now an instrumented execution of the terminal BR read at `0x4011870E` through
+the 32-sample render loop, with input/output sample provenance.

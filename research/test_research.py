@@ -12,6 +12,7 @@ sys.path.insert(0, str(HERE))
 
 from ar172_extract import NRV2BDepacker, decode_sysex, parse_ele3
 from audio_stream_trace import trace as trace_audio_stream
+from audio_interface_trace import trace as trace_audio_interface
 from br_bridge_trace import trace
 from br_consumer_trace import trace as trace_br_consumer
 from control_frame_trace import trace as trace_control_frame
@@ -163,6 +164,21 @@ class BitReductionConsumerTests(unittest.TestCase):
         )
 
 
+@unittest.skipUnless(
+    (HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin").exists(),
+    "extracted proprietary MAIN image not present",
+)
+class AudioInterfaceTraceTests(unittest.TestCase):
+    def test_ready_and_tcd30_poll_runtime(self):
+        main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
+        emulator_path = ROOT / "recovered_library" / "minicoldfire.py"
+        result = trace_audio_interface(main_image, emulator_path)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["pre_render_runtime"]["result"], "PASS")
+        self.assertEqual(result["tcd30_poll_runtime"]["busy_observations"], 1)
+        self.assertEqual(result["tcd30_poll_runtime"]["final_polled_bit"], 0)
+
+
 class MiniColdFirePeripheralTests(unittest.TestCase):
     @staticmethod
     def load_emulator():
@@ -185,6 +201,25 @@ class MiniColdFirePeripheralTests(unittest.TestCase):
         self.assertEqual(bus.pending_irqs, [(module.PIT0_VECTOR, module.PIT0_LEVEL, "PIT0")])
         self.assertTrue(bus.trigger_pit0())
         self.assertEqual(len(bus.pending_irqs), 1)
+
+    def test_audio_interface_ready_transition(self):
+        module = self.load_emulator()
+        bus = module.Bus()
+        obj = 0x80007000
+        bus.write(module.AUDIO_IFACE_PTRS[0], 4, obj)
+        bus.write(obj + module.AUDIO_IFACE_STATUS_OFF, 2, 1)
+        self.assertEqual(
+            bus.read(obj + module.AUDIO_IFACE_STATUS_OFF, 2),
+            1 | module.AUDIO_IFACE_READY,
+        )
+        self.assertEqual([event["kind"] for event in bus.audio_iface_events], ["COMMAND", "READY"])
+
+    def test_tcd30_polled_bit_transition(self):
+        module = self.load_emulator()
+        bus = module.Bus()
+        bus.write(module.AUDIO_DMA_TCD30_CSR, 2, module.AUDIO_DMA_POLLED_BIT)
+        self.assertEqual(bus.read(module.AUDIO_DMA_TCD30_CSR, 2), module.AUDIO_DMA_POLLED_BIT)
+        self.assertEqual(bus.read(module.AUDIO_DMA_TCD30_CSR, 2), 0)
 
     def test_signed_word_multiply(self):
         module = self.load_emulator()
@@ -227,7 +262,7 @@ class MiniColdFirePeripheralTests(unittest.TestCase):
     )
     def test_synthetic_descriptor_runtime_proof(self):
         main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
-        emulator_path = HERE.parents[1] / "recovered_library" / "minicoldfire.py"
+        emulator_path = ROOT / "recovered_library" / "minicoldfire.py"
         result = probe_runtime_descriptors(main_image, emulator_path, 2_000_000)
         self.assertEqual(result["result"], "PASS")
         self.assertEqual(result["project_capture_status"], "NOT_LOADED_OPTIONAL")

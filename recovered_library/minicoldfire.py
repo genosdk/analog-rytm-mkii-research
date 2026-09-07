@@ -56,6 +56,11 @@ EDMA_CSR_D_REQ=0x0008
 EDMA_CSR_DONE=0x0080
 EDMA_CH_UART8_RX=34
 EDMA_CH_UART8_TX=35
+AUDIO_IFACE_PTRS=(0x80005820,0x80005824)
+AUDIO_IFACE_STATUS_OFF=0x1E
+AUDIO_IFACE_READY=0x0080
+AUDIO_DMA_TCD30_CSR=0xFC0453DE
+AUDIO_DMA_POLLED_BIT=0x0010
 
 class Unsupported(Exception):
     pass
@@ -88,6 +93,9 @@ class Bus:
     pending_irqs: list[tuple[int,int,str]] = field(default_factory=list)
     uart_tx: bytearray = field(default_factory=bytearray)
     uart_rx: bytearray = field(default_factory=bytearray)
+    audio_iface_pending: dict[int,int] = field(default_factory=dict)
+    audio_iface_events: list[dict] = field(default_factory=list)
+    audio_dma_events: list[dict] = field(default_factory=list)
 
     def load_main(self,path:Path):
         b=path.read_bytes(); off=MAIN_LOAD-SDRAM_BASE
@@ -113,6 +121,17 @@ class Bus:
     def _mmio_raw_write(self,addr,size,value):
         bs=(value & mask_for(size)).to_bytes(size,'big')
         for i,x in enumerate(bs): self.mmio[(addr+i)&0xffffffff]=x
+
+    def _sram_raw_read(self,addr,size):
+        off=addr&(SRAM_PHYS-1)
+        return int.from_bytes(bytes(self.sram[(off+i)&(SRAM_PHYS-1)] for i in range(size)),'big')
+
+    def _audio_iface_object_for_status(self,addr,size):
+        if size!=2:return None
+        for ptr_addr in AUDIO_IFACE_PTRS:
+            obj=self._sram_raw_read(ptr_addr,4)
+            if obj and addr==(obj+AUDIO_IFACE_STATUS_OFF)&0xffffffff:return obj
+        return None
 
     def _tcd_addr(self,ch,off=0):
         return EDMA_TCD_BASE + EDMA_TCD_STRIDE*ch + off
@@ -208,6 +227,21 @@ class Bus:
     def read(self,addr,size):
         buf,off=self._region(addr,size)
         if buf is not None:
+            # The audio-interface command objects are RAM-backed but completed
+            # asynchronously by the peripheral.  Stock 1.72 waits for READY in
+            # the +0x1E status word after writing command state 0/1.  Complete
+            # the command on its first observation, preserving all state bits.
+            obj=self._audio_iface_object_for_status(addr&0xffffffff,size)
+            if obj in self.audio_iface_pending:
+                remaining=self.audio_iface_pending[obj]-1
+                if remaining<=0:
+                    value=self._sram_raw_read(addr,size)|AUDIO_IFACE_READY
+                    bs=value.to_bytes(size,'big')
+                    for i,x in enumerate(bs):self.sram[(off+i)&(SRAM_PHYS-1)]=x
+                    del self.audio_iface_pending[obj]
+                    self.audio_iface_events.append({'pc':self.pc_provider() if self.pc_provider else 0,
+                        'kind':'READY','object':obj,'status_address':addr&0xffffffff,'value':value})
+                else:self.audio_iface_pending[obj]=remaining
             # wrap SRAM if needed
             if buf is self.sram and off+size>SRAM_PHYS:
                 bs=bytes(self.sram[(off+i)&(SRAM_PHYS-1)] for i in range(size))
@@ -230,6 +264,15 @@ class Bus:
             # while preserving monotonic 32-bit wraparound behavior.
             steps=self.step_provider() if self.step_provider else 0
             value=(steps*DTIM_ACCEL)&0xffffffff
+        elif a==AUDIO_DMA_TCD30_CSR and size==2:
+            # 0x40109FFE polls bit 0x10 until hardware clears it.  Preserve one
+            # visible busy observation, then complete the transient handoff.
+            value=self._mmio_raw_read(a,size)
+            if value&AUDIO_DMA_POLLED_BIT:
+                self._mmio_raw_write(a,size,value&~AUDIO_DMA_POLLED_BIT)
+                self.audio_dma_events.append({'pc':self.pc_provider() if self.pc_provider else 0,
+                    'kind':'POLLED_BIT_CLEAR','address':a,'value':value,
+                    'bit':AUDIO_DMA_POLLED_BIT})
         elif size==1 and any(a==base+UART_USR_OFF for base in UART_BASES):
             # Idle UART: transmitter holding register ready and transmitter empty.
             value=UART_USR_TXRDY|UART_USR_TXEMP
@@ -251,6 +294,11 @@ class Bus:
             if buf is self.sram and off+size>SRAM_PHYS:
                 for i,x in enumerate(bs): self.sram[(off+i)&(SRAM_PHYS-1)]=x
             else: buf[off:off+size]=bs
+            obj=self._audio_iface_object_for_status(addr&0xffffffff,size)
+            if obj is not None and not (value&AUDIO_IFACE_READY):
+                self.audio_iface_pending[obj]=1
+                self.audio_iface_events.append({'pc':self.pc_provider() if self.pc_provider else 0,
+                    'kind':'COMMAND','object':obj,'status_address':addr&0xffffffff,'value':value})
             if buf is self.flex_ext:
                 self.flex_events.append({'pc':self.pc_provider() if self.pc_provider else 0,'kind':'W','addr':addr&0xffffffff,'size':size,'value':value})
             return

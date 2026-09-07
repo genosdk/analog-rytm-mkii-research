@@ -21,14 +21,15 @@
 | physical parameter `0x15` | Stock BR parameter |
 | packed record word 39 | Proven SRR/BR consumer input |
 | `0x4011C69E` | 13 × 42-word control-rate EMAC smoother |
-| `0x40117F00` | Pre-render/audio-interface routine under active trace |
+| `0x40117F00` | Pre-render/audio-interface routine; returns under modeled READY transitions |
 | `0x4011870E` | Terminal BR render read |
 | `0x4011877A..0x401187A0` | Stock 32-sample render loop |
 
-The control smoother is not the audio quantizer. The immediate task is to satisfy the
-audio-interface and DMA status loops under emulation, then follow record word 39 to the
-instruction that transforms the sample word. This is also the preferred boundary for a
-digital Filter 2 before the DAC path.
+The control smoother is not the audio quantizer. The audio-interface blocker is now
+resolved: all three READY polls execute, and the TCD30 CSR `0x10` poll exits after a
+modeled transient observation. The next task is to execute the terminal BR read and
+32-sample render loop with sample-word provenance. This remains the preferred boundary
+for a digital Filter 2 before the DAC path.
 
 ## Audio scheduling
 
@@ -37,6 +38,10 @@ digital Filter 2 before the DAC path.
 - PIT0 vector 205 is now deliverable in MiniColdFire.
 - Descriptor initializer `0x4011AE52` completes in 154 synthetic instructions.
 - Destination indices 39..46 map from input destinations 13..20.
+- READY poll sites `0x40117F16`, `0x40118396`, and `0x40118518` execute in a
+  17,109-instruction pre-render smoke call.
+- `0x40109FFE` polls TCD30 CSR word `0xFC0453DE`, mask `0x10`. The bit's exact
+  hardware semantics are deliberately left unclassified pending hardware evidence.
 
 ## Feature tracks
 
@@ -68,4 +73,3 @@ boundary is proven. The reference model is a topology-preserving state-variable 
 This repository contains no original or modified Elektron firmware image. Research scripts
 are read-only unless explicitly documented otherwise. Hardware testing must follow
 `docs/AR172_FIRST_HARDWARE_TEST_PROTOCOL.md` in order.
-
