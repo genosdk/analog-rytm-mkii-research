@@ -1,0 +1,81 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "size": 2903032,
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "base_address": "0x40000400"
+  },
+  "audio_tick": {
+    "isr": "0x40118AF2",
+    "timer_read": "0xFC07800C",
+    "edma_clear_interrupt_register": "0xFC04401C",
+    "edma_channel": 54,
+    "callback": "0x4011B3AE",
+    "observed_tcd_addresses": [
+      "0xFC0456C0",
+      "0xFC045690"
+    ],
+    "render_sequence": [
+      "0x40117F00",
+      "0x4010A2E0",
+      "0x40108944",
+      "0x40105188"
+    ]
+  },
+  "generic_stream_descriptors": {
+    "setup": "0x401177D2",
+    "reset": "0x401178BA",
+    "table": "0x41310D30",
+    "record_bytes": 16,
+    "record_count": 131,
+    "valid_index_range": "0x00..0x82",
+    "field_offsets": [
+      "+0x0",
+      "+0x4",
+      "+0x8",
+      "+0xC"
+    ],
+    "default_rate": 48000,
+    "default_ratio_word": "0x40000000",
+    "setup_call_sites": [
+      "0x4009A2C6",
+      "0x4009A942",
+      "0x4009B100",
+      "0x4009B2D0",
+      "0x40124AC2"
+    ],
+    "reset_call_sites": [
+      "0x4009A24E",
+      "0x4009A5B6",
+      "0x4009A888",
+      "0x4009A9CC",
+      "0x4009B176",
+      "0x40124AA2"
+    ],
+    "high_index_users": [
+      "0x81",
+      "0x82"
+    ],
+    "classification": "buffer-stream family; playback/record direction unproven"
+  },
+  "per_voice_control": {
+    "converter": "0x40105188",
+    "record_stride_bytes": "0x54",
+    "direct_record_words": [
+      36,
+      37,
+      38
+    ],
+    "bit_reduction_record_word": 39,
+    "bit_reduction_read_directly_here": false,
+    "runtime_table": "0x41310B20",
+    "runtime_table_helper": "0x4010515A"
+  },
+  "insertion_point_status": {
+    "filter2": "not yet proven",
+    "next_proof": "resolve BR descriptor destinations and trace their consumer to the sample quantizer/DAC path",
+    "unsafe_assumption_rejected": "streams 0x81/0x82 are not sample playback absent direction/consumer proof"
+  },
+  "safety": "Static analysis only; no firmware was modified or repacked."
+}
