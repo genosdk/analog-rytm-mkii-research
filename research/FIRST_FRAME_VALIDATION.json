@@ -1,0 +1,30 @@
+{
+  "status": "pass",
+  "scope": "QEMU emulator-only compatibility harness; not a flashable firmware image",
+  "qemu_machine": "mcf5208evb",
+  "qemu_cpu": "any",
+  "main_load_address": "0x40000400",
+  "main_entry": "0x40000870",
+  "panel_identity_query_hex": "70 00",
+  "panel_identity_reply_hex": "70 07 05 05 00",
+  "panel_validator_registers": {
+    "D6": "0x00000070",
+    "D5": "0x00000007",
+    "D4": "0x00000005",
+    "D2": "0x00000005"
+  },
+  "framebuffer_pointer_global": "0x4026F478",
+  "framebuffer_pointer_observed": "0x41906644",
+  "framebuffer_bytes": 1024,
+  "framebuffer_dimensions": "128x64x1bpp",
+  "first_write_pc": "0x4006D3AC",
+  "first_completed_frame_nonzero_bytes": 95,
+  "first_completed_frame_lit_pixels": 367,
+  "first_completed_frame_sha256": "9fc4f1bc105a8aaa5f2769c905bfdcd8fa68a200f2b8b48a168c558df79fa542",
+  "temporary_peripheral_shims": [
+    "PIT0 scheduler interrupt translation",
+    "UART8 to QEMU UART0 alias",
+    "RAM-backed DSPI0 discovery registers",
+    "DTIM1 wakeup to QEMU PIT1 translation"
+  ]
+}
