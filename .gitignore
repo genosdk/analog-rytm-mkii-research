@@ -1,0 +1,20 @@
+# Proprietary or generated firmware must never enter Git.
+*.syx
+*.bin
+*.rom
+*.img
+*.elf
+*.map
+imported/
+private/
+build/
+research/extracted_stock_nrv/
+
+# Local tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.env
+.DS_Store
+
