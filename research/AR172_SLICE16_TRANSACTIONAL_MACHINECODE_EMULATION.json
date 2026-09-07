@@ -1,0 +1,23 @@
+{
+  "pre_hook_address": "0x402B4200",
+  "post_hook_address": "0x402B4300",
+  "pre_hook_sha256": "1f97a853bce717306c0331acc6ab1a4f2746c3406d1dab92877c43bbdff7592f",
+  "post_hook_sha256": "60da304862bc82fe68cf7cbd04fae97a38e4b5d59f96bb7a21060ddbb1256777",
+  "actual_machine_code_cases": 1573,
+  "simultaneous_patterns": 3,
+  "pre_hook_steps_min": 95,
+  "pre_hook_steps_max": 103,
+  "post_hook_steps": 60,
+  "stack_delta_before_stock_post_adjust": 0,
+  "final_stack_delta_including_displaced_stock_addq": 4,
+  "result": "PASS",
+  "assertions": [
+    "actual assembled pre/post hook bytes executed by opcode-level emulator",
+    "all 13 tracks x 121 selectors produce exact oracle slice boundaries",
+    "all 13 original START/END longs restored exactly",
+    "A0 preserved across post hook",
+    "52-byte hook stack frame is exactly balanced before replaying stock ADDQ #4,SP",
+    "D7 and final CCR after pre hook match displaced stock MOVE.L immediate semantics",
+    "D0/D1 and final CCR after post hook match displaced stock sequence semantics"
+  ]
+}
