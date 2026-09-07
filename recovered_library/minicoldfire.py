@@ -639,11 +639,19 @@ class CPU:
                 else:
                     rx=((rx>>16)&0xffff) if upperx else (rx&0xffff)
                     ry=((ry>>16)&0xffff) if uppery else (ry&0xffff)
-            if self.macsr&0x040: prod=sx(rx&0xffffffff,32)*sx(ry&0xffffffff,32)
+            # In fractional mode the operands are signed Q1.31 values.  The
+            # ColdFire accumulator keeps eight guard/rounding bits below the
+            # 32-bit value returned by FROM_MAC, so a 64-bit Q2.62 product is
+            # aligned into that representation by shifting it right 23 bits.
+            # (FROM_MAC performs the remaining eight-bit extraction.)
+            signed_product=bool(self.macsr&(0x020|0x040))
+            if signed_product: prod=sx(rx&0xffffffff,32)*sx(ry&0xffffffff,32)
             else: prod=(rx&0xffffffff)*(ry&0xffffffff)
             shift=(ext>>9)&3
             if shift==1:prod<<=1
-            elif shift==3:prod=(prod&0xffffffffffffffff)>>1
+            elif shift==3:
+                prod=prod>>1 if signed_product else (prod&0xffffffffffffffff)>>1
+            if self.macsr&0x020:prod>>=23
             targets=[(acc,bool(op&0x100))]
             if dual:targets.append(((ext>>2)&3,bool(ext&2)))
             for anum,subtract in targets:

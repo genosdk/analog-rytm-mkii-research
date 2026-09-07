@@ -1,0 +1,534 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "execution": {
+    "entry": "0x4011870E",
+    "exit": "0x401187A6",
+    "br_levels": 8,
+    "loop_iterations": 128,
+    "quantizer_samples": 256,
+    "sample_matches": 256
+  },
+  "equation": "Q(x) = (((signed32(x) * signed32(D3)) >> 31) << D2) mod 2^32",
+  "mac_mode": "MACSR 0x20: signed fractional, truncate, 32-bit accumulator store",
+  "levels": [
+    {
+      "raw_br": "0x0000",
+      "instructions": 291,
+      "loop_iterations": 16,
+      "quantizer_samples": 32,
+      "coefficient_match": true,
+      "sample_matches": 32,
+      "d2": 1,
+      "d3": "0x40000000",
+      "d4": "0x40000000",
+      "shifted_vector_sha256": "e838b15fef60616f84512fb85fd93f09a9cff2def2e8f15419e8dfdeabb0c6c2",
+      "first_samples": [
+        {
+          "index": 0,
+          "pc": "0x4011878E",
+          "operand": "0x7FFFFFFF",
+          "mantissa": "0x3FFFFFFF",
+          "shifted": "0x7FFFFFFE",
+          "match": true
+        },
+        {
+          "index": 1,
+          "pc": "0x40118792",
+          "operand": "0x80000000",
+          "mantissa": "0xC0000000",
+          "shifted": "0x80000000",
+          "match": true
+        },
+        {
+          "index": 2,
+          "pc": "0x4011878E",
+          "operand": "0xFFFFFFFF",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xFFFFFFFE",
+          "match": true
+        },
+        {
+          "index": 3,
+          "pc": "0x40118792",
+          "operand": "0x40000000",
+          "mantissa": "0x20000000",
+          "shifted": "0x40000000",
+          "match": true
+        }
+      ],
+      "last_samples": [
+        {
+          "index": 30,
+          "pc": "0x4011878E",
+          "operand": "0x44B42100",
+          "mantissa": "0x225A1080",
+          "shifted": "0x44B42100",
+          "match": true
+        },
+        {
+          "index": 31,
+          "pc": "0x40118792",
+          "operand": "0xB7BAA05F",
+          "mantissa": "0xDBDD502F",
+          "shifted": "0xB7BAA05E",
+          "match": true
+        }
+      ]
+    },
+    {
+      "raw_br": "0x0001",
+      "instructions": 292,
+      "loop_iterations": 16,
+      "quantizer_samples": 32,
+      "coefficient_match": true,
+      "sample_matches": 32,
+      "d2": 21,
+      "d3": "0x00000260",
+      "d4": "0x6BA27E64",
+      "shifted_vector_sha256": "76069e3d8d17d03f62cf9599cae910350e9e0fb9c3b30583fc31b4f0e16d45be",
+      "first_samples": [
+        {
+          "index": 0,
+          "pc": "0x4011878E",
+          "operand": "0x7FFFFFFF",
+          "mantissa": "0x0000025F",
+          "shifted": "0x4BE00000",
+          "match": true
+        },
+        {
+          "index": 1,
+          "pc": "0x40118792",
+          "operand": "0x80000000",
+          "mantissa": "0xFFFFFDA0",
+          "shifted": "0xB4000000",
+          "match": true
+        },
+        {
+          "index": 2,
+          "pc": "0x4011878E",
+          "operand": "0xFFFFFFFF",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xFFE00000",
+          "match": true
+        },
+        {
+          "index": 3,
+          "pc": "0x40118792",
+          "operand": "0x40000000",
+          "mantissa": "0x00000130",
+          "shifted": "0x26000000",
+          "match": true
+        }
+      ],
+      "last_samples": [
+        {
+          "index": 30,
+          "pc": "0x4011878E",
+          "operand": "0x44B42100",
+          "mantissa": "0x00000146",
+          "shifted": "0x28C00000",
+          "match": true
+        },
+        {
+          "index": 31,
+          "pc": "0x40118792",
+          "operand": "0xB7BAA05F",
+          "mantissa": "0xFFFFFEA8",
+          "shifted": "0xD5000000",
+          "match": true
+        }
+      ]
+    },
+    {
+      "raw_br": "0x0100",
+      "instructions": 292,
+      "loop_iterations": 16,
+      "quantizer_samples": 32,
+      "coefficient_match": true,
+      "sample_matches": 32,
+      "d2": 21,
+      "d3": "0x00000242",
+      "d4": "0x7133AD60",
+      "shifted_vector_sha256": "0671ec4e7c0c38cdac7ed1e681d49d90cd91df66f50b572170d2b6bb0fd2a983",
+      "first_samples": [
+        {
+          "index": 0,
+          "pc": "0x4011878E",
+          "operand": "0x7FFFFFFF",
+          "mantissa": "0x00000241",
+          "shifted": "0x48200000",
+          "match": true
+        },
+        {
+          "index": 1,
+          "pc": "0x40118792",
+          "operand": "0x80000000",
+          "mantissa": "0xFFFFFDBE",
+          "shifted": "0xB7C00000",
+          "match": true
+        },
+        {
+          "index": 2,
+          "pc": "0x4011878E",
+          "operand": "0xFFFFFFFF",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xFFE00000",
+          "match": true
+        },
+        {
+          "index": 3,
+          "pc": "0x40118792",
+          "operand": "0x40000000",
+          "mantissa": "0x00000121",
+          "shifted": "0x24200000",
+          "match": true
+        }
+      ],
+      "last_samples": [
+        {
+          "index": 30,
+          "pc": "0x4011878E",
+          "operand": "0x44B42100",
+          "mantissa": "0x00000136",
+          "shifted": "0x26C00000",
+          "match": true
+        },
+        {
+          "index": 31,
+          "pc": "0x40118792",
+          "operand": "0xB7BAA05F",
+          "mantissa": "0xFFFFFEB9",
+          "shifted": "0xD7200000",
+          "match": true
+        }
+      ]
+    },
+    {
+      "raw_br": "0x1000",
+      "instructions": 292,
+      "loop_iterations": 16,
+      "quantizer_samples": 32,
+      "coefficient_match": true,
+      "sample_matches": 32,
+      "d2": 22,
+      "d3": "0x0000010F",
+      "d4": "0x78AE0008",
+      "shifted_vector_sha256": "754e788b63c21c92d85897ef9c0f9c7a484ba32128b2c862b85550a2934f0b4a",
+      "first_samples": [
+        {
+          "index": 0,
+          "pc": "0x4011878E",
+          "operand": "0x7FFFFFFF",
+          "mantissa": "0x0000010E",
+          "shifted": "0x43800000",
+          "match": true
+        },
+        {
+          "index": 1,
+          "pc": "0x40118792",
+          "operand": "0x80000000",
+          "mantissa": "0xFFFFFEF1",
+          "shifted": "0xBC400000",
+          "match": true
+        },
+        {
+          "index": 2,
+          "pc": "0x4011878E",
+          "operand": "0xFFFFFFFF",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xFFC00000",
+          "match": true
+        },
+        {
+          "index": 3,
+          "pc": "0x40118792",
+          "operand": "0x40000000",
+          "mantissa": "0x00000087",
+          "shifted": "0x21C00000",
+          "match": true
+        }
+      ],
+      "last_samples": [
+        {
+          "index": 30,
+          "pc": "0x4011878E",
+          "operand": "0x44B42100",
+          "mantissa": "0x00000091",
+          "shifted": "0x24400000",
+          "match": true
+        },
+        {
+          "index": 31,
+          "pc": "0x40118792",
+          "operand": "0xB7BAA05F",
+          "mantissa": "0xFFFFFF66",
+          "shifted": "0xD9800000",
+          "match": true
+        }
+      ]
+    },
+    {
+      "raw_br": "0x2000",
+      "instructions": 292,
+      "loop_iterations": 16,
+      "quantizer_samples": 32,
+      "coefficient_match": true,
+      "sample_matches": 32,
+      "d2": 24,
+      "d3": "0x00000079",
+      "d4": "0x43ACFBEC",
+      "shifted_vector_sha256": "a39e775ce0f2d450c9f5a9ab89a9b92f41b932262ce1873c5d7c1d68b0f6f8ae",
+      "first_samples": [
+        {
+          "index": 0,
+          "pc": "0x4011878E",
+          "operand": "0x7FFFFFFF",
+          "mantissa": "0x00000078",
+          "shifted": "0x78000000",
+          "match": true
+        },
+        {
+          "index": 1,
+          "pc": "0x40118792",
+          "operand": "0x80000000",
+          "mantissa": "0xFFFFFF87",
+          "shifted": "0x87000000",
+          "match": true
+        },
+        {
+          "index": 2,
+          "pc": "0x4011878E",
+          "operand": "0xFFFFFFFF",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xFF000000",
+          "match": true
+        },
+        {
+          "index": 3,
+          "pc": "0x40118792",
+          "operand": "0x40000000",
+          "mantissa": "0x0000003C",
+          "shifted": "0x3C000000",
+          "match": true
+        }
+      ],
+      "last_samples": [
+        {
+          "index": 30,
+          "pc": "0x4011878E",
+          "operand": "0x44B42100",
+          "mantissa": "0x00000040",
+          "shifted": "0x40000000",
+          "match": true
+        },
+        {
+          "index": 31,
+          "pc": "0x40118792",
+          "operand": "0xB7BAA05F",
+          "mantissa": "0xFFFFFFBB",
+          "shifted": "0xBB000000",
+          "match": true
+        }
+      ]
+    },
+    {
+      "raw_br": "0x4000",
+      "instructions": 292,
+      "loop_iterations": 16,
+      "quantizer_samples": 32,
+      "coefficient_match": true,
+      "sample_matches": 32,
+      "d2": 26,
+      "d3": "0x00000018",
+      "d4": "0x551A49D4",
+      "shifted_vector_sha256": "82b38df91d4104930248a0d71f41809fa21dc0dd1dcc96f7146d5a07089a6052",
+      "first_samples": [
+        {
+          "index": 0,
+          "pc": "0x4011878E",
+          "operand": "0x7FFFFFFF",
+          "mantissa": "0x00000017",
+          "shifted": "0x5C000000",
+          "match": true
+        },
+        {
+          "index": 1,
+          "pc": "0x40118792",
+          "operand": "0x80000000",
+          "mantissa": "0xFFFFFFE8",
+          "shifted": "0xA0000000",
+          "match": true
+        },
+        {
+          "index": 2,
+          "pc": "0x4011878E",
+          "operand": "0xFFFFFFFF",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xFC000000",
+          "match": true
+        },
+        {
+          "index": 3,
+          "pc": "0x40118792",
+          "operand": "0x40000000",
+          "mantissa": "0x0000000C",
+          "shifted": "0x30000000",
+          "match": true
+        }
+      ],
+      "last_samples": [
+        {
+          "index": 30,
+          "pc": "0x4011878E",
+          "operand": "0x44B42100",
+          "mantissa": "0x0000000C",
+          "shifted": "0x30000000",
+          "match": true
+        },
+        {
+          "index": 31,
+          "pc": "0x40118792",
+          "operand": "0xB7BAA05F",
+          "mantissa": "0xFFFFFFF2",
+          "shifted": "0xC8000000",
+          "match": true
+        }
+      ]
+    },
+    {
+      "raw_br": "0x6000",
+      "instructions": 292,
+      "loop_iterations": 16,
+      "quantizer_samples": 32,
+      "coefficient_match": true,
+      "sample_matches": 32,
+      "d2": 28,
+      "d3": "0x00000004",
+      "d4": "0x6B0468E0",
+      "shifted_vector_sha256": "0525cd4efeba49e59de46db294616c0dc4b4f15882587a6c901ecb10576502d7",
+      "first_samples": [
+        {
+          "index": 0,
+          "pc": "0x4011878E",
+          "operand": "0x7FFFFFFF",
+          "mantissa": "0x00000003",
+          "shifted": "0x30000000",
+          "match": true
+        },
+        {
+          "index": 1,
+          "pc": "0x40118792",
+          "operand": "0x80000000",
+          "mantissa": "0xFFFFFFFC",
+          "shifted": "0xC0000000",
+          "match": true
+        },
+        {
+          "index": 2,
+          "pc": "0x4011878E",
+          "operand": "0xFFFFFFFF",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xF0000000",
+          "match": true
+        },
+        {
+          "index": 3,
+          "pc": "0x40118792",
+          "operand": "0x40000000",
+          "mantissa": "0x00000002",
+          "shifted": "0x20000000",
+          "match": true
+        }
+      ],
+      "last_samples": [
+        {
+          "index": 30,
+          "pc": "0x4011878E",
+          "operand": "0x44B42100",
+          "mantissa": "0x00000002",
+          "shifted": "0x20000000",
+          "match": true
+        },
+        {
+          "index": 31,
+          "pc": "0x40118792",
+          "operand": "0xB7BAA05F",
+          "mantissa": "0xFFFFFFFD",
+          "shifted": "0xD0000000",
+          "match": true
+        }
+      ]
+    },
+    {
+      "raw_br": "0x7800",
+      "instructions": 292,
+      "loop_iterations": 16,
+      "quantizer_samples": 32,
+      "coefficient_match": true,
+      "sample_matches": 32,
+      "d2": 30,
+      "d3": "0x00000001",
+      "d4": "0x59DE6020",
+      "shifted_vector_sha256": "4620c70581c9ec12a8cb9c3fde2028dd23d2e940b104b42c629dcaee80ab3190",
+      "first_samples": [
+        {
+          "index": 0,
+          "pc": "0x4011878E",
+          "operand": "0x7FFFFFFF",
+          "mantissa": "0x00000000",
+          "shifted": "0x00000000",
+          "match": true
+        },
+        {
+          "index": 1,
+          "pc": "0x40118792",
+          "operand": "0x80000000",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xC0000000",
+          "match": true
+        },
+        {
+          "index": 2,
+          "pc": "0x4011878E",
+          "operand": "0xFFFFFFFF",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xC0000000",
+          "match": true
+        },
+        {
+          "index": 3,
+          "pc": "0x40118792",
+          "operand": "0x40000000",
+          "mantissa": "0x00000000",
+          "shifted": "0x00000000",
+          "match": true
+        }
+      ],
+      "last_samples": [
+        {
+          "index": 30,
+          "pc": "0x4011878E",
+          "operand": "0x44B42100",
+          "mantissa": "0x00000000",
+          "shifted": "0x00000000",
+          "match": true
+        },
+        {
+          "index": 31,
+          "pc": "0x40118792",
+          "operand": "0xB7BAA05F",
+          "mantissa": "0xFFFFFFFF",
+          "shifted": "0xC0000000",
+          "match": true
+        }
+      ]
+    }
+  ],
+  "conclusion": "The unmodified terminal BR read, coefficient setup, and 16-pass stock loop agree with the independent coefficient reconstruction and Q31 equation.",
+  "boundary": "Instruction execution is proven; front-panel value mapping and physical hardware/DAC behavior remain unverified.",
+  "safety": "Stock MAIN was executed read-only; firmware bytes were not modified."
+}

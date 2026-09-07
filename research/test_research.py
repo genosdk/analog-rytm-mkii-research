@@ -15,6 +15,7 @@ from audio_stream_trace import trace as trace_audio_stream
 from audio_interface_trace import trace as trace_audio_interface
 from br_bridge_trace import trace
 from br_consumer_trace import trace as trace_br_consumer
+from br_quantizer_runtime_trace import trace as trace_br_quantizer_runtime
 from control_frame_trace import trace as trace_control_frame
 from lfo2_filter2_reference import run_tests
 from runtime_descriptor_probe import probe as probe_runtime_descriptors
@@ -179,6 +180,22 @@ class AudioInterfaceTraceTests(unittest.TestCase):
         self.assertEqual(result["tcd30_poll_runtime"]["final_polled_bit"], 0)
 
 
+@unittest.skipUnless(
+    (HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin").exists(),
+    "extracted proprietary MAIN image not present",
+)
+class BitReductionQuantizerRuntimeTests(unittest.TestCase):
+    def test_terminal_read_coefficients_and_32_sample_loop(self):
+        main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
+        emulator_path = ROOT / "recovered_library" / "minicoldfire.py"
+        result = trace_br_quantizer_runtime(main_image, emulator_path)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["execution"]["br_levels"], 8)
+        self.assertEqual(result["execution"]["loop_iterations"], 128)
+        self.assertEqual(result["execution"]["quantizer_samples"], 256)
+        self.assertEqual(result["execution"]["sample_matches"], 256)
+
+
 class MiniColdFirePeripheralTests(unittest.TestCase):
     @staticmethod
     def load_emulator():
@@ -246,6 +263,28 @@ class MiniColdFirePeripheralTests(unittest.TestCase):
         self.assertEqual(cpu.macc[0], 9)
         self.assertEqual(cpu.step(), "FROM_MAC ACC0")
         self.assertEqual(cpu.d[0], 9)
+
+    def test_emac_signed_fractional_q31_extract(self):
+        module = self.load_emulator()
+        bus = module.Bus()
+        cpu = module.CPU(bus)
+        # MAC.L D0,D1,ACC0 followed by MOVE.L ACC0,D2.
+        bus.write(module.ENTRY, 2, 0xA001)
+        bus.write(module.ENTRY + 2, 2, 0x0800)
+        bus.write(module.ENTRY + 4, 2, 0xA1C2)
+        cpu.macsr = 0x20  # signed fractional, truncate
+        cpu.d[0] = 0x40000000  # +0.5 in Q1.31
+        cpu.d[1] = 0x40000000  # +0.5 in Q1.31
+        self.assertEqual(cpu.step(), "EMAC")
+        self.assertEqual(cpu.step(), "FROM_MAC ACC0")
+        self.assertEqual(cpu.d[2], 0x20000000)  # +0.25 in Q1.31
+
+        cpu.pc = module.ENTRY
+        cpu.macc[0] = 0
+        cpu.d[0] = 0xC0000000  # -0.5 in Q1.31
+        self.assertEqual(cpu.step(), "EMAC")
+        self.assertEqual(cpu.step(), "FROM_MAC ACC0")
+        self.assertEqual(cpu.d[2], 0xE0000000)  # -0.25 in Q1.31
 
     def test_ext_register_encoding_overrides_movem(self):
         module = self.load_emulator()

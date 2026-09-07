@@ -15,6 +15,21 @@
 - MAIN decompressed size: 2,903,032 bytes
 - MAIN SHA-256: `5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772`
 
+## Bit Reduction quantizer runtime proof
+
+The unmodified MAIN path now executes from the terminal BR read at `0x4011870E`
+through the loop exit at `0x401187A6` under MiniColdFire.
+
+- MAC mode: `0x20` (signed fractional, truncate)
+- Loop body: 16 iterations × 2 samples = 32 quantizer operations
+- Test matrix: 8 raw BR words, including zero and the observed `0x7800` maximum
+- Runtime result: 128 loop iterations and 256 / 256 sample matches
+- Coefficients: independently reconstructed D2/D3/D4 match runtime for every level
+- Equation: `Q(x) = (((signed32(x) * signed32(D3)) >> 31) << D2) mod 2^32`
+
+This is an instruction-execution proof, not a physical-unit claim. Front-panel BR
+mapping, DAC representation, audible behavior, and timing headroom remain hardware-open.
+
 ## Transport round-trip
 
 The stock decoded container was re-encoded locally using the recovered Elektron transport rules.

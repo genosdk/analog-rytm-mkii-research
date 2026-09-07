@@ -24,12 +24,18 @@
 | `0x40117F00` | Pre-render/audio-interface routine; returns under modeled READY transitions |
 | `0x4011870E` | Terminal BR render read |
 | `0x4011877A..0x401187A0` | Stock 32-sample render loop |
+| `0x4011878E`, `0x40118792` | Paired signed-fractional quantizer MACs |
 
-The control smoother is not the audio quantizer. The audio-interface blocker is now
-resolved: all three READY polls execute, and the TCD30 CSR `0x10` poll exits after a
-modeled transient observation. The next task is to execute the terminal BR read and
-32-sample render loop with sample-word provenance. This remains the preferred boundary
-for a digital Filter 2 before the DAC path.
+The control smoother is not the audio quantizer. The terminal BR setup and loop now
+execute from `0x4011870E` through `0x401187A6`. Across eight raw BR words, all 128
+loop iterations and 256 sample operations match the independently reconstructed
+coefficients and equation:
+
+`Q(x) = (((signed32(x) * signed32(D3)) >> 31) << D2) mod 2^32`
+
+This proves the instruction-level quantizer boundary. The next task is to trace its
+post-quantizer words into the final sample-format/DAC handoff and establish a cycle-safe
+Filter 2 insertion point. Front-panel mapping and physical hardware behavior remain open.
 
 ## Audio scheduling
 

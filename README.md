@@ -45,6 +45,9 @@ and reproducible tooling.
 - BR physical parameter: `0x15`.
 - BR terminal render read: `0x4011870E`.
 - Stock 32-sample render loop: `0x4011877A..0x401187A0`.
+- Stock BR coefficient setup and all 32 quantizer MACs execute under MiniColdFire.
+- Proven quantizer equation: `Q(x) = (((signed32(x) * signed32(D3)) >> 31) << D2) mod 2^32`.
+- Runtime matrix: 8 BR words, 128 loop iterations, 256 / 256 sample matches.
 - All three audio-interface READY polls execute and return under MiniColdFire.
 - The TCD30 CSR `0x10` poll executes through a modeled one-observation transition.
 - Functional SRR research image SHA-256: `ac077fe3d2262494265a12f1b8264e53e637091323c2306cf90573560b06a82e`.
@@ -66,9 +69,9 @@ unless you intentionally want the research dashboard exposed.
 
 ## Active reverse-engineering target
 
-The audio-interface blocker is resolved: `0x40117F00` now traverses the READY
-polls at `0x40117F16`, `0x40118396`, and `0x40118518` and returns under the
-board model. The exact TCD30 CSR bit `0x10` poll at `0xFC0453DE` also exits;
-its stronger peripheral meaning remains hardware-unproven. The active target is
-now an instrumented execution of the terminal BR read at `0x4011870E` through
-the 32-sample render loop, with input/output sample provenance.
+The terminal BR path is now instruction-executed from `0x4011870E` through
+`0x401187A6`. Eight BR words independently reproduce the runtime D2/D3/D4
+coefficients, and every one of 256 quantizer evaluations matches the signed Q31
+equation above. The active target is now the post-quantizer sample-format/DAC
+handoff so Filter 2 can be placed at a cycle-safe digital boundary. Front-panel
+BR mapping and physical hardware behavior remain unverified.
