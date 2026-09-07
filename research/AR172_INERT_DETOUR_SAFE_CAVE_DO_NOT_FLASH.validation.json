@@ -1,0 +1,57 @@
+{
+  "name": "AR172_INERT_DETOUR_SAFE_CAVE_DO_NOT_FLASH",
+  "warning": "RESEARCH BUILD - DO NOT FLASH UNTIL HARDWARE ACCEPTANCE/RECOVERY TEST PLAN IS EXECUTED",
+  "stock_file": "/mnt/data/Analog-Rytm_MKII_OS1.72.syx",
+  "output": "/mnt/data/ar172_workspace/AR172_INERT_DETOUR_SAFE_CAVE_DO_NOT_FLASH.syx",
+  "output_size": 1827616,
+  "output_sha256": "be90357de1e2857769a08d2a2542b0a2fd8c31c446fc029a32126c180eb9009e",
+  "container_size": 1442027,
+  "container_checksum": "0x762F13E6",
+  "packet_count": 14278,
+  "packet_checksums_ok": 14278,
+  "packet_checksums_bad": 0,
+  "main_stock_size": 2903032,
+  "main_comp_size": 1372547,
+  "main_variant_sha256": "b73483dd313d481290e0d60ec716d8921f2dc1aee2f07c57d412f796524c1292",
+  "main_byte_differences": 17,
+  "patches": [
+    {
+      "addr": "0x4011C312",
+      "length": 6,
+      "expected": "2039800067b8",
+      "replacement": "4ef9402b4200"
+    },
+    {
+      "addr": "0x402B4200",
+      "length": 12,
+      "expected": "000000000000000000000000",
+      "replacement": "2039800067b84ef94011c318"
+    }
+  ],
+  "sections": [
+    {
+      "id": 5,
+      "same_decompressed": true,
+      "stock_sha256": "eaf3553f35561fa0eff7ae9dbb2a3889cb9d7b1c7195e88e989974125aefdba8",
+      "variant_sha256": "eaf3553f35561fa0eff7ae9dbb2a3889cb9d7b1c7195e88e989974125aefdba8"
+    },
+    {
+      "id": 2,
+      "same_decompressed": true,
+      "stock_sha256": "9b7ed34c1ce6ff5c2842b581f00140a864b30b185a128c61ef784a23db301dbc",
+      "variant_sha256": "9b7ed34c1ce6ff5c2842b581f00140a864b30b185a128c61ef784a23db301dbc"
+    },
+    {
+      "id": 1,
+      "same_decompressed": true,
+      "stock_sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f",
+      "variant_sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f"
+    },
+    {
+      "id": 3,
+      "same_decompressed": true,
+      "stock_sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+      "variant_sha256": "b73483dd313d481290e0d60ec716d8921f2dc1aee2f07c57d412f796524c1292"
+    }
+  ]
+}
