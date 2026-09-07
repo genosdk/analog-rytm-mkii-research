@@ -1,0 +1,96 @@
+image:
+  main_os_path: /mnt/data/ar172_workspace/AR172_SLICE16_TRANSACTIONAL_LAB_DO_NOT_FLASH.main.bin
+  main_load_base: 0x40000400
+  main_size: 2903032
+  entry_candidate: 0x40000870
+
+cpu:
+  family: NXP/Freescale ColdFire MCF5441x
+  qemu_candidate: cfv4e
+  notes: Firmware uses V4-class ColdFire instructions including MAC/EMAC and FPU-class features.
+
+memory:
+  - name: sdram
+    type: ram
+    base: 0x40000000
+    size: 0x08000000
+    status: strong_hypothesis
+    notes: MCF5441x SDRAM aperture begins at 0x40000000. 128 MiB is inferred from firmware switching SP to 0x48000000; confirm against hardware/bootloader later.
+
+  - name: main_loaded_image
+    type: sdram_initialized_image
+    base: 0x40000400
+    size: 0x002C4FF8
+    notes: Decompressed MAIN is copied/loaded into executable SDRAM, not a ROM mapping.
+
+  - name: firmware_stack_top
+    type: sdram_address
+    addr: 0x48000000
+    notes: Early MAIN entry switches A7/SP to this exact address.
+
+  - name: internal_sram_backdoor
+    type: aliased_sram
+    base: 0x80000000
+    aperture_end: 0x8C000000
+    physical_size: 0x00010000
+    notes: MCF5441x 64 KiB internal SRAM is visible through the backdoor aperture; emulator should alias/wrap addresses to the 64 KiB backing store as the hardware does.
+
+  - name: rapid_gpio
+    type: mmio
+    base: 0x8C000000
+    end: 0x90000000
+
+runtime_objects:
+  - name: runtime_param_table
+    base: 0x8000E5B0
+    size: 0x00000444
+    backing: internal_sram_backdoor
+    notes: 13 tracks × 42 uint16 live parameters, plus nearby control words.
+
+  - name: param_state_table
+    base: 0x80005F10
+    size: 0x00000444
+    backing: internal_sram_backdoor
+    notes: Per-parameter companion state/update table.
+
+image_regions:
+  - name: startup_data_copy_src
+    base: 0x402BD000
+    end: 0x402C4FF8
+    notes: Source image for startup-initialized runtime data.
+
+  - name: preferred_patch_cave
+    base: 0x402B4200
+    end: 0x402B5000
+    notes: Audited zero pad in the executable SDRAM-loaded MAIN image between a counted function-pointer table and startup data-copy source.
+
+  - name: counted_fn_table
+    base: 0x402B3FB4
+    count_addr: 0x402B3FB0
+    count: 0x8B
+    notes: 139-entry function-pointer table ending at 0x402B41E0.
+
+peripheral_buses:
+  - name: PBC1
+    base: 0xE0000000
+    end: 0xF0000000
+  - name: PBC0
+    base: 0xF0000000
+    end: 0x100000000
+
+known_addresses:
+  - addr: 0x4011C550
+    label: playback_pack_pre_hook_window
+  - addr: 0x4011C598
+    label: playback_pack_post_hook_window
+  - addr: 0x4011C20C
+    label: late_overlay_loop
+  - addr: 0x4011ACAE
+    label: base_sound_runtime_write
+  - addr: 0x400CECE6
+    label: sample_pageview_start_end_accessor
+  - addr: 0x40190B5E
+    label: SamplePageView_ctor
+  - addr: 0x40087560
+    label: screenshot_rpc_handler_region
+    notes: Handler path establishes 128×64 / 1024-byte screenshot payload.
