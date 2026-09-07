@@ -1,0 +1,144 @@
+{
+  "name": "AR172_SLICE16_ZERO_PERSISTENCE_LAB_DO_NOT_FLASH",
+  "warning": "RESEARCH BUILD - DO NOT FLASH UNTIL STOCK ROUNDTRIP AND INERT-DETOUR HARDWARE TESTS PASS; BOOTLOADER/CAVE/TIMING/DSP BEHAVIOR UNPROVEN",
+  "design": "START 105..120 (raw 0x6900..0x7800) maps to equal slices 1..16 only in D0 during 572-word control-frame conversion; source/live parameter RAM is never modified by hook",
+  "stock_file": "/mnt/data/Analog-Rytm_MKII_OS1.72.syx",
+  "output": "/mnt/data/ar172_workspace/AR172_SLICE16_ZERO_PERSISTENCE_LAB_DO_NOT_FLASH.syx",
+  "output_size": 1817632,
+  "output_sha256": "0d0a508c409ea1d19da76b9f9d2d1813704bc808bd44a00cb19ea90a8d533fba",
+  "container_size": 1434124,
+  "container_checksum": "0xF511DD21",
+  "packet_count": 14200,
+  "packet_checksums_ok": 14200,
+  "packet_checksums_bad": 0,
+  "main_stock_size": 2903032,
+  "main_comp_size": 1364652,
+  "main_variant_sha256": "4dd464c4fc6f43938bda0345b9b0f893df5a0d35ab3bdc52e5fa73fc484efb3a",
+  "main_byte_differences": 136,
+  "hook_sizes": {
+    "pre": 18,
+    "pair": 110,
+    "post": 16
+  },
+  "phase_start_pairs": [
+    23,
+    44,
+    65,
+    86,
+    107,
+    128,
+    149,
+    170,
+    191,
+    212,
+    233,
+    254,
+    275
+  ],
+  "phase_end_pairs": [
+    24,
+    45,
+    66,
+    87,
+    108,
+    129,
+    150,
+    171,
+    192,
+    213,
+    234,
+    255,
+    276
+  ],
+  "semantic_simulation_cases": 1573,
+  "patches": [
+    {
+      "name": "pre-pack detour",
+      "addr": "0x4011C550",
+      "length": 6,
+      "expected": "2e3c03d70000",
+      "replacement": "4ef9402b4200"
+    },
+    {
+      "name": "per-pair detour",
+      "addr": "0x4011C56E",
+      "length": 8,
+      "expected": "a89200c7a8060800",
+      "replacement": "4ef9402b42404e71"
+    },
+    {
+      "name": "post-pack detour",
+      "addr": "0x4011C598",
+      "length": 6,
+      "expected": "7034588f2200",
+      "replacement": "4ef9402b4320"
+    },
+    {
+      "name": "pre-pack hook body",
+      "addr": "0x402B4200",
+      "length": 18,
+      "expected": "000000000000000000000000000000000000",
+      "replacement": "2f052f067a182e3c03d700004ef94011c556"
+    },
+    {
+      "name": "per-pair slice hook body",
+      "addr": "0x402B4240",
+      "length": 110,
+      "expected": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "replacement": "53456b0000386700000ea89200c7a80608004ef94011c5763a3c80013c000c466900650000420c4678006200003ae04e04460069ccfc078030066000002a7a143c29fffa0c4669006500001c0c46780062000014e04e04460069ccfc0780064607804840300648402c176000ff9c"
+    },
+    {
+      "name": "post-pack hook body",
+      "addr": "0x402B4320",
+      "length": 16,
+      "expected": "00000000000000000000000000000000",
+      "replacement": "2c1f2a1f7034588f22004ef94011c59e"
+    }
+  ],
+  "sections": [
+    {
+      "id": 5,
+      "stock_sha256": "eaf3553f35561fa0eff7ae9dbb2a3889cb9d7b1c7195e88e989974125aefdba8",
+      "variant_sha256": "eaf3553f35561fa0eff7ae9dbb2a3889cb9d7b1c7195e88e989974125aefdba8",
+      "expected_variant_match": true
+    },
+    {
+      "id": 2,
+      "stock_sha256": "9b7ed34c1ce6ff5c2842b581f00140a864b30b185a128c61ef784a23db301dbc",
+      "variant_sha256": "9b7ed34c1ce6ff5c2842b581f00140a864b30b185a128c61ef784a23db301dbc",
+      "expected_variant_match": true
+    },
+    {
+      "id": 1,
+      "stock_sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f",
+      "variant_sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f",
+      "expected_variant_match": true
+    },
+    {
+      "id": 3,
+      "stock_sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+      "variant_sha256": "4dd464c4fc6f43938bda0345b9b0f893df5a0d35ab3bdc52e5fa73fc484efb3a",
+      "expected_variant_match": true
+    }
+  ],
+  "static_assertions": [
+    "all six patch sites matched exact expected stock bytes/zero cave bytes before replacement",
+    "START/END pair phase sequence exactly matches 13 tracks: START 23+21*t, END 24+21*t",
+    "selectors 0..104 preserve START and END; selectors 105..120 map exactly to 16 equal 0x0780-wide slices for all 13 tracks",
+    "neighbor halfwords and LOOP halfword preserved in simulation",
+    "source parameter image remains unchanged in simulation",
+    "D5 is reserved as phase state and restored after the loop; D6 is touched only on START/END paths and restored before the displaced MAC/EMAC instructions",
+    "hook bodies remain inside 0x402B41E0..0x402B5000 candidate cave and do not overlap",
+    "all MAIN changes are contained within declared patch regions",
+    "recompressed MAIN decompresses bit-identically to intended patched MAIN",
+    "rebuilt ELE3 checksum verifies and all SysEx packet checksums verify",
+    "DSP/FPGA/metadata sections decompress identically to stock"
+  ],
+  "unproven_without_hardware": [
+    "bootloader accepts modified/recompressed ELE3 image",
+    "0x402B4200 candidate cave is executable and safe under physical memory/cache configuration",
+    "additional inner-loop instructions meet real-time deadline",
+    "ColdFire control-frame representation inferred here produces intended DSP sample boundaries",
+    "audible END endpoint/click/loop semantics"
+  ]
+}
