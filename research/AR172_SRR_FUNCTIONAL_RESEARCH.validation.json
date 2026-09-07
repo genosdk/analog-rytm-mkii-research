@@ -1,0 +1,91 @@
+{
+  "name": "AR172_SRR_FUNCTIONAL_RESEARCH_DO_NOT_FLASH",
+  "warning": "RESEARCH BUILD. DO NOT FLASH until the stock recovery, byte-identical round-trip, and inert-detour hardware tests have passed.",
+  "source": {
+    "file": "Analog-Rytm_MKII_OS1.72.syx",
+    "size": 1706144,
+    "sha256": "1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f"
+  },
+  "output": {
+    "file": "AR172_SRR_FUNCTIONAL_RESEARCH_DO_NOT_FLASH.syx",
+    "size": 1809568,
+    "sha256": "ac077fe3d2262494265a12f1b8264e53e637091323c2306cf90573560b06a82e"
+  },
+  "parameter_mapping": {
+    "descriptor_address": "0x401ABC48",
+    "name": "Bit Reduction",
+    "short_name": "BR",
+    "physical_parameter_id": "0x15",
+    "internal_max": "0x7800"
+  },
+  "patches": [
+    {
+      "site": "0x4011870E",
+      "stock": "71 E9 00 06 48 40",
+      "replacement": "4E F9 40 2B 42 00",
+      "purpose": "Detour stock BR read/SWAP to selector pre-hook."
+    },
+    {
+      "cave": "0x402B4200",
+      "length": 24,
+      "purpose": "Reproduce zero-extended BR read; for BR >= 0x7400 feed BR=0 to stock bit-reduction stage while retaining original BR in parameter state."
+    },
+    {
+      "site": "0x401187A6",
+      "stock": "76 5C 78 08 52 AF 00 58",
+      "replacement": "4E F9 40 2B 43 00 4E 71",
+      "purpose": "Detour after stock 32-sample render loop to SRR post-pass."
+    },
+    {
+      "cave": "0x402B4300",
+      "length": 242,
+      "purpose": "32-sample sample-and-hold post-pass; then reproduce displaced stock tail and return to 0x401187AE."
+    }
+  ],
+  "srr_lab_mapping": {
+    "0x7400..0x74FF": "hold 2 samples",
+    "0x7500..0x75FF": "hold 4 samples",
+    "0x7600..0x76FF": "hold 8 samples",
+    "0x7700..0x77FF": "hold 16 samples",
+    "0x7800+": "hold 32 samples",
+    "below_0x7400": "stock behavior"
+  },
+  "render_loop_static_proof": {
+    "counter_init": "0x40118778: MOVEQ #0x10,D0",
+    "loop_start": "0x4011877A",
+    "write_1": "0x40118798: MOVE.L A0,(A6)+",
+    "write_2": "0x4011879C: MOVE.L A0,(A6)+",
+    "decrement": "0x4011879E: SUBQ.L #1,D0",
+    "back_branch": "0x401187A0: BNE 0x4011877A",
+    "result": "16 iterations x 2 x 32-bit samples = 32 samples / 0x80 bytes. A6 ends exactly one block past the rendered data.",
+    "a1_lifetime": "The EMAC loop does not modify A1; the post-pass can reread the original BR at +0x06(A1)."
+  },
+  "integrity": {
+    "data_packets": 14137,
+    "packet_checksums_ok": 14137,
+    "packet_checksums_bad": 0,
+    "container_size": 1427744,
+    "container_checksum": "0x9930D853",
+    "container_checksum_recomputed": "0x9930D853",
+    "trailer_bytes": 0,
+    "main_compressed_size": 1358267,
+    "main_decompressed_size": 2903032,
+    "main_sha256": "41bfd182f5f933bbc70fe9033fd157fc938d3ce54a64229b45ec2e1709c8ee67",
+    "main_diff_bytes_vs_stock": 244,
+    "main_recompression_roundtrip_exact": true,
+    "meta_same_as_stock": true,
+    "bootstrap_same_as_stock": true,
+    "fpga_same_as_stock": true,
+    "stock_cave_literal_refs": 0,
+    "stock_cave_absolute_jump_or_jsr_targets": 0,
+    "stock_cave_relative_branch_targets": 0
+  },
+  "hardware_unverified": [
+    "Bootloader acceptance of modified MAIN",
+    "Execution permission/safety of 0x402B4200 code cave",
+    "Realtime cycle headroom",
+    "Audible SRR result",
+    "Front-panel BR value to internal 0x7400..0x7800 correspondence",
+    "Recovery behavior after a failed custom image"
+  ]
+}
