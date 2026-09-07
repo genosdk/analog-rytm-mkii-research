@@ -1,0 +1,145 @@
+{
+  "name": "AR172_SLICE16_TRANSACTIONAL_LAB_DO_NOT_FLASH",
+  "warning": "RESEARCH BUILD - DO NOT FLASH UNTIL STOCK ROUNDTRIP AND INERT-DETOUR HARDWARE TESTS PASS",
+  "design": "After p-lock overlay, save all 13 effective START+END pairs (52 bytes) on stack; transiently substitute START selectors 105..120 with equal 16-slice START/END boundaries; run the stock 572-word MAC/EMAC converter byte-for-byte unchanged; restore all START+END pairs immediately afterward.",
+  "prototype_mapping": {
+    "stock": "START 0..104",
+    "slice_selectors": "START 105..120 => Slice 1..16",
+    "slice_width_raw": "0x0780"
+  },
+  "output": "/mnt/data/ar172_workspace/AR172_SLICE16_TRANSACTIONAL_LAB_DO_NOT_FLASH.syx",
+  "output_size": 1817632,
+  "output_sha256": "9233da51a2467a7dd0a7b8897af41058e54fa4768e86479c226778a26c7a709f",
+  "container_size": 1434102,
+  "container_checksum": "0x0DAAF92B",
+  "packet_count": 14200,
+  "packet_checksums_ok": 14200,
+  "packet_checksums_bad": 0,
+  "main_stock_size": 2903032,
+  "main_comp_size": 1364630,
+  "main_comp_header_stream_length": 1364622,
+  "main_comp_header_stream_sum": "0x08FDEDF4",
+  "main_stock_sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+  "main_variant_sha256": "f38ff27ce25d72f0892fae67f09786043cc07519201b041b6777a32623dfc81a",
+  "main_byte_differences": 100,
+  "hook_sizes": {
+    "pre": 70,
+    "post": 36
+  },
+  "temporary_stack_bytes": 52,
+  "semantic_simulation_cases": 1573,
+  "simultaneous_multitrack_patterns": 3,
+  "inner_converter_stock_range": [
+    "0x4011C556",
+    "0x4011C598"
+  ],
+  "inner_converter_byte_identical": true,
+  "candidate_cave": [
+    "0x402B41E0",
+    "0x402B5000"
+  ],
+  "used_ranges": [
+    [
+      "0x402B4200",
+      "0x402B4246"
+    ],
+    [
+      "0x402B4300",
+      "0x402B4324"
+    ]
+  ],
+  "cave_aligned_pointer_refs": 0,
+  "cave_absolute_jump_call_refs": 0,
+  "cave_relative_branch_refs": 0,
+  "patches": [
+    {
+      "name": "pre-pack transactional detour",
+      "addr": "0x4011C550",
+      "length": 6,
+      "expected": "2e3c03d70000",
+      "replacement": "4ef9402b4200"
+    },
+    {
+      "name": "post-pack transactional detour",
+      "addr": "0x4011C598",
+      "length": 6,
+      "expected": "7034588f2200",
+      "replacement": "4ef9402b4300"
+    },
+    {
+      "name": "transactional pre-hook",
+      "addr": "0x402B4200",
+      "length": 70,
+      "expected": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "replacement": "41f98000e5da760c2f1030100c4069006500001c0c40780062000014e04804400069c0fc07803080064007803140000241e8005453836a00ffce2e3c03d700004ef94011c556"
+    },
+    {
+      "name": "transactional post-hook",
+      "addr": "0x402B4300",
+      "length": 36,
+      "expected": "000000000000000000000000000000000000000000000000000000000000000000000000",
+      "replacement": "220841f98000e9ca700c209f41e8ffac53806a00fff420417034588f22004ef94011c59e"
+    }
+  ],
+  "sections": [
+    {
+      "id": 5,
+      "stock_sha256": "eaf3553f35561fa0eff7ae9dbb2a3889cb9d7b1c7195e88e989974125aefdba8",
+      "variant_sha256": "eaf3553f35561fa0eff7ae9dbb2a3889cb9d7b1c7195e88e989974125aefdba8",
+      "stock_identical_expected": true
+    },
+    {
+      "id": 2,
+      "stock_sha256": "9b7ed34c1ce6ff5c2842b581f00140a864b30b185a128c61ef784a23db301dbc",
+      "variant_sha256": "9b7ed34c1ce6ff5c2842b581f00140a864b30b185a128c61ef784a23db301dbc",
+      "stock_identical_expected": true
+    },
+    {
+      "id": 1,
+      "stock_sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f",
+      "variant_sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f",
+      "stock_identical_expected": true
+    },
+    {
+      "id": 3,
+      "stock_sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+      "variant_sha256": "f38ff27ce25d72f0892fae67f09786043cc07519201b041b6777a32623dfc81a",
+      "stock_identical_expected": false
+    }
+  ],
+  "static_assertions_passed": [
+    "stock transport packet checksums pass before modification",
+    "stock ELE3 content checksum matches preamble",
+    "stock MAIN SHA-256 matches prior independent extraction",
+    "every patch site matches exact expected stock bytes before replacement",
+    "only 100 MAIN bytes differ from stock",
+    "stock 572-word MAC/EMAC converter body remains byte-identical",
+    "all 13 x 121 selector cases restore exact START/END values",
+    "simultaneous multi-track selector cases restore exact START/END values",
+    "transactional cave bytes are zero in stock MAIN",
+    "no aligned 32-bit literals, absolute JMP/JSR, or relative Bcc targets point into used cave ranges",
+    "compressed stream header length and byte-sum verify",
+    "recompressed MAIN expands bit-identically to intended transactional MAIN",
+    "DSP/FPGA/metadata compressed bytes and decompressed bytes remain stock-identical",
+    "rebuilt ELE3 content checksum matches generated preamble",
+    "all rebuilt SysEx packet checksums pass",
+    "opcode-level execution of actual assembled transactional pre/post hook bytes passes 1,573 exhaustive cases"
+  ],
+  "unproven_without_hardware": [
+    "bootloader acceptance of modified MAIN",
+    "execution/safety of candidate code cave on physical CPU mapping",
+    "whether an interrupt/concurrent observer can see the transient START/END table substitution window",
+    "actual DSP audible endpoint/loop/click behavior",
+    "real-time stack/timing behavior on hardware"
+  ],
+  "machinecode_emulation": {
+    "result": "PASS",
+    "actual_machine_code_cases": 1573,
+    "simultaneous_patterns": 3,
+    "pre_hook_steps_min": 95,
+    "pre_hook_steps_max": 103,
+    "post_hook_steps": 60,
+    "stack_delta_before_stock_post_adjust": 0,
+    "final_stack_delta_including_displaced_stock_addq": 4
+  }
+}
