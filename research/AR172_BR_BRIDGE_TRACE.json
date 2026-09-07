@@ -1,0 +1,54 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "size": 2903032,
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "base_address": "0x40000400"
+  },
+  "render_sequence": [
+    {
+      "address": "0x4010A2E0",
+      "role": "8-channel renderer"
+    },
+    {
+      "address": "0x40108944",
+      "role": "8-physical-voice control bridge"
+    },
+    {
+      "address": "0x40105188",
+      "role": "per-voice control conversion"
+    }
+  ],
+  "track_parameter_record": {
+    "stride_bytes": 84,
+    "word_count": 42,
+    "physical_voice_to_logical_track": [
+      0,
+      4,
+      1,
+      5,
+      8,
+      6,
+      10,
+      2
+    ]
+  },
+  "bit_reduction": {
+    "logical_parameter_id": 20,
+    "sound_subview_word_index": 30,
+    "sound_subview_byte_offset": "0x3C",
+    "packed_record_word_index": 39,
+    "packed_record_byte_offset": "0x4E",
+    "field_base": "0x8000F7F6",
+    "loop_address": "0x4011C722",
+    "track_count": 12,
+    "modulation_flags_base": "0x8000E53C",
+    "modulation_values_base": "0x800067C4",
+    "coefficient_table_a": "0x8000EA3C",
+    "coefficient_table_b": "0x8000EA4C",
+    "converter": "0x40119672",
+    "converter_output_base": "0x8000F774"
+  },
+  "safety": "Static analysis only; no firmware was modified or repacked."
+}
