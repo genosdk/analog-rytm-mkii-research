@@ -50,6 +50,11 @@ and reproducible tooling.
 - Runtime matrix: 8 BR words, 128 loop iterations, 256 / 256 sample matches.
 - All three audio-interface READY polls execute and return under MiniColdFire.
 - The TCD30 CSR `0x10` poll executes through a modeled one-observation transition.
+- The post-BR slab is 8 voice-major blocks × 32 signed-fractional longwords at
+  `0x800067F8..0x80006BF7`; renderer `0x4010A2E0` consumes all 256 words and
+  writes the eight voice slots into a 32-frame, `0x40`-byte-stride work slab.
+- eDMA channel 30 is input-side (`0x4B7FFFF0` → SRAM); channel 42 is the
+  outbound 256-byte handoff (SRAM → `0x4B400000`).
 - Functional SRR research image SHA-256: `ac077fe3d2262494265a12f1b8264e53e637091323c2306cf90573560b06a82e`.
 
 See `docs/REVERSE_ENGINEERING_MAP.md`, `docs/AR172_LFO2_FILTER2_RESEARCH.md`,
@@ -69,9 +74,9 @@ unless you intentionally want the research dashboard exposed.
 
 ## Active reverse-engineering target
 
-The terminal BR path is now instruction-executed from `0x4011870E` through
-`0x401187A6`. Eight BR words independently reproduce the runtime D2/D3/D4
-coefficients, and every one of 256 quantizer evaluations matches the signed Q31
-equation above. The active target is now the post-quantizer sample-format/DAC
-handoff so Filter 2 can be placed at a cycle-safe digital boundary. Front-panel
-BR mapping and physical hardware behavior remain unverified.
+The terminal BR path and its downstream buffer geometry are now
+instruction-executed. The last clean voice-separated boundary is the
+`0x400`-byte post-BR slab at `0x800067F8..0x80006BF7`, immediately before
+renderer `0x4010A2E0`. This is the preferred semantic Filter 2 hook. The active
+target is now measuring its cycle margin and proving an exact disabled bypass;
+front-panel BR mapping and physical hardware behavior remain unverified.

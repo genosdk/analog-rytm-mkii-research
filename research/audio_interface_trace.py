@@ -48,7 +48,8 @@ def run_pre_render(module, main_path: Path) -> dict:
     cpu = module.CPU(bus)
     cpu.a[7] = module.INITIAL_SP - 0x1000
 
-    objects = (0x80007000, 0x80007100)
+    # Keep these fixtures away from renderer work arrays at 0x80007000/0x80007040.
+    objects = (0x80003000, 0x80003100)
     for pointer, obj in zip(module.AUDIO_IFACE_PTRS, objects):
         bus.write(pointer, 4, obj)
     # Force the entry poll as well as the two command-completion polls later
@@ -100,7 +101,7 @@ def run_tcd30_poll(module, main_path: Path) -> dict:
         "polled_bit": f"0x{module.AUDIO_DMA_POLLED_BIT:02X}",
         "busy_observations": len(bus.audio_dma_events),
         "final_polled_bit": final & module.AUDIO_DMA_POLLED_BIT,
-        "classification": "TCD30 CSR bit 0x10; exact peripheral semantics not yet hardware-proven",
+        "classification": "TCD30 input/capture-side CSR bit 0x10; exact bit semantics remain hardware-unproven",
     }
 
 
@@ -129,7 +130,7 @@ def trace(main_path: Path, emulator_path: Path) -> dict:
         "pre_render_runtime": run_pre_render(module, main_path),
         "tcd30_poll_runtime": run_tcd30_poll(module, main_path),
         "resolved_blocker": "0x40117F00 now returns under the board model without manually forcing status words.",
-        "next_target": "Execute the 0x4011870E terminal BR read and 32-sample render loop with provenance on input/output sample words.",
+        "next_target": "Measure cycle margin at the proven post-BR voice slab before renderer 0x4010A2E0.",
         "safety": "Static analysis and emulation only; firmware bytes were not modified.",
     }
 

@@ -13,6 +13,7 @@ sys.path.insert(0, str(HERE))
 from ar172_extract import NRV2BDepacker, decode_sysex, parse_ele3
 from audio_stream_trace import trace as trace_audio_stream
 from audio_interface_trace import trace as trace_audio_interface
+from audio_handoff_trace import trace as trace_audio_handoff
 from br_bridge_trace import trace
 from br_consumer_trace import trace as trace_br_consumer
 from br_quantizer_runtime_trace import trace as trace_br_quantizer_runtime
@@ -194,6 +195,28 @@ class BitReductionQuantizerRuntimeTests(unittest.TestCase):
         self.assertEqual(result["execution"]["loop_iterations"], 128)
         self.assertEqual(result["execution"]["quantizer_samples"], 256)
         self.assertEqual(result["execution"]["sample_matches"], 256)
+
+
+@unittest.skipUnless(
+    (HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin").exists(),
+    "extracted proprietary MAIN image not present",
+)
+class AudioHandoffTraceTests(unittest.TestCase):
+    def test_voice_transpose_staging_and_dma_direction(self):
+        main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
+        emulator_path = ROOT / "recovered_library" / "minicoldfire.py"
+        result = trace_audio_handoff(main_image, emulator_path)
+        self.assertEqual(result["result"], "PASS")
+        pipeline = result["pipeline"]
+        self.assertEqual(pipeline["renderer"]["tagged_input_words_matched"], 256)
+        self.assertEqual(pipeline["renderer"]["address_permutation_words_matched"], 256)
+        self.assertEqual(pipeline["handoff"]["source_reads"], 512)
+        self.assertEqual(pipeline["handoff"]["unique_source_longwords"], 256)
+        self.assertEqual(pipeline["outbound_dma_tcd42"]["channel"], 42)
+        self.assertEqual(pipeline["outbound_dma_tcd42"]["major_bytes"], 256)
+        self.assertEqual(result["input_dma_tcd30"]["channel"], 30)
+        self.assertIn("input/capture", result["input_dma_tcd30"]["classification"])
+        self.assertIn("not proven", result["filter2_insertion"]["cycle_status"])
 
 
 class MiniColdFirePeripheralTests(unittest.TestCase):

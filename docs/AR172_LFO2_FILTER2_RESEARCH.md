@@ -19,9 +19,9 @@ The two features belong on opposite sides of the existing control/audio boundary
   phase/update scheduling, modulation destination dispatch, UI, parameter locks,
   MIDI and persistence.
 - **Filter 2** belongs in the digital sample playback path before the sample DAC.
-  The firmware package's section ID 2 loads at `0x07020000` and is the leading
-  candidate for that DSP path. This must be proven by disassembly and ultimately
-  by hardware behavior.
+  MAIN now provides a proven voice-separated post-BR boundary before shared
+  renderer processing. Section ID 2 remains an open secondary target, not a
+  prerequisite for the first exact-bypass experiment.
 
 The physical analog voice topology remains unchanged:
 
@@ -78,7 +78,7 @@ New state must use a versioned extension or verified-unused storage; existing
    of initializer `0x4011AE52` proves the exact mapping
    `frame_word = 26 + 42 * track + sound_destination`; project ingestion is no
    longer required to resolve the descriptor banks.
-3. **First BR consumer proven; sample quantizer still open:** the 13-record
+3. **Complete:** the 13-record
    EMAC loop at `0x4011C69E` smooths 21 longwords/42 words per record. Its
    iteration 19 reads `0x8000F7F4..0x8000F7F7`, the track-0 SRR/BR pair, at
    `0x4011C6C0`. This is a control-rate smoother, not the audio quantizer.
@@ -89,9 +89,17 @@ New state must use a versioned extension or verified-unused storage; existing
    generic 16-byte stream-descriptor family at `0x41310D30` supports indices
    `0x00..0x82` and defaults to 48 kHz. Its high-index users `0x81` and `0x82`
    are proven buffer streams, but their playback/record direction is not. They
-   are therefore not accepted as Filter 2 insertion points.
-4. Locate sample fetch/interpolation, existing BRR and DAC handoff routines.
-5. Establish sample rate, numeric representation, saturation and available cycles.
+   are therefore not accepted as Filter 2 insertion points. The terminal BR read
+   at `0x4011870E` and all 256 Q31 quantizer operations are now executed and
+   independently matched.
+4. **Complete through the outbound DMA boundary:** pre-render emits eight
+   voice-major blocks of 32 longwords at `0x800067F8..0x80006BF7`. Renderer
+   `0x4010A2E0` consumes all 256 words and writes voice slots 0..7 into a
+   32-frame work slab with `0x40`-byte stride. Shared processing stages 128
+   longwords at `0x80007A44..0x80007C43`, populates a 256-byte runtime output
+   block, and programs eDMA channel 42 from SRAM to `0x4B400000`. TCD30 is
+   separately proven input-side (`0x4B7FFFF0` to SRAM), not the DAC handoff.
+5. **Open:** measure saturation behavior and available cycles at the post-BR hook.
 6. Insert an exact bypass hook and prove bit-identical output.
 7. Insert a single 2-pole low-pass instance on one voice.
 8. Expand to eight simultaneous physical voices and sweep worst-case resonance.
@@ -126,6 +134,10 @@ New state must use a versioned extension or verified-unused storage; existing
   its track-0 SRR/BR read, then smoke-tests `0x40108944` and `0x40105188` to
   return under emulation. Passing output is
   `research/AR172_BR_CONSUMER_TRACE.json`.
+- `research/audio_handoff_trace.py` executes the stock post-BR pipeline with a
+  256-word tagged provenance fixture, proves the renderer address permutation,
+  traces shared staging, and reconstructs the TCD30 input and TCD42 outbound
+  descriptors. Passing output is `research/AR172_AUDIO_HANDOFF_TRACE.json`.
 - `recovered_library/minicoldfire.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply and the register-encoding precedence needed by
@@ -157,13 +169,14 @@ The audio-interface transition model is now implemented. All three poll sites
 `0x40109FFE` observes and clears mask `0x10` in TCD30 CSR word `0xFC0453DE`;
 the exact peripheral meaning of that bit remains hardware-unproven.
 
-Next, execute the terminal BR read at `0x4011870E` through the stock 32-sample
-render loop and capture input/output sample provenance. That point—not the
-control smoother, mixer, or unclassified `0x81`/`0x82` streams—is the preferred
-Filter 2 insertion boundary. In parallel, LFO2 should reuse the
-proven destination equation and update machinery via shadow state; the stock
-42-word record remains frozen until persistence and SysEx compatibility are
-mapped.
+The post-BR sample boundary is now traced through outbound eDMA. The preferred
+Filter 2 hook is `0x800067F8..0x80006BF7`, after the stock quantizer and before
+renderer `0x4010A2E0`, because all eight physical voices remain separated into
+32-longword blocks there. The next gate is cycle-counter or hardware timing
+measurement followed by a disabled, bit-identical bypass hook. Semantic placement
+is proven; cycle safety is not. In parallel, LFO2 should reuse the proven
+destination equation and update machinery via shadow state; the stock 42-word
+record remains frozen until persistence and SysEx compatibility are mapped.
 
 ## External format cross-checks
 

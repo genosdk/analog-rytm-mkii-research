@@ -1,0 +1,103 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "pipeline": {
+    "pre_render": {
+      "entry": "0x40117F00",
+      "instructions": 17109,
+      "stock_unique_longword_writes": 256,
+      "voice_blocks": 8,
+      "samples_per_voice": 32,
+      "range": "0x800067F8..0x80006BF7"
+    },
+    "renderer": {
+      "entry": "0x4010A2E0",
+      "instructions": 3227,
+      "tagged_input_words_matched": 256,
+      "address_permutation_words_matched": 256,
+      "numeric_transform": "renderer arithmetic changes sample values; only input provenance and output address permutation are asserted",
+      "input_layout": "8 voice-major blocks x 32 signed-fractional longwords",
+      "output_layout": "32 frames x 0x40-byte stride; voice slots 0..7 at +0x00..+0x1C",
+      "output_range": "0x80000000..0x800007FF"
+    },
+    "handoff": {
+      "entry": "0x40109F04",
+      "instructions_through_return": 18718,
+      "source_reads": 512,
+      "unique_source_longwords": 256,
+      "two_source_groups_identical": true,
+      "first_source": "0x80000008",
+      "last_source": "0x800005F4",
+      "initial_stage_writes": 128,
+      "fixed_stage": "0x80007A44..0x80007C43",
+      "stage_layout": "2 output groups x 32 frames x 2 longwords",
+      "downstream_unique_dma_block_writes": 64,
+      "synthetic_output_pointer_global": "0x8000DDB0",
+      "synthetic_output_block": "0x80003200..0x800032FF",
+      "tcd30_poll_observations": 1
+    },
+    "outbound_dma_tcd42": {
+      "base": "0xFC045540",
+      "channel": 42,
+      "direction": "SRAM output block -> external 0x4B400000 window",
+      "major_bytes": 256,
+      "citer_decode": {
+        "elink": true,
+        "link_channel": 10,
+        "iteration_count": 16
+      },
+      "descriptor": {
+        "saddr": "0x80003200",
+        "attr": "0x04B4",
+        "soff": "0x0010",
+        "nbytes": "0x00000010",
+        "slast": "0x00000000",
+        "daddr": "0x4B400000",
+        "citer": "0xD410",
+        "doff": "0x0010",
+        "dlast_sga": "0x8000CDA0",
+        "biter": "0xD410",
+        "csr": "0x0011"
+      },
+      "source_note": "SADDR equals the synthetic value placed in runtime pointer global 0x8000DDB0."
+    }
+  },
+  "input_dma_tcd30": {
+    "setup_entry": "0x40109C68",
+    "instructions": 442,
+    "base": "0xFC0453C0",
+    "channel": 30,
+    "direction": "external 0x4B7FFFF0 window -> SRAM 0x8000DDD0",
+    "major_bytes": 272,
+    "citer_decode": {
+      "elink": true,
+      "link_channel": 30,
+      "iteration_count": 17
+    },
+    "descriptor": {
+      "saddr": "0x4B7FFFF0",
+      "attr": "0xB402",
+      "soff": "0x0010",
+      "nbytes": "0x00000010",
+      "slast": "0x00000000",
+      "daddr": "0x8000DDD0",
+      "citer": "0xBC11",
+      "doff": "0x0004",
+      "dlast_sga": "0x8000E1A0",
+      "biter": "0xBC11",
+      "csr": "0x0011"
+    },
+    "classification": "input/capture-side DMA synchronization, not the outbound DAC transfer"
+  },
+  "filter2_insertion": {
+    "preferred_boundary": "0x800067F8..0x80006BF7, after stock BR and before 0x4010A2E0",
+    "reason": "Samples are still separated into eight 32-longword physical-voice blocks before renderer transposition and shared downstream processing.",
+    "semantic_status": "proven by stock execution plus a 256-word tagged transpose test",
+    "cycle_status": "not proven; hardware timing or cycle-counter measurements are still required"
+  },
+  "conclusion": "The per-voice post-BR slab is the last clean, proven voice-separated sample boundary. TCD30 is input-side; TCD42 is the outbound 256-byte DMA handoff.",
+  "safety": "Read-only stock execution with synthetic RAM fixtures; no firmware was modified, repacked, or flashed."
+}

@@ -22,8 +22,8 @@
     "instructions": 17109,
     "return_pc": "0x400FCECC",
     "objects": [
-      "0x80007000",
-      "0x80007100"
+      "0x80003000",
+      "0x80003100"
     ],
     "poll_sites_executed": [
       "0x40117F16",
@@ -40,9 +40,9 @@
     "polled_bit": "0x10",
     "busy_observations": 1,
     "final_polled_bit": 0,
-    "classification": "TCD30 CSR bit 0x10; exact peripheral semantics not yet hardware-proven"
+    "classification": "TCD30 input/capture-side CSR bit 0x10; exact bit semantics remain hardware-unproven"
   },
   "resolved_blocker": "0x40117F00 now returns under the board model without manually forcing status words.",
-  "next_target": "Execute the 0x4011870E terminal BR read and 32-sample render loop with provenance on input/output sample words.",
+  "next_target": "Measure cycle margin at the proven post-BR voice slab before renderer 0x4010A2E0.",
   "safety": "Static analysis and emulation only; firmware bytes were not modified."
 }

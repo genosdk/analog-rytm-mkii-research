@@ -25,6 +25,11 @@
 | `0x4011870E` | Terminal BR render read |
 | `0x4011877A..0x401187A0` | Stock 32-sample render loop |
 | `0x4011878E`, `0x40118792` | Paired signed-fractional quantizer MACs |
+| `0x800067F8..0x80006BF7` | Eight post-BR voice blocks, 32 longwords each |
+| `0x4010A2E0` | Consumes all 256 voice words and emits strided frame slots |
+| `0x40109F04` | Shared handoff/staging pipeline |
+| eDMA 30 | Input-side: `0x4B7FFFF0` → SRAM `0x8000DDD0` |
+| eDMA 42 | Outbound: 256-byte SRAM block → `0x4B400000` |
 
 The control smoother is not the audio quantizer. The terminal BR setup and loop now
 execute from `0x4011870E` through `0x401187A6`. Across eight raw BR words, all 128
@@ -33,9 +38,11 @@ coefficients and equation:
 
 `Q(x) = (((signed32(x) * signed32(D3)) >> 31) << D2) mod 2^32`
 
-This proves the instruction-level quantizer boundary. The next task is to trace its
-post-quantizer words into the final sample-format/DAC handoff and establish a cycle-safe
-Filter 2 insertion point. Front-panel mapping and physical hardware behavior remain open.
+This proves the instruction-level quantizer boundary. Runtime provenance now also
+proves the post-BR voice slab, renderer address permutation, shared 0x200-byte
+staging area, and outbound eDMA-42 direction. The post-BR slab is therefore the
+preferred semantic Filter 2 insertion point. Cycle margin, front-panel mapping,
+and physical hardware behavior remain open.
 
 ## Audio scheduling
 
@@ -46,8 +53,9 @@ Filter 2 insertion point. Front-panel mapping and physical hardware behavior rem
 - Destination indices 39..46 map from input destinations 13..20.
 - READY poll sites `0x40117F16`, `0x40118396`, and `0x40118518` execute in a
   17,109-instruction pre-render smoke call.
-- `0x40109FFE` polls TCD30 CSR word `0xFC0453DE`, mask `0x10`. The bit's exact
-  hardware semantics are deliberately left unclassified pending hardware evidence.
+- `0x40109FFE` polls TCD30 CSR word `0xFC0453DE`, mask `0x10`. TCD30's descriptor
+  establishes an external-to-SRAM input path; the precise meaning of mask `0x10`
+  remains hardware-unverified.
 
 ## Feature tracks
 
@@ -71,8 +79,9 @@ The stock 42-word record stays frozen until persistence and SysEx compatibility 
 
 ### Filter 2
 
-Filter 2 belongs in the digital sample path before the DAC, after the exact quantizer/render
-boundary is proven. The reference model is a topology-preserving state-variable filter.
+Filter 2 belongs at the proven voice-separated post-BR boundary, before renderer
+`0x4010A2E0`. The reference model is a topology-preserving state-variable filter;
+an exact bypass and cycle margin must be proven before enabling it.
 
 ## Safety boundary
 
