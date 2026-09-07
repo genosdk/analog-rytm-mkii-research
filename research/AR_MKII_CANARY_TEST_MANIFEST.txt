@@ -1,0 +1,50 @@
+Analog Rytm MKII OS 1.72 - Canary Authentication Test
+
+SOURCE
+  Analog-Rytm_MKII_OS1.72.syx
+  Size: 1,706,144 bytes
+  SHA-256: 1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f
+
+CANARY
+  AR_MKII_1.72_CANARY_AUTH_TEST.syx
+  Size: 1,706,144 bytes
+  SHA-256: 21f00b6c1efc0ae3abd679d4928f97313c90964f597cecc954df23ef280b1b7c
+
+ONLY INTENTIONAL CONTAINER CHANGE
+  Section 5 (META), offset 0x70, 15 bytes
+  Build timestamp: "250130 13:39:51" -> "250130 13:39:52"
+  Exactly one decoded container byte changes: offset 0x7E, ASCII '1' (0x31) -> '2' (0x32).
+
+UNCHANGED
+  OS version remains 1.72.
+  MAIN OS section unchanged.
+  DSP section unchanged.
+  FPGA section unchanged.
+  Section table and all section offsets/lengths unchanged.
+
+INTEGRITY
+  Stock content checksum:  0x2111B1DE
+  Canary content checksum: 0x2111B2DE
+  All 13,329 SysEx packet checksums validate.
+  Marker packet count validates.
+  Container size validates.
+  No HMAC/signature trailer is present in this package.
+
+ROUND-TRIP CONTROL
+  The same decoder/encoder was first run on the untouched stock image.
+  Its output was byte-for-byte identical to Elektron's supplied .syx:
+  SHA-256 remained 1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f.
+
+PURPOSE
+  Test whether the AR MKII update path accepts modified package content when all
+  ordinary integrity gates are recomputed. A cryptographic signature over the
+  package would fail from this one-byte modification; acceptance is therefore
+  strong evidence that this package/update path has no additional cryptographic
+  authenticity gate.
+
+CAUTION
+  Experimental modified firmware. Flashing firmware carries risk. Do not interrupt
+  power during an update. Keep the official OS 1.72 .syx available. The AR MKII
+  STARTUP-menu OS UPGRADE path can receive firmware over physical MIDI DIN if the
+  normal OS upgrade path is unavailable; USB MIDI is not available for that startup
+  recovery path according to Elektron's OS 1.72 manual.
