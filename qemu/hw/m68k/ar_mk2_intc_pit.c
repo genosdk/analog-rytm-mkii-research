@@ -23,6 +23,8 @@
 #define AR_INTC2_BASE 0xFC050000u
 #define AR_PIT0_BASE  0xFC080000u
 #define AR_PIT_STRIDE 0x00004000u
+#define AR_DTIM0_BASE 0xFC070000u
+#define AR_DTIM_STRIDE 0x00004000u
 #define AR_UART8_BASE 0xEC070000u
 
 #define AR_PIT_PCSR_EN   0x0001
@@ -59,10 +61,23 @@ typedef struct ARPitState {
     unsigned index;
 } ARPitState;
 
+typedef struct ARDtimState {
+    MemoryRegion iomem;
+    uint16_t dtmr;
+    uint8_t dtxmr;
+    uint8_t dter;
+    uint32_t dtrr;
+    uint32_t dtcr;
+    int64_t epoch_ns;
+    uint32_t epoch_count;
+    unsigned index;
+} ARDtimState;
+
 struct ARCoreState {
     M68kCPU *cpu;
     ARIntcState intc[3];
     ARPitState pit[4];
+    ARDtimState dtim[4];
     DeviceState *uart8;
     qemu_irq uart8_irq;
 };
@@ -327,6 +342,78 @@ static const MemoryRegionOps ar_pit_ops = {
     .valid.max_access_size = 2,
 };
 
+/*
+ * MAIN inherits DTIM0 as a free-running delay counter from the bootloader and
+ * reads DTCN before it programs any DTIM registers itself. Model that inherited
+ * state from QEMU's virtual clock; retain the remaining registers so later
+ * firmware initialization observes its own writes.
+ */
+static uint32_t ar_dtim_counter(ARDtimState *s)
+{
+    int64_t elapsed = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) - s->epoch_ns;
+    uint64_t ticks = ((uint64_t)MAX(elapsed, (int64_t)0) * AR_PIT_BUS_HZ) /
+                     1000000000ULL;
+    return s->epoch_count + (uint32_t)ticks;
+}
+
+static uint64_t ar_dtim_read(void *opaque, hwaddr addr, unsigned size)
+{
+    ARDtimState *s = opaque;
+
+    switch (addr & 0x3fff) {
+    case 0x00: return s->dtmr;
+    case 0x02: return s->dtxmr;
+    case 0x03: return s->dter;
+    case 0x04: return s->dtrr;
+    case 0x08: return s->dtcr;
+    case 0x0c: return ar_dtim_counter(s);
+    default: return 0;
+    }
+}
+
+static void ar_dtim_write(void *opaque, hwaddr addr,
+                          uint64_t value, unsigned size)
+{
+    ARDtimState *s = opaque;
+
+    switch (addr & 0x3fff) {
+    case 0x00: s->dtmr = value; break;
+    case 0x02: s->dtxmr = value; break;
+    case 0x03: s->dter &= ~(uint8_t)value; break;
+    case 0x04: s->dtrr = value; break;
+    case 0x08: s->dtcr = value; break;
+    case 0x0c:
+        s->epoch_count = value;
+        s->epoch_ns = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
+        break;
+    default: break;
+    }
+}
+
+static const MemoryRegionOps ar_dtim_ops = {
+    .read = ar_dtim_read,
+    .write = ar_dtim_write,
+    .endianness = DEVICE_BIG_ENDIAN,
+    .valid.min_access_size = 1,
+    .valid.max_access_size = 4,
+};
+
+static void ar_dtim_init(MemoryRegion *sysmem, ARCoreState *c)
+{
+    unsigned i;
+
+    for (i = 0; i < 4; i++) {
+        ARDtimState *s = &c->dtim[i];
+        s->index = i;
+        s->epoch_ns = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
+        memory_region_init_io(&s->iomem, NULL, &ar_dtim_ops, s,
+                              "ar-mk2-dtim", 0x4000);
+        memory_region_add_subregion_overlap(sysmem,
+                                            AR_DTIM0_BASE + i * AR_DTIM_STRIDE,
+                                            &s->iomem, 10);
+    }
+}
+
 static void ar_uart8_restore_boot_state(void *opaque)
 {
     ARCoreState *c = opaque;
@@ -382,5 +469,6 @@ void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu)
                                             &s->iomem, 10);
     }
 
+    ar_dtim_init(sysmem, ar_core);
     ar_uart8_init(sysmem, ar_core);
 }
