@@ -1,0 +1,50 @@
+{
+  "schema": "ar-mk2-qemu-initialization-gate/v1",
+  "gate": "uart8-front-panel-identity",
+  "status": "passed",
+  "observed_at_utc": "2026-09-08T02:41:00Z",
+  "repository_commit": "0085fc43197fc5fe8f00d81d67182779b79f4aa1",
+  "prerequisite_commit": "95cb8a3cf7591ca7d1c8dcc2fdb0dfd6660ece78",
+  "workflow_run": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34180627742",
+  "workflow_artifact": {
+    "id": 10038839679,
+    "name": "ar-mk2-qemu-m68k",
+    "archive_sha256": "8d0bbd43e45996c4021beae2ae29645e20ffcb0fdd7e51e6efd93131e7727c66",
+    "qemu_system_m68k_sha256": "8caf60f4a43b0f2280c0fcd484686f57144c197332f71df241f6e1e70b7553f0"
+  },
+  "firmware_fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; binary not committed",
+    "byte_count": 2903032,
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "load_address": "0x40000400",
+    "entry_pc": "0x40000870",
+    "bootstrap_sp": "0x47FFFFE0"
+  },
+  "panel_transport": {
+    "backend": "QEMU serial0 over named-pipe fixture",
+    "firmware_tx_hex": "62 00 f1 62 00 70 00",
+    "fixture_rx_hex": "70 07 05 05 00",
+    "request_exact_match": true,
+    "response_sent_after_exact_match": true,
+    "validator_advanced": true
+  },
+  "timer_evidence": {
+    "dtim0_frozen_counter_loop_cleared": true,
+    "pit_vectors_observed": [
+      205,
+      207
+    ]
+  },
+  "next_blocker": {
+    "module": "DSPI0",
+    "status_address": "0xFC05C02C",
+    "polling_pc": "0x40127F5E",
+    "observed_value": "0x10000000"
+  },
+  "framebuffer": {
+    "bytes": 1024,
+    "nonzero_bytes": 0,
+    "sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+    "interpretation": "Panel identity gate passed before first non-zero frame; DSPI0 is the next startup gate."
+  }
+}
