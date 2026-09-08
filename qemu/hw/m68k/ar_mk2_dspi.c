@@ -16,6 +16,8 @@
 #define AR_DSPI_SR_RXCTR_SHIFT 4
 #define AR_DSPI_SR_RXCTR_MASK  (0xFu << AR_DSPI_SR_RXCTR_SHIFT)
 
+void ar_mk2_dtim_init(MemoryRegion *sysmem);
+
 typedef struct ARDspiState {
     MemoryRegion iomem;
     uint32_t mcr;
@@ -141,4 +143,8 @@ void ar_mk2_dspi_init(MemoryRegion *sysmem)
                               AR_DSPI_SIZE);
         memory_region_add_subregion_overlap(sysmem, bases[i], &s->iomem, 40);
     }
+
+    /* The machine already calls this constructor during topology creation;
+     * initialize the higher-priority DTIM overlay in the same safe phase. */
+    ar_mk2_dtim_init(sysmem);
 }
