@@ -1,0 +1,76 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "in_memory_candidate": {
+    "call_site": "0x4011CAE2",
+    "stock_call": "4eb94010a2e0",
+    "patched_call": "4eb9402b4800",
+    "cave": "0x402B4800",
+    "stock_cave_bytes": "000000000000",
+    "bypass_body": "4ef94010a2e0",
+    "behavior": "JSR cave; cave tail-JMPs to the stock renderer",
+    "stock_absolute_cave_references": 0,
+    "artifact_emitted": false
+  },
+  "exact_bypass": {
+    "renderer_return_state_identical": true,
+    "post_br_voice_slab_identical": true,
+    "renderer_frame_slab_identical": true,
+    "fixed_stage_identical": true,
+    "outbound_dma_block_identical": true,
+    "tcd42_descriptor_identical": true,
+    "hashes": {
+      "post_br_voice_slab": "6c8b9f5e6a81f0af725f254721f60839d8446f5567aca5adb24978d57ff9df6b",
+      "renderer_frame_slab": "91bff6c06a263bf886608b6bb42368d71fd56073e800693ea80c3973223f66ee",
+      "fixed_stage": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
+      "outbound_dma_block": "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+    },
+    "nonzero_bytes": {
+      "renderer_frame_slab": 759,
+      "fixed_stage": 0,
+      "outbound_dma_block": 0
+    },
+    "signal_coverage": "The renderer-frame comparison is nonzero and signal-bearing. The compact model leaves final mixer coefficients uninitialized, so fixed-stage and outbound-block equality is structural zero-state evidence."
+  },
+  "instruction_measurement": {
+    "baseline": {
+      "pre_render": 17109,
+      "renderer_call_site": 3228,
+      "voice_bridge": 780,
+      "control_converter": 1139,
+      "handoff": 18718,
+      "traced_component_total": 40974
+    },
+    "disabled_bypass": {
+      "pre_render": 17109,
+      "renderer_call_site": 3229,
+      "voice_bridge": 780,
+      "control_converter": 1139,
+      "handoff": 18718,
+      "traced_component_total": 40975
+    },
+    "added_semantic_instructions_per_32_frame_block": 1,
+    "limitation": "MiniColdFire counts semantic instructions, not hardware cycles or SDRAM/cache stalls."
+  },
+  "deadline_bound": {
+    "sample_rate_hz": 48000,
+    "frames_per_block": 32,
+    "blocks_per_second": 1500.0,
+    "block_deadline_microseconds": 666.6666666666666,
+    "traced_stock_component_instructions": 40974,
+    "minimum_semantic_mips_for_traced_components_at_one_instruction_per_cycle": 61.461,
+    "coverage": "lower bound; scheduler glue and untraced callback work are not included",
+    "mcf54418_family_ceiling_mhz": 250,
+    "family_clock_source": "https://www.nxp.com/part/MCF54418CMJ250",
+    "board_clock_status": "unverified until PCB/bootloader or hardware timer measurement"
+  },
+  "gate_status": {
+    "semantic_hook": "PASS",
+    "disabled_bit_identity": "PASS through the nonzero renderer frame under emulation",
+    "cycle_safe": "OPEN; one extra semantic instruction is measured, but total hardware timing margin is not"
+  },
+  "safety": "In-memory emulation only; no modified MAIN or SysEx file was written or flashed."
+}

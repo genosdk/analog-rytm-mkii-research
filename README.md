@@ -78,5 +78,7 @@ The terminal BR path and its downstream buffer geometry are now
 instruction-executed. The last clean voice-separated boundary is the
 `0x400`-byte post-BR slab at `0x800067F8..0x80006BF7`, immediately before
 renderer `0x4010A2E0`. This is the preferred semantic Filter 2 hook. The active
-target is now measuring its cycle margin and proving an exact disabled bypass;
-front-panel BR mapping and physical hardware behavior remain unverified.
+in-memory bypass detour at call site `0x4011CAE2` is now bit-identical through a
+nonzero renderer frame and adds exactly one semantic instruction per 32-frame
+block. The active target is full callback/hardware timing and a signal-bearing
+final-mix trace; front-panel BR mapping and physical behavior remain unverified.

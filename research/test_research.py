@@ -18,6 +18,7 @@ from br_bridge_trace import trace
 from br_consumer_trace import trace as trace_br_consumer
 from br_quantizer_runtime_trace import trace as trace_br_quantizer_runtime
 from control_frame_trace import trace as trace_control_frame
+from filter2_bypass_timing_trace import trace as trace_filter2_bypass_timing
 from lfo2_filter2_reference import run_tests
 from runtime_descriptor_probe import probe as probe_runtime_descriptors
 
@@ -217,6 +218,29 @@ class AudioHandoffTraceTests(unittest.TestCase):
         self.assertEqual(result["input_dma_tcd30"]["channel"], 30)
         self.assertIn("input/capture", result["input_dma_tcd30"]["classification"])
         self.assertIn("not proven", result["filter2_insertion"]["cycle_status"])
+
+
+@unittest.skipUnless(
+    (HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin").exists(),
+    "extracted proprietary MAIN image not present",
+)
+class Filter2BypassTimingTraceTests(unittest.TestCase):
+    def test_in_memory_tail_detour_is_exact_through_renderer(self):
+        main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
+        emulator_path = ROOT / "recovered_library" / "minicoldfire.py"
+        result = trace_filter2_bypass_timing(main_image, emulator_path)
+        self.assertEqual(result["result"], "PASS")
+        self.assertFalse(result["in_memory_candidate"]["artifact_emitted"])
+        self.assertTrue(result["exact_bypass"]["renderer_return_state_identical"])
+        self.assertTrue(result["exact_bypass"]["renderer_frame_slab_identical"])
+        self.assertGreater(result["exact_bypass"]["nonzero_bytes"]["renderer_frame_slab"], 0)
+        self.assertEqual(
+            result["instruction_measurement"]["added_semantic_instructions_per_32_frame_block"],
+            1,
+        )
+        self.assertEqual(result["deadline_bound"]["frames_per_block"], 32)
+        self.assertEqual(result["deadline_bound"]["blocks_per_second"], 1500.0)
+        self.assertIn("OPEN", result["gate_status"]["cycle_safe"])
 
 
 class MiniColdFirePeripheralTests(unittest.TestCase):

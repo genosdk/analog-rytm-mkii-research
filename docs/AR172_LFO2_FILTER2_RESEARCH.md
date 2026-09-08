@@ -99,8 +99,20 @@ New state must use a versioned extension or verified-unused storage; existing
    longwords at `0x80007A44..0x80007C43`, populates a 256-byte runtime output
    block, and programs eDMA channel 42 from SRAM to `0x4B400000`. TCD30 is
    separately proven input-side (`0x4B7FFFF0` to SRAM), not the DAC handoff.
-5. **Open:** measure saturation behavior and available cycles at the post-BR hook.
-6. Insert an exact bypass hook and prove bit-identical output.
+5. **Partial:** the 48-kHz, 32-frame geometry gives a 666.667-microsecond block
+   deadline. Traced stock components total 40,974 semantic instructions, or a
+   61.461-MIPS one-instruction-per-cycle lower bound. Exact ColdFire cycles,
+   cache/SDRAM stalls, untraced scheduler work, saturation behavior, and the
+   board clock remain open.
+6. **Complete through the nonzero renderer frame under emulation:** an
+   in-memory-only patch changes the `JSR 0x4010A2E0` at `0x4011CAE2` to
+   `JSR 0x402B4800`; that unreferenced zero-filled cave tail-jumps to the stock
+   renderer. Renderer return state, the tagged post-BR slab, and the 759-nonzero-
+   byte renderer frame are bit-identical. The fixed stage and outbound block are
+   also identical, but zero because the compact model does not initialize final
+   mixer coefficients, so those comparisons are structural rather than audible
+   proof. The detour costs exactly one semantic instruction per block and emits
+   no modified firmware artifact.
 7. Insert a single 2-pole low-pass instance on one voice.
 8. Expand to eight simultaneous physical voices and sweep worst-case resonance.
 9. Add modes, modulation, drive and optional 4-pole cascade.
@@ -145,6 +157,10 @@ New state must use a versioned extension or verified-unused storage; existing
 - `research/lfo2_filter2_reference.py` defines deterministic host reference models
   and test vectors for all proposed LFO modes and a topology-preserving state
   variable Filter 2.
+- `research/filter2_bypass_timing_trace.py` verifies the stock MAIN hash, applies
+  the inert detour only in emulator memory, proves exact state/buffer equality,
+  and reports the per-block semantic instruction bound. Its checked report is
+  `research/AR172_FILTER2_BYPASS_TIMING_TRACE.json`.
 - Existing Slice16 transactional SHA-256 remains
   `9233da51a2467a7dd0a7b8897af41058e54fa4768e86479c226778a26c7a709f`.
 
@@ -172,9 +188,11 @@ the exact peripheral meaning of that bit remains hardware-unproven.
 The post-BR sample boundary is now traced through outbound eDMA. The preferred
 Filter 2 hook is `0x800067F8..0x80006BF7`, after the stock quantizer and before
 renderer `0x4010A2E0`, because all eight physical voices remain separated into
-32-longword blocks there. The next gate is cycle-counter or hardware timing
-measurement followed by a disabled, bit-identical bypass hook. Semantic placement
-is proven; cycle safety is not. In parallel, LFO2 should reuse the proven
+32-longword blocks there. The disabled bypass is now exact through a nonzero
+renderer frame and its emulated overhead is one semantic instruction per block.
+The next gate is full-callback cycle-counter or hardware timing measurement plus
+a nonzero final-mix/outbound trace. Semantic placement and disabled behavior are
+proven; hardware cycle safety is not. In parallel, LFO2 should reuse the proven
 destination equation and update machinery via shadow state; the stock 42-word
 record remains frozen until persistence and SysEx compatibility are mapped.
 

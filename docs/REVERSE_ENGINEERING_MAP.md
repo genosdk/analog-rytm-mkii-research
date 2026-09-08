@@ -42,7 +42,11 @@ This proves the instruction-level quantizer boundary. Runtime provenance now als
 proves the post-BR voice slab, renderer address permutation, shared 0x200-byte
 staging area, and outbound eDMA-42 direction. The post-BR slab is therefore the
 preferred semantic Filter 2 insertion point. Cycle margin, front-panel mapping,
-and physical hardware behavior remain open.
+and physical hardware behavior remain open. An in-memory-only candidate replaces
+the renderer call at `0x4011CAE2` with a call to unused space at `0x402B4800`;
+the cave tail-jumps to the stock renderer. It preserves the tagged post-BR slab,
+renderer return state, and nonzero renderer frame exactly. The detour adds one
+semantic instruction per 32-frame block; it does not establish real cycle margin.
 
 ## Audio scheduling
 
@@ -56,6 +60,11 @@ and physical hardware behavior remain open.
 - `0x40109FFE` polls TCD30 CSR word `0xFC0453DE`, mask `0x10`. TCD30's descriptor
   establishes an external-to-SRAM input path; the precise meaning of mask `0x10`
   remains hardware-unverified.
+- The stream default and block geometry imply 1,500 32-frame blocks per second,
+  or a 666.667-microsecond block deadline at 48 kHz. The traced stock components
+  execute 40,974 semantic instructions per block, a 61.461-MIPS lower bound if
+  each counted instruction took one cycle. Scheduler glue, cache/SDRAM stalls,
+  and untraced callback work are excluded.
 
 ## Feature tracks
 
@@ -81,7 +90,9 @@ The stock 42-word record stays frozen until persistence and SysEx compatibility 
 
 Filter 2 belongs at the proven voice-separated post-BR boundary, before renderer
 `0x4010A2E0`. The reference model is a topology-preserving state-variable filter;
-an exact bypass and cycle margin must be proven before enabling it.
+the disabled bypass is exact through the signal-bearing renderer frame. Full
+callback timing, board clock confirmation, and a nonzero final-mix trace remain
+required before enabling it.
 
 ## Safety boundary
 
