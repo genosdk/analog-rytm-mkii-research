@@ -41,6 +41,7 @@
 #define AR_FB_BYTES          0x400u
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu);
+void ar_mk2_dspi_init(MemoryRegion *sysmem);
 
 /* Known MCF5441x module bases used only for readable logging. */
 typedef struct ARPeripheralName {
@@ -346,6 +347,7 @@ static void elektron_ar_mk2_init(MachineState *machine)
 
     /* Overlay the first stateful MCF5441x blocks on the discovery buses. */
     ar_mk2_intc_pit_init(sysmem, s->cpu);
+    ar_mk2_dspi_init(sysmem);
 
     if (!machine->firmware) {
         error_report("Use -bios <decompressed-main.bin> for AR MKII research firmware");
