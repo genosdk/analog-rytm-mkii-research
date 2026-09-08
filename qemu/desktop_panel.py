@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Desktop panel for the AR MKII firmware emulator.
 
-Only controls whose firmware UART mapping has been proven are exposed here:
-16 trig keys and encoders A-I. The OLED area displays the firmware's presented
-128x64 1bpp framebuffer exported by the custom QEMU machine.
+Only controls whose OS 1.72 UART mappings have been proven are exposed. The
+OLED shows the firmware's presented 1 KiB framebuffer in its native internal
+layout: 64x128 row-major MSB, rotated 90 degrees to the physical 128x64 screen.
 """
 from __future__ import annotations
 
@@ -14,7 +14,9 @@ import time
 import tkinter as tk
 
 W, H = 128, 64
+RAW_W, RAW_H = 64, 128
 FRAME_BYTES = 1024
+PROVEN_BUTTONS = ("TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO", "YES", "NO")
 
 
 class PanelApp:
@@ -25,7 +27,6 @@ class PanelApp:
         self.event_file = event_file
         self.scale = scale
         self.last_mtime = 0
-        self.mode = "row-msb"
         self.photo = None
 
         root.title("Analog Rytm MKII — Firmware Emulator")
@@ -54,23 +55,27 @@ class PanelApp:
             anchor="w",
         ).grid(row=1, column=0, columnspan=9, sticky="ew", pady=(0, 10))
 
+        page_frame = tk.Frame(shell, bg="#181818")
+        page_frame.grid(row=2, column=0, columnspan=9, sticky="ew", pady=(0, 10))
+        for col, name in enumerate(PROVEN_BUTTONS):
+            b = tk.Button(page_frame, text=name, width=6)
+            b.grid(row=0, column=col, padx=3, pady=3)
+            b.bind("<ButtonPress-1>", lambda _e, n=name: self.panel_button(n, True))
+            b.bind("<ButtonRelease-1>", lambda _e, n=name: self.panel_button(n, False))
+
         trig_frame = tk.Frame(shell, bg="#202020")
-        trig_frame.grid(row=2, column=0, columnspan=9, sticky="ew", pady=(0, 10))
+        trig_frame.grid(row=3, column=0, columnspan=9, sticky="ew", pady=(0, 10))
         for i in range(16):
             trig = i + 1
             row = i // 8
             col = i % 8
-            b = tk.Button(
-                trig_frame,
-                text=str(trig),
-                width=5,
-            )
+            b = tk.Button(trig_frame, text=str(trig), width=5)
             b.grid(row=row, column=col, padx=3, pady=4)
             b.bind("<ButtonPress-1>", lambda _e, t=trig: self.trig(t, True))
             b.bind("<ButtonRelease-1>", lambda _e, t=trig: self.trig(t, False))
 
         enc_frame = tk.Frame(shell, bg="#181818")
-        enc_frame.grid(row=3, column=0, columnspan=9)
+        enc_frame.grid(row=4, column=0, columnspan=9)
         for col, name in enumerate("ABCDEFGHI"):
             f = tk.Frame(enc_frame, bg="#181818")
             f.grid(row=0, column=col, padx=4)
@@ -93,6 +98,10 @@ class PanelApp:
         with self.event_file.open("a", encoding="utf-8") as f:
             f.write(json.dumps(rec, separators=(",", ":")) + "\n")
 
+    def panel_button(self, name: str, pressed: bool) -> None:
+        self.emit("button", name, "press" if pressed else "release")
+        self.status.set(f"{name} {'down' if pressed else 'up'}")
+
     def trig(self, trig: int, pressed: bool) -> None:
         self.emit("trig", str(trig), "press" if pressed else "release")
         self.status.set(f"Trig {trig} {'down' if pressed else 'up'}")
@@ -102,17 +111,25 @@ class PanelApp:
         self.status.set(f"Encoder {name}: {delta:+d}")
 
     @staticmethod
-    def decode_row_msb(data: bytes) -> list[list[int]]:
+    def decode_presented(data: bytes) -> list[list[int]]:
+        """Decode 64x128 row-major MSB storage and rotate 90° CCW."""
+        raw = [[0] * RAW_W for _ in range(RAW_H)]
+        for y in range(RAW_H):
+            rowoff = y * (RAW_W // 8)
+            for x in range(RAW_W):
+                value = data[rowoff + x // 8]
+                raw[y][x] = (value >> (7 - (x & 7))) & 1
+
+        # PIL's visually verified rotate(90, expand=True) equivalent:
+        # dest(x,y) = raw[x][RAW_W - 1 - y].
         pix = [[0] * W for _ in range(H)]
         for y in range(H):
-            rowoff = y * 16
             for x in range(W):
-                value = data[rowoff + x // 8]
-                pix[y][x] = (value >> (7 - (x & 7))) & 1
+                pix[y][x] = raw[x][RAW_W - 1 - y]
         return pix
 
     def draw(self, data: bytes) -> None:
-        pix = self.decode_row_msb(data)
+        pix = self.decode_presented(data)
         small = tk.PhotoImage(width=W, height=H)
         for y, row in enumerate(pix):
             start = 0
