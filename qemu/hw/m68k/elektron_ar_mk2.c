@@ -123,6 +123,12 @@ typedef struct ARBoardState {
     GHashTable *mmio_bytes; /* sparse byte-addressed register backing */
     QEMUTimer *frame_timer;
     char *frame_out;
+    uint8_t frame_candidate[AR_FB_BYTES];
+    uint8_t frame_published[AR_FB_BYTES];
+    uint32_t frame_candidate_ptr;
+    unsigned frame_candidate_matches;
+    bool frame_candidate_valid;
+    bool frame_published_valid;
 } ARBoardState;
 
 static const char *ar_mmio_name(hwaddr absolute)
@@ -272,11 +278,38 @@ static void ar_export_framebuffer(void *opaque)
     if (ptr >= AR_SDRAM_BASE &&
         (uint64_t)ptr + AR_FB_BYTES <= AR_SDRAM_BASE + AR_DEFAULT_RAM_SIZE) {
         physical_memory_read(ptr, frame, sizeof(frame));
-        if (!g_file_set_contents(s->frame_out, (const char *)frame,
-                                 sizeof(frame), NULL)) {
-            qemu_log_mask(LOG_GUEST_ERROR,
-                          "AR-MK2: failed to write framebuffer file %s\n",
-                          s->frame_out);
+
+        /*
+         * Firmware redraws over multiple scheduler slices. Publishing every
+         * sample exposes those intermediate writes as torn desktop frames.
+         * Require the pointer and all 1024 bytes to match twice in succession,
+         * then write only when the stable image differs from the last export.
+         */
+        if (s->frame_candidate_valid &&
+            s->frame_candidate_ptr == ptr &&
+            memcmp(s->frame_candidate, frame, sizeof(frame)) == 0) {
+            if (s->frame_candidate_matches < UINT_MAX) {
+                s->frame_candidate_matches++;
+            }
+        } else {
+            memcpy(s->frame_candidate, frame, sizeof(frame));
+            s->frame_candidate_ptr = ptr;
+            s->frame_candidate_matches = 0;
+            s->frame_candidate_valid = true;
+        }
+
+        if (s->frame_candidate_matches >= 1 &&
+            (!s->frame_published_valid ||
+             memcmp(s->frame_published, frame, sizeof(frame)) != 0)) {
+            if (!g_file_set_contents(s->frame_out, (const char *)frame,
+                                     sizeof(frame), NULL)) {
+                qemu_log_mask(LOG_GUEST_ERROR,
+                              "AR-MK2: failed to write framebuffer file %s\n",
+                              s->frame_out);
+            } else {
+                memcpy(s->frame_published, frame, sizeof(frame));
+                s->frame_published_valid = true;
+            }
         }
     }
 

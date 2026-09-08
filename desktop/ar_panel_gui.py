@@ -67,12 +67,22 @@ class App:
             b.bind("<ButtonPress-1>", lambda _e, n=i + 1: self.event("trig", str(n), "press"))
             b.bind("<ButtonRelease-1>", lambda _e, n=i + 1: self.event("trig", str(n), "release"))
 
+        pages = tk.Frame(outer, bg="#181818")
+        pages.grid(row=4, column=0, columnspan=9, pady=(10, 0))
+        for i, name in enumerate(("NO", "YES", "TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO")):
+            button = tk.Button(pages, text=name, width=5)
+            button.grid(row=0, column=i, padx=3)
+            button.bind("<ButtonPress-1>",
+                        lambda _e, n=name: self.event("button", n, "press"))
+            button.bind("<ButtonRelease-1>",
+                        lambda _e, n=name: self.event("button", n, "release"))
+
         tk.Label(
             outer,
-            text="Native mappings currently enabled: Trig 1–16 and encoders A–I",
+            text="Native mappings: page keys, NO/YES, Trig 1–16, and encoders A–I",
             fg="#888",
             bg="#181818",
-        ).grid(row=4, column=0, columnspan=9, sticky="w", pady=(8, 0))
+        ).grid(row=5, column=0, columnspan=9, sticky="w", pady=(8, 0))
 
         self.poll()
 
@@ -87,16 +97,17 @@ class App:
         self.status.set(f"panel: {kind} {name} {value}")
 
     @staticmethod
-    def decode_row_msb(data: bytes) -> list[list[int]]:
+    def decode_firmware_layout(data: bytes) -> list[list[int]]:
+        """Decode x-major OLED pages: eight vertical LSB-first pixels per byte."""
         pixels = [[0] * W for _ in range(H)]
         for y in range(H):
             for x in range(W):
-                value = data[y * 16 + x // 8]
-                pixels[y][x] = (value >> (7 - (x & 7))) & 1
+                value = data[x * 8 + y // 8]
+                pixels[y][x] = (value >> (y & 7)) & 1
         return pixels
 
     def draw(self, data: bytes) -> None:
-        pixels = self.decode_row_msb(data)
+        pixels = self.decode_firmware_layout(data)
         small = tk.PhotoImage(width=W, height=H)
         for y, row in enumerate(pixels):
             start = 0
