@@ -22,7 +22,7 @@
 #include "hw/core/loader.h"
 #include "system/system.h"
 #include "system/address-spaces.h"
-#include "exec/memory.h"
+#include "system/memory.h"
 #include "qemu/timer.h"
 
 #define AR_MAIN_LOAD_ADDR    0x40000400u
@@ -36,7 +36,7 @@
 #define AR_PBC0_BASE         0xF0000000u
 #define AR_PBC_WINDOW        0x10000000u
 #define AR_BOOT_STACK        0x47FFFFE0u
-#define AR_FB_PTR_GLOBAL     0x4026F478u
+#define AR_FB_PTR_GLOBAL     0x4026F474u
 #define AR_FB_BYTES          0x400u
 
 /* Known MCF5441x module bases used only for readable logging. */
