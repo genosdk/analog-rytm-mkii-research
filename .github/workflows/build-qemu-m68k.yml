@@ -7,6 +7,10 @@ on:
       - '.github/workflows/build-qemu-m68k.yml'
       - 'qemu/**'
 
+concurrency:
+  group: ar-mk2-qemu-linux
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
