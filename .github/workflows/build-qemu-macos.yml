@@ -22,14 +22,15 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Checkout AR research
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: research
 
       - name: Checkout upstream QEMU
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: qemu/qemu
+          ref: 35500e5c41aec76cde59befe750600dac7a9e37a
           path: qemu-src
           fetch-depth: 1
 
