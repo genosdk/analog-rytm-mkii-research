@@ -80,6 +80,8 @@ struct ARCoreState {
     ARDtimState dtim[4];
     DeviceState *uart8;
     qemu_irq uart8_irq;
+    MemoryRegion uart8_proxy;
+    bool uart8_boot_applied;
 };
 
 static ARCoreState *ar_core;
@@ -414,16 +416,48 @@ static void ar_dtim_init(MemoryRegion *sysmem, ARCoreState *c)
     }
 }
 
-static void ar_uart8_restore_boot_state(void *opaque)
+/* QEMU resets the mcf-uart after machine construction, while the physical
+ * Rytm boot stage has already enabled UART8 before MAIN begins. Mark that
+ * inherited state invalid on reset and apply it lazily on the first MAIN
+ * register access, which necessarily occurs after QEMU's device reset. */
+static void ar_uart8_mark_boot_unapplied(void *opaque)
 {
     ARCoreState *c = opaque;
+    c->uart8_boot_applied = false;
+}
 
-    /* The physical boot stage leaves UART8 receiver and transmitter enabled
-     * before MAIN starts. QEMU resets the UART after machine construction, so
-     * restore that inherited state after each system reset. */
+static void ar_uart8_apply_boot_state(ARCoreState *c)
+{
+    if (c->uart8_boot_applied) {
+        return;
+    }
     mcf_uart_write(c->uart8, 0x08, 0x01, 1);
     mcf_uart_write(c->uart8, 0x08, 0x04, 1);
+    c->uart8_boot_applied = true;
 }
+
+static uint64_t ar_uart8_proxy_read(void *opaque, hwaddr addr, unsigned size)
+{
+    ARCoreState *c = opaque;
+    ar_uart8_apply_boot_state(c);
+    return mcf_uart_read(c->uart8, addr, size);
+}
+
+static void ar_uart8_proxy_write(void *opaque, hwaddr addr,
+                                 uint64_t value, unsigned size)
+{
+    ARCoreState *c = opaque;
+    ar_uart8_apply_boot_state(c);
+    mcf_uart_write(c->uart8, addr, value, size);
+}
+
+static const MemoryRegionOps ar_uart8_proxy_ops = {
+    .read = ar_uart8_proxy_read,
+    .write = ar_uart8_proxy_write,
+    .endianness = DEVICE_NATIVE_ENDIAN,
+    .valid.min_access_size = 1,
+    .valid.max_access_size = 4,
+};
 
 static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
 {
@@ -433,7 +467,12 @@ static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
     c->uart8 = mcf_uart_create(c->uart8_irq, serial_hd(0));
     mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(c->uart8), 0);
     memory_region_add_subregion_overlap(sysmem, AR_UART8_BASE, mr, 20);
-    qemu_register_reset(ar_uart8_restore_boot_state, c);
+
+    memory_region_init_io(&c->uart8_proxy, NULL, &ar_uart8_proxy_ops, c,
+                          "ar-mk2-uart8-boot-proxy", 0x40);
+    memory_region_add_subregion_overlap(sysmem, AR_UART8_BASE,
+                                        &c->uart8_proxy, 30);
+    qemu_register_reset(ar_uart8_mark_boot_unapplied, c);
 }
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu)
