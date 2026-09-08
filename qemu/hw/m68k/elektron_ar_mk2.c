@@ -40,6 +40,8 @@
 #define AR_FB_PTR_GLOBAL     0x4026F474u
 #define AR_FB_BYTES          0x400u
 
+void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu);
+
 /* Known MCF5441x module bases used only for readable logging. */
 typedef struct ARPeripheralName {
     hwaddr base;
@@ -284,9 +286,20 @@ static void ar_write_boot_argument(MachineState *machine)
 {
     uint8_t *ram = memory_region_get_ram_ptr(machine->ram);
     hwaddr off = AR_BOOT_STACK - AR_SDRAM_BASE;
+    uint32_t flags = 0x10;
+    const char *env_flags = g_getenv("AR_MK2_BOOT_FLAGS");
 
-    /* Firmware reads a boot-provided long from incoming SP+4. Use zero first. */
-    stl_be_p(ram + off + 4, 0);
+    /* MAIN copies the long at incoming SP+4 directly into its boot-mode global.
+     * Normal UI initialization needs bit 0x10 when booting a raw MAIN without
+     * the physical bootloader/project state. Keep it overrideable for research. */
+    if (env_flags && *env_flags) {
+        char *endp = NULL;
+        uint64_t parsed = g_ascii_strtoull(env_flags, &endp, 0);
+        if (endp && *endp == '\0' && parsed <= UINT32_MAX) {
+            flags = parsed;
+        }
+    }
+    stl_be_p(ram + off + 4, flags);
 }
 
 static void elektron_ar_mk2_init(MachineState *machine)
@@ -331,6 +344,9 @@ static void elektron_ar_mk2_init(MachineState *machine)
                           "elektron-ar-mk2.pbc0", AR_PBC_WINDOW);
     memory_region_add_subregion(sysmem, AR_PBC0_BASE, &s->pbc0);
 
+    /* Overlay the first stateful MCF5441x blocks on the discovery buses. */
+    ar_mk2_intc_pit_init(sysmem, s->cpu);
+
     if (!machine->firmware) {
         error_report("Use -bios <decompressed-main.bin> for AR MKII research firmware");
         exit(1);
@@ -373,7 +389,7 @@ static void elektron_ar_mk2_machine_init(MachineClass *mc)
 {
     mc->desc = "Elektron Analog Rytm MKII research machine (incomplete)";
     mc->init = elektron_ar_mk2_init;
-    mc->default_cpu_type = M68K_CPU_TYPE_NAME("cfv4e");
+    mc->default_cpu_type = M68K_CPU_TYPE_NAME("any");
     mc->default_ram_size = AR_DEFAULT_RAM_SIZE;
     mc->default_ram_id = "elektron-ar-mk2.sdram";
 }
