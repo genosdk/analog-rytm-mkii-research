@@ -7,6 +7,10 @@ on:
       - '.github/workflows/build-qemu-macos.yml'
       - 'qemu/hw/**'
 
+concurrency:
+  group: ar-mk2-qemu-macos
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:
