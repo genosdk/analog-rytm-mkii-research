@@ -1,27 +1,18 @@
 /*
  * MCF5441x DMA timer overlay for Analog Rytm MKII emulation.
- *
- * This supersedes the early counter-only DTIM backing in ar_mk2_intc_pit.c.
- * It keeps all four counters monotonic (matching bootloader-inherited timer
- * state) and implements reference-event scheduling plus INTC0 sources 32..35.
+ * Keeps all four counters monotonic and implements reference-event scheduling.
  */
 
 #include "qemu/osdep.h"
-#include "qemu/module.h"
-#include "qemu/notify.h"
 #include "qemu/timer.h"
-#include "hw/core/boards.h"
 #include "system/memory.h"
 #include "system/physmem.h"
-#include "system/system.h"
-#include "qom/object.h"
 
 #define AR_DTIM0_BASE      0xFC070000u
 #define AR_DTIM_STRIDE     0x00004000u
 #define AR_DTIM_SIZE       0x4000u
 #define AR_INTC0_IFRH      0xFC048010u
 #define AR_DTIM_BUS_HZ     125000000ULL
-
 #define AR_DTMR_RST        0x0001u
 #define AR_DTER_REF        0x02u
 
@@ -62,7 +53,6 @@ static void ar_dtim_set_irq(unsigned index, bool level)
 {
     uint8_t raw[4];
     uint32_t ifr;
-
     physical_memory_read(AR_INTC0_IFRH, raw, sizeof(raw));
     ifr = ldl_be_p(raw);
     if (level) {
@@ -95,13 +85,8 @@ static void ar_dtim_schedule(ARDtimState *s)
 static void ar_dtim_fire(void *opaque)
 {
     ARDtimState *s = opaque;
-
     s->dter |= AR_DTER_REF;
     ar_dtim_set_irq(s->index, true);
-
-    /* Firmware stops one-shot users such as DTIM1 in the ISR by clearing
-     * DTMR. Periodic users such as DTIM3 leave RST asserted, so rescheduling
-     * here naturally supports both patterns. */
     if (s->dtmr & AR_DTMR_RST) {
         ar_dtim_schedule(s);
     }
@@ -126,7 +111,6 @@ static void ar_dtim_write(void *opaque, hwaddr addr,
 {
     ARDtimState *s = opaque;
     int64_t now = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
-
     switch (addr & 0x3fff) {
     case 0x00:
         s->epoch_count = ar_dtim_counter_at(s, now);
@@ -139,9 +123,7 @@ static void ar_dtim_write(void *opaque, hwaddr addr,
             ar_dtim_schedule(s);
         }
         break;
-    case 0x02:
-        s->dtxmr = value;
-        break;
+    case 0x02: s->dtxmr = value; break;
     case 0x03:
         s->dter &= ~(uint8_t)value;
         if (value & AR_DTER_REF) {
@@ -154,15 +136,12 @@ static void ar_dtim_write(void *opaque, hwaddr addr,
             ar_dtim_schedule(s);
         }
         break;
-    case 0x08:
-        s->dtcr = value;
-        break;
+    case 0x08: s->dtcr = value; break;
     case 0x0c:
         s->epoch_count = value;
         s->epoch_ns = now;
         break;
-    default:
-        break;
+    default: break;
     }
 }
 
@@ -174,10 +153,9 @@ static const MemoryRegionOps ar_dtim_ops = {
     .valid.max_access_size = 4,
 };
 
-static void ar_mk2_dtim_init(MemoryRegion *sysmem)
+void ar_mk2_dtim_init(MemoryRegion *sysmem)
 {
     unsigned i;
-
     if (ar_dtim) {
         return;
     }
@@ -187,35 +165,10 @@ static void ar_mk2_dtim_init(MemoryRegion *sysmem)
         s->index = i;
         s->epoch_ns = qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL);
         s->ref_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, ar_dtim_fire, s);
-        memory_region_init_io(&s->iomem, OBJECT(current_machine), &ar_dtim_ops, s,
+        memory_region_init_io(&s->iomem, NULL, &ar_dtim_ops, s,
                               "ar-mk2-dtim-overlay", AR_DTIM_SIZE);
         memory_region_add_subregion_overlap(sysmem,
                                             AR_DTIM0_BASE + i * AR_DTIM_STRIDE,
                                             &s->iomem, 50);
     }
 }
-
-static void ar_dtim_machine_done(Notifier *notifier, void *opaque)
-{
-    const char *type;
-
-    if (!current_machine) {
-        return;
-    }
-    type = object_get_typename(OBJECT(current_machine));
-    if (!type || !strstr(type, "elektron-ar-mk2")) {
-        return;
-    }
-    ar_mk2_dtim_init(get_system_memory());
-}
-
-static Notifier ar_dtim_machine_done_notifier = {
-    .notify = ar_dtim_machine_done,
-};
-
-static void ar_dtim_register(void)
-{
-    qemu_add_machine_init_done_notifier(&ar_dtim_machine_done_notifier);
-}
-
-type_init(ar_dtim_register)
