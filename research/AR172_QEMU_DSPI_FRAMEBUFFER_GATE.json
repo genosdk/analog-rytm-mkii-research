@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "gate": "AR OS 1.72 QEMU DSPI startup and first non-zero framebuffer",
+  "result": "pass",
+  "recorded_at_utc": "2026-09-08T03:32:00Z",
+  "source": {
+    "repository": "genosdk/analog-rytm-mkii-research",
+    "commit": "d9636f47e37dcc724262dfdbfe81167f1dd06449",
+    "commit_url": "https://github.com/genosdk/analog-rytm-mkii-research/commit/d9636f47e37dcc724262dfdbfe81167f1dd06449"
+  },
+  "ci": {
+    "linux": {
+      "workflow_run_id": 34183496183,
+      "workflow_url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34183496183",
+      "conclusion": "success",
+      "artifact_id": 10039770370,
+      "artifact_name": "ar-mk2-qemu-m68k",
+      "binary_sha256": "2e1f9f0490e1223d4f230050845180a78a2fd739d8c9b31ef978c35e705a9ed4"
+    },
+    "macos": {
+      "workflow_run_id": 34183496163,
+      "workflow_url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34183496163",
+      "conclusion": "success"
+    }
+  },
+  "firmware": {
+    "label": "Analog Rytm MKII OS 1.72 extracted MAIN",
+    "local_only": true,
+    "bytes": 2903032,
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "panel_fixture": {
+    "firmware_tx_hex": "62 00 f1 62 00 70 00",
+    "fixture_rx_hex": "70 07 05 05 00",
+    "exact_request_observed": true
+  },
+  "dspi0": {
+    "base": "0xfc05c000",
+    "prior_block_pc": "0x40127f5e",
+    "required_status_field": "SR.RXCTR bits 4..7",
+    "modeled_behavior": "Each PUSHR write creates one zero-valued POPR FIFO entry and updates RXCTR/RFDF/completion flags.",
+    "proof": "Firmware crossed the prior SR.RXCTR polling loop and executed UI/runtime code in 0x400a, 0x400f, and 0x4016 ranges."
+  },
+  "interrupt_correction": {
+    "vector_table_offset": "0x268",
+    "vector_number": 154,
+    "cause": "UART8 RX level had been incorrectly wired directly to INTC1 source 26.",
+    "trace_evidence": "The vector handler writes eDMA CINT=34 and masks/unmasks INTC1 source 26, identifying it as the eDMA channel 34 completion path.",
+    "correction": "UART8 request is kept separate from the CPU INTC line pending an eDMA request model.",
+    "storm_removed": true
+  },
+  "framebuffer": {
+    "bytes": 1024,
+    "geometry_candidate": "128x64 monochrome",
+    "nonzero_bytes": 111,
+    "sha256": "8864bae58ff33936f56e2fdf52e2e37ba28c9b114420688389ead3d3a38389c0",
+    "observed_at_seconds": [
+      6,
+      12
+    ],
+    "stable_across_runs": true
+  },
+  "next_gate": {
+    "name": "UART8-to-eDMA channel 34 transfer path",
+    "objective": "Model UART8 RX DMA requests, TCD progress, CINT/INTC completion behavior, and observe whether the panel framebuffer advances beyond the first stable non-zero image."
+  }
+}
