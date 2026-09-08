@@ -5,21 +5,34 @@ Private reverse-engineering workspace for the Analog Rytm MKII OS 1.72 research 
 ## Current milestone
 
 The firmware transport/container path is understood well enough to decode, modify,
-recompress, checksum, and re-encode OS 1.72. Static analysis has located the sample
-renderer's Bit Reduction path and produced a first functional **Sample Rate Reduction
-(SRR)** research patch. The SRR build is statically valid but remains **hardware-unverified**.
+recompress, checksum, and re-encode OS 1.72. The stock sample Bit Reduction control
+path is now traced from the packed track parameter through the machine renderer and
+out to the external audio hardware transport.
+
+A critical correction supersedes earlier notes: the arithmetic block around
+`0x4011870E..0x401187A4` is **not** the sample BR quantizer. The true sample BR field
+is track destination/record word 11 (`0x8000F7BE` for track 0). MAIN encodes that
+parameter into a per-voice control word and serializes it through DSPI/eDMA; the final
+hardware-side amplitude quantization law remains to be measured on a physical Rytm.
+
+A first functional Sample Rate Reduction research image still exists, but its original
+BR-selector rationale was based on the superseded `0x4011870E` interpretation and it
+must not be treated as a validated BR implementation.
 
 ## Safety gate
 
-Do **not** jump directly to the functional SRR build on hardware. The staged hardware
+Do **not** jump directly to a functional custom image on hardware. The staged hardware
 sequence is:
 
 1. Verify normal boot and disposable project baseline.
 2. Verify startup-menu recovery with original Elektron OS 1.72 over physical MIDI.
-3. Verify the byte-identical stock round-trip image.
-4. Verify a checksum-correct modified MAIN image is accepted.
-5. Verify the inert code-cave detour boots and behaves normally.
-6. Only then test the functional SRR image on one disposable sample/track.
+3. Characterize stock BR on stock OS 1.72.
+4. Verify the byte-identical stock round-trip image.
+5. Verify a checksum-correct modified MAIN image is accepted.
+6. Verify the inert code-cave detour boots and behaves normally.
+7. Only then test functional feature candidates on one disposable sample/track.
+
+See `docs/AR172_FIRST_HARDWARE_TEST_PROTOCOL.md`.
 
 ## Repository policy
 
@@ -36,29 +49,75 @@ and reproducible tooling.
 ## Key results
 
 - OS package: ELE3 over Elektron SysEx transport.
-- Device ID: `0x0C` (Analog Rytm MKII).
+- Device ID: `0x0C`.
 - MAIN load address: `0x40000400`.
 - MAIN decompressed size: `2,903,032` bytes.
-- Stock OS 1.72 SHA-256: `1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f`.
+- Stock MAIN SHA-256: `5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772`.
+- Stock OS 1.72 SysEx SHA-256: `1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f`.
 - Corrected cave candidate: `0x402B4200`.
-- Bit Reduction descriptor: `0x401ABC48`.
-- BR physical parameter: `0x15`.
-- BR terminal render read: `0x4011870E`.
-- Stock 32-sample render loop: `0x4011877A..0x401187A0`.
-- Stock BR coefficient setup and all 32 quantizer MACs execute under MiniColdFire.
-- Proven quantizer equation: `Q(x) = (((signed32(x) * signed32(D3)) >> 31) << D2) mod 2^32`.
-- Runtime matrix: 8 BR words, 128 loop iterations, 256 / 256 sample matches.
-- All three audio-interface READY polls execute and return under MiniColdFire.
-- The TCD30 CSR `0x10` poll executes through a modeled one-observation transition.
-- The post-BR slab is 8 voice-major blocks × 32 signed-fractional longwords at
-  `0x800067F8..0x80006BF7`; renderer `0x4010A2E0` consumes all 256 words and
-  writes the eight voice slots into a 32-frame, `0x40`-byte-stride work slab.
-- eDMA channel 30 is input-side (`0x4B7FFFF0` → SRAM); channel 42 is the
-  outbound 256-byte handoff (SRAM → `0x4B400000`).
-- Functional SRR research image SHA-256: `ac077fe3d2262494265a12f1b8264e53e637091323c2306cf90573560b06a82e`.
+- Sample BR destination/record word: `11`.
+- Track-0 sample BR address: `0x8000F7BE`.
+- Machine-0 renderer: `0x4010CBA8`.
+- Direct BR frame read: `0x4010CC58`.
+- BR control encode path: case 3 at `0x4010D164`, cached read at `0x4010D16E`.
+- Per-voice BR control word: `0x80006544`.
+- Reconstructed CPU command law:
+  `0xB31407FF + ceil(BR * 0x40000 / 127)` for BR `0..127`.
+- BR 0 endpoint: `0xB31407FF`.
+- BR 127 endpoint: `0xB31807FF`.
+- The command is packetized by the `0x40077Dxx` path and submitted through eDMA
+  channel 15 to DSPI1 PUSHR; MAIN does not show a proven BR-dependent PCM mask/shift.
+- Section ID 2 is the temporary ColdFire bootstrap/updater, not the runtime sample DSP.
+- Section ID 1 is an FPGA configuration stream, not ColdFire code.
+- Renderer combiner `0x4010A2E0` writes 32 frames × 8 lanes and consumes three
+  256-longword source planes.
+- A BR-low/high test with deterministic nonzero CPU render planes produces identical
+  CPU PCM/combined output while the hardware control word diverges.
 
-See `docs/REVERSE_ENGINEERING_MAP.md`, `docs/AR172_LFO2_FILTER2_RESEARCH.md`,
-and `research/SRR_FUNCTIONAL_RESEARCH_NOTES.md`.
+## Stock BR hardware characterization
+
+`research/br_hardware_characterize.py` is the active measurement harness.
+
+It can:
+
+- generate deterministic 48-kHz BR test WAVs,
+- automate BR `0..127` over MIDI CC 26,
+- trigger one diagnostic sample per setting into a continuous recording,
+- analyze the capture against uniform quantizer models,
+- infer candidate bit-depth plateaus and rounding/truncation behavior,
+- correlate each measured setting with the reconstructed CPU/DSPI command word.
+
+Run:
+
+```bash
+python research/br_hardware_characterize.py self-test
+python research/br_hardware_characterize.py stimuli build/br_hw/stimuli
+```
+
+The software self-test currently passes and exactly recovers a synthetic 6-bit
+truncate-to-zero quantizer. The real AR MKII hardware-side law remains unproven until
+physical capture data is supplied.
+
+See `docs/AR172_BR_HARDWARE_CHARACTERIZATION.md`.
+
+## Other feature tracks
+
+### Slice16
+
+The transactional Slice16 candidate remains the preferred first functional feature test
+after stock recovery and inert-detour gates. It is independent of the corrected BR
+architecture.
+
+### SRR
+
+The existing functional SRR research image remains hardware-unverified. Its BR-overload
+selector concept must be redesigned before it can be considered production architecture,
+because the old selector was attached to the misidentified `0x4011870E` path.
+
+### LFO2 / Filter 2
+
+LFO2 remains a MAIN control/UI/state problem. Filter 2 remains a digital sample-path
+problem; insertion must be proven against active sample playback and hardware timing.
 
 ## Railway dashboard
 
@@ -71,16 +130,3 @@ python app.py
 
 Railway can detect the included Dockerfile automatically. Do not enable public networking
 unless you intentionally want the research dashboard exposed.
-
-## Active reverse-engineering target
-
-The terminal BR path and its downstream buffer geometry are now
-instruction-executed. The last clean voice-separated boundary is the
-`0x400`-byte post-BR slab at `0x800067F8..0x80006BF7`, immediately before
-renderer `0x4010A2E0`. This is the preferred semantic Filter 2 hook. The active
-in-memory bypass detour at call site `0x4011CAE2` is now bit-identical through a
-nonzero renderer frame and adds exactly one semantic instruction per 32-frame
-block. A documented synthetic runtime fixture now drives nonzero data through
-the stock fixed stage and outbound DMA block, which also remain bit-identical.
-The active target is full callback/hardware timing; front-panel BR mapping and
-physical behavior remain unverified.
