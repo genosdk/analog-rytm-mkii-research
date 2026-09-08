@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_PAGE_CONTROL_STATE_GATE",
   "recorded_at_utc": "2026-09-08",
-  "status": "PASS_TO_UI_HANDOFF_TIMESTAMP_FROZEN",
+  "status": "PASS_MISSING_TYPE8_AUDIO_FEED_IDENTIFIED",
   "repository": "genosdk/analog-rytm-mkii-research",
   "build": {
     "source_commit": "2ff8463468f3a46fee6983f662523e7c24e376e8",
@@ -64,8 +64,8 @@
     "persistent_framebuffer_delta": false
   },
   "next_gate": {
-    "name": "AR172_QEMU_ACTIVE_TIMELINE_VOICE_GATE",
-    "objective": "Activate the stock audio/timeline state that advances 0x8000FE54, retest SMP redraw, then activate a stock sample voice and resume the BR-dependent MAIN render trace."
+    "name": "AR172_QEMU_TYPE8_AUDIO_FEED_GATE",
+    "objective": "Identify the producer and exact record layout for input type 8, model the minimal non-proprietary feed in QEMU, prove vectors 108 and 121 execute and 0x8000FE54 advances, then retest SMP and activate a stock sample voice."
   },
   "github_actions": {
     "latest_pinned_run": 34288785642,
@@ -92,7 +92,32 @@
         "0x4011CEB8"
       ]
     },
-    "conclusion": "The native page mapping, UART/eDMA parser, live queue, dequeue, event construction, and UI handoff are proven. The shared audio/timeline value carried with the event is frozen at zero in the current emulator.",
-    "causality": "Candidate missing runtime input only; not yet proven to be the reason the page request produces no persistent redraw."
+    "conclusion": "The page event reaches the UI handoff, but the shared audio/timeline value carried with it remains frozen because the upstream type-8 audio feed callback is absent.",
+    "causality": "The missing feed is proven to explain the frozen timeline. Whether the frozen timeline alone prevents page redraw remains to be tested after the feed is modeled."
+  },
+  "timeline_interrupt_chain": {
+    "input_dispatch_table": "0x401C2B64",
+    "type_8_slot": "0x401C2B84",
+    "type_8_callback": "0x400805AC",
+    "callback_runtime_observation": "not reached during a 12-second stock MAIN boot",
+    "callback_inputs": [
+      "reads DTIM0 counter at 0xFC07000C",
+      "checks firmware audio mode",
+      "software-forces INTC0 source 44 through IFRH bit 12"
+    ],
+    "source_44": {
+      "vector": 108,
+      "handler": "0x400968BC",
+      "registration": "0x400970C8",
+      "action": "clears source 44 and software-forces source 57 through IFRH bit 25"
+    },
+    "source_57": {
+      "vector": 121,
+      "handler": "0x400980C0",
+      "registration": "0x400970DC",
+      "action": "clears source 57 and advances the shared audio/timeline state including 0x8000FE54",
+      "runtime_observation": "not reached during a 12-second stock MAIN boot"
+    },
+    "conclusion": "The current QEMU INTC already implements IFRH writes and priority delivery. The missing precursor is invocation of the firmware type-8 audio feed callback, before either software-forced interrupt can run."
   }
 }
