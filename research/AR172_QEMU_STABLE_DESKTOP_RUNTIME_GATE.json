@@ -56,10 +56,11 @@
       ]
     },
     "account_block": {
-      "latest_observed_run_id": 34286453745,
-      "symptom": "failure before step 1; no runner assigned; empty job steps",
+      "latest_observed_run_id": 34288785642,
+      "symptom": "failure before step 1; no runner assigned; steps null",
       "classification": "GitHub-hosted runner account eligibility, usage budget, billing, or policy—not source compilation",
-      "external_status": "GitHub Actions service operational at diagnosis time"
+      "external_status": "GitHub Actions service operational at diagnosis time",
+      "latest_job_id": 102270413117
     }
   },
   "railway": {
