@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_DESKTOP_PRESENTATION_GATE",
+  "recorded_at_utc": "2026-09-08",
+  "status": "IMPLEMENTED_CI_RUNNER_BLOCKED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "implementation": {
+    "commit": "2ff8463468f3a46fee6983f662523e7c24e376e8",
+    "url": "https://github.com/genosdk/analog-rytm-mkii-research/commit/2ff8463468f3a46fee6983f662523e7c24e376e8",
+    "changes": [
+      "Decode the firmware framebuffer as x-major OLED pages with eight LSB-first vertical pixels per byte.",
+      "Expose the already-proven NO, YES, TRIG, SYN, SMP, FLTR, AMP, and LFO mappings in the desktop GUI.",
+      "Require two identical consecutive front-buffer samples before publication.",
+      "Avoid rewriting framebuffer.bin when a stable frame matches the last published frame."
+    ]
+  },
+  "control_mapping": {
+    "NO": {"group": 4, "bit": 0, "press": "24 01", "release": "24 00"},
+    "YES": {"group": 5, "bit": 0, "press": "25 01", "release": "25 00"},
+    "TRIG": {"group": 5, "bit": 2},
+    "SYN": {"group": 5, "bit": 3},
+    "SMP": {"group": 5, "bit": 4},
+    "FLTR": {"group": 5, "bit": 5},
+    "AMP": {"group": 5, "bit": 6},
+    "LFO": {"group": 5, "bit": 7}
+  },
+  "framebuffer_layout": {
+    "width": 128,
+    "height": 64,
+    "bytes": 1024,
+    "byte_offset": "x * 8 + floor(y / 8)",
+    "bit_index": "y & 7",
+    "bit_order": "LSB first",
+    "derivation": "The full-transfer loop at 0x40092a0c emits eight page passes; each pass gathers byte page + 8*x for x=0..127.",
+    "validation": {
+      "stock_frame_sha256": "2c737d38a08af9188a30829b28258a2088db6a9a7db43ac2cc74136859ba1f4e",
+      "old_row_major_decoder": "structurally corrupted image",
+      "new_decoder": "coherent firmware UI with readable text, borders, parameter graphics, and status fields"
+    }
+  },
+  "stable_frame_filter": {
+    "sample_period_virtual_ms": 16,
+    "required_equal_samples": 2,
+    "key": "front-buffer pointer plus all 1024 framebuffer bytes",
+    "purpose": "Suppress intermediate scheduler-slice redraws observed as one-sample torn frames.",
+    "publication": "Only write a newly stable image when it differs from the previously published image."
+  },
+  "ci": {
+    "assessment": "Runner provisioning failure, not a source compile failure",
+    "evidence": "Every Linux/macOS/package job completed with failure before step 1; job step arrays are empty and decoded logs are unavailable.",
+    "linux_run": {
+      "id": 34282460770,
+      "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34282460770",
+      "attempts": 2,
+      "result": "failure before step 1"
+    },
+    "macos_build_run": {
+      "id": 34282460748,
+      "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34282460748",
+      "arm64": "failure before step 1",
+      "x86_64": "failure before step 1"
+    },
+    "macos_package_run": {
+      "id": 34282460754,
+      "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34282460754",
+      "arm64": "failure before step 1",
+      "x86_64": "failure before step 1"
+    }
+  },
+  "validation_boundary": {
+    "passed": [
+      "Exact framebuffer layout derived from firmware transfer code.",
+      "Correct layout visually validated against captured stock OS 1.72 frames.",
+      "Named control mappings match the already-proven bridge table.",
+      "Committed source content and blob identities verified from GitHub."
+    ],
+    "pending": [
+      "Compile commit 2ff8463 when GitHub runner provisioning is restored.",
+      "Run the resulting QEMU artifact against the local stock OS 1.72 MAIN fixture.",
+      "Confirm torn intermediate frames are absent while NO/YES/page changes still publish."
+    ]
+  },
+  "next_gate": {
+    "name": "AR172_QEMU_STABLE_DESKTOP_RUNTIME_GATE",
+    "objective": "Build the presentation changes and prove a legible, tear-free, interactive desktop session with the named native page controls."
+  },
+  "railway": {"touched": false}
+}
