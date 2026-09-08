@@ -69,6 +69,29 @@ def resolve_qemu(value: Path | None) -> Path:
     return qemu
 
 
+def self_test(qemu: Path) -> None:
+    version = subprocess.run(
+        [str(qemu), "-version"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        timeout=10,
+        check=True,
+    )
+    machines = subprocess.run(
+        [str(qemu), "-machine", "help"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        timeout=10,
+        check=True,
+    )
+    if "QEMU emulator version" not in version.stdout:
+        raise RuntimeError("bundled QEMU did not report a valid version")
+    if "elektron-ar-mk2" not in machines.stdout:
+        raise RuntimeError("bundled QEMU is missing the elektron-ar-mk2 machine")
+
+
 def hmp_continue(path: Path, timeout: float = 5.0) -> None:
     deadline = time.monotonic() + timeout
     last_error: Exception | None = None
@@ -102,9 +125,15 @@ def main() -> None:
                     help="already-decompressed MAIN image (development only)")
     ap.add_argument("--scale", type=int, default=6)
     ap.add_argument("--keep-runtime", action="store_true")
+    ap.add_argument("--self-test", action="store_true",
+                    help="verify the bundled QEMU backend and exit")
     args = ap.parse_args()
 
     qemu = resolve_qemu(args.qemu)
+    if args.self_test:
+        self_test(qemu)
+        return
+
     runtime = Path(tempfile.mkdtemp(prefix="ar-mk2-emulator-"))
     uart = runtime / "panel.sock"
     monitor = runtime / "monitor.sock"
@@ -123,11 +152,12 @@ def main() -> None:
             raise SystemExit(f"firmware file not found: {syx}")
         main_image = runtime / "main.bin"
         metadata = extract_main(syx, main_image)
-        print(
-            f"Extracted MAIN: {metadata['size']} bytes, "
-            f"sha256={metadata['sha256']}",
-            file=sys.stderr,
-        )
+        if sys.stderr is not None:
+            print(
+                f"Extracted MAIN: {metadata['size']} bytes, "
+                f"sha256={metadata['sha256']}",
+                file=sys.stderr,
+            )
 
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
@@ -186,7 +216,8 @@ def main() -> None:
             except subprocess.TimeoutExpired:
                 qemu_proc.kill()
         if args.keep_runtime:
-            print(f"Runtime retained at: {runtime}", file=sys.stderr)
+            if sys.stderr is not None:
+                print(f"Runtime retained at: {runtime}", file=sys.stderr)
         else:
             shutil.rmtree(runtime, ignore_errors=True)
 
