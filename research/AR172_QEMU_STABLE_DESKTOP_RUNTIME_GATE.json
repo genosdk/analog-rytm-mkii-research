@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_STABLE_DESKTOP_RUNTIME_GATE",
+  "recorded_at_utc": "2026-09-08",
+  "status": "PASS_LOCAL_BUILD_GITHUB_RUNNER_ACCOUNT_BLOCKED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "source_commit": "2ff8463468f3a46fee6983f662523e7c24e376e8",
+  "build": {
+    "qemu_upstream_ref": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "artifact_sha256": "d29d524d29406c3e9d50c121cc5c9c7c501a6f7ff22455288e103c8f3ccb6c0b",
+    "result": "local Linux build completed; elektron-ar-mk2 machine registered"
+  },
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "repository_policy": "firmware and extracted proprietary sections are not committed"
+  },
+  "framebuffer_validation": {
+    "baseline": {
+      "sha256": "2c737d38a08af9188a30829b28258a2088db6a9a7db43ac2cc74136859ba1f4e",
+      "nonzero_bytes": 773,
+      "lit_pixels": 2922
+    },
+    "no": {
+      "sha256": "b562c6c5142080de59c13f448f3dba61d85e0904cd1644dbeedb028afdde11f4",
+      "nonzero_bytes": 787,
+      "lit_pixels": 2629,
+      "published_changed_frames": 1
+    },
+    "yes": {
+      "sha256": "af58d1b4287537014f1ae614a89633bb39a8583dc6161e548df5b0bb6d2b794d",
+      "nonzero_bytes": 850,
+      "lit_pixels": 2748,
+      "published_changed_frames": 1
+    },
+    "torn_frame_suppression": {
+      "previously_observed_transient_sha256": "efbf9a",
+      "result": "not published by the two-sample stable-frame filter"
+    }
+  },
+  "interaction_boundary": {
+    "proven": [
+      "NO produces one stable persistent framebuffer transition.",
+      "YES produces one stable persistent framebuffer transition."
+    ],
+    "unresolved": "TRIG/SYN/SMP/FLTR/AMP/LFO emitted through the native bridge but produced no persistent framebuffer delta in the current blank-project state."
+  },
+  "github_actions": {
+    "workflow_hardening": {
+      "qemu_upstream_ref": "35500e5c41aec76cde59befe750600dac7a9e37a",
+      "checkout_action": "actions/checkout@v5",
+      "automatic_scope": "Linux qemu/hw/** only",
+      "manual_scope": [
+        "macOS build",
+        "macOS standalone package"
+      ]
+    },
+    "account_block": {
+      "latest_observed_run_id": 34286453745,
+      "symptom": "failure before step 1; no runner assigned; empty job steps",
+      "classification": "GitHub-hosted runner account eligibility, usage budget, billing, or policy—not source compilation",
+      "external_status": "GitHub Actions service operational at diagnosis time"
+    }
+  },
+  "railway": {
+    "touched": false
+  },
+  "next_gate": {
+    "name": "AR172_QEMU_PAGE_CONTROL_STATE_GATE",
+    "objective": "Trace group-5 page events through the firmware queue, identify the missing active-track/project/sample state, then activate a stock sample voice and resume the MAIN render trace."
+  }
+}
