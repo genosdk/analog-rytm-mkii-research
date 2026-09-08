@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_PAGE_CONTROL_STATE_GATE",
+  "recorded_at_utc": "2026-09-08",
+  "status": "PASS_TO_UI_HANDOFF_CONTEXT_ZERO",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "build": {
+    "source_commit": "2ff8463468f3a46fee6983f662523e7c24e376e8",
+    "qemu_upstream_ref": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_system_m68k_sha256": "d29d524d29406c3e9d50c121cc5c9c7c501a6f7ff22455288e103c8f3ccb6c0b"
+  },
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "queue_activation": {
+    "pointer_global": "0x4026D4C8",
+    "startup_queue": "0x42F4D850",
+    "live_ui_queue": "0x4192A9D0",
+    "observed_live_transition_seconds": 4.498476312
+  },
+  "group_5_descriptor_table": {
+    "pointer_global": "0x4026D4B8",
+    "observed_base": "0x4026D518",
+    "values_by_bit": [
+      "0x44",
+      "0x42",
+      "0x30",
+      "0x31",
+      "0x32",
+      "0x33",
+      "0x34",
+      "0x35"
+    ],
+    "named_bits": {
+      "2": "TRIG / event 0x30",
+      "3": "SYN / event 0x31",
+      "4": "SMP / event 0x32",
+      "5": "FLTR / event 0x33",
+      "6": "AMP / event 0x34",
+      "7": "LFO / event 0x35"
+    }
+  },
+  "smp_dynamic_trace": {
+    "packet_press": "25 10",
+    "parser": "0x4007EFC8",
+    "dequeue_case": "0x400A124E",
+    "raw_event_address": "0x418B7B9C",
+    "raw_event_words": [
+      "0x00000000",
+      "0x00000032",
+      "0x00000001",
+      "0x00000000"
+    ],
+    "interpretation": {
+      "type": "button event type 0",
+      "control_id": "0x32",
+      "flags": "press flag 1",
+      "context": "zero"
+    },
+    "event_object": "0x419531B0",
+    "ui_controller": "0x41ACAA60",
+    "ui_handoff": "0x4009D2F2",
+    "persistent_framebuffer_delta": false
+  },
+  "context_boundary": {
+    "parser_context_source": "0x8000FE54",
+    "observed_value": "0x00000000",
+    "conclusion": "The native page mapping, UART/eDMA parser, live queue, dequeue, and UI handoff are working. The raw-MAIN boot supplies a null downstream context, so the page request is consumed without a persistent redraw.",
+    "semantic_role": "not yet assigned; activation prerequisite must be traced before altering guest state"
+  },
+  "next_gate": {
+    "name": "AR172_QEMU_ACTIVE_VOICE_CONTEXT_GATE",
+    "objective": "Identify and establish the stock active-track/project/sample context that populates the page-event context source, prove SMP redraws, then activate a stock sample voice and resume the BR-dependent MAIN render trace."
+  },
+  "github_actions": {
+    "latest_pinned_run": 34288785642,
+    "latest_job": 102270413117,
+    "boundary": "failure before step 1 with steps null; hosted-runner account provisioning remains blocked"
+  },
+  "railway": {
+    "touched": false
+  }
+}
