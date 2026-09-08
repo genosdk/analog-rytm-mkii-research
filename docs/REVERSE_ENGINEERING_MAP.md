@@ -11,116 +11,124 @@
 | MAIN size | `2,903,032` bytes |
 | CPU model | NXP/Freescale MCF5441x ColdFire family; QEMU `cfv4e` baseline |
 | Stock MAIN SHA-256 | `5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772` |
+| Stock SysEx SHA-256 | `1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f` |
 | Safe cave candidate | `0x402B4200..0x402B5000` |
 
-## Sample/SRR trace
+## Sample Bit Reduction — corrected path
+
+Earlier research that labeled `0x4011870E..0x401187A4` as sample Bit Reduction is **superseded**. That arithmetic block is real firmware DSP/control code but its `A1` provenance lands on another track destination, not sample BR.
+
+The current proven BR path is:
 
 | Landmark | Meaning |
 |---|---|
-| `0x401ABC48` | Bit Reduction descriptor |
-| physical parameter `0x15` | Stock BR parameter |
-| BR UI/storage domain | `0..127`, nominal runtime encoding `BR << 8` |
-| packed record word 39 | Proven SRR/BR consumer input in the descriptor/control trace; terminal provenance reconciliation remains open |
-| `0x4011C69E` | 13 × 42-word control-rate EMAC smoother |
-| `0x40117F00` | Pre-render/audio-interface routine; returns under modeled READY transitions |
-| `0x401186B2..0x40118700` | Previous/current sample-level state shaping and persistence |
-| `0x4011870E` | Terminal BR render read |
-| `0x40118744..0x40118750` | BR exponential-table lookup producing D4/D3 |
-| `0x4011875A..0x4011876C` | D4 sample-level compensation and 32-sample ramp setup |
-| `0x4011877A..0x401187A0` | Stock 32-sample render loop |
-| `0x4011878E`, `0x40118792` | Paired signed-fractional D3 quantizer MACs |
-| `0x40118782`, `0x40118788` | Post-quantizer sample-level ramp MACs through ACC2/ACC3 |
-| `0x800067F8..0x80006BF7` | Eight post-BR voice blocks, 32 longwords each |
-| `0x4010A2E0` | Consumes all 256 voice words and emits strided frame slots |
-| `0x40109F04` | Shared handoff/staging pipeline |
-| eDMA 30 | Input-side: `0x4B7FFFF0` → SRAM `0x8000DDD0` |
-| eDMA 42 | Outbound: 256-byte SRAM block → `0x4B400000` |
+| BR UI/storage domain | `0..127` |
+| MIDI control | CC `26`; NRPN `1:10` |
+| modulation destination | `11` |
+| track-0 packed BR | `0x8000F7BE` / frame word `37` |
+| control smoother | `0x4011C69E`; covers the BR-containing longword at `0x8000F7BC` |
+| machine renderer table | `0x40277FE8` |
+| machine-0 renderer | `0x4010CBA8` |
+| direct BR read | `0x4010CC58` |
+| BR-update state case | case 3 at `0x4010D164` |
+| cached BR read | `0x4010D16E` |
+| fixed-point helper | `0x4011A0B6` |
+| per-voice BR command | `0x80006544` |
+| packetizer family | `0x40077Dxx`; source slab `0x800063C0..0x80006797` |
+| DSPI submit | eDMA channel `15` -> DSPI1 PUSHR `0xFC03C034` |
 
-The control smoother is not the audio quantizer. The terminal BR setup and loop now
-execute from `0x4011870E` through `0x401187A6`. Across eight raw BR words, all 128
-loop iterations and 256 sample operations match the independently reconstructed
-quantizer equation:
+### CPU command law
 
-`Q(x) = (((signed32(x) * signed32(D3)) >> 31) << D2) mod 2^32`
+The renderer's 128-point BR command sweep reconstructs to:
 
-The surrounding block is now reconstructed as well. If `Lprev` and `Lnext` are
-the previous/current sample-level ramp states, stock computes:
+`command(BR) = 0xB31407FF + ceil(BR * 0x40000 / 127)`
 
-```text
-r0   = truncQ31(Lprev, D4)
-r1   = truncQ31(Lnext, D4)
-dr   = wrap32(r1-r0) >> 5
-y[i] = truncQ31(Q(sample[i]), wrap32(r0 + i*dr)), i=0..31
-```
+with endpoints:
 
-D4 is therefore BR-dependent amplitude compensation applied to the sample-level
-smoothing ramp, not another amplitude-resolution quantizer. The instruction-order
-pipeline and this closed-form expression match for 10,000 randomized blocks;
-10,006 independent Q31 alignment cases also pass. Normal exit clears ACC0..ACC3.
-See `research/br_full_path_reconstruct.py` and
-`research/AR172_BR_FULL_PATH_RECONSTRUCTION.md`.
+- BR 0 -> `0xB31407FF`
+- BR 127 -> `0xB31807FF`
 
-Runtime provenance also proves the post-BR voice slab, renderer address permutation,
-shared 0x200-byte staging area, and outbound eDMA-42 direction. The post-BR slab is
-therefore the preferred semantic Filter 2 insertion point. Cycle margin, exact
-control-frame-to-terminal-BR provenance, and physical hardware behavior remain open.
-An in-memory-only candidate replaces the renderer call at `0x4011CAE2` with a call
-to unused space at `0x402B4800`; the cave tail-jumps to the stock renderer. It
-preserves the tagged post-BR slab, renderer return state, nonzero renderer frame,
-fixed stage, and nonzero outbound DMA block exactly. The final-mix inputs are a
-documented synthetic fixture because the compact model has no project loader. The
-detour adds one semantic instruction per 32-frame block; it does not establish real
-cycle margin.
+The associated four-halfword per-voice record is serialized as:
 
-## Audio scheduling
+`0x4000, 0x0080, command_hi, command_lo`
 
-- eDMA interrupt channel: 54.
-- Render sequence: `0x40117F00` → `0x4010A2E0` → `0x40108944` → `0x40105188`.
-- PIT0 vector 205 is now deliverable in MiniColdFire.
-- Descriptor initializer `0x4011AE52` completes in 154 synthetic instructions.
-- Destination indices 39..46 map from input destinations 13..20.
-- READY poll sites `0x40117F16`, `0x40118396`, and `0x40118518` execute in a
-  17,109-instruction pre-render smoke call.
-- `0x40109FFE` polls TCD30 CSR word `0xFC0453DE`, mask `0x10`. TCD30's descriptor
-  establishes an external-to-SRAM input path; the precise meaning of mask `0x10`
-  remains hardware-unverified.
-- The stream default and block geometry imply 1,500 32-frame blocks per second,
-  or a 666.667-microsecond block deadline at 48 kHz. The traced stock components
-  execute 40,971 semantic instructions per block, a 61.4565-MIPS lower bound if
-  each counted instruction took one cycle. Scheduler glue, cache/SDRAM stalls,
-  and untraced callback work are excluded.
+and expanded into DSPI PUSHR entries by the packetizer. MAIN does not numerically apply this command to PCM in the traced path.
+
+### CPU-side PCM differential
+
+A BR-low/high experiment with deterministic **nonzero** data pre-seeded into the three CPU renderer source planes produced:
+
+- identical traced renderer writes,
+- identical combined CPU output,
+- different packed BR hardware commands.
+
+This strongly rejects the old hypothesis that stock BR is a ColdFire-side PCM `AND`/shift/truncation operation.
+
+The exact **hardware-side** quantizer equation remains unproven. `research/br_hardware_characterize.py` is the active measurement harness for resolving it on a physical Rytm.
+
+## Render and audio geometry
+
+| Landmark | Meaning |
+|---|---|
+| `0x4010A2E0` | MAIN combiner: 32 frames × 8 lanes |
+| source plane A | `0x80006BF8..0x80006FF4` |
+| source plane B | `0x80007040..0x8000743C` |
+| source plane C | `0x800067FC..0x80006BF8` |
+| combined output | `0x80000800..0x80000FDC`, `0x40`-byte frame stride |
+| eDMA 30 | `17 × 16 = 272` byte external modulo-window ingress beginning at `0x4B7FFFF0` |
+| eDMA 31/32 | repeated `9 × 16 = 144` byte external-to-SRAM ingress/state blocks |
+| eDMA 15 | outbound BR/control packet transport to DSPI1 |
+
+The previous classification of a post-`0x401187xx` slab as a proven post-BR PCM boundary is retired with the BR correction.
+
+## Firmware section roles
+
+- **Section ID 2**: temporary ColdFire bootstrap/updater/service UI; not the runtime sample DSP.
+- **Section ID 1**: 149,516-byte 16-bit FPGA configuration stream; not ColdFire code.
+- **Section ID 3**: MAIN runtime image containing the control/render path under active analysis.
+
+## Event/control state
+
+The renderer uses an eight-entry, `0x20`-byte per-physical-voice event-state array around `0x8000FEF8`.
+
+A synthetic BR-update event naturally transitions:
+
+`case 3 -> case 4 with 32-unit countdown -> 16 -> 0 -> idle (-1)`
+
+This event machine handles parameter/control timing. It is distinct from the missing project/sample-resource activation state needed for fully genuine sample playback emulation.
 
 ## Feature tracks
 
 ### Slice16
 
-The transactional Slice16 image is the preferred candidate. Its SHA-256 is
-`9233da51a2467a7dd0a7b8897af41058e54fa4768e86479c226778a26c7a709f`.
-The zero-persistence variant remains a fallback. Neither may skip the staged hardware
-acceptance and recovery protocol.
+The transactional Slice16 candidate remains the preferred first functional feature test after recovery and inert-detour gates. Its control-frame transformation is independent of the corrected BR architecture.
 
 ### SRR
 
-The functional SRR research build is statically valid and hardware-unverified. The upper
-BR bands correspond to 2, 4, 8, 16, and 32-sample hold periods. Its recorded SHA-256 is
-`ac077fe3d2262494265a12f1b8264e53e637091323c2306cf90573560b06a82e`.
+The existing functional SRR research image is hardware-unverified. Its original selector overloaded the path previously mislabeled as BR, so that selector architecture is **superseded** and must be redesigned before production use.
 
 ### LFO2
 
-LFO2 should reuse the proven destination equation and update machinery via shadow state.
-The stock 42-word record stays frozen until persistence and SysEx compatibility are mapped.
+LFO2 remains a MAIN control/UI/state problem. It should reuse the proven destination/update machinery through shadow state while preserving the stock 42-word record until persistence and SysEx compatibility are mapped.
 
 ### Filter 2
 
-Filter 2 belongs at the proven voice-separated post-BR boundary, before renderer
-`0x4010A2E0`. The reference model is a topology-preserving state-variable filter;
-the disabled bypass is exact through a signal-bearing outbound DMA block under a
-documented synthetic runtime fixture. Full callback timing, board clock
-confirmation, and project-loaded runtime validation remain required before
-enabling it.
+A Filter 2 insertion point is **not yet proven**. The next acceptable boundary is either:
+
+1. the first genuine active-sample PCM/fetch/interpolation write inside MAIN, or
+2. a hardware-side point proven from physical characterization/FPGA analysis.
+
+Do not use the retired `0x401187xx` BR interpretation as the insertion boundary.
+
+## Active next gate
+
+Run the stock BR hardware characterization suite:
+
+- `docs/AR172_BR_HARDWARE_CHARACTERIZATION.md`
+- `research/br_hardware_characterize.py`
+
+Measure all BR values against a deterministic ramp, correlate the captured quantization behavior with the reconstructed DSPI command law, and establish the true hardware-side bit-depth/rounding function.
 
 ## Safety boundary
 
-This repository contains no original or modified Elektron firmware image. Research scripts
-are read-only unless explicitly documented otherwise. Hardware testing must follow
-`docs/AR172_FIRST_HARDWARE_TEST_PROTOCOL.md` in order.
+This repository contains no original or modified Elektron firmware image. Research scripts are read-only unless explicitly documented otherwise. Hardware testing must follow `docs/AR172_FIRST_HARDWARE_TEST_PROTOCOL.md` in order.
