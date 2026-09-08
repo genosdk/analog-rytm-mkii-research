@@ -14,7 +14,7 @@
 #include "hw/core/sysbus.h"
 #include "hw/m68k/mcf.h"
 #include "system/memory.h"
-#include "system/physmem.h"
+#include "system/reset.h"
 #include "system/system.h"
 #include "target/m68k/cpu.h"
 
@@ -29,7 +29,6 @@
 #define AR_PIT_PCSR_RLD  0x0002
 #define AR_PIT_PCSR_PIF  0x0004
 #define AR_PIT_PCSR_PIE  0x0008
-#define AR_PIT_PCSR_OVW  0x0010
 #define AR_PIT_CLK_MASK  0x0F00
 
 /* MCF5441x bus clock is board-dependent. 125 MHz gives the observed firmware
@@ -72,8 +71,6 @@ static ARCoreState *ar_core;
 
 static unsigned ar_icr_level(uint8_t icr)
 {
-    /* OS 1.72 programs the currently observed sources with small values
-     * (for example PIT0=1, PIT2=3). Preserve that behavior directly. */
     unsigned level = icr & 7;
     return level ? level : (icr ? 1 : 0);
 }
@@ -140,9 +137,6 @@ static uint64_t ar_intc_read(void *opaque, hwaddr addr, unsigned size)
     case 0x10: return (uint32_t)(s->ifr >> 32);
     case 0x14: return (uint32_t)s->ifr;
     case 0xe0:
-        /* Software IACK value. The CPU already receives the full vector from
-         * ar_intc_update(), but returning the bank-relative active vector is
-         * useful for firmware that probes SWIACK. */
         {
             uint64_t active = (s->ipr | s->ifr) & s->enabled & ~s->imr;
             int best = -1;
@@ -195,14 +189,14 @@ static void ar_intc_write(void *opaque, hwaddr addr,
     case 0x14:
         s->ifr = (s->ifr & 0xffffffff00000000ULL) | (uint32_t)value;
         break;
-    case 0x1c: /* SIMR: set one mask bit; 0x40 means all. */
+    case 0x1c:
         if (value & 0x40) {
             s->imr = ~0ULL;
         } else {
             s->imr |= 1ULL << (value & 0x3f);
         }
         break;
-    case 0x1d: /* CIMR: clear one mask bit; 0x40 means all. */
+    case 0x1d:
         if (value & 0x40) {
             s->imr = 0;
         } else {
@@ -320,9 +314,6 @@ static void ar_pit_write(void *opaque, hwaddr addr,
             ar_pit_schedule(s);
         }
         break;
-    case 0x04:
-        /* PCNTR is read-only on hardware. */
-        break;
     default:
         break;
     }
@@ -336,29 +327,26 @@ static const MemoryRegionOps ar_pit_ops = {
     .valid.max_access_size = 2,
 };
 
-static void ar_uart8_boot_enable(void)
+static void ar_uart8_restore_boot_state(void *opaque)
 {
-    uint8_t cmd;
+    ARCoreState *c = opaque;
 
-    /* MAIN assumes UART8 was already enabled by the preceding boot stage.
-     * Recreate only that inherited state when launching a raw MAIN image. */
-    cmd = 0x01; /* receiver enable */
-    physical_memory_write(AR_UART8_BASE + 0x08, &cmd, sizeof(cmd));
-    cmd = 0x04; /* transmitter enable */
-    physical_memory_write(AR_UART8_BASE + 0x08, &cmd, sizeof(cmd));
+    /* The physical boot stage leaves UART8 receiver and transmitter enabled
+     * before MAIN starts. QEMU resets the UART after machine construction, so
+     * restore that inherited state after each system reset. */
+    mcf_uart_write(c->uart8, 0x08, 0x01, 1);
+    mcf_uart_write(c->uart8, 0x08, 0x04, 1);
 }
 
 static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
 {
     MemoryRegion *mr;
 
-    /* UART8 is INTC1 source 26 on the MCF5441x. Use serial0 as its external
-     * panel transport so -serial unix:... can connect the desktop bridge. */
     c->uart8_irq = qemu_allocate_irq(ar_external_irq, c, 64 + 26);
     c->uart8 = mcf_uart_create(c->uart8_irq, serial_hd(0));
     mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(c->uart8), 0);
     memory_region_add_subregion_overlap(sysmem, AR_UART8_BASE, mr, 20);
-    ar_uart8_boot_enable();
+    qemu_register_reset(ar_uart8_restore_boot_state, c);
 }
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu)
