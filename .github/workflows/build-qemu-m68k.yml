@@ -34,7 +34,8 @@ jobs:
           cp research/qemu/hw/m68k/elektron_ar_mk2.c qemu-src/hw/m68k/
           cp research/qemu/hw/m68k/ar_mk2_intc_pit.c qemu-src/hw/m68k/
           cp research/qemu/hw/m68k/ar_mk2_dspi.c qemu-src/hw/m68k/
-          printf "\nm68k_ss.add(files('elektron_ar_mk2.c', 'ar_mk2_intc_pit.c', 'ar_mk2_dspi.c'))\n" >> qemu-src/hw/m68k/meson.build
+          cp research/qemu/hw/m68k/ar_mk2_dtim.c qemu-src/hw/m68k/
+          printf "\nm68k_ss.add(files('elektron_ar_mk2.c', 'ar_mk2_intc_pit.c', 'ar_mk2_dspi.c', 'ar_mk2_dtim.c'))\n" >> qemu-src/hw/m68k/meson.build
 
       - name: Configure m68k-softmmu only
         working-directory: qemu-src
