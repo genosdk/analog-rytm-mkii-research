@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_PAGE_CONTROL_STATE_GATE",
   "recorded_at_utc": "2026-09-08",
-  "status": "PASS_TO_UI_HANDOFF_CONTEXT_ZERO",
+  "status": "PASS_TO_UI_HANDOFF_TIMESTAMP_FROZEN",
   "repository": "genosdk/analog-rytm-mkii-research",
   "build": {
     "source_commit": "2ff8463468f3a46fee6983f662523e7c24e376e8",
@@ -56,22 +56,16 @@
       "type": "button event type 0",
       "control_id": "0x32",
       "flags": "press flag 1",
-      "context": "zero"
+      "timestamp_or_runtime_context": "zero"
     },
     "event_object": "0x419531B0",
     "ui_controller": "0x41ACAA60",
     "ui_handoff": "0x4009D2F2",
     "persistent_framebuffer_delta": false
   },
-  "context_boundary": {
-    "parser_context_source": "0x8000FE54",
-    "observed_value": "0x00000000",
-    "conclusion": "The native page mapping, UART/eDMA parser, live queue, dequeue, and UI handoff are working. The raw-MAIN boot supplies a null downstream context, so the page request is consumed without a persistent redraw.",
-    "semantic_role": "not yet assigned; activation prerequisite must be traced before altering guest state"
-  },
   "next_gate": {
-    "name": "AR172_QEMU_ACTIVE_VOICE_CONTEXT_GATE",
-    "objective": "Identify and establish the stock active-track/project/sample context that populates the page-event context source, prove SMP redraws, then activate a stock sample voice and resume the BR-dependent MAIN render trace."
+    "name": "AR172_QEMU_ACTIVE_TIMELINE_VOICE_GATE",
+    "objective": "Activate the stock audio/timeline state that advances 0x8000FE54, retest SMP redraw, then activate a stock sample voice and resume the BR-dependent MAIN render trace."
   },
   "github_actions": {
     "latest_pinned_run": 34288785642,
@@ -80,5 +74,25 @@
   },
   "railway": {
     "touched": false
+  },
+  "timestamp_boundary": {
+    "source": "0x8000FE54",
+    "observed_value": "0x00000000",
+    "static_xrefs": {
+      "parser_reads": [
+        "0x4007EC18",
+        "0x4007EFF4",
+        "0x4007F26C"
+      ],
+      "audio_timeline_writes": [
+        "0x4009810C",
+        "0x4011CDEC",
+        "0x4011CE28",
+        "0x4011CE6C",
+        "0x4011CEB8"
+      ]
+    },
+    "conclusion": "The native page mapping, UART/eDMA parser, live queue, dequeue, event construction, and UI handoff are proven. The shared audio/timeline value carried with the event is frozen at zero in the current emulator.",
+    "causality": "Candidate missing runtime input only; not yet proven to be the reason the page request produces no persistent redraw."
   }
 }
