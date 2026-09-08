@@ -5,10 +5,11 @@
 Separate the remaining hardware-only questions in order:
 
 1. Does stock recovery work normally?
-2. Does our byte-identical stock round-trip behave normally?
-3. Does the bootloader accept a modified, checksum-correct MAIN image?
-4. Does the corrected cave at `0x402B4200` execute safely via an inert detour?
-5. Does the preferred Slice16 transactional build produce the expected sample boundaries?
+2. What is the exact stock hardware-side Bit Reduction transfer function?
+3. Does our byte-identical stock round-trip behave normally?
+4. Does the bootloader accept a modified, checksum-correct MAIN image?
+5. Does the corrected cave at `0x402B4200` execute safely via an inert detour?
+6. Does the preferred Slice16 transactional build produce the expected sample boundaries?
 
 Do not skip stages.
 
@@ -50,6 +51,30 @@ Startup-menu recovery requires physical MIDI; do not depend on USB MIDI for that
 5. Confirm successful transfer, reboot and normal operation.
 
 If stock recovery cannot be completed, stop. Do not flash a modified image.
+
+## Stage B2 — characterize stock Bit Reduction hardware
+
+This stage uses **stock OS 1.72 only** and does not require a custom firmware image.
+
+The current reverse engineering proves that MAIN reads sample BR at `0x8000F7BE`, encodes it into a per-voice control command and serializes that command through DSPI/eDMA to external audio hardware. The final hardware-side amplitude quantization law is not yet proven.
+
+Use:
+
+- `docs/AR172_BR_HARDWARE_CHARACTERIZATION.md`
+- `research/br_hardware_characterize.py`
+
+Minimum sequence:
+
+1. Run `python research/br_hardware_characterize.py self-test` and require `PASS`.
+2. Generate the deterministic stimuli.
+3. Load `br_ramp_full.wav` into one disposable sample track.
+4. Prefer an Overbridge/digital individual-track capture with fixed gain and no processing.
+5. Use MIDI CC 26 to sweep BR. The harness automates all 128 values.
+6. Analyze the continuous WAV capture.
+7. Repeat at least one shortened sweep and verify the inferred mapping repeats.
+8. Do not call truncation/rounding bit-exact from an analog-only capture.
+
+This stage should be completed before designing any replacement BR algorithm. It does not block the safety proof for an inert code-cave detour, but it is the stock reference for all later SRR/BR work.
 
 ## Stage C — byte-identical stock round-trip
 
