@@ -459,11 +459,23 @@ static const MemoryRegionOps ar_uart8_proxy_ops = {
     .valid.max_access_size = 4,
 };
 
+/*
+ * UART8 RX is routed to eDMA channel 34 on the Rytm. INTC1 source 26 is the
+ * channel-completion interrupt, not the UART request level itself. Until the
+ * eDMA request path is modeled, keep the UART request off the CPU INTC input;
+ * directly wiring it there leaves unread FIFO data asserted and causes an
+ * artificial vector-154 interrupt storm.
+ */
+static void ar_uart8_dma_request(void *opaque, int n, int level)
+{
+    /* Request is intentionally consumed by the future eDMA model. */
+}
+
 static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
 {
     MemoryRegion *mr;
 
-    c->uart8_irq = qemu_allocate_irq(ar_external_irq, c, 64 + 26);
+    c->uart8_irq = qemu_allocate_irq(ar_uart8_dma_request, c, 34);
     c->uart8 = mcf_uart_create(c->uart8_irq, serial_hd(0));
     mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(c->uart8), 0);
     memory_region_add_subregion_overlap(sysmem, AR_UART8_BASE, mr, 20);
