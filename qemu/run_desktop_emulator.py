@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """One-command host launcher for the AR MKII firmware emulator.
 
-This development launcher expects a custom qemu-system-m68k binary and an
-already-decompressed OS 1.72 MAIN image. The release app will perform MAIN
-extraction locally from a user-supplied official Elektron .syx file.
+Elektron firmware is never bundled. The launcher accepts either a user-supplied
+official update .syx or a decompressed MAIN image for development/testing.
 """
 from __future__ import annotations
 
@@ -11,11 +10,12 @@ import argparse
 import os
 from pathlib import Path
 import shutil
-import signal
 import subprocess
 import sys
 import tempfile
 import time
+
+from firmware_loader import extract_main
 
 
 def wait_for(path: Path, proc: subprocess.Popen, timeout: float = 10.0) -> None:
@@ -32,18 +32,18 @@ def wait_for(path: Path, proc: subprocess.Popen, timeout: float = 10.0) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--qemu", type=Path, required=True)
-    ap.add_argument("--main", type=Path, required=True,
-                    help="decompressed AR MKII MAIN image")
+    fw = ap.add_mutually_exclusive_group(required=True)
+    fw.add_argument("--firmware", type=Path,
+                    help="official Elektron Analog Rytm MKII update .syx")
+    fw.add_argument("--main", type=Path,
+                    help="already-decompressed MAIN image (development only)")
     ap.add_argument("--scale", type=int, default=6)
     ap.add_argument("--keep-runtime", action="store_true")
     args = ap.parse_args()
 
     qemu = args.qemu.expanduser().resolve()
-    main_image = args.main.expanduser().resolve()
     if not qemu.is_file():
         raise SystemExit(f"QEMU binary not found: {qemu}")
-    if not main_image.is_file():
-        raise SystemExit(f"MAIN image not found: {main_image}")
 
     here = Path(__file__).resolve().parent
     bridge = here / "panel_event_bridge.py"
@@ -56,6 +56,22 @@ def main() -> None:
     frame = runtime / "front-buffer.bin"
     events = runtime / "panel-events.jsonl"
     log = runtime / "qemu.log"
+
+    if args.firmware:
+        syx = args.firmware.expanduser().resolve()
+        if not syx.is_file():
+            raise SystemExit(f"firmware file not found: {syx}")
+        main_image = runtime / "main.bin"
+        metadata = extract_main(syx, main_image)
+        print(
+            f"Extracted MAIN: {metadata['size']} bytes, "
+            f"sha256={metadata['sha256']}",
+            file=sys.stderr,
+        )
+    else:
+        main_image = args.main.expanduser().resolve()
+        if not main_image.is_file():
+            raise SystemExit(f"MAIN image not found: {main_image}")
 
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
