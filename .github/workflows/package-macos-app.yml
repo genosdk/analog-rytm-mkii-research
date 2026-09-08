@@ -1,11 +1,8 @@
 name: Package AR MKII Emulator macOS
 
+# Standalone app packaging is an explicit release gate, never a push side effect.
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '.github/workflows/package-macos-app.yml'
-      - 'qemu/**'
 
 concurrency:
   group: package-ar-mk2-macos-final2-${{ github.ref }}

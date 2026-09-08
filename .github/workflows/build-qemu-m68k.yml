@@ -5,10 +5,10 @@ on:
   push:
     paths:
       - '.github/workflows/build-qemu-m68k.yml'
-      - 'qemu/**'
+      - 'qemu/hw/**'
 
 concurrency:
-  group: ar-mk2-qemu-linux
+  group: ar-mk2-qemu-linux-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

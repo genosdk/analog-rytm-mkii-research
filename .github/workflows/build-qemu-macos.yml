@@ -1,14 +1,11 @@
 name: Build AR MKII QEMU macOS
 
+# Hosted macOS minutes are reserved for explicit validation gates.
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - '.github/workflows/build-qemu-macos.yml'
-      - 'qemu/hw/**'
 
 concurrency:
-  group: ar-mk2-qemu-macos
+  group: ar-mk2-qemu-macos-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
