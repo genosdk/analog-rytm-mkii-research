@@ -8,7 +8,7 @@ on:
       - 'qemu/**'
 
 concurrency:
-  group: package-ar-mk2-macos-fast-${{ github.ref }}
+  group: package-ar-mk2-macos-final-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
           - runner: macos-15-intel
             arch: x86_64
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Checkout AR research
@@ -30,14 +30,21 @@ jobs:
         with:
           path: research
 
+      - name: Checkout upstream QEMU
+        uses: actions/checkout@v4
+        with:
+          repository: qemu/qemu
+          path: qemu-src
+          fetch-depth: 1
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install packaging dependencies
+      - name: Install build and packaging dependencies
         run: |
-          brew install glib pixman dylibbundler
+          brew install glib pixman ninja pkg-config dylibbundler
           python -m pip install --upgrade pip
           python -m pip install pyinstaller
           python - <<'PY'
@@ -45,20 +52,33 @@ jobs:
           print('tkinter', tkinter.TkVersion)
           PY
 
-      - name: Download validated custom QEMU
-        uses: actions/download-artifact@v4
-        with:
-          name: ar-mk2-qemu-macos-${{ matrix.arch }}
-          path: prebuilt-qemu
-          github-token: ${{ github.token }}
-          repository: ${{ github.repository }}
-          run-id: 34188018645
+      - name: Inject AR MKII QEMU machine
+        run: |
+          cp research/qemu/hw/m68k/elektron_ar_mk2.c qemu-src/hw/m68k/
+          cp research/qemu/hw/m68k/ar_mk2_intc_pit.c qemu-src/hw/m68k/
+          cp research/qemu/hw/m68k/ar_mk2_dspi.c qemu-src/hw/m68k/
+          cp research/qemu/hw/m68k/ar_mk2_dtim.c qemu-src/hw/m68k/
+          printf "\nm68k_ss.add(files('elektron_ar_mk2.c', 'ar_mk2_intc_pit.c', 'ar_mk2_dspi.c', 'ar_mk2_dtim.c'))\n" >> qemu-src/hw/m68k/meson.build
+
+      - name: Configure QEMU
+        working-directory: qemu-src
+        run: |
+          ./configure \
+            --target-list=m68k-softmmu \
+            --disable-werror \
+            --disable-docs \
+            --disable-gtk \
+            --disable-sdl \
+            --disable-cocoa
+
+      - name: Build custom QEMU
+        working-directory: qemu-src
+        run: ninja -C build qemu-system-m68k
 
       - name: Verify custom QEMU
         run: |
-          chmod +x prebuilt-qemu/qemu-system-m68k
-          prebuilt-qemu/qemu-system-m68k -machine help | grep elektron-ar-mk2
-          file prebuilt-qemu/qemu-system-m68k
+          qemu-src/build/qemu-system-m68k -machine help | grep elektron-ar-mk2
+          file qemu-src/build/qemu-system-m68k
 
       - name: Freeze desktop frontend
         working-directory: research
@@ -75,10 +95,9 @@ jobs:
         run: |
           APP='research/dist/AR MKII Emulator.app'
           QEMU="$APP/Contents/MacOS/qemu-system-m68k"
-          cp prebuilt-qemu/qemu-system-m68k "$QEMU"
+          cp qemu-src/build/qemu-system-m68k "$QEMU"
           chmod +x "$QEMU"
           mkdir -p "$APP/Contents/Frameworks"
-
           dylibbundler \
             -od \
             -b \
