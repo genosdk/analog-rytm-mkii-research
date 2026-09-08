@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_PANEL_EVENT_DISPATCH_GATE",
+  "recorded_at_utc": "2026-09-08",
+  "status": "PASS",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "emulator_commit": "294b2642221e039e33b1e64083cc27440e2786dd",
+  "firmware_fixture": {
+    "name": "Analog Rytm MKII OS 1.72 MAIN",
+    "repository_contains_binary": false,
+    "decompressed_main_sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "interrupt_trace": {
+    "edma_channel": 34,
+    "intc": 1,
+    "source": 26,
+    "vector": 154,
+    "qemu_vector_offset": "0x268",
+    "isr_entry": "0x400016f2",
+    "interrupted_pc_press_example": "0x40008a0c",
+    "isr_actions": [
+      "write channel 34 to eDMA CINT at 0xfc04401c",
+      "write source 26 to INTC1 clear-pending at 0xfc04c01c",
+      "compare channel 34 TCD DADDR at 0xfc045450 with the software ring cursor",
+      "drain each new byte from the 1024-byte RX ring",
+      "call the installed byte-parser pointer from 0x413c15a0"
+    ]
+  },
+  "parser_trace": {
+    "byte_parser": "0x4007f30c",
+    "button_bitmap_dispatcher": "0x4007efc8",
+    "header_format": "0x2n selects button group n; next byte is the group bitmap",
+    "encoder_format": "0x3n selects encoder n; next byte is signed delta",
+    "event_record_bytes": 16,
+    "event_queue_pointer_global": "0x4026d4c8"
+  },
+  "queue_lifecycle": {
+    "startup_queue_pointer": "0x42f4d850",
+    "live_ui_queue_pointer": "0x4192a9d0",
+    "observation": "Packets injected one second after identity were parsed into the startup queue. The global later switched to the live UI queue, explaining the earlier lack of UI response.",
+    "gate_rule": "Inject interactive test packets only after 0x4026d4c8 equals 0x4192a9d0. The isolated proof used a conservative six-second delay after identity."
+  },
+  "ui_dispatch_trace": {
+    "dequeue_callsite": "0x400a1126",
+    "dequeue_primitive": "0x40001444",
+    "event_type_switch": "0x400a113e..0x400a1144",
+    "button_event_case_target": "0x400a141a",
+    "observed_case_calls": [
+      "0x40082b14",
+      "0x4017fe5c",
+      "0x400960a4"
+    ],
+    "case_completion": "increments 0x4192b1f4 and returns to dequeue at 0x400a1126"
+  },
+  "stable_visible_response": {
+    "control_identity": "button group 4 bit 0; physical panel label not yet assigned",
+    "press_packet": "24 01",
+    "release_packet": "24 00",
+    "isolated": true,
+    "repeatable_against_sweep": true,
+    "rx_bytes": 4,
+    "channel_34_major_completions": 4,
+    "vector_154_entries": 2,
+    "before": {
+      "framebuffer_bytes": 1024,
+      "nonzero_bytes": 773,
+      "lit_pixels": 2922,
+      "sha256": "2c737d38a08af9188a30829b28258a2088db6a9a7db43ac2cc74136859ba1f4e"
+    },
+    "after": {
+      "framebuffer_bytes": 1024,
+      "nonzero_bytes": 787,
+      "lit_pixels": 2629,
+      "sha256": "b562c6c5142080de59c13f448f3dba61d85e0904cd1644dbeedb028afdde11f4"
+    }
+  },
+  "secondary_sweep_result": {
+    "control_identity": "button group 5 bit 0; physical panel label not yet assigned",
+    "press_packet": "25 01",
+    "release_packet": "25 00",
+    "result_after_group_4_state": {
+      "nonzero_bytes": 850,
+      "sha256": "af58d1b4287537014f1ae614a89633bb39a8583dc6161e548df5b0bb6d2b794d"
+    }
+  },
+  "negative_controls": {
+    "groups_0_and_1": {
+      "controls_tested": 16,
+      "rx_bytes": 64,
+      "vector_154_entries": 32,
+      "stable_framebuffer_changes": 0
+    },
+    "known_trig_and_encoder_examples": {
+      "packets": ["23 01", "23 00", "23 02", "23 00", "30 01"],
+      "result": "Fully transferred and consumed after live-queue activation, but no persistent framebuffer state change in the current page."
+    }
+  },
+  "frame_export_note": {
+    "front_pointer_global": "0x4026f474",
+    "poll_period_virtual_ms": 16,
+    "observation": "Unsynchronized polling can capture torn intermediate drawing states. Only stable post-event hashes are accepted as gate evidence."
+  },
+  "conclusion": "The stock OS 1.72 interactive path is proven end-to-end: native UART packet, UART8 RX request, eDMA channel 34, vector 154 ISR, byte parser, live UI queue, UI dispatcher, state handling, and persistent presented-framebuffer change.",
+  "next_gate": {
+    "name": "AR172_QEMU_PANEL_CONTROL_MAPPING_GATE",
+    "objective": "Assign physical front-panel names to the newly proven group 4/5 bits and add only verified mappings to the desktop bridge.",
+    "following_target": "Synchronize framebuffer export to presentation/swap boundaries to eliminate torn intermediate frames."
+  },
+  "railway": {
+    "touched": false
+  }
+}
