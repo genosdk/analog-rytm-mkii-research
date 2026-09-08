@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_DESKTOP_PRESENTATION_GATE",
   "recorded_at_utc": "2026-09-08",
-  "status": "IMPLEMENTED_CI_RUNNER_BLOCKED",
+  "status": "PASS_LOCAL_BUILD_GITHUB_RUNNER_ACCOUNT_BLOCKED",
   "repository": "genosdk/analog-rytm-mkii-research",
   "implementation": {
     "commit": "2ff8463468f3a46fee6983f662523e7c24e376e8",
@@ -15,14 +15,42 @@
     ]
   },
   "control_mapping": {
-    "NO": {"group": 4, "bit": 0, "press": "24 01", "release": "24 00"},
-    "YES": {"group": 5, "bit": 0, "press": "25 01", "release": "25 00"},
-    "TRIG": {"group": 5, "bit": 2},
-    "SYN": {"group": 5, "bit": 3},
-    "SMP": {"group": 5, "bit": 4},
-    "FLTR": {"group": 5, "bit": 5},
-    "AMP": {"group": 5, "bit": 6},
-    "LFO": {"group": 5, "bit": 7}
+    "NO": {
+      "group": 4,
+      "bit": 0,
+      "press": "24 01",
+      "release": "24 00"
+    },
+    "YES": {
+      "group": 5,
+      "bit": 0,
+      "press": "25 01",
+      "release": "25 00"
+    },
+    "TRIG": {
+      "group": 5,
+      "bit": 2
+    },
+    "SYN": {
+      "group": 5,
+      "bit": 3
+    },
+    "SMP": {
+      "group": 5,
+      "bit": 4
+    },
+    "FLTR": {
+      "group": 5,
+      "bit": 5
+    },
+    "AMP": {
+      "group": 5,
+      "bit": 6
+    },
+    "LFO": {
+      "group": 5,
+      "bit": 7
+    }
   },
   "framebuffer_layout": {
     "width": 128,
@@ -46,7 +74,7 @@
     "publication": "Only write a newly stable image when it differs from the previously published image."
   },
   "ci": {
-    "assessment": "Runner provisioning failure, not a source compile failure",
+    "assessment": "Source validated locally; GitHub-hosted runner provisioning remains blocked before step 1",
     "evidence": "Every Linux/macOS/package job completed with failure before step 1; job step arrays are empty and decoded logs are unavailable.",
     "linux_run": {
       "id": 34282460770,
@@ -65,24 +93,32 @@
       "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34282460754",
       "arm64": "failure before step 1",
       "x86_64": "failure before step 1"
+    },
+    "workflow_hardening": {
+      "qemu_upstream_ref": "35500e5c41aec76cde59befe750600dac7a9e37a",
+      "checkout_action": "actions/checkout@v5",
+      "push_scope": "Linux only for qemu/hw/**; macOS build and package are manual gates"
     }
   },
   "validation_boundary": {
     "passed": [
       "Exact framebuffer layout derived from firmware transfer code.",
       "Correct layout visually validated against captured stock OS 1.72 frames.",
-      "Named control mappings match the already-proven bridge table.",
-      "Committed source content and blob identities verified from GitHub."
+      "Named control mappings match the established native bridge table.",
+      "Commit 2ff8463 compiled locally against pinned upstream QEMU 35500e5c41aec76cde59befe750600dac7a9e37a.",
+      "Stable-frame filter reproduced baseline, NO, and YES frames without publishing the known torn intermediate NO frame."
     ],
     "pending": [
-      "Compile commit 2ff8463 when GitHub runner provisioning is restored.",
-      "Run the resulting QEMU artifact against the local stock OS 1.72 MAIN fixture.",
-      "Confirm torn intermediate frames are absent while NO/YES/page changes still publish."
+      "Restore GitHub-hosted runner eligibility/budget so the pinned Linux workflow can execute.",
+      "Trace why native page-control events do not cause a persistent redraw in the current blank-project state.",
+      "Activate a stock sample voice before resuming BR-dependent MAIN/audio tracing."
     ]
   },
   "next_gate": {
-    "name": "AR172_QEMU_STABLE_DESKTOP_RUNTIME_GATE",
-    "objective": "Build the presentation changes and prove a legible, tear-free, interactive desktop session with the named native page controls."
+    "name": "AR172_QEMU_PAGE_CONTROL_STATE_GATE",
+    "objective": "Trace native page events through the firmware queue and identify the active-track/project/sample prerequisite for a persistent page redraw."
   },
-  "railway": {"touched": false}
+  "railway": {
+    "touched": false
+  }
 }
