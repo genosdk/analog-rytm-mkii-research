@@ -1,0 +1,3 @@
+# Optional dependencies for research/br_hardware_characterize.py sweep-midi
+mido>=1.3
+python-rtmidi>=1.5
