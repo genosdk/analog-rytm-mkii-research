@@ -117,19 +117,11 @@ jobs:
           APP='research/dist/AR MKII Emulator.app'
 
           # Homebrew/dylibbundler can leave Finder/resource metadata that
-          # modern codesign rejects. Remove it before signing anything.
+          # modern codesign rejects. Remove it, then let codesign --deep walk
+          # PyInstaller's real nested-code hierarchy itself instead of signing
+          # through its MacOS/_internal alias/symlink tree.
           xattr -cr "$APP" || true
-
-          # Sign nested Mach-O content first, then seal the application root.
-          # This includes the frozen Python runtime/extensions, bundled QEMU,
-          # and all copied Homebrew dylibs/framework binaries.
-          while IFS= read -r -d '' f; do
-            if file "$f" | grep -q 'Mach-O'; then
-              codesign --force --sign - "$f"
-            fi
-          done < <(find "$APP/Contents" -type f -print0)
-
-          codesign --force --sign - "$APP"
+          codesign --force --deep --timestamp=none --sign - "$APP"
           codesign --verify --deep --strict --verbose=4 "$APP"
 
       - name: Smoke-test packaged executable
