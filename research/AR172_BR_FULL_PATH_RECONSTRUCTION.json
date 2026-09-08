@@ -1,0 +1,64 @@
+{
+  "result": "PASS",
+  "verification": {
+    "sha256": "41bfd182f5f933bbc70fe9033fd157fc938d3ce54a64229b45ec2e1709c8ee67",
+    "image_kind": "known_srr_research",
+    "macsr": "0x20",
+    "render_source": "0x8000E1D0",
+    "render_output_block_bytes": "0x80",
+    "render_samples": 32,
+    "render_pair_iterations": 16
+  },
+  "full_block_equation": {
+    "coefficients": "(D2,D3,D4) = stock BR setup(ui_br)",
+    "quantizer": "q[i] = wrap32((truncQ31(sample[i] * D3)) << D2)",
+    "ramp_start": "r0 = truncQ31(previous_level_state * D4)",
+    "ramp_target": "r1 = truncQ31(current_level_state * D4)",
+    "ramp_step": "dr = wrap32(r1-r0) >> 5",
+    "output": "y[i] = truncQ31(q[i] * wrap32(r0 + i*dr)), i=0..31",
+    "pipeline_note": "stock prequantizes the next source pair before writing each emitted pair; two additional Q31 values are prefetched at block exit"
+  },
+  "semantic_trace": {
+    "previous_level_state": "D7 <- 0x10(A3) at 0x401186B2",
+    "current_level_source": "signed word 0x0E(A1) at 0x401186CC",
+    "current_level_shaping": "conditional gate; square; double; optional hold-previous; arithmetic >>2; persisted back to 0x10(A3)",
+    "classification": "post-quantizer sample-level/amplitude smoothing ramp with BR-dependent D4 compensation",
+    "confidence": "high for arithmetic/field role; some gating flags remain unlabeled"
+  },
+  "accumulator_invariant": {
+    "ACC2_ACC3": "each output MOVCLR at 0x40118796/9A clears the post-ramp accumulators",
+    "ACC0_ACC1": "0x401187A2/A4 clear the two prefetched quantizer accumulators at block exit",
+    "consequence": "all four EMAC accumulators are clear at normal block exit, making the zero-ACC Q31 model self-maintaining across blocks"
+  },
+  "selected_br_coefficients": [
+    {"ui_br":0,"raw_br":0,"raw_br_hex":"0x0000","exponent_hex":"0x00000000","frac_index_hex":"0x0000","d2_pre":0,"d2":1,"d3":1073741824,"d3_hex":"0x40000000","d4":1073741824,"d4_hex":"0x40000000"},
+    {"ui_br":1,"raw_br":256,"raw_br_hex":"0x0100","exponent_hex":"0x534A952A","frac_index_hex":"0x1A54","d2_pre":20,"d2":21,"d3":578,"d3_hex":"0x00000242","d4":1899212128,"d4_hex":"0x7133AD60"},
+    {"ui_br":32,"raw_br":8192,"raw_br_hex":"0x2000","exponent_hex":"0x5C52A54A","frac_index_hex":"0x0294","d2_pre":23,"d2":24,"d3":121,"d3_hex":"0x00000079","d4":1135410156,"d4_hex":"0x43ACFBEC"},
+    {"ui_br":64,"raw_br":16384,"raw_br_hex":"0x4000","exponent_hex":"0x65A54A95","frac_index_hex":"0x0D28","d2_pre":25,"d2":26,"d3":24,"d3_hex":"0x00000018","d4":1427786196,"d4_hex":"0x551A49D4"},
+    {"ui_br":96,"raw_br":24576,"raw_br_hex":"0x6000","exponent_hex":"0x6EF7EFDF","frac_index_hex":"0x17BC","d2_pre":27,"d2":28,"d3":4,"d3_hex":"0x00000004","d4":1795451104,"d4_hex":"0x6B0468E0"},
+    {"ui_br":112,"raw_br":28672,"raw_br_hex":"0x7000","exponent_hex":"0x73A14284","frac_index_hex":"0x1D08","d2_pre":28,"d2":29,"d3":2,"d3_hex":"0x00000002","d4":2013734812,"d4_hex":"0x7807279C"},
+    {"ui_br":114,"raw_br":29184,"raw_br_hex":"0x7200","exponent_hex":"0x74366CD9","frac_index_hex":"0x01B0","d2_pre":29,"d2":30,"d3":1,"d3_hex":"0x00000001","d4":1113716100,"d4_hex":"0x4261F584"},
+    {"ui_br":120,"raw_br":30720,"raw_br_hex":"0x7800","exponent_hex":"0x75F5EBD7","frac_index_hex":"0x0FAC","d2_pre":29,"d2":30,"d3":1,"d3_hex":"0x00000001","d4":1507745824,"d4_hex":"0x59DE6020"},
+    {"ui_br":127,"raw_br":32512,"raw_br_hex":"0x7F00","exponent_hex":"0x77FFFFFF","frac_index_hex":"0x1FFC","d2_pre":29,"d2":30,"d3":1,"d3_hex":"0x00000001","d4":2146756952,"d4_hex":"0x7FF4E958"}
+  ],
+  "randomized_equivalence": {
+    "seed": 169290519,
+    "q31_equivalence_cases": 10006,
+    "block_equivalence_cases": 10000,
+    "samples_compared_per_block": 32,
+    "result": "PASS"
+  },
+  "resolved": [
+    "D4 is applied to previous/current sample-level ramp states before the 32-sample block",
+    "D5 becomes the arithmetic /32 interpolation delta after D4 compensation",
+    "ACC2/ACC3 apply the interpolated multiplicative level to the D3/D2-quantized samples",
+    "the 16-iteration loop emits exactly 32 32-bit samples and prefetches the next pair",
+    "normal loop exit clears ACC0..ACC3"
+  ],
+  "open_questions": [
+    "name the A3+0x28/A3+0x29 status flags and the global bitmask gate at 0x8000586C",
+    "resolve the exact control-frame bridge from modulation destination SMP_BR to terminal renderer 6(A1)",
+    "validate the model against captured hardware output once the physical unit is available"
+  ],
+  "safety": "Static reconstruction/model only; no firmware bytes are modified or repacked."
+}
