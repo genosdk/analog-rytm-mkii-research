@@ -79,7 +79,7 @@ def main() -> None:
     qemu_cmd = [
         str(qemu),
         "-machine", "elektron-ar-mk2",
-        "-m", "128M",
+        "-m", "256M",
         "-bios", str(main_image),
         "-display", "none",
         "-serial", f"unix:{uart},server=on,wait=off",

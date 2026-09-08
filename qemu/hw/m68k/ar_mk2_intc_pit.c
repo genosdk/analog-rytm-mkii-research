@@ -14,6 +14,7 @@
 #include "hw/core/sysbus.h"
 #include "hw/m68k/mcf.h"
 #include "system/memory.h"
+#include "system/physmem.h"
 #include "system/reset.h"
 #include "system/system.h"
 #include "target/m68k/cpu.h"
@@ -26,6 +27,27 @@
 #define AR_DTIM0_BASE 0xFC070000u
 #define AR_DTIM_STRIDE 0x00004000u
 #define AR_UART8_BASE 0xEC070000u
+#define AR_EDMA_BASE  0xFC044000u
+#define AR_EDMA_SIZE  0x00002000u
+#define AR_EDMA_TCD_BASE 0x1000u
+#define AR_EDMA_TCD_SIZE 0x20u
+#define AR_EDMA_CHANNELS 64u
+
+#define AR_EDMA_TCD_SADDR 0x00
+#define AR_EDMA_TCD_ATTR  0x04
+#define AR_EDMA_TCD_SOFF  0x06
+#define AR_EDMA_TCD_NBYTES 0x08
+#define AR_EDMA_TCD_SLAST 0x0c
+#define AR_EDMA_TCD_DADDR 0x10
+#define AR_EDMA_TCD_CITER 0x14
+#define AR_EDMA_TCD_DOFF  0x16
+#define AR_EDMA_TCD_DLAST 0x18
+#define AR_EDMA_TCD_BITER 0x1c
+#define AR_EDMA_TCD_CSR   0x1e
+
+#define AR_EDMA_CSR_INT_MAJOR 0x0002u
+#define AR_EDMA_CSR_D_REQ     0x0008u
+#define AR_EDMA_CSR_DONE      0x0080u
 
 #define AR_PIT_PCSR_EN   0x0001
 #define AR_PIT_PCSR_RLD  0x0002
@@ -61,6 +83,17 @@ typedef struct ARPitState {
     unsigned index;
 } ARPitState;
 
+typedef struct AREdmaState {
+    MemoryRegion iomem;
+    ARCoreState *core;
+    uint32_t cr;
+    uint64_t erq;
+    uint64_t intr;
+    uint8_t dchpri[AR_EDMA_CHANNELS];
+    uint8_t tcd[AR_EDMA_CHANNELS][AR_EDMA_TCD_SIZE];
+    bool uart_busy;
+} AREdmaState;
+
 typedef struct ARDtimState {
     MemoryRegion iomem;
     uint16_t dtmr;
@@ -78,6 +111,7 @@ struct ARCoreState {
     ARIntcState intc[3];
     ARPitState pit[4];
     ARDtimState dtim[4];
+    AREdmaState edma;
     DeviceState *uart8;
     qemu_irq uart8_irq;
     MemoryRegion uart8_proxy;
@@ -345,6 +379,300 @@ static const MemoryRegionOps ar_pit_ops = {
 };
 
 /*
+ * Minimal MCF54418 eDMA engine.  The panel link uses channel 34 for UART8 RX
+ * and channel 35 for UART8 TX.  TCD storage is byte-accurate so the firmware
+ * observes its own register programming; requests execute one minor loop and
+ * honor address offsets, modulo addressing, major-loop reload, D_REQ and
+ * INT_MAJOR.
+ */
+static uint64_t ar_edma_load(const uint8_t *p, unsigned size)
+{
+    uint64_t value = 0;
+    unsigned i;
+
+    for (i = 0; i < size; i++) {
+        value = (value << 8) | p[i];
+    }
+    return value;
+}
+
+static void ar_edma_store(uint8_t *p, uint64_t value, unsigned size)
+{
+    unsigned i;
+
+    for (i = 0; i < size; i++) {
+        unsigned shift = 8 * (size - 1 - i);
+        p[i] = value >> shift;
+    }
+}
+
+static uint32_t ar_edma_advance(uint32_t address, int16_t offset,
+                                unsigned modulo)
+{
+    uint32_t next = address + offset;
+
+    if (modulo && modulo < 32) {
+        uint32_t mask = (1u << modulo) - 1;
+        next = (address & ~mask) | (next & mask);
+    }
+    return next;
+}
+
+static void ar_edma_set_irq(AREdmaState *s, unsigned channel, bool level)
+{
+    if (channel >= 32 && channel <= 63) {
+        ar_intc_set_irq(s->core, 1, channel - 8, level);
+    }
+}
+
+static void ar_edma_complete(AREdmaState *s, unsigned channel)
+{
+    uint8_t *tcd = s->tcd[channel];
+    uint16_t csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
+
+    csr |= AR_EDMA_CSR_DONE;
+    stw_be_p(tcd + AR_EDMA_TCD_CSR, csr);
+    if (csr & AR_EDMA_CSR_D_REQ) {
+        s->erq &= ~(1ULL << channel);
+    }
+    if (csr & AR_EDMA_CSR_INT_MAJOR) {
+        s->intr |= 1ULL << channel;
+        ar_edma_set_irq(s, channel, true);
+    }
+    qemu_log_mask(LOG_UNIMP,
+                  "AR-MK2 eDMA complete channel=%u saddr=%08x daddr=%08x\n",
+                  channel, ldl_be_p(tcd + AR_EDMA_TCD_SADDR),
+                  ldl_be_p(tcd + AR_EDMA_TCD_DADDR));
+}
+
+static bool ar_edma_service(AREdmaState *s, unsigned channel)
+{
+    uint8_t *tcd;
+    uint8_t buffer[32];
+    uint32_t saddr, daddr, nbytes;
+    uint16_t attr, citer, biter;
+    int16_t soff, doff;
+    unsigned smod, dmod;
+
+    if (channel >= AR_EDMA_CHANNELS ||
+        !(s->erq & (1ULL << channel))) {
+        return false;
+    }
+
+    tcd = s->tcd[channel];
+    citer = lduw_be_p(tcd + AR_EDMA_TCD_CITER) & 0x7fff;
+    nbytes = ldl_be_p(tcd + AR_EDMA_TCD_NBYTES) & 0x3fffffff;
+    if (!citer || !nbytes || nbytes > sizeof(buffer)) {
+        return false;
+    }
+
+    saddr = ldl_be_p(tcd + AR_EDMA_TCD_SADDR);
+    daddr = ldl_be_p(tcd + AR_EDMA_TCD_DADDR);
+    attr = lduw_be_p(tcd + AR_EDMA_TCD_ATTR);
+    soff = (int16_t)lduw_be_p(tcd + AR_EDMA_TCD_SOFF);
+    doff = (int16_t)lduw_be_p(tcd + AR_EDMA_TCD_DOFF);
+    smod = (attr >> 11) & 0x1f;
+    dmod = (attr >> 3) & 0x1f;
+
+    physical_memory_read(saddr, buffer, nbytes);
+    physical_memory_write(daddr, buffer, nbytes);
+    saddr = ar_edma_advance(saddr, soff, smod);
+    daddr = ar_edma_advance(daddr, doff, dmod);
+    stl_be_p(tcd + AR_EDMA_TCD_SADDR, saddr);
+    stl_be_p(tcd + AR_EDMA_TCD_DADDR, daddr);
+
+    citer--;
+    if (citer) {
+        stw_be_p(tcd + AR_EDMA_TCD_CITER, citer);
+        return true;
+    }
+
+    saddr += (int32_t)ldl_be_p(tcd + AR_EDMA_TCD_SLAST);
+    daddr += (int32_t)ldl_be_p(tcd + AR_EDMA_TCD_DLAST);
+    stl_be_p(tcd + AR_EDMA_TCD_SADDR, saddr);
+    stl_be_p(tcd + AR_EDMA_TCD_DADDR, daddr);
+    biter = lduw_be_p(tcd + AR_EDMA_TCD_BITER) & 0x7fff;
+    stw_be_p(tcd + AR_EDMA_TCD_CITER, biter);
+    ar_edma_complete(s, channel);
+    return true;
+}
+
+static void ar_edma_pump_uart(ARCoreState *c)
+{
+    AREdmaState *s = &c->edma;
+    unsigned guard = 0;
+
+    if (!c->uart8 || s->uart_busy) {
+        return;
+    }
+
+    s->uart_busy = true;
+    while (guard++ < 64) {
+        uint8_t isr = mcf_uart_read(c->uart8, 0x14, 1);
+        bool progress = false;
+
+        if ((isr & 0x02) && (s->erq & (1ULL << 34))) {
+            progress |= ar_edma_service(s, 34);
+        }
+        if ((isr & 0x01) && (s->erq & (1ULL << 35))) {
+            progress |= ar_edma_service(s, 35);
+        }
+        if (!progress) {
+            break;
+        }
+    }
+    s->uart_busy = false;
+}
+
+static uint64_t ar_edma_read(void *opaque, hwaddr addr, unsigned size)
+{
+    AREdmaState *s = opaque;
+    unsigned off = addr & (AR_EDMA_SIZE - 1);
+
+    if (off >= AR_EDMA_TCD_BASE &&
+        off + size <= AR_EDMA_TCD_BASE +
+                      AR_EDMA_CHANNELS * AR_EDMA_TCD_SIZE) {
+        unsigned rel = off - AR_EDMA_TCD_BASE;
+        return ar_edma_load(&s->tcd[rel / AR_EDMA_TCD_SIZE]
+                                  [rel % AR_EDMA_TCD_SIZE], size);
+    }
+    if (off >= 0x100 && off < 0x140 && size == 1) {
+        return s->dchpri[off - 0x100];
+    }
+
+    switch (off) {
+    case 0x00: return s->cr;
+    case 0x08: return (uint32_t)(s->erq >> 32);
+    case 0x0c: return (uint32_t)s->erq;
+    case 0x20: return (uint32_t)(s->intr >> 32);
+    case 0x24: return (uint32_t)s->intr;
+    case 0x30:
+    case 0x34:
+        return 0;
+    default:
+        return 0;
+    }
+}
+
+static void ar_edma_write(void *opaque, hwaddr addr,
+                          uint64_t value, unsigned size)
+{
+    AREdmaState *s = opaque;
+    unsigned off = addr & (AR_EDMA_SIZE - 1);
+    unsigned channel;
+
+    if (off >= AR_EDMA_TCD_BASE &&
+        off + size <= AR_EDMA_TCD_BASE +
+                      AR_EDMA_CHANNELS * AR_EDMA_TCD_SIZE) {
+        unsigned rel = off - AR_EDMA_TCD_BASE;
+        ar_edma_store(&s->tcd[rel / AR_EDMA_TCD_SIZE]
+                            [rel % AR_EDMA_TCD_SIZE], value, size);
+        ar_edma_pump_uart(s->core);
+        return;
+    }
+    if (off >= 0x100 && off < 0x140 && size == 1) {
+        s->dchpri[off - 0x100] = value;
+        return;
+    }
+
+    switch (off) {
+    case 0x00:
+        s->cr = value;
+        break;
+    case 0x08:
+        s->erq = (s->erq & 0xffffffffULL) |
+                 ((uint64_t)(uint32_t)value << 32);
+        break;
+    case 0x0c:
+        s->erq = (s->erq & 0xffffffff00000000ULL) |
+                 (uint32_t)value;
+        break;
+    case 0x18:
+        if (!(value & 0x80)) {
+            if (value & 0x40) {
+                s->erq = ~0ULL;
+            } else {
+                s->erq |= 1ULL << (value & 0x3f);
+            }
+            ar_edma_pump_uart(s->core);
+        }
+        break;
+    case 0x19:
+        if (!(value & 0x80)) {
+            if (value & 0x40) {
+                s->erq = 0;
+            } else {
+                s->erq &= ~(1ULL << (value & 0x3f));
+            }
+        }
+        break;
+    case 0x1c:
+        if (!(value & 0x80)) {
+            if (value & 0x40) {
+                for (channel = 0; channel < AR_EDMA_CHANNELS; channel++) {
+                    ar_edma_set_irq(s, channel, false);
+                }
+                s->intr = 0;
+            } else {
+                channel = value & 0x3f;
+                s->intr &= ~(1ULL << channel);
+                ar_edma_set_irq(s, channel, false);
+            }
+        }
+        break;
+    case 0x1e:
+        if (!(value & 0x80)) {
+            if (value & 0x40) {
+                for (channel = 0; channel < AR_EDMA_CHANNELS; channel++) {
+                    ar_edma_service(s, channel);
+                }
+            } else {
+                ar_edma_service(s, value & 0x3f);
+            }
+        }
+        break;
+    case 0x1f:
+        if (!(value & 0x80)) {
+            if (value & 0x40) {
+                for (channel = 0; channel < AR_EDMA_CHANNELS; channel++) {
+                    uint16_t csr =
+                        lduw_be_p(s->tcd[channel] + AR_EDMA_TCD_CSR);
+                    stw_be_p(s->tcd[channel] + AR_EDMA_TCD_CSR,
+                             csr & ~AR_EDMA_CSR_DONE);
+                }
+            } else {
+                channel = value & 0x3f;
+                uint16_t csr =
+                    lduw_be_p(s->tcd[channel] + AR_EDMA_TCD_CSR);
+                stw_be_p(s->tcd[channel] + AR_EDMA_TCD_CSR,
+                         csr & ~AR_EDMA_CSR_DONE);
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
+
+static const MemoryRegionOps ar_edma_ops = {
+    .read = ar_edma_read,
+    .write = ar_edma_write,
+    .endianness = DEVICE_BIG_ENDIAN,
+    .valid.min_access_size = 1,
+    .valid.max_access_size = 4,
+};
+
+static void ar_edma_init(MemoryRegion *sysmem, ARCoreState *c)
+{
+    AREdmaState *s = &c->edma;
+
+    s->core = c;
+    memory_region_init_io(&s->iomem, NULL, &ar_edma_ops, s,
+                          "ar-mk2-edma", AR_EDMA_SIZE);
+    memory_region_add_subregion_overlap(sysmem, AR_EDMA_BASE, &s->iomem, 20);
+}
+
+/*
  * MAIN inherits DTIM0 as a free-running delay counter from the bootloader and
  * reads DTCN before it programs any DTIM registers itself. Model that inherited
  * state from QEMU's virtual clock; retain the remaining registers so later
@@ -468,7 +796,9 @@ static const MemoryRegionOps ar_uart8_proxy_ops = {
  */
 static void ar_uart8_dma_request(void *opaque, int n, int level)
 {
-    /* Request is intentionally consumed by the future eDMA model. */
+    ARCoreState *c = opaque;
+
+    ar_edma_pump_uart(c);
 }
 
 static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
@@ -521,5 +851,6 @@ void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu)
     }
 
     ar_dtim_init(sysmem, ar_core);
+    ar_edma_init(sysmem, ar_core);
     ar_uart8_init(sysmem, ar_core);
 }

@@ -29,7 +29,7 @@
 #define AR_MAIN_LOAD_ADDR    0x40000400u
 #define AR_MAIN_ENTRY        0x40000870u
 #define AR_SDRAM_BASE        0x40000000u
-#define AR_DEFAULT_RAM_SIZE  (128 * MiB)
+#define AR_DEFAULT_RAM_SIZE  (256 * MiB)
 #define AR_SRAM_BASE         0x80000000u
 #define AR_SRAM_SIZE         (64 * KiB)
 #define AR_SRAM_APERTURE     0x0C000000u
@@ -312,7 +312,7 @@ static void elektron_ar_mk2_init(MachineState *machine)
     int64_t loaded;
 
     if (machine->ram_size < AR_DEFAULT_RAM_SIZE) {
-        error_report("elektron-ar-mk2 currently requires at least 128 MiB RAM");
+        error_report("elektron-ar-mk2 currently requires at least 256 MiB RAM");
         exit(1);
     }
 

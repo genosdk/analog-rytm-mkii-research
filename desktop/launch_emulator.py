@@ -60,7 +60,7 @@ def main() -> None:
     qemu_cmd = [
         str(args.qemu),
         "-M", "elektron-ar-mk2",
-        "-m", "128M",
+        "-m", "256M",
         "-bios", str(args.main),
         "-display", "none",
         "-monitor", "none",
