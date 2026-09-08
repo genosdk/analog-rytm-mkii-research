@@ -1,15 +1,21 @@
 /*
- * Minimal MCF5441x interrupt-controller and PIT model used by the
+ * Minimal MCF5441x interrupt-controller, PIT and panel UART model used by the
  * Analog Rytm MKII research machine.
  *
  * This is intentionally narrow: it implements only the register behavior
- * required to deliver PIT0..PIT3 through the three MCF5441x INTC banks.
+ * required to deliver PIT0..PIT3 through the three MCF5441x INTC banks and
+ * overlays QEMU's ColdFire UART model at the Rytm UART8 address.
  */
 
 #include "qemu/osdep.h"
 #include "qemu/log.h"
 #include "qemu/timer.h"
+#include "hw/core/irq.h"
+#include "hw/core/sysbus.h"
+#include "hw/m68k/mcf.h"
 #include "system/memory.h"
+#include "system/physmem.h"
+#include "system/system.h"
 #include "target/m68k/cpu.h"
 
 #define AR_INTC0_BASE 0xFC048000u
@@ -17,6 +23,7 @@
 #define AR_INTC2_BASE 0xFC050000u
 #define AR_PIT0_BASE  0xFC080000u
 #define AR_PIT_STRIDE 0x00004000u
+#define AR_UART8_BASE 0xEC070000u
 
 #define AR_PIT_PCSR_EN   0x0001
 #define AR_PIT_PCSR_RLD  0x0002
@@ -57,6 +64,8 @@ struct ARCoreState {
     M68kCPU *cpu;
     ARIntcState intc[3];
     ARPitState pit[4];
+    DeviceState *uart8;
+    qemu_irq uart8_irq;
 };
 
 static ARCoreState *ar_core;
@@ -106,6 +115,13 @@ static void ar_intc_set_irq(ARCoreState *c, unsigned bank,
         s->ipr &= ~(1ULL << source);
     }
     ar_intc_update(c);
+}
+
+static void ar_external_irq(void *opaque, int n, int level)
+{
+    ARCoreState *c = opaque;
+    unsigned line = (unsigned)n;
+    ar_intc_set_irq(c, line / 64, line % 64, level != 0);
 }
 
 static uint64_t ar_intc_read(void *opaque, hwaddr addr, unsigned size)
@@ -320,6 +336,31 @@ static const MemoryRegionOps ar_pit_ops = {
     .valid.max_access_size = 2,
 };
 
+static void ar_uart8_boot_enable(void)
+{
+    uint8_t cmd;
+
+    /* MAIN assumes UART8 was already enabled by the preceding boot stage.
+     * Recreate only that inherited state when launching a raw MAIN image. */
+    cmd = 0x01; /* receiver enable */
+    physical_memory_write(AR_UART8_BASE + 0x08, &cmd, sizeof(cmd));
+    cmd = 0x04; /* transmitter enable */
+    physical_memory_write(AR_UART8_BASE + 0x08, &cmd, sizeof(cmd));
+}
+
+static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
+{
+    MemoryRegion *mr;
+
+    /* UART8 is INTC1 source 26 on the MCF5441x. Use serial0 as its external
+     * panel transport so -serial unix:... can connect the desktop bridge. */
+    c->uart8_irq = qemu_allocate_irq(ar_external_irq, c, 64 + 26);
+    c->uart8 = mcf_uart_create(c->uart8_irq, serial_hd(0));
+    mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(c->uart8), 0);
+    memory_region_add_subregion_overlap(sysmem, AR_UART8_BASE, mr, 20);
+    ar_uart8_boot_enable();
+}
+
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu)
 {
     static const hwaddr intc_base[3] = {
@@ -352,4 +393,6 @@ void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu)
                                             AR_PIT0_BASE + i * AR_PIT_STRIDE,
                                             &s->iomem, 10);
     }
+
+    ar_uart8_init(sysmem, ar_core);
 }
