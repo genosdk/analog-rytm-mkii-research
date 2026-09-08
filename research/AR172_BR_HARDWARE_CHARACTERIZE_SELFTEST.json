@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "stimulus_count": 4,
+  "synthetic_model": {
+    "bits": 6,
+    "mode": "truncate_zero",
+    "gain": 0.8,
+    "dc": 0.010000000000000007,
+    "mse": 2.4504394181256517e-35
+  },
+  "br_command_endpoints": [
+    "0xB31407FF",
+    "0xB31807FF"
+  ],
+  "meaning": "The analyzer recovers a synthetic 6-bit truncate-to-zero transfer function exactly and validates the reconstructed stock BR command endpoints. This is a software self-test only; the hardware-side AR MKII quantization law remains unmeasured until a physical capture is supplied."
+}
