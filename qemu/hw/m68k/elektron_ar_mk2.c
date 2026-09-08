@@ -23,6 +23,7 @@
 #include "system/system.h"
 #include "system/address-spaces.h"
 #include "system/memory.h"
+#include "system/physmem.h"
 #include "qemu/timer.h"
 
 #define AR_MAIN_LOAD_ADDR    0x40000400u
@@ -263,11 +264,11 @@ static void ar_export_framebuffer(void *opaque)
         return;
     }
 
-    cpu_physical_memory_read(AR_FB_PTR_GLOBAL, pbuf, sizeof(pbuf));
+    physical_memory_read(AR_FB_PTR_GLOBAL, pbuf, sizeof(pbuf));
     ptr = ldl_be_p(pbuf);
     if (ptr >= AR_SDRAM_BASE &&
         (uint64_t)ptr + AR_FB_BYTES <= AR_SDRAM_BASE + AR_DEFAULT_RAM_SIZE) {
-        cpu_physical_memory_read(ptr, frame, sizeof(frame));
+        physical_memory_read(ptr, frame, sizeof(frame));
         if (!g_file_set_contents(s->frame_out, (const char *)frame,
                                  sizeof(frame), NULL)) {
             qemu_log_mask(LOG_GUEST_ERROR,
