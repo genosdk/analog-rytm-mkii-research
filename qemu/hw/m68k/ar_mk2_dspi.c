@@ -160,7 +160,7 @@ static void ar_mk2_dspi_init(MemoryRegion *sysmem)
     for (i = 0; i < 2; i++) {
         ARDspiState *s = &ar_dspi[i];
         s->index = i;
-        memory_region_init_io(&s->iomem, NULL, &ar_dspi_ops, s,
+        memory_region_init_io(&s->iomem, OBJECT(current_machine), &ar_dspi_ops, s,
                               i ? "ar-mk2-dspi1" : "ar-mk2-dspi0",
                               AR_DSPI_SIZE);
         memory_region_add_subregion_overlap(sysmem, bases[i], &s->iomem, 40);
