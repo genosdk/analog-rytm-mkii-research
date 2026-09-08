@@ -3,15 +3,14 @@
 
 Research-only host component. This script contains no Elektron firmware bytes.
 
-Current proven mappings:
+Proven OS 1.72 mappings:
 - UART identity query 70 00 -> reply 70 07 05 05 00
 - button packet 0x2n + bitmap, where n is an 8-button group
 - group 3 bits 0..7 -> Trig 1..8
 - group 2 bits 0..7 -> Trig 9..16
+- group 5 bits 2..7 -> TRIG/SYN/SMP/FLTR/AMP/LFO pages
+- group 5 bit 0 -> YES; group 4 bit 0 -> NO
 - encoder packet 0x3n + signed 8-bit delta, indices 0..8
-
-The existing ar_panel_gui.py writes JSONL records. This bridge tails that file and
-sends only mappings that have been established from the OS 1.72 parser.
 """
 from __future__ import annotations
 
@@ -26,6 +25,16 @@ import time
 IDENTITY_QUERY = b"\x70\x00"
 IDENTITY_REPLY = bytes.fromhex("70 07 05 05 00")
 ENCODERS = {name: i for i, name in enumerate("ABCDEFGHI")}
+BUTTONS = {
+    "NO": (4, 0),
+    "YES": (5, 0),
+    "TRIG": (5, 2),
+    "SYN": (5, 3),
+    "SMP": (5, 4),
+    "FLTR": (5, 5),
+    "AMP": (5, 6),
+    "LFO": (5, 7),
+}
 
 
 class PanelLink:
@@ -34,7 +43,7 @@ class PanelLink:
         self.lock = threading.Lock()
         self.rx = bytearray()
         self.identity_replied = False
-        self.button_groups = {2: 0, 3: 0}
+        self.button_groups = {2: 0, 3: 0, 4: 0, 5: 0}
 
     def send(self, data: bytes, label: str = "host -> firmware") -> None:
         with self.lock:
@@ -58,6 +67,19 @@ class PanelLink:
                 self.send(IDENTITY_REPLY, "panel identity -> firmware")
                 self.identity_replied = True
 
+    def set_group_bit(self, group: int, bit: int, pressed: bool) -> None:
+        value = self.button_groups.get(group, 0)
+        mask = 1 << bit
+        value = (value | mask) if pressed else (value & ~mask)
+        self.button_groups[group] = value
+        self.send(bytes((0x20 | group, value)))
+
+    def set_button(self, name: str, pressed: bool) -> None:
+        mapping = BUTTONS.get(name.upper())
+        if mapping is None:
+            return
+        self.set_group_bit(*mapping, pressed)
+
     def set_trig(self, trig: int, pressed: bool) -> None:
         if not 1 <= trig <= 16:
             return
@@ -65,11 +87,7 @@ class PanelLink:
             group, bit = 3, trig - 1
         else:
             group, bit = 2, trig - 9
-        value = self.button_groups[group]
-        mask = 1 << bit
-        value = (value | mask) if pressed else (value & ~mask)
-        self.button_groups[group] = value
-        self.send(bytes((0x20 | group, value)))
+        self.set_group_bit(group, bit, pressed)
 
     def tap_trig(self, trig: int, dwell: float = 0.035) -> None:
         self.set_trig(trig, True)
@@ -116,6 +134,13 @@ def follow_events(path: Path, link: PanelLink, start_at_end: bool) -> None:
             name = str(event.get("name", ""))
             value = event.get("value")
 
+            if kind == "button":
+                if value in (1, True, "down", "press"):
+                    link.set_button(name, True)
+                elif value in (0, False, "up", "release"):
+                    link.set_button(name, False)
+                continue
+
             if kind == "trig":
                 try:
                     trig = int(name)
@@ -137,8 +162,6 @@ def follow_events(path: Path, link: PanelLink, start_at_end: bool) -> None:
                 link.encoder(name, delta)
                 continue
 
-            # Other front-panel buttons remain intentionally unmapped until
-            # their group/bit positions are established from firmware/hardware.
             print(f"unmapped panel event: {event}", flush=True)
 
 
