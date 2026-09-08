@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_EDMA_UI_GATE",
+  "recorded_at_utc": "2026-09-08",
+  "status": "PASS_BIDIRECTIONAL_EDMA_VISIBLE_UI_PENDING",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "implementation": {
+    "commit": "294b2642221e039e33b1e64083cc27440e2786dd",
+    "commit_url": "https://github.com/genosdk/analog-rytm-mkii-research/commit/294b2642221e039e33b1e64083cc27440e2786dd",
+    "summary": "Minimal MCF54418 eDMA overlay, UART8 request pump, channel 34/35 completion IRQs, and 256 MiB guest RAM",
+    "files": [
+      "qemu/hw/m68k/ar_mk2_intc_pit.c",
+      "qemu/hw/m68k/elektron_ar_mk2.c",
+      "desktop/launch_emulator.py",
+      "qemu/run_desktop_emulator.py"
+    ]
+  },
+  "builds": {
+    "linux": {
+      "workflow_run": 34188018591,
+      "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34188018591",
+      "conclusion": "success",
+      "artifact_id": 10041252096,
+      "qemu_system_m68k_sha256": "d67b7ee6ddb4050f30503fdbdd35793824ab4e60ef268375da17ecc3085a31cd"
+    },
+    "macos": {
+      "workflow_run": 34188018645,
+      "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34188018645",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "runner": "macos-15-intel",
+          "architecture": "x86_64",
+          "conclusion": "success"
+        },
+        {
+          "runner": "macos-15",
+          "architecture": "arm64",
+          "conclusion": "success"
+        }
+      ]
+    }
+  },
+  "firmware_fixture": {
+    "name": "Analog Rytm MKII OS 1.72 MAIN",
+    "repository_contains_binary": false,
+    "decompressed_main_bytes": 2903032,
+    "decompressed_main_sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "panel_identity_request": "62 00 f1 62 00 70 00",
+    "panel_identity_reply": "70 07 05 05 00"
+  },
+  "observed_tcds": {
+    "channel_34_uart8_rx": {
+      "saddr": "0xec07000c",
+      "daddr": "0x4b80a000",
+      "nbytes": 1,
+      "soff": 0,
+      "doff": 1,
+      "source_modulo_bytes": 0,
+      "destination_modulo_bytes": 1024,
+      "citer": 1,
+      "biter": 1,
+      "csr": "0x0002",
+      "completion_irq": "INTC1 source 26"
+    },
+    "channel_35_uart8_tx": {
+      "saddr": "0x4b80b000",
+      "daddr": "0xec07000c",
+      "nbytes": 1,
+      "soff": 1,
+      "doff": 0,
+      "source_modulo_bytes": 4096,
+      "destination_modulo_bytes": 0,
+      "citer": 1,
+      "biter": 1,
+      "csr": "0x000a",
+      "completion_irq": "INTC1 source 27"
+    }
+  },
+  "boot_result": {
+    "duration_seconds": 8,
+    "firmware_panel_initialization": "full stream",
+    "channel_35_major_completions": 6724,
+    "framebuffer_bytes": 1024,
+    "framebuffer_nonzero_bytes": 773,
+    "framebuffer_sha256": "2c737d38a08af9188a30829b28258a2088db6a9a7db43ac2cc74136859ba1f4e",
+    "previous_gate_nonzero_bytes": 111,
+    "interpretation": "UART8 TX through eDMA channel 35 unlocks the normal full panel initialization path."
+  },
+  "interactive_ab_test": {
+    "control": {
+      "input_after_identity": null,
+      "channel_34_major_completions": 0,
+      "channel_35_major_completions": 6724,
+      "firmware_tx_bytes": 16565,
+      "firmware_tx_sha256": "9709f8a0fea077d56aca4c28a33a62fb88f236d4d1988135635130d86fe096b9"
+    },
+    "trig_1": {
+      "native_press_packet": "23 01",
+      "native_release_packet": "23 00",
+      "channel_34_major_completions": 4,
+      "channel_34_destination_after_release": "0x4b80a004",
+      "channel_35_major_completions": 6730,
+      "firmware_tx_bytes": 16565,
+      "firmware_tx_sha256": "160d37cf91120d8fb027463ded64d7905522b0670f21d9d45cb998ebb7b1a7ac"
+    },
+    "outbound_delta": {
+      "first_difference_offset": 2676,
+      "observation": "The Trig 1 run emits panel command b7 ff at offset 2676; the control emits the same command at offset 2760. Remaining bytes realign after that command.",
+      "persistent_framebuffer_changed": false
+    },
+    "conclusion": "UART8 RX packets are transferred byte-for-byte by eDMA channel 34 and perturb firmware-driven panel output. A persistent visible control response is not yet proven."
+  },
+  "next_gate": {
+    "name": "AR172_QEMU_PANEL_EVENT_DISPATCH_GATE",
+    "objective": "Trace the channel 34 completion ISR into the OS 1.72 button parser and prove one native control event produces a deterministic UI-state or framebuffer delta.",
+    "preferred_probe": "Use a control whose parser path causes a persistent screen transition, or instrument the established dispatcher boundary without modifying firmware bytes.",
+    "blocker_after_that": "Continue the next unmodeled peripheral encountered by the normal UI path."
+  },
+  "railway": {
+    "touched_for_this_gate": false,
+    "reason": "The QEMU desktop emulator is built and validated with GitHub Actions artifacts; Railway deployment is not part of this gate."
+  }
+}
