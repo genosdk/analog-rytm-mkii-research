@@ -48,6 +48,13 @@ STOCK_CALL = bytes.fromhex("4eb94010a2e0")
 PATCHED_CALL = bytes.fromhex("4eb9402b4800")
 BYPASS_BODY = bytes.fromhex("4ef94010a2e0")
 SAMPLE_RATE = 48_000
+MIX_CONTROL_BASE = 0x8000F7F8
+MIX_CONTROL_RECORD_STRIDE = 0x54
+PHYSICAL_VOICE_RECORD_ORDER = (0, 4, 1, 5, 8, 6, 10, 2)
+MIX_SOURCE_BASE = 0x41310C20
+MIX_SOURCE_STRIDE = 8
+MIX_CONTROL_FIXTURE = 0x7FFF
+MIX_SOURCE_FIXTURE = 0x7FFF7FFF
 
 
 def memory_bytes(bus, start: int, end: int) -> bytes:
@@ -68,6 +75,64 @@ def tag_voice_slab(bus) -> None:
         for sample in range(SAMPLES_PER_BLOCK):
             value = 0x10000000 | (voice << 16) | sample
             bus.write(VOICE_BASE + voice * VOICE_BYTES + sample * 4, 4, value)
+
+
+def initialize_signal_bearing_final_mix(bus) -> dict:
+    """Seed the two runtime inputs used by the stock final-mix coefficient builder.
+
+    The compact boot model has no project/storage loader, so both tables remain
+    zero after boot.  These values are a controlled emulator fixture, not claimed
+    stock defaults.  All coefficient construction and downstream mixing remains
+    unmodified OS 1.72 machine code.
+    """
+    control_addresses = []
+    for record in PHYSICAL_VOICE_RECORD_ORDER:
+        for offset in (0, 2):
+            address = MIX_CONTROL_BASE + record * MIX_CONTROL_RECORD_STRIDE + offset
+            bus.write(address, 2, MIX_CONTROL_FIXTURE)
+            control_addresses.append(address)
+
+    source_addresses = []
+    for slot in range(VOICE_COUNT):
+        address = MIX_SOURCE_BASE + slot * MIX_SOURCE_STRIDE
+        bus.write(address, 4, MIX_SOURCE_FIXTURE)
+        source_addresses.append(address)
+
+    return {
+        "classification": "synthetic nonzero runtime fixture; not a claimed stock preset or hardware default",
+        "physical_voice_record_order": list(PHYSICAL_VOICE_RECORD_ORDER),
+        "control_words": {
+            "addresses": [f"0x{address:08X}" for address in control_addresses],
+            "value": f"0x{MIX_CONTROL_FIXTURE:04X}",
+        },
+        "packed_source_words": {
+            "addresses": [f"0x{address:08X}" for address in source_addresses],
+            "value": f"0x{MIX_SOURCE_FIXTURE:08X}",
+        },
+        "execution_boundary": "fixture values only; coefficient construction, mixing, packing, and TCD42 programming execute stock instructions",
+    }
+
+
+def attach_final_mix_input_trace(bus) -> tuple[list[dict], object]:
+    control_addresses = {
+        MIX_CONTROL_BASE + record * MIX_CONTROL_RECORD_STRIDE + offset
+        for record in PHYSICAL_VOICE_RECORD_ORDER
+        for offset in (0, 2)
+    }
+    source_addresses = {
+        MIX_SOURCE_BASE + slot * MIX_SOURCE_STRIDE for slot in range(VOICE_COUNT)
+    }
+    reads: list[dict] = []
+    raw_read = bus.read
+
+    def traced_read(address: int, size: int) -> int:
+        value = raw_read(address, size)
+        if address in control_addresses or address in source_addresses:
+            reads.append({"address": address, "size": size, "value": value})
+        return value
+
+    bus.read = traced_read
+    return reads, raw_read
 
 
 def execute_renderer_call_site(cpu) -> int:
@@ -121,11 +186,49 @@ def run_case(module, main_path: Path, patched: bool) -> dict:
     frame = memory_bytes(bus, FRAME_BASE, FRAME_END)
     bridge_steps = execute_call(cpu, VOICE_BRIDGE, (CONTROL_BLOCK,))
     converter_steps = execute_call(cpu, CONTROL_CONVERTER, (CONTROL_BLOCK,))
+    final_mix_fixture = initialize_signal_bearing_final_mix(bus)
     bus.write(OUTPUT_POINTER_GLOBAL, 4, SYNTHETIC_OUTPUT)
     bus.write(module.AUDIO_DMA_TCD30_CSR, 2, module.AUDIO_DMA_POLLED_BIT)
-    handoff_steps = execute_call(cpu, HANDOFF, (FRAME_BASE,))
+    final_mix_reads, raw_read = attach_final_mix_input_trace(bus)
+    try:
+        handoff_steps = execute_call(cpu, HANDOFF, (FRAME_BASE,))
+    finally:
+        bus.read = raw_read
+
+    expected_control_addresses = {
+        MIX_CONTROL_BASE + record * MIX_CONTROL_RECORD_STRIDE + offset
+        for record in PHYSICAL_VOICE_RECORD_ORDER
+        for offset in (0, 2)
+    }
+    expected_source_addresses = {
+        MIX_SOURCE_BASE + slot * MIX_SOURCE_STRIDE for slot in range(VOICE_COUNT)
+    }
+    observed_control_reads = [
+        event for event in final_mix_reads if event["address"] in expected_control_addresses
+    ]
+    observed_source_reads = [
+        event for event in final_mix_reads if event["address"] in expected_source_addresses
+    ]
+    if len(observed_control_reads) != 16 or {
+        event["address"] for event in observed_control_reads
+    } != expected_control_addresses:
+        raise ValueError("stock handoff did not read every synthetic control word exactly once")
+    if len(observed_source_reads) != 16 or {
+        event["address"] for event in observed_source_reads
+    } != expected_source_addresses:
+        raise ValueError(
+            "stock handoff did not read every synthetic packed source word twice: "
+            f"{observed_source_reads}"
+        )
     fixed_stage = memory_bytes(bus, FIXED_STAGE, FIXED_STAGE_END)
     output_block = memory_bytes(bus, SYNTHETIC_OUTPUT, OUTPUT_BLOCK_END)
+    nonzero_bytes = {
+        "renderer_frame_slab": sum(value != 0 for value in frame),
+        "fixed_stage": sum(value != 0 for value in fixed_stage),
+        "outbound_dma_block": sum(value != 0 for value in output_block),
+    }
+    if not all(nonzero_bytes.values()):
+        raise ValueError(f"signal-bearing final-mix fixture produced a zero boundary: {nonzero_bytes}")
 
     return {
         "patched": patched,
@@ -150,10 +253,14 @@ def run_case(module, main_path: Path, patched: bool) -> dict:
             "fixed_stage": digest(fixed_stage),
             "outbound_dma_block": digest(output_block),
         },
-        "nonzero_bytes": {
-            "renderer_frame_slab": sum(value != 0 for value in frame),
-            "fixed_stage": sum(value != 0 for value in fixed_stage),
-            "outbound_dma_block": sum(value != 0 for value in output_block),
+        "nonzero_bytes": nonzero_bytes,
+        "final_mix_fixture": final_mix_fixture,
+        "final_mix_input_reads": {
+            "control_word_reads": len(observed_control_reads),
+            "packed_source_word_reads": len(observed_source_reads),
+            "control_words_each_read_once": True,
+            "packed_source_words_each_read_twice": True,
+            "all_expected_fixture_reads_matched": True,
         },
         "tcd42": tcd_snapshot(bus, TCD42_BASE),
     }
@@ -182,6 +289,10 @@ def trace(main_path: Path, emulator_path: Path) -> dict:
         raise ValueError("disabled bypass changed downstream audio buffers")
     if baseline["tcd42"] != bypass["tcd42"]:
         raise ValueError("disabled bypass changed outbound DMA programming")
+    if baseline["final_mix_fixture"] != bypass["final_mix_fixture"]:
+        raise ValueError("baseline and bypass final-mix fixtures differ")
+    if baseline["final_mix_input_reads"] != bypass["final_mix_input_reads"]:
+        raise ValueError("baseline and bypass final-mix input reads differ")
 
     overhead = (
         bypass["instructions"]["renderer_call_site"]
@@ -218,11 +329,13 @@ def trace(main_path: Path, emulator_path: Path) -> dict:
             "hashes": baseline["hashes"],
             "nonzero_bytes": baseline["nonzero_bytes"],
             "signal_coverage": (
-                "The renderer-frame comparison is nonzero and signal-bearing. "
-                "The compact model leaves final mixer coefficients uninitialized, "
-                "so fixed-stage and outbound-block equality is structural zero-state evidence."
+                "Renderer frame, fixed stage, and outbound DMA block are all nonzero and "
+                "bit-identical. The final-mix inputs are a documented synthetic runtime "
+                "fixture because the compact model has no project/storage loader."
             ),
         },
+        "final_mix_initialization": baseline["final_mix_fixture"],
+        "stock_final_mix_input_reads": baseline["final_mix_input_reads"],
         "instruction_measurement": {
             "baseline": baseline["instructions"],
             "disabled_bypass": bypass["instructions"],
@@ -245,7 +358,7 @@ def trace(main_path: Path, emulator_path: Path) -> dict:
         },
         "gate_status": {
             "semantic_hook": "PASS",
-            "disabled_bit_identity": "PASS through the nonzero renderer frame under emulation",
+            "disabled_bit_identity": "PASS through the nonzero outbound DMA block under emulation",
             "cycle_safe": "OPEN; one extra semantic instruction is measured, but total hardware timing margin is not",
         },
         "safety": "In-memory emulation only; no modified MAIN or SysEx file was written or flashed.",

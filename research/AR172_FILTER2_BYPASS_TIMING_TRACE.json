@@ -25,15 +25,70 @@
     "hashes": {
       "post_br_voice_slab": "6c8b9f5e6a81f0af725f254721f60839d8446f5567aca5adb24978d57ff9df6b",
       "renderer_frame_slab": "91bff6c06a263bf886608b6bb42368d71fd56073e800693ea80c3973223f66ee",
-      "fixed_stage": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
-      "outbound_dma_block": "5341e6b2646979a70e57653007a1f310169421ec9bdd9f1a5648f75ade005af1"
+      "fixed_stage": "6fb0aa0f34f631011e65947ffb51648d30a2e22fb6309fb25f77352ab9d86d09",
+      "outbound_dma_block": "086086ab51dc0a430800083b7b7f7b5b256e0ac64c87ca4fdea5c13f97ab2ea8"
     },
     "nonzero_bytes": {
       "renderer_frame_slab": 759,
-      "fixed_stage": 0,
-      "outbound_dma_block": 0
+      "fixed_stage": 160,
+      "outbound_dma_block": 80
     },
-    "signal_coverage": "The renderer-frame comparison is nonzero and signal-bearing. The compact model leaves final mixer coefficients uninitialized, so fixed-stage and outbound-block equality is structural zero-state evidence."
+    "signal_coverage": "Renderer frame, fixed stage, and outbound DMA block are all nonzero and bit-identical. The final-mix inputs are a documented synthetic runtime fixture because the compact model has no project/storage loader."
+  },
+  "final_mix_initialization": {
+    "classification": "synthetic nonzero runtime fixture; not a claimed stock preset or hardware default",
+    "physical_voice_record_order": [
+      0,
+      4,
+      1,
+      5,
+      8,
+      6,
+      10,
+      2
+    ],
+    "control_words": {
+      "addresses": [
+        "0x8000F7F8",
+        "0x8000F7FA",
+        "0x8000F948",
+        "0x8000F94A",
+        "0x8000F84C",
+        "0x8000F84E",
+        "0x8000F99C",
+        "0x8000F99E",
+        "0x8000FA98",
+        "0x8000FA9A",
+        "0x8000F9F0",
+        "0x8000F9F2",
+        "0x8000FB40",
+        "0x8000FB42",
+        "0x8000F8A0",
+        "0x8000F8A2"
+      ],
+      "value": "0x7FFF"
+    },
+    "packed_source_words": {
+      "addresses": [
+        "0x41310C20",
+        "0x41310C28",
+        "0x41310C30",
+        "0x41310C38",
+        "0x41310C40",
+        "0x41310C48",
+        "0x41310C50",
+        "0x41310C58"
+      ],
+      "value": "0x7FFF7FFF"
+    },
+    "execution_boundary": "fixture values only; coefficient construction, mixing, packing, and TCD42 programming execute stock instructions"
+  },
+  "stock_final_mix_input_reads": {
+    "control_word_reads": 16,
+    "packed_source_word_reads": 16,
+    "control_words_each_read_once": true,
+    "packed_source_words_each_read_twice": true,
+    "all_expected_fixture_reads_matched": true
   },
   "instruction_measurement": {
     "baseline": {
@@ -41,16 +96,16 @@
       "renderer_call_site": 3228,
       "voice_bridge": 780,
       "control_converter": 1139,
-      "handoff": 18718,
-      "traced_component_total": 40974
+      "handoff": 18715,
+      "traced_component_total": 40971
     },
     "disabled_bypass": {
       "pre_render": 17109,
       "renderer_call_site": 3229,
       "voice_bridge": 780,
       "control_converter": 1139,
-      "handoff": 18718,
-      "traced_component_total": 40975
+      "handoff": 18715,
+      "traced_component_total": 40972
     },
     "added_semantic_instructions_per_32_frame_block": 1,
     "limitation": "MiniColdFire counts semantic instructions, not hardware cycles or SDRAM/cache stalls."
@@ -60,8 +115,8 @@
     "frames_per_block": 32,
     "blocks_per_second": 1500.0,
     "block_deadline_microseconds": 666.6666666666666,
-    "traced_stock_component_instructions": 40974,
-    "minimum_semantic_mips_for_traced_components_at_one_instruction_per_cycle": 61.461,
+    "traced_stock_component_instructions": 40971,
+    "minimum_semantic_mips_for_traced_components_at_one_instruction_per_cycle": 61.4565,
     "coverage": "lower bound; scheduler glue and untraced callback work are not included",
     "mcf54418_family_ceiling_mhz": 250,
     "family_clock_source": "https://www.nxp.com/part/MCF54418CMJ250",
@@ -69,7 +124,7 @@
   },
   "gate_status": {
     "semantic_hook": "PASS",
-    "disabled_bit_identity": "PASS through the nonzero renderer frame under emulation",
+    "disabled_bit_identity": "PASS through the nonzero outbound DMA block under emulation",
     "cycle_safe": "OPEN; one extra semantic instruction is measured, but total hardware timing margin is not"
   },
   "safety": "In-memory emulation only; no modified MAIN or SysEx file was written or flashed."

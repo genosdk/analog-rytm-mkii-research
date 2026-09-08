@@ -100,19 +100,21 @@ New state must use a versioned extension or verified-unused storage; existing
    block, and programs eDMA channel 42 from SRAM to `0x4B400000`. TCD30 is
    separately proven input-side (`0x4B7FFFF0` to SRAM), not the DAC handoff.
 5. **Partial:** the 48-kHz, 32-frame geometry gives a 666.667-microsecond block
-   deadline. Traced stock components total 40,974 semantic instructions, or a
-   61.461-MIPS one-instruction-per-cycle lower bound. Exact ColdFire cycles,
+   deadline. Traced stock components total 40,971 semantic instructions under
+   the nonzero fixture, or a 61.4565-MIPS one-instruction-per-cycle lower bound.
+   Exact ColdFire cycles,
    cache/SDRAM stalls, untraced scheduler work, saturation behavior, and the
    board clock remain open.
-6. **Complete through the nonzero renderer frame under emulation:** an
+6. **Complete through a nonzero outbound DMA block under emulation:** an
    in-memory-only patch changes the `JSR 0x4010A2E0` at `0x4011CAE2` to
    `JSR 0x402B4800`; that unreferenced zero-filled cave tail-jumps to the stock
    renderer. Renderer return state, the tagged post-BR slab, and the 759-nonzero-
-   byte renderer frame are bit-identical. The fixed stage and outbound block are
-   also identical, but zero because the compact model does not initialize final
-   mixer coefficients, so those comparisons are structural rather than audible
-   proof. The detour costs exactly one semantic instruction per block and emits
-   no modified firmware artifact.
+   byte renderer frame are bit-identical. A documented synthetic runtime fixture
+   supplies the two zeroed coefficient-builder inputs that a loaded project would
+   normally provide; stock instructions then produce a 160-nonzero-byte fixed
+   stage and 80-nonzero-byte outbound block, both bit-identical. The fixture is
+   not claimed as a stock preset or hardware default. The detour costs exactly
+   one semantic instruction per block and emits no modified firmware artifact.
 7. Insert a single 2-pole low-pass instance on one voice.
 8. Expand to eight simultaneous physical voices and sweep worst-case resonance.
 9. Add modes, modulation, drive and optional 4-pole cascade.
@@ -189,10 +191,11 @@ The post-BR sample boundary is now traced through outbound eDMA. The preferred
 Filter 2 hook is `0x800067F8..0x80006BF7`, after the stock quantizer and before
 renderer `0x4010A2E0`, because all eight physical voices remain separated into
 32-longword blocks there. The disabled bypass is now exact through a nonzero
-renderer frame and its emulated overhead is one semantic instruction per block.
-The next gate is full-callback cycle-counter or hardware timing measurement plus
-a nonzero final-mix/outbound trace. Semantic placement and disabled behavior are
-proven; hardware cycle safety is not. In parallel, LFO2 should reuse the proven
+outbound DMA block and its emulated overhead is one semantic instruction per
+block. The next gate is full-callback cycle-counter or hardware timing measurement
+plus project-loaded validation of the synthetic final-mix fixture. Semantic
+placement and disabled behavior are proven; hardware cycle safety is not. In
+parallel, LFO2 should reuse the proven
 destination equation and update machinery via shadow state; the stock 42-word
 record remains frozen until persistence and SysEx compatibility are mapped.
 

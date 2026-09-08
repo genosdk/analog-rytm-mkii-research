@@ -80,5 +80,7 @@ instruction-executed. The last clean voice-separated boundary is the
 renderer `0x4010A2E0`. This is the preferred semantic Filter 2 hook. The active
 in-memory bypass detour at call site `0x4011CAE2` is now bit-identical through a
 nonzero renderer frame and adds exactly one semantic instruction per 32-frame
-block. The active target is full callback/hardware timing and a signal-bearing
-final-mix trace; front-panel BR mapping and physical behavior remain unverified.
+block. A documented synthetic runtime fixture now drives nonzero data through
+the stock fixed stage and outbound DMA block, which also remain bit-identical.
+The active target is full callback/hardware timing; front-panel BR mapping and
+physical behavior remain unverified.

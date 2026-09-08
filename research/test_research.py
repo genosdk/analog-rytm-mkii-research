@@ -234,6 +234,15 @@ class Filter2BypassTimingTraceTests(unittest.TestCase):
         self.assertTrue(result["exact_bypass"]["renderer_return_state_identical"])
         self.assertTrue(result["exact_bypass"]["renderer_frame_slab_identical"])
         self.assertGreater(result["exact_bypass"]["nonzero_bytes"]["renderer_frame_slab"], 0)
+        self.assertGreater(result["exact_bypass"]["nonzero_bytes"]["fixed_stage"], 0)
+        self.assertGreater(result["exact_bypass"]["nonzero_bytes"]["outbound_dma_block"], 0)
+        self.assertEqual(
+            result["final_mix_initialization"]["physical_voice_record_order"],
+            [0, 4, 1, 5, 8, 6, 10, 2],
+        )
+        self.assertTrue(
+            result["stock_final_mix_input_reads"]["all_expected_fixture_reads_matched"]
+        )
         self.assertEqual(
             result["instruction_measurement"]["added_semantic_instructions_per_32_frame_block"],
             1,

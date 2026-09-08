@@ -66,9 +66,11 @@ therefore the preferred semantic Filter 2 insertion point. Cycle margin, exact
 control-frame-to-terminal-BR provenance, and physical hardware behavior remain open.
 An in-memory-only candidate replaces the renderer call at `0x4011CAE2` with a call
 to unused space at `0x402B4800`; the cave tail-jumps to the stock renderer. It
-preserves the tagged post-BR slab, renderer return state, and nonzero renderer frame
-exactly. The detour adds one semantic instruction per 32-frame block; it does not
-establish real cycle margin.
+preserves the tagged post-BR slab, renderer return state, nonzero renderer frame,
+fixed stage, and nonzero outbound DMA block exactly. The final-mix inputs are a
+documented synthetic fixture because the compact model has no project loader. The
+detour adds one semantic instruction per 32-frame block; it does not establish real
+cycle margin.
 
 ## Audio scheduling
 
@@ -84,7 +86,7 @@ establish real cycle margin.
   remains hardware-unverified.
 - The stream default and block geometry imply 1,500 32-frame blocks per second,
   or a 666.667-microsecond block deadline at 48 kHz. The traced stock components
-  execute 40,974 semantic instructions per block, a 61.461-MIPS lower bound if
+  execute 40,971 semantic instructions per block, a 61.4565-MIPS lower bound if
   each counted instruction took one cycle. Scheduler glue, cache/SDRAM stalls,
   and untraced callback work are excluded.
 
@@ -112,9 +114,10 @@ The stock 42-word record stays frozen until persistence and SysEx compatibility 
 
 Filter 2 belongs at the proven voice-separated post-BR boundary, before renderer
 `0x4010A2E0`. The reference model is a topology-preserving state-variable filter;
-the disabled bypass is exact through the signal-bearing renderer frame. Full
-callback timing, board clock confirmation, and a nonzero final-mix trace remain
-required before enabling it.
+the disabled bypass is exact through a signal-bearing outbound DMA block under a
+documented synthetic runtime fixture. Full callback timing, board clock
+confirmation, and project-loaded runtime validation remain required before
+enabling it.
 
 ## Safety boundary
 
