@@ -8,7 +8,7 @@ on:
       - 'qemu/**'
 
 concurrency:
-  group: package-ar-mk2-macos-final-${{ github.ref }}
+  group: package-ar-mk2-macos-final2-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -95,21 +95,44 @@ jobs:
         run: |
           APP='research/dist/AR MKII Emulator.app'
           QEMU="$APP/Contents/MacOS/qemu-system-m68k"
+
+          # PyInstaller seals the app when it creates it. Remove only the outer
+          # resource envelope before adding our QEMU payload; nested PyInstaller
+          # code signatures remain intact and will be preserved by final sealing.
+          rm -rf "$APP/Contents/_CodeSignature"
+
           cp qemu-src/build/qemu-system-m68k "$QEMU"
           chmod +x "$QEMU"
-          mkdir -p "$APP/Contents/Frameworks"
+
+          # Keep QEMU's Homebrew dependencies outside PyInstaller's managed
+          # Contents/Frameworks tree. This prevents alias/symlink collisions and
+          # makes the added nested code explicit for signing.
+          mkdir -p "$APP/Contents/QEMULibs"
           dylibbundler \
             -od \
             -b \
             -x "$QEMU" \
-            -d "$APP/Contents/Frameworks/" \
-            -p '@executable_path/../Frameworks/'
+            -d "$APP/Contents/QEMULibs/" \
+            -p '@executable_path/../QEMULibs/'
           otool -L "$QEMU"
 
       - name: Sign and verify app
         run: |
           APP='research/dist/AR MKII Emulator.app'
+          QEMU="$APP/Contents/MacOS/qemu-system-m68k"
+
           xattr -cr "$APP" || true
+          rm -rf "$APP/Contents/_CodeSignature"
+
+          # Sign only the code we added. Do not traverse PyInstaller's MacOS/
+          # _internal alias tree; its nested binaries were already signed by
+          # PyInstaller and remain untouched.
+          while IFS= read -r -d '' f; do
+            codesign --force --timestamp=none --sign - "$f"
+          done < <(find "$APP/Contents/QEMULibs" -maxdepth 1 -type f -print0)
+          codesign --force --timestamp=none --sign - "$QEMU"
+
+          # Recreate the outer resource seal after every added resource exists.
           codesign --force --deep --timestamp=none --sign - "$APP"
           codesign --verify --deep --strict --verbose=4 "$APP"
 
