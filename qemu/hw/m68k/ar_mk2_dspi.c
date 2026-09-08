@@ -9,7 +9,12 @@
  */
 
 #include "qemu/osdep.h"
+#include "qemu/module.h"
+#include "qemu/notify.h"
+#include "hw/core/boards.h"
 #include "system/memory.h"
+#include "system/system.h"
+#include "qom/object.h"
 
 #define AR_DSPI0_BASE 0xFC05C000u
 #define AR_DSPI1_BASE 0xFC03C000u
@@ -143,11 +148,14 @@ static const MemoryRegionOps ar_dspi_ops = {
     .valid.max_access_size = 4,
 };
 
-void ar_mk2_dspi_init(MemoryRegion *sysmem)
+static void ar_mk2_dspi_init(MemoryRegion *sysmem)
 {
     static const hwaddr bases[2] = { AR_DSPI0_BASE, AR_DSPI1_BASE };
     unsigned i;
 
+    if (ar_dspi) {
+        return;
+    }
     ar_dspi = g_new0(ARDspiState, 2);
     for (i = 0; i < 2; i++) {
         ARDspiState *s = &ar_dspi[i];
@@ -155,6 +163,31 @@ void ar_mk2_dspi_init(MemoryRegion *sysmem)
         memory_region_init_io(&s->iomem, NULL, &ar_dspi_ops, s,
                               i ? "ar-mk2-dspi1" : "ar-mk2-dspi0",
                               AR_DSPI_SIZE);
-        memory_region_add_subregion_overlap(sysmem, bases[i], &s->iomem, 20);
+        memory_region_add_subregion_overlap(sysmem, bases[i], &s->iomem, 40);
     }
 }
+
+static void ar_dspi_machine_done(Notifier *notifier, void *opaque)
+{
+    const char *type;
+
+    if (!current_machine) {
+        return;
+    }
+    type = object_get_typename(OBJECT(current_machine));
+    if (!type || !strstr(type, "elektron-ar-mk2")) {
+        return;
+    }
+    ar_mk2_dspi_init(get_system_memory());
+}
+
+static Notifier ar_dspi_machine_done_notifier = {
+    .notify = ar_dspi_machine_done,
+};
+
+static void ar_dspi_register(void)
+{
+    qemu_add_machine_init_done_notifier(&ar_dspi_machine_done_notifier);
+}
+
+type_init(ar_dspi_register)
