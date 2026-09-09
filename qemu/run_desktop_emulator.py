@@ -133,6 +133,14 @@ def main() -> None:
             "firmware's real missing-calibration path (research/hardware-validation mode)"
         ),
     )
+    ap.add_argument(
+        "--no-mock-factory-state",
+        action="store_true",
+        help=(
+            "disable emulator-only empty factory metadata/eMMC state and expose "
+            "the firmware's physical-storage startup path"
+        ),
+    )
     ap.add_argument("--self-test", action="store_true",
                     help="verify the bundled QEMU backend and exit")
     args = ap.parse_args()
@@ -177,6 +185,12 @@ def main() -> None:
         # calibration record through the emulated SPI NOR. Raw/research mode
         # can disable this explicitly; the firmware image itself is unchanged.
         env["AR_MK2_MOCK_CALIBRATION"] = "1"
+    if args.no_mock_factory_state:
+        env.pop("AR_MK2_MOCK_FACTORY_STATE", None)
+    else:
+        # Supply only non-proprietary metadata and volatile storage. The empty
+        # manifest intentionally advances to the real NO FACTORY SAMPLES gate.
+        env["AR_MK2_MOCK_FACTORY_STATE"] = "1"
 
     qemu_cmd = [
         str(qemu),

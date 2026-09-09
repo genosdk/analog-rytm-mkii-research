@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_PROJECT_SAMPLE_ACTIVATION_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "IN_PROGRESS_FACTORY_METADATA_PASS_SAMPLE_ACTIVATION_BLOCKED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "live_negative_control": {
+    "esdhc_ready_global_0x41901B08": 0,
+    "esdhc_block_count_global_0x41901B2C": 0,
+    "esdhc_block_size_global_0x41901B30": 0,
+    "magj_validator_result": 0,
+    "sm_validator_result": -1,
+    "drive_error_global_0x405AFDF0": 10,
+    "method": "QEMU GDB trace at OS 1.72 startup decision 0x400A0E68"
+  },
+  "storage_boundaries": {
+    "media_probe": {
+      "function": "0x4008EA1C",
+      "input_register": "0xEC09401A",
+      "set_register": "0xEC09401B",
+      "clear_register": "0xEC094027",
+      "effect": "The opt-in factory-state profile models the board-level loopback and permits eSDHC initialization."
+    },
+    "block_reader": {
+      "function": "0x4008F4BA",
+      "transport": "eSDHC plus eDMA channel 59",
+      "ready_global": "0x41901B08",
+      "block_count_global": "0x41901B2C",
+      "block_size_global": "0x41901B30"
+    },
+    "factory_manifest": {
+      "validator": "0x400FCFCC",
+      "transport": "+Drive/eSDHC",
+      "logical_block_address": "0x00180000",
+      "read_bytes": "0x4000",
+      "magic": "MaGj",
+      "record_count_offset": "0x10",
+      "entry_bytes": 12,
+      "checksum_residue": "0xDEBB20E3"
+    },
+    "sample_verification": {
+      "validator": "0x4012AED0",
+      "transport": "DSPI0 SPI NOR",
+      "address": "0x00380000",
+      "read_bytes": "0x4C",
+      "magic_offset": "0x10",
+      "magic": "SM",
+      "version_offset": "0x12",
+      "startup_expected_version": 2
+    }
+  },
+  "implemented_checkpoint": {
+    "environment_gate": "AR_MK2_MOCK_FACTORY_STATE=1",
+    "bytes_supplied": {
+      "record_0x10": "53 4D",
+      "record_0x12": "00 02"
+    },
+    "scope": "Emulator-only opt-in SPI-NOR metadata; disabled by default.",
+    "explicitly_absent": [
+      "factory sample",
+      "project assignment",
+      "sample descriptor",
+      "PCM payload"
+    ],
+    "runtime_positive_control": {
+      "validator_return": 2,
+      "record_bytes_0x10_0x13": "53 4D 00 02",
+      "result": "PASS_THROUGH_STOCK_VALIDATOR"
+    }
+  },
+  "sample_voice_activation": {
+    "result": "BLOCKED",
+    "reason": "The GPIO/eSDHC transport, default COKI state, empty MaGj manifest, and SM metadata all validate. Activation remains blocked because no factory sample or project sample slot is assigned."
+  },
+  "factory_state_esdhc_checkpoint": {
+    "environment_gate": "AR_MK2_MOCK_FACTORY_STATE=1",
+    "initializer_result": 0,
+    "ready_global_0x41901B08": 1,
+    "logical_block_count_0x41901B2C": "0x00400000",
+    "address_multiplier_0x41901B30": 1,
+    "read_transfer_result": 0,
+    "edma_channel": 59,
+    "edma_interrupt": {
+      "bank": 2,
+      "source": 0,
+      "vector": 192
+    },
+    "esdhc_interrupt": {
+      "bank": 2,
+      "source": 31,
+      "vector": 223
+    },
+    "write_erase_policy": "CMD24/CMD25/CMD35/CMD36/CMD38 use sparse RAM-only backing that is discarded at exit",
+    "synthetic_records": {
+      "COKI_primary_logical_block": "0x0007A000",
+      "ekFS_logical_block": "0x001C0000",
+      "MaGj_logical_block": "0x00180000",
+      "MaGj_record_count": 0
+    },
+    "runtime_positive_control": {
+      "magj_validator_result": 1,
+      "sm_validator_result": 2,
+      "drive_error_global_0x405AFDF0": 0,
+      "panel": "NO FACTORY SAMPLES",
+      "framebuffer_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109"
+    },
+    "result": "PASS_FACTORY_METADATA_EMPTY_MANIFEST_EXPECTED"
+  },
+  "next_step": {
+    "name": "AR172_QEMU_PROJECT_SAMPLE_SLOT_GATE",
+    "objective": "Trace the smallest non-proprietary project sample-slot assignment and RAM descriptor path while keeping the manifest empty and supplying no factory PCM."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Local compile and runtime proof first; reserve one hosted Linux run for a completed code gate."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Firmware bytes and proprietary storage contents were not modified, embedded, or committed."
+}

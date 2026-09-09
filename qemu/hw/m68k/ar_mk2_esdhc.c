@@ -41,9 +41,11 @@
 #define AR_PRSSTAT_DAT0        (1u << 24)
 #define AR_PRSSTAT_BWEN        (1u << 10)
 #define AR_PRSSTAT_BREN        (1u << 11)
+#define AR_PRSSTAT_DLSL0       (1u << 3)
 
 #define AR_SECTOR_SIZE         512u
 #define AR_EMMC_SECTORS        0x00400000u /* 2 GiB */
+#define AR_COKI_PRIMARY_SECTOR 0x0007A000u
 #define AR_MAJG_SECTOR         0x00180000u
 #define AR_EKFS_SECTOR         0x001C0000u
 
@@ -52,6 +54,11 @@
 #define AR_CMD_TUNING_READ     14u
 #define AR_CMD_READ_MULTIPLE   18u
 #define AR_CMD_TUNING_WRITE    19u
+#define AR_CMD_WRITE_SINGLE    24u
+#define AR_CMD_WRITE_MULTIPLE  25u
+#define AR_CMD_ERASE_START     35u
+#define AR_CMD_ERASE_END       36u
+#define AR_CMD_ERASE           38u
 #define AR_XFERTYP_DPSEL       (1u << 21)
 
 #define AR_STREAM_MAX          65536u
@@ -72,9 +79,37 @@ typedef struct AREsdhcState {
     size_t stream_len;
     size_t stream_pos;
     uint32_t pio_latch;
+    GHashTable *media;
+    uint32_t erase_start;
+    uint32_t erase_end;
+    bool storage_write;
 } AREsdhcState;
 
 static AREsdhcState *ar_esdhc;
+
+/* Captured from the stock firmware's own default-record constructor. */
+static const uint8_t ar_coki_default[0x74] = {
+    [0x00] = 'C', [0x01] = 'O', [0x02] = 'K', [0x03] = 'I',
+    [0x04] = 0x35, [0x05] = 0xb6, [0x06] = 0x2a, [0x07] = 0x6d,
+    [0x0b] = 0x0c, [0x0f] = 0x64,
+    [0x1c] = 'A', [0x1d] = 'n', [0x1e] = 'a', [0x1f] = 'l',
+    [0x20] = 'o', [0x21] = 'g', [0x22] = ' ', [0x23] = 'R',
+    [0x24] = 'y', [0x25] = 't', [0x26] = 'm',
+    [0x3f] = 0x01,
+    [0x48] = 0x13, [0x49] = 0x88,
+    [0x4c] = 0x13, [0x4d] = 0x88,
+    [0x50] = 0x13, [0x51] = 0x88,
+    [0x56] = 0x13, [0x57] = 0x88,
+    [0x5a] = 0x13, [0x5b] = 0x88,
+    [0x5e] = 0x13, [0x5f] = 0x88,
+    [0x60] = 0x20, [0x61] = 0x21,
+    [0x62] = 0xff, [0x63] = 0xff, [0x64] = 0xff,
+    [0x65] = 0xff, [0x66] = 0xff, [0x67] = 0xff,
+    [0x68] = 0xa0, [0x69] = 0xa1,
+    [0x6a] = 0xff, [0x6b] = 0xff, [0x6c] = 0xff,
+    [0x6d] = 0xff, [0x6e] = 0xff, [0x6f] = 0xff,
+    [0x70] = 0x10, [0x71] = 0x10,
+};
 
 static void ar_store_be32(uint8_t *p, uint32_t v)
 {
@@ -112,9 +147,23 @@ static void ar_esdhc_update_irq(AREsdhcState *s)
     ar_esdhc_set_irq((s->irqstat & s->irqsigen) != 0);
 }
 
-static void ar_virtual_sector(uint32_t sector, uint8_t out[AR_SECTOR_SIZE])
+static void ar_virtual_sector(AREsdhcState *s, uint32_t sector,
+                              uint8_t out[AR_SECTOR_SIZE])
 {
+    const uint8_t *stored = g_hash_table_lookup(
+        s->media, GUINT_TO_POINTER((guint)sector + 1));
+
+    if (stored) {
+        memcpy(out, stored, AR_SECTOR_SIZE);
+        return;
+    }
+
     memset(out, 0, AR_SECTOR_SIZE);
+
+    if (sector == AR_COKI_PRIMARY_SECTOR) {
+        memcpy(out, ar_coki_default, sizeof(ar_coki_default));
+        return;
+    }
 
     if (sector == AR_EKFS_SECTOR) {
         memcpy(out, "ekFS", 4);
@@ -161,10 +210,54 @@ static void ar_prepare_storage_read(AREsdhcState *s)
     blocks = MIN(blocks, (uint32_t)(AR_STREAM_MAX / AR_SECTOR_SIZE));
     memset(s->stream, 0, AR_STREAM_MAX);
     for (i = 0; i < blocks; i++) {
-        ar_virtual_sector(sector + i, s->stream + i * AR_SECTOR_SIZE);
+        ar_virtual_sector(s, sector + i, s->stream + i * AR_SECTOR_SIZE);
     }
     s->stream_len = blocks * AR_SECTOR_SIZE;
     s->stream_pos = 0;
+}
+
+static void ar_prepare_storage_write(AREsdhcState *s)
+{
+    uint32_t blocks = (s->blkattr >> 16) & 0xffffu;
+
+    if (!blocks) {
+        blocks = 1;
+    }
+    blocks = MIN(blocks, (uint32_t)(AR_STREAM_MAX / AR_SECTOR_SIZE));
+    memset(s->stream, 0, blocks * AR_SECTOR_SIZE);
+    s->stream_len = blocks * AR_SECTOR_SIZE;
+    s->stream_pos = 0;
+    s->storage_write = true;
+}
+
+static void ar_commit_storage_write(AREsdhcState *s)
+{
+    size_t i;
+
+    for (i = 0; i < s->stream_len / AR_SECTOR_SIZE; i++) {
+        uint8_t *sector = g_memdup2(s->stream + i * AR_SECTOR_SIZE,
+                                   AR_SECTOR_SIZE);
+        g_hash_table_replace(s->media,
+                             GUINT_TO_POINTER((guint)(s->argument + i) + 1),
+                             sector);
+    }
+    s->storage_write = false;
+}
+
+static void ar_erase_storage(AREsdhcState *s)
+{
+    uint32_t sector;
+
+    if (s->erase_end < s->erase_start) {
+        return;
+    }
+    for (sector = s->erase_start; sector <= s->erase_end; sector++) {
+        g_hash_table_remove(s->media,
+                            GUINT_TO_POINTER((guint)sector + 1));
+        if (sector == UINT32_MAX) {
+            break;
+        }
+    }
 }
 
 static void ar_pump_edma59(void)
@@ -202,6 +295,18 @@ static uint32_t ar_stream_read(AREsdhcState *s, unsigned size)
     return v;
 }
 
+static void ar_stream_write(AREsdhcState *s, uint32_t value, unsigned size)
+{
+    unsigned i;
+
+    for (i = 0; i < size; i++) {
+        unsigned shift = 8 * (size - 1 - i);
+        if (s->stream_pos < s->stream_len) {
+            s->stream[s->stream_pos++] = value >> shift;
+        }
+    }
+}
+
 static void ar_command(AREsdhcState *s, uint32_t value)
 {
     unsigned cmd = (value >> 24) & 0x3fu;
@@ -210,6 +315,7 @@ static void ar_command(AREsdhcState *s, uint32_t value)
 
     s->xfertyp = value;
     memset(s->response, 0, sizeof(s->response));
+    s->storage_write = false;
 
     switch (cmd) {
     case AR_CMD_SEND_OP_COND:
@@ -224,8 +330,28 @@ static void ar_command(AREsdhcState *s, uint32_t value)
         ar_prepare_storage_read(s);
         dma_data = true;
         break;
+    case AR_CMD_WRITE_SINGLE:
+    case AR_CMD_WRITE_MULTIPLE:
+        ar_prepare_storage_write(s);
+        ar_pump_edma59();
+        ar_commit_storage_write(s);
+        s->irqstat |= AR_IRQ_TC;
+        break;
+    case AR_CMD_ERASE_START:
+        s->erase_start = s->argument;
+        break;
+    case AR_CMD_ERASE_END:
+        s->erase_end = s->argument;
+        break;
+    case AR_CMD_ERASE:
+        ar_erase_storage(s);
+        break;
     case AR_CMD_TUNING_READ:
-        s->pio_latch = 0x5a;
+        /* The startup self-test writes 0x5a with CMD19, then expects the
+         * paired CMD14 read to return the complemented byte. */
+        s->stream_len = 0;
+        s->stream_pos = 0;
+        s->pio_latch = 0xa5;
         pio_data = true;
         break;
     case AR_CMD_TUNING_WRITE:
@@ -280,7 +406,8 @@ static uint64_t ar_esdhc_read(void *opaque, hwaddr addr, unsigned size)
     case AR_ESDHC_CMDRSP3: return s->response[3];
     case AR_ESDHC_DATPORT: return ar_stream_read(s, size);
     case AR_ESDHC_PRSSTAT:
-        return AR_PRSSTAT_DAT0 | AR_PRSSTAT_BWEN | AR_PRSSTAT_BREN;
+        return AR_PRSSTAT_DAT0 | AR_PRSSTAT_BWEN | AR_PRSSTAT_BREN |
+               AR_PRSSTAT_DLSL0;
     case AR_ESDHC_PROCTL: return s->proctl;
     case AR_ESDHC_SYSCTL: return s->sysctl;
     case AR_ESDHC_IRQSTAT: return s->irqstat;
@@ -299,6 +426,10 @@ static void ar_esdhc_write(void *opaque, hwaddr addr,
     uint32_t v = value;
 
     if (off == AR_ESDHC_DATPORT) {
+        if (s->storage_write) {
+            ar_stream_write(s, v, size);
+            return;
+        }
         s->pio_latch = v;
         return;
     }
@@ -345,6 +476,8 @@ void ar_mk2_esdhc_init(MemoryRegion *sysmem)
     }
 
     ar_esdhc = g_new0(AREsdhcState, 1);
+    ar_esdhc->media = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+                                            NULL, g_free);
     memory_region_init_io(&ar_esdhc->iomem, NULL, &ar_esdhc_ops, ar_esdhc,
                           "ar-mk2-esdhc-mock", AR_ESDHC_SIZE);
     memory_region_add_subregion_overlap(sysmem, AR_ESDHC_BASE,

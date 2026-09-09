@@ -39,6 +39,11 @@
 #define AR_BOOT_STACK        0x47FFFFE0u
 #define AR_FB_PTR_GLOBAL     0x4026F474u
 #define AR_FB_BYTES          0x400u
+#define AR_GPIO_MEDIA_INPUT  0xEC09401Au
+#define AR_GPIO_MEDIA_SET    0xEC09401Bu
+#define AR_GPIO_MEDIA_CLEAR  0xEC094027u
+#define AR_GPIO_MEDIA_SENSE  0x08u
+#define AR_GPIO_MEDIA_DRIVE  0x10u
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu);
 void ar_mk2_dspi_init(MemoryRegion *sysmem);
@@ -129,6 +134,8 @@ typedef struct ARBoardState {
     unsigned frame_candidate_matches;
     bool frame_candidate_valid;
     bool frame_published_valid;
+    bool mock_factory_state;
+    bool media_probe_high;
 } ARBoardState;
 
 static const char *ar_mmio_name(hwaddr absolute)
@@ -198,6 +205,14 @@ static uint64_t ar_default_mmio_read(void *opaque, hwaddr offset, unsigned size,
         value = (value << 8) | ar_sparse_get_byte(s, absolute + i);
     }
 
+    /* The storage probe drives one GPIO and samples its board-level loopback.
+     * Model that wiring only for the explicitly requested synthetic factory
+     * state; the default catch-all remains passive. */
+    if (s->mock_factory_state && absolute == AR_GPIO_MEDIA_INPUT && size == 1) {
+        value = (value & ~AR_GPIO_MEDIA_SENSE) |
+                (s->media_probe_high ? AR_GPIO_MEDIA_SENSE : 0);
+    }
+
     qemu_log_mask(LOG_UNIMP,
                   "AR-MK2 MMIO R pc=%08x addr=%08" HWADDR_PRIx
                   " size=%u value=%08" PRIx64 " module=%s\n",
@@ -217,6 +232,15 @@ static void ar_default_mmio_write(void *opaque, hwaddr offset, uint64_t value,
     for (i = 0; i < size; i++) {
         unsigned shift = 8 * (size - 1 - i);
         ar_sparse_put_byte(s, absolute + i, (uint8_t)(value >> shift));
+    }
+
+    if (s->mock_factory_state && size == 1) {
+        if (absolute == AR_GPIO_MEDIA_SET && (value & AR_GPIO_MEDIA_DRIVE)) {
+            s->media_probe_high = true;
+        } else if (absolute == AR_GPIO_MEDIA_CLEAR &&
+                   !(value & AR_GPIO_MEDIA_DRIVE)) {
+            s->media_probe_high = false;
+        }
     }
 
     qemu_log_mask(LOG_UNIMP,
@@ -350,6 +374,10 @@ static void elektron_ar_mk2_init(MachineState *machine)
     }
 
     s->mmio_bytes = g_hash_table_new(g_direct_hash, g_direct_equal);
+    {
+        const char *mock = g_getenv("AR_MK2_MOCK_FACTORY_STATE");
+        s->mock_factory_state = mock && *mock && strcmp(mock, "0") != 0;
+    }
     {
         const char *out = g_getenv("AR_MK2_FRAMEBUFFER_OUT");
         if (out && *out) {

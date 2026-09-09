@@ -455,7 +455,11 @@ static uint32_t ar_edma_advance(uint32_t address, int16_t offset,
 
 static void ar_edma_set_irq(AREdmaState *s, unsigned channel, bool level)
 {
-    if (channel >= 32 && channel <= 63) {
+    if (channel >= 56 && channel <= 63) {
+        /* MCF5441x groups eDMA56..63 onto INTC2 source 0. OS 1.72 installs
+         * the channel-59 completion ISR at vector 192. */
+        ar_intc_set_irq(s->core, 2, 0, level);
+    } else if (channel >= 32 && channel <= 55) {
         ar_intc_set_irq(s->core, 1, channel - 8, level);
     }
 }
@@ -483,11 +487,11 @@ static void ar_edma_complete(AREdmaState *s, unsigned channel)
 static bool ar_edma_service(AREdmaState *s, unsigned channel)
 {
     uint8_t *tcd;
-    uint8_t buffer[32];
+    g_autofree uint8_t *buffer = NULL;
     uint32_t saddr, daddr, nbytes;
     uint16_t attr, citer, biter;
     int16_t soff, doff;
-    unsigned smod, dmod;
+    unsigned smod, dmod, ssize, dsize, pos;
 
     if (channel >= AR_EDMA_CHANNELS ||
         !(s->erq & (1ULL << channel))) {
@@ -497,9 +501,10 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     tcd = s->tcd[channel];
     citer = lduw_be_p(tcd + AR_EDMA_TCD_CITER) & 0x7fff;
     nbytes = ldl_be_p(tcd + AR_EDMA_TCD_NBYTES) & 0x3fffffff;
-    if (!citer || !nbytes || nbytes > sizeof(buffer)) {
+    if (!citer || !nbytes || nbytes > 65536) {
         return false;
     }
+    buffer = g_malloc(nbytes);
 
     saddr = ldl_be_p(tcd + AR_EDMA_TCD_SADDR);
     daddr = ldl_be_p(tcd + AR_EDMA_TCD_DADDR);
@@ -509,7 +514,18 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     smod = (attr >> 11) & 0x1f;
     dmod = (attr >> 3) & 0x1f;
 
-    physical_memory_read(saddr, buffer, nbytes);
+    /* A fixed peripheral source is a FIFO register, not a linear MMIO byte
+     * window. Respect SSIZE and reread the same address for every element in
+     * the minor loop (notably eSDHC DATPORT -> eDMA59). */
+    ssize = 1u << ((attr >> 8) & 0x7);
+    if (soff == 0 && ssize <= 4 && nbytes > ssize) {
+        for (pos = 0; pos < nbytes; pos += ssize) {
+            physical_memory_read(saddr, buffer + pos,
+                                 MIN(ssize, nbytes - pos));
+        }
+    } else {
+        physical_memory_read(saddr, buffer, nbytes);
+    }
     if (channel == 36 && buffer[0] == AR_TYPE8_RECORD &&
         !s->core->type8_dma_seen) {
         s->core->type8_dma_seen = true;
@@ -520,7 +536,18 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
                       lduw_be_p(tcd + AR_EDMA_TCD_BITER) & 0x7fff,
                       (unsigned)mcf_uart_read(s->core->uart9, 0x14, 1));
     }
-    physical_memory_write(daddr, buffer, nbytes);
+    /* The symmetric memory-to-peripheral case also targets one FIFO
+     * register repeatedly.  A linear 16-byte write would spill across the
+     * eSDHC register window and retain only the first word of each loop. */
+    dsize = 1u << (attr & 0x7);
+    if (doff == 0 && dsize <= 4 && nbytes > dsize) {
+        for (pos = 0; pos < nbytes; pos += dsize) {
+            physical_memory_write(daddr, buffer + pos,
+                                  MIN(dsize, nbytes - pos));
+        }
+    } else {
+        physical_memory_write(daddr, buffer, nbytes);
+    }
     saddr = ar_edma_advance(saddr, soff, smod);
     daddr = ar_edma_advance(daddr, doff, dmod);
     stl_be_p(tcd + AR_EDMA_TCD_SADDR, saddr);

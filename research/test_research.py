@@ -21,6 +21,7 @@ from control_frame_trace import trace as trace_control_frame
 from filter2_bypass_timing_trace import trace as trace_filter2_bypass_timing
 from lfo2_filter2_reference import run_tests
 from runtime_descriptor_probe import probe as probe_runtime_descriptors
+from sample_storage_trace import trace as trace_sample_storage
 
 
 @unittest.skipUnless(
@@ -82,6 +83,26 @@ class FirmwareExtractionTests(unittest.TestCase):
             size, digest = expected[section["id"]]
             self.assertEqual(len(unpacked), size)
             self.assertEqual(hashlib.sha256(unpacked).hexdigest(), digest)
+
+
+@unittest.skipUnless(
+    (HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin").exists(),
+    "extracted proprietary MAIN image not present",
+)
+class SampleStorageTraceTests(unittest.TestCase):
+    def test_independent_manifest_and_verification_gates(self):
+        main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
+        result = trace_sample_storage(main_image)
+        self.assertEqual(result["result"], "PASS")
+        gates = result["storage_gates"]
+        self.assertEqual(gates["factory_manifest"]["magic"], "MaGj")
+        self.assertEqual(gates["factory_manifest"]["storage"], "+Drive/eSDHC")
+        self.assertEqual(gates["sample_verification"]["magic"], "SM")
+        self.assertEqual(gates["sample_verification"]["startup_expected_version"], 2)
+        self.assertNotEqual(
+            gates["factory_manifest"]["storage"],
+            gates["sample_verification"]["storage"],
+        )
 
 
 class ReferenceModelTests(unittest.TestCase):

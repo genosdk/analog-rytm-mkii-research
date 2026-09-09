@@ -68,7 +68,10 @@ Likely early modules:
 - GPIO/pin mux
 - DSPI0/DSPI1
 
-Do not emulate USB, Ethernet, SDHC or the physical OLED until execution proves they are startup blockers.
+USB, Ethernet, and the physical OLED remain outside the current evidence-based
+boundary. The opt-in `AR_MK2_MOCK_FACTORY_STATE=1` profile now models only the
+eSDHC/eMMC behavior proven necessary for stock startup; see
+`qemu/MOCK_STORAGE.md` for its volatile-storage and empty-manifest limits.
 
 ## GUI bridge
 
