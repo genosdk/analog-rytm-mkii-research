@@ -1,0 +1,20 @@
+From: Analog Rytm MKII research
+Subject: [PATCH] target/m68k: reset ColdFire EMAC MASK to all ones
+
+The ColdFire EMAC MASK register resets to 0xffffffff. Leaving it zeroed
+causes every EMAC-with-load effective address to be ANDed down to address
+zero until guest software explicitly writes MASK.
+
+diff --git a/target/m68k/cpu.c b/target/m68k/cpu.c
+--- a/target/m68k/cpu.c
++++ b/target/m68k/cpu.c
+@@ -110,6 +110,9 @@ static void m68k_cpu_reset_hold(Object *obj, ResetType type)
+     }
+
+     memset(env, 0, offsetof(CPUM68KState, end_reset_fields));
++    if (m68k_feature(env, M68K_FEATURE_CF_EMAC)) {
++        env->mac_mask = 0xffffffff;
++    }
+ #ifdef CONFIG_USER_ONLY
+     cpu_m68k_set_sr(env, 0);
+ #else

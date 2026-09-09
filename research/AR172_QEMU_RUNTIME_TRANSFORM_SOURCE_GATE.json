@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_RUNTIME_TRANSFORM_SOURCE_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_EMAC_MASK_RESET_AND_SOURCE_ALIGNMENT_RESOLVED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "coldfire_emac_mask": {
+    "register": "MASK",
+    "hardware_reset_value": "0xFFFFFFFF",
+    "hardware_operation": "Each EMAC-with-load operand address is ANDed with MASK.",
+    "reference": "NXP MCF5441x Reference Manual, Enhanced Multiply-Accumulate Unit, MASK register",
+    "reference_url": "https://www.nxp.com/docs/en/reference-manual/MCF54418RM.pdf",
+    "qemu_before": "m68k_cpu_reset_hold zeroed env.mac_mask with the reset-field memset.",
+    "observed_before": {
+      "postincrement_address_register": "0x00000004",
+      "target_iteration_output_d1": "0x00000000",
+      "effect": "The EMAC load address was masked to address zero."
+    },
+    "fix": "For CPUs with M68K_FEATURE_CF_EMAC, set env.mac_mask to 0xFFFFFFFF immediately after the reset-field memset.",
+    "patch": "qemu/patches/0001-m68k-reset-coldfire-emac-mask.patch",
+    "observed_after": {
+      "postincrement_address_register": "0x8000E5DC",
+      "target_iteration_output_d1": "0x1F0A0000",
+      "effect": "The source walk remains in the firmware control bank and produces nonzero transform output."
+    }
+  },
+  "exact_pipeline_trace": {
+    "transform_loop": "0x4011C56E..0x4011C594",
+    "seed_store": "0x4011C576 MOVE.L D1,(A5)+",
+    "sample_slot_control_word": {
+      "address": "0x8000E5D6",
+      "value": "0x0200",
+      "containing_long": {
+        "address": "0x8000E5D4",
+        "value": "0x40000200"
+      },
+      "associated_seed_long": "0x8000F7C8",
+      "observed_seed_output": "0x1F0A0000"
+    },
+    "runtime_voice_long": {
+      "address": "0x8000F7CC",
+      "sample_slot_byte": "0x8000F7CE",
+      "actual_source_long": {
+        "address": "0x8000E5D8",
+        "value": "0x00000000"
+      },
+      "observed_output": "0x1F0A0000",
+      "observed_sample_slot_byte": "0x00"
+    },
+    "correction": "The earlier two-words-per-iteration lane estimate was off by one 32-bit pipeline stage. Control word 0x8000E5D6 feeds seed long 0x8000F7C8, while runtime voice long 0x8000F7CC is derived from source long 0x8000E5D8."
+  },
+  "smoothing_hypothesis": {
+    "result": "RULED_OUT_FOR_THIS_BYTE",
+    "experiment": "After the first native call, replayed the unmodified 0x4011C542..0x4011C71E transform body 31 additional times in QEMU while retaining live SRAM state.",
+    "frames": 32,
+    "sampled_frames": {
+      "1": "0x00",
+      "2": "0x00",
+      "16": "0x00",
+      "32": "0x00"
+    },
+    "note": "All 32 observed frames were 0x00.",
+    "limit": "Repeated-body execution is a trace-only causal experiment, not a claim about physical interrupt cadence."
+  },
+  "conclusion": "The ColdFire EMAC reset defect is fixed and the transform source map is exact. The remaining zero is not settling latency: the sample-slot setter writes 0x8000E5D6, but runtime byte 0x8000F7CE is sourced from the next control long beginning at 0x8000E5D8.",
+  "next_step": {
+    "name": "AR172_QEMU_SAMPLE_CONTROL_ALIGNMENT_GATE",
+    "objective": "Trace why mapped parameter 19 lands at 0x8000E5D6 while the voice record consumes the lane derived from 0x8000E5D8; distinguish a bridge-index interpretation error from missing project/factory layout initialization."
+  },
+  "downstream_input_milestone": {
+    "name": "QWERTY_PAD_TRIGGERING",
+    "plan": "Map desktop key-down and key-up events onto the already validated panel press/release frame path after the native sample voice reaches the consumer gate."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Firmware bytes, extracted MAIN data, project data, factory sample names, descriptor slabs, and proprietary PCM were not embedded, modified, or committed. All GDB intervention and raw SRAM snapshots remained scratch-only."
+}

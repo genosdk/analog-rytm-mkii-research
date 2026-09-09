@@ -15,9 +15,16 @@ From a QEMU source checkout:
 ```bash
 cp elektron_ar_mk2.c /path/to/qemu/hw/m68k/
 cd /path/to/qemu
+# Restore the ColdFire EMAC MASK hardware reset value.
+patch -p1 < /path/to/0001-m68k-reset-coldfire-emac-mask.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
+
+The EMAC patch is required for this machine. The MCF5441x MASK register resets
+to `0xFFFF_FFFF`; QEMU otherwise zero-initializes it, causing EMAC-with-load
+instructions to mask valid SRAM operands down to address zero. The pinned build
+workflows apply the patch automatically.
 
 ## Configure
 
