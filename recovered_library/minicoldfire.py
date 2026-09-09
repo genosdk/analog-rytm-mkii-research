@@ -616,7 +616,7 @@ class CPU:
         elif (op&0xFFC0)==0xAD00:
             ea=self.ea((op>>3)&7,op&7,4,self.pc); self.pc+=ea.ext_bytes; self.mac_mask=(ea.read()|0xffff0000)&0xffffffff; desc='TO_MASK'
         elif (op&0xF100)==0xA000:
-            ext=self.fetchw(); acc=((op>>7)&1)|((ext>>3)&2); dual=bool((op&0x30) and (ext&3))
+            ext=self.fetchw(); acc=((op>>7)&1)|((ext>>3)&2); dual=bool(not (op&0x30) and (ext&3))
             if op&0x30:
                 # Capture multiply operands before an addressing-mode writeback.
                 rx=((self.a if ext&0x8000 else self.d)[(ext>>12)&7])&0xffffffff

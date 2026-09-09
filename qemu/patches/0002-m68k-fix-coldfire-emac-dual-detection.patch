@@ -1,0 +1,21 @@
+From: Analog Rytm MKII research
+Subject: [PATCH] target/m68k: do not decode MAC-with-load as dual accumulate
+
+EMAC_B dual-accumulation instructions use the no-load opcode form.  The
+existing condition instead selects load-form MAC instructions whenever the
+low extension bits are nonzero, then applies an unintended second
+accumulation.
+
+diff --git a/target/m68k/translate.c b/target/m68k/translate.c
+--- a/target/m68k/translate.c
++++ b/target/m68k/translate.c
+@@ -5437,7 +5437,7 @@ DISAS_INSN(mac)
+ 
+     ext = read_im16(env, s);
+ 
+     acc = ((insn >> 7) & 1) | ((ext >> 3) & 2);
+-    dual = ((insn & 0x30) != 0 && (ext & 3) != 0);
++    dual = ((insn & 0x30) == 0 && (ext & 3) != 0);
+     if (dual && !m68k_feature(s->env, M68K_FEATURE_CF_EMAC_B)) {
+         disas_undef(env, s, insn);
+         return;

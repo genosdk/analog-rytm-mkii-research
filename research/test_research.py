@@ -45,14 +45,95 @@ class FpgaIobGeometryTests(unittest.TestCase):
         )
         self.assertEqual(report["result"], "PASS_P28_P31_QUARTET_REJECTED")
         self.assertEqual(report["p28_p31_hypothesis"]["status"], "REJECTED")
-        for pin in (28, 29, 30, 31):
-            self.assertEqual(
-                report["p28_p31_hypothesis"]["routes"][str(pin)][
-                    "configured_first_hop_consumers"
-                ],
-                [],
+        self.assertEqual(
+            report["p28_p31_hypothesis"]["routes"]["28"][
+                "configured_first_hop_consumers"
+            ][0]["destination"],
+            "OMUX[12]",
+        )
+        self.assertEqual(report["p29_sin_output_path"]["ioi_mux_o"]["selected"], "O1")
+        self.assertEqual(
+            report["dedicated_clock_routes"]["selected_package_clock_inputs"],
+            ["S:CELL[4].OUT_CLKPAD[0]"],
+        )
+
+    def test_dspi_deep_trace_assigns_ingress_trio(self):
+        report = json.loads(
+            (HERE / "AR172_FPGA_DSPI_DEEP_TRACE.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(report["result"], "PASS_DSPI_INGRESS_PIN_TRIO_IDENTIFIED")
+        self.assertEqual(
+            report["assignment"],
+            {
+                "PCS0": "P39 / IOB_S11_2",
+                "SCK": "P43 / IOB_S13_0 / GCLK0",
+                "SOUT": "P51 / IOB_S24_0",
+            },
+        )
+        self.assertEqual(
+            report["evidence"]["P43_SCK"]["bufg_input_mux"]["selected"],
+            "CELL[4].OUT_CLKPAD[0]",
+        )
+        self.assertEqual(
+            report["evidence"]["P51_SOUT"]["terminal_consumer"],
+            "X23Y8 SLICE[1].BY via IMUX_FAN_BY[1]",
+        )
+
+    def test_dspi1_br_receive_is_drain_only(self):
+        report = json.loads(
+            (HERE / "AR172_DSPI1_TX_ONLY_TRACE.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(report["result"], "PASS_DSPI1_BR_TRANSPORT_TX_ONLY_IN_SOFTWARE")
+        self.assertEqual(report["transmit_path"]["edma_channel"], 15)
+        self.assertEqual(report["transmit_path"]["destination"], "0xFC03C034")
+        self.assertEqual(report["receive_reads"]["literal_reference_count"], 8)
+        self.assertEqual(
+            [row["words"] for row in report["receive_reads"]["drain_idioms"]],
+            [4, 3, 16],
+        )
+
+    def test_dspi1_wire_mode_and_fpga_receiver_clock(self):
+        wire = json.loads(
+            (HERE / "AR172_DSPI1_WIRE_MODE_TRACE.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(wire["result"], "PASS_DSPI1_BR_WIRE_MODE_IDENTIFIED")
+        self.assertEqual(
+            wire["wire_mode"],
+            {
+                "word_bits": 16,
+                "spi_mode": 3,
+                "clock_idle": "high",
+                "data_change_edge": "falling",
+                "data_sample_edge": "rising",
+                "bit_order": "MSB-first",
+                "sck": "internal bus clock / 8",
+            },
+        )
+        receiver = json.loads(
+            (HERE / "AR172_FPGA_DSPI_RECEIVER_CLOCK_TRACE.json").read_text(
+                encoding="utf-8"
             )
-        self.assertEqual(report["p29_sin_output_path"]["ioi_mux_o"]["selected"], "NONE")
+        )
+        self.assertEqual(
+            receiver["result"],
+            "PASS_DSPI_RECEIVER_CLOCK_AND_FIRST_REGISTERS_IDENTIFIED",
+        )
+        self.assertEqual(receiver["p43_sck"]["bufg0_s_value"], 0)
+        self.assertEqual(
+            receiver["p43_sck"]["output"],
+            "BUFGMUX[0].O -> GCLK_S[0] -> fabric GCLK[0]",
+        )
+        self.assertEqual(
+            receiver["p39_pcs0_gated_registers"]["count_routed_ff_outputs"], 11
+        )
+        self.assertEqual(
+            receiver["p51_sout_first_register"]["registered_output"],
+            "YQ -> OMUX[9]",
+        )
+        self.assertEqual(
+            receiver["rejected_p46_locality_candidate"]["clock"]["selected"],
+            "GCLK[6]",
+        )
 
 
 @unittest.skipUnless(
@@ -65,12 +146,16 @@ class FpgaIobInventoryTests(unittest.TestCase):
         result = inventory_fpga_iobs(image)
         self.assertEqual(result["result"], "PASS")
         self.assertEqual(result["summary"]["bonded_user_pins"], 68)
-        self.assertEqual(result["summary"]["directions"]["input"], 15)
-        self.assertEqual(result["summary"]["directions"]["bidirectional"], 2)
-        self.assertEqual(result["summary"]["directions"]["output"], 8)
+        self.assertEqual(result["summary"]["directions"]["input"], 5)
+        self.assertEqual(result["summary"]["directions"]["input-only"], 2)
+        self.assertEqual(result["summary"]["directions"]["bidirectional"], 1)
+        self.assertEqual(result["summary"]["directions"]["output"], 45)
         top = result["dspi_candidate_clusters"][0]
-        self.assertEqual(top["package_pins"], [28, 29, 30, 31])
-        self.assertEqual(top["sin_output"], "P29 / IOB_S3_1")
+        self.assertEqual(top["package_pins"], [39, 43, 46])
+        self.assertEqual(top["clock_capable_inputs"], ["GCLK0"])
+        self.assertEqual(
+            result["resolved_dspi_ingress"]["SOUT"], "P51 / IOB_S24_0"
+        )
 
 
 @unittest.skipUnless(
@@ -428,6 +513,26 @@ class MiniColdFirePeripheralTests(unittest.TestCase):
         self.assertEqual(cpu.step(), "EMAC")
         self.assertEqual(cpu.step(), "FROM_MAC ACC0")
         self.assertEqual(cpu.d[2], 0xE0000000)  # -0.25 in Q1.31
+
+    def test_emac_with_load_is_not_dual_accumulate(self):
+        module = self.load_emulator()
+        bus = module.Bus()
+        cpu = module.CPU(bus)
+        # MAC.W D7.U,D0.L,4(A2),D0,ACC1. The low extension bits encode D7;
+        # a load-form MAC is not one of EMAC_B's dual-accumulation opcodes.
+        bus.write(module.ENTRY, 2, 0xA02A)
+        bus.write(module.ENTRY + 2, 2, 0x0047)
+        bus.write(module.ENTRY + 4, 2, 0x0004)
+        cpu.macsr = 0x40  # signed integer mode
+        cpu.d[0] = 2
+        cpu.d[7] = 3 << 16
+        cpu.a[2] = module.SRAM_BASE + 0x100
+        bus.write(cpu.a[2] + 4, 4, 0x12345678)
+        self.assertEqual(cpu.step(), "EMAC")
+        self.assertEqual(cpu.macc[1], 6)
+        self.assertEqual(cpu.d[0], 0x12345678)
+        self.assertEqual(cpu.macc[0], 0)
+
 
     def test_ext_register_encoding_overrides_movem(self):
         module = self.load_emulator()

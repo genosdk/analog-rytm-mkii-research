@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_EMAC_LOW_LANE_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_QEMU_DUAL_DECODE_DEFECT_FIXED_BLOCKED_PACKED_TRANSFORM",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "defect": {
+    "qemu_location": "target/m68k/translate.c DISAS_INSN(mac)",
+    "before": "dual = ((insn & 0x30) != 0 && (ext & 3) != 0)",
+    "after": "dual = ((insn & 0x30) == 0 && (ext & 3) != 0)",
+    "reason": "EMAC_B dual-accumulation operations are no-load MAAAC/MASAC/MSAAC/MSSAC instructions. MAC-with-load has one destination accumulator.",
+    "reference": "NXP ColdFire Family Programmer's Reference Manual, Rev. 3, Chapter 6",
+    "reference_url": "https://www.nxp.com/docs/en/reference-manual/CFPRM.pdf",
+    "patch": "qemu/patches/0002-m68k-fix-coldfire-emac-dual-detection.patch"
+  },
+  "sample_lane_causal_trace": {
+    "sample_slot_control_word": "0x8000E5D6 = 0x0200",
+    "runtime_sample_byte": "0x8000F7CE",
+    "before_decoder_fix": {
+      "packed_seed_long": "0x1F0A0000",
+      "runtime_sample_byte": "0x00"
+    },
+    "after_decoder_fix": {
+      "packed_seed_long": "0x1F0A01EC",
+      "runtime_sample_byte": "0x01",
+      "interpretation": "The first transform now propagates the low Sample Slot lane instead of canceling it."
+    }
+  },
+  "downstream_write": {
+    "instruction": "0x4011C6D2 MOVE.L D4,(A0)+",
+    "watchpoint_pc": "0x4011C6D4",
+    "packed_transform_begin": "0x4011C69E",
+    "value_written_to_0x8000F7CC": "0x000000F6",
+    "runtime_sample_byte_after_write": "0x00",
+    "conclusion": "The EMAC low lane is repaired. A separate packed-transform stage now owns the final clearing write."
+  },
+  "local_validation": {
+    "qemu_rebuild": "PASS",
+    "native_firmware_trace": "PASS_LOW_LANE_PROPAGATES_TO_0x01_BEFORE_PACKED_STAGE",
+    "minicoldfire_regression": "MAC-with-load accumulates once into ACC1 and loads D0"
+  },
+  "next_step": {
+    "name": "AR172_QEMU_PACKED_SAMPLE_LANE_GATE",
+    "objective": "Trace the 13-by-21 packed transform at 0x4011C69E..0x4011C6E4 and identify which input bit/byte should preserve the Sample Slot field at 0x8000F7CE."
+  },
+  "qwerty_milestone": "Once the native sample consumer passes, map QWERTY key-down/up to the validated panel press/release frames.",
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "No firmware, extracted MAIN, project data, sample names, descriptor slabs, or proprietary PCM are included. Trace-only interventions remain outside the repository."
+}

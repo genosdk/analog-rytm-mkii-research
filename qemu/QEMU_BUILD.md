@@ -17,6 +17,8 @@ cp elektron_ar_mk2.c /path/to/qemu/hw/m68k/
 cd /path/to/qemu
 # Restore the ColdFire EMAC MASK hardware reset value.
 patch -p1 < /path/to/0001-m68k-reset-coldfire-emac-mask.patch
+# Keep load-form MAC instructions single-accumulator operations.
+patch -p1 < /path/to/0002-m68k-fix-coldfire-emac-dual-detection.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -24,7 +26,10 @@ patch -p1 < /path/to/meson.build.patch
 The EMAC patch is required for this machine. The MCF5441x MASK register resets
 to `0xFFFF_FFFF`; QEMU otherwise zero-initializes it, causing EMAC-with-load
 instructions to mask valid SRAM operands down to address zero. The pinned build
-workflows apply the patch automatically.
+workflows apply both required EMAC patches automatically. The second patch
+corrects QEMU's reversed load/no-load test for EMAC_B dual-accumulation
+opcodes; without it, ordinary MAC-with-load instructions can perform an
+unintended second accumulation.
 
 ## Configure
 
