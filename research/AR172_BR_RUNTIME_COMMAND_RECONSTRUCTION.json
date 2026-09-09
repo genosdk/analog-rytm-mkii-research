@@ -1,0 +1,49 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "proven_path": {
+    "track0_br_frame_address": "0x8000F7BE",
+    "frame_read_instruction": "0x4010CC58",
+    "case3_entry": "0x4010D164",
+    "cached_br_read": "0x4010D16E",
+    "packed_command_write": "0x4010D1E8",
+    "packed_command_address": "0x80006544"
+  },
+  "exact_positive_domain_equation": {
+    "input": "b = nonnegative 16-bit renderer BR word, 0x0000..0x7fff",
+    "step_1": "u = (b >> 1) + 0x3fff",
+    "step_2": "scalar = (u * 0x40810204) >> 26",
+    "step_3": "command = 0xB3100000 | (scalar & 0x000fffff)",
+    "note": "The initial arithmetic shift discards bit 0, so adjacent even/odd BR words collapse to one hardware-control value."
+  },
+  "validation": {
+    "known_vectors": 13,
+    "domain_words": 32768,
+    "unique_commands": 16384,
+    "effective_input_resolution_bits": 14,
+    "adjacent_even_odd_pairs_identical": true,
+    "monotonic": true,
+    "command_first": "0xB31407FF",
+    "command_last": "0xB3180FFF"
+  },
+  "selected_vectors": [
+    {"raw_br":"0x0000","command":"0xB31407FF"},
+    {"raw_br":"0x0001","command":"0xB31407FF"},
+    {"raw_br":"0x0002","command":"0xB3140810"},
+    {"raw_br":"0x0003","command":"0xB3140810"},
+    {"raw_br":"0x00FF","command":"0xB3140FFF"},
+    {"raw_br":"0x0100","command":"0xB3141010"},
+    {"raw_br":"0x1234","command":"0xB3149AC5"},
+    {"raw_br":"0x3FFF","command":"0xB3160BF7"},
+    {"raw_br":"0x4000","command":"0xB3160C08"},
+    {"raw_br":"0x6000","command":"0xB3170E0C"},
+    {"raw_br":"0x7E18","command":"0xB31800B1"},
+    {"raw_br":"0x7F00","command":"0xB31807FF"},
+    {"raw_br":"0x7FFF","command":"0xB3180FFF"}
+  ],
+  "interpretation": "This is the CPU-side normalized BR hardware-control encoder. It does not establish the FPGA/audio-engine quantization staircase, rounding rule, or effective audio bit depth.",
+  "safety": "Read-only static reconstruction; no firmware bytes are modified."
+}
