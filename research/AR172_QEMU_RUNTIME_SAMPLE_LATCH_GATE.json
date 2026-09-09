@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_RUNTIME_SAMPLE_LATCH_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_PARAMETER_BRIDGE_BLOCKED_CONTROL_TO_RUNTIME_LATCH",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "stock_parameter_path": {
+    "sample_picker_callback": "0x400CE658",
+    "setter": "0x400A59C4",
+    "setter_object": "0x41AE8428",
+    "setter_vtable": "0x401C7B40",
+    "parameter": "0x29",
+    "requested_value_q8": "0x00000100",
+    "track": 0,
+    "update_callback": "0x400A60AC",
+    "update_result": 0,
+    "final_callback": "0x400A57BE",
+    "final_result": "0x00000100",
+    "provider": "0x41AE73A8",
+    "conclusion": "The stock setter and provider accept sample slot 1; a missing provider is not the blocker."
+  },
+  "audio_parameter_bridge": {
+    "notification_callback": "0x400A673A",
+    "parameter_mapper": "0x40006F48",
+    "mapped_parameter": 19,
+    "bridge": "0x4011ACAE",
+    "linear_index_expression": "track * 42 + mapped_parameter",
+    "linear_index": 19,
+    "control_word_expression": "0x8000E57C + 0x34 + 2 * linear_index",
+    "control_word_address": "0x8000E5D6",
+    "control_word_after_write": "0x0100",
+    "paired_control_address": "0x80005F36",
+    "paired_control_after_write": "0x0000",
+    "displacement_correction": "The 0x4011ACC8 instruction extension contains displacement 0x34; treating objdump's displayed 34 as decimal incorrectly points at 0x8000E5C4."
+  },
+  "audio_isr_transform": {
+    "isr": "0x4011B3AE",
+    "transform_begin": "0x4011C542",
+    "packed_transform_begin": "0x4011C69E",
+    "transform_end": "0x4011C71E",
+    "control_word_at_begin": "0x0100",
+    "control_word_at_packed_transform": "0x0100",
+    "control_word_at_end": "0x0100",
+    "candidate_expanded_lane": "0x8000EF38",
+    "candidate_expanded_lane_value": "0x00000000",
+    "candidate_lane_basis": "The first transform reads two source words per iteration and emits two longs; source word index 45 is the second word of input pair 22. This lane address is an inference, not yet a proven semantic mapping."
+  },
+  "runtime_voice_record": {
+    "track": 0,
+    "stride_bytes": 84,
+    "base_expression_at_0x40117A72": "0x8000F776 + 84 * (track + 1)",
+    "base": "0x8000F7CA",
+    "sample_slot_byte": "0x8000F7CE",
+    "hardware_watchpoint_writes_observed": 0,
+    "first_four_longs_at_sample_branch": [
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000"
+    ],
+    "sample_branch": "0x40117A78",
+    "sample_branch_predicate": "0x00000000",
+    "sample_slot_value": "0x00"
+  },
+  "conclusion": "The UI assignment, stock setter, parameter mapper, and audio control-bank write are complete. The current QEMU environment does not convert or latch that control value into the track-0 runtime voice record before the stock sample branch, so the sample path remains disabled.",
+  "next_step": {
+    "name": "AR172_QEMU_AUDIO_CONTROL_CONVERSION_ENABLE_GATE",
+    "objective": "Identify the stock enable/precondition or missing peripheral state that makes the 0x4011C542 conversion emit and latch audio parameter 19 into the 84-byte per-track runtime record."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Firmware bytes, project data, factory sample names, descriptor slabs, and proprietary PCM were not embedded, modified, or committed. GDB picker intervention, delayed interrupt timing, and trace scripts remained scratch-only."
+}
