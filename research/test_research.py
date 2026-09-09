@@ -2,6 +2,7 @@
 
 import hashlib
 import importlib.util
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -37,6 +38,21 @@ class FpgaIobGeometryTests(unittest.TestCase):
         self.assertEqual(bel_for("E", 29, 1), 6)
         self.assertEqual(bel_for("S", 11, 2), 2)
         self.assertEqual(bel_for("N", 13, 2), 2)
+
+    def test_dspi_first_hop_rejects_locality_quartet(self):
+        report = json.loads(
+            (HERE / "AR172_FPGA_DSPI_FIRST_HOP_TRACE.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(report["result"], "PASS_P28_P31_QUARTET_REJECTED")
+        self.assertEqual(report["p28_p31_hypothesis"]["status"], "REJECTED")
+        for pin in (28, 29, 30, 31):
+            self.assertEqual(
+                report["p28_p31_hypothesis"]["routes"][str(pin)][
+                    "configured_first_hop_consumers"
+                ],
+                [],
+            )
+        self.assertEqual(report["p29_sin_output_path"]["ioi_mux_o"]["selected"], "NONE")
 
 
 @unittest.skipUnless(

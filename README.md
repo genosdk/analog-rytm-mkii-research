@@ -73,9 +73,10 @@ and reproducible tooling.
 - DSPI1 sends 16-bit payloads as `0x8001xxxx` PUSHR entries: `CONT=1`, PCS mask
   `0x01`; the BR/control link is therefore PCS0, SCK, SOUT and SIN.
 - Direct XC3S200A/VQ100 IOB-bit extraction classifies all 68 BOND57 user pins.
-  The strongest package-local 3-input + 1-output quartet is FPGA pins P28-P31:
-  P28/P30/P31 are inputs and P29 is bidirectional/output-enabled. Signal assignment
-  among PCS0/SCK/SOUT remains unproven.
+  A subsequent IOI/INT first-hop decode rejects the earlier P28-P31 locality
+  hypothesis: none has a selected fabric consumer and P29 `MUX_O` is `NONE`.
+  The DSPI package pins remain unresolved pending dedicated-clock and continuing-net
+  tracing.
 - Section ID 2 is the temporary ColdFire bootstrap/updater, not the runtime sample DSP.
 - Section ID 1 is an FPGA configuration stream, not ColdFire code.
 - Renderer combiner `0x4010A2E0` writes 32 frames × 8 lanes and consumes three

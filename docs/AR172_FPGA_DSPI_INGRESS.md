@@ -5,8 +5,7 @@
 The stock XC3S200A/VQ100 image has been decoded at every one of the 68 BOND57
 user pins using Project Combine's exact Spartan-3A IOB configuration coordinates.
 
-The strongest package-local match for DSPI1's required three FPGA inputs plus one
-FPGA output is:
+The initial direction/locality-only ranking placed the following quartet first:
 
 | VQ100 pin | FPGA IOB | Stock mode | DSPI role status |
 |---|---|---|---|
@@ -15,14 +14,16 @@ FPGA output is:
 | P30 | `IOB_S5_0` | input (`CMOS_VCCO`) | PCS0/SCK/SOUT, unassigned |
 | P31 | `IOB_S5_1` | input (`CMOS_VCCO`) | PCS0/SCK/SOUT, unassigned |
 
-These four pins are consecutive package pins and occupy a two-coordinate span on
-the south edge. This is a defensible quartet identification, but it is not yet a
-defensible assignment of PCS0, SCK and SOUT to P28/P30/P31.
+That quartet is now rejected. Configuration-level decoding shows no selected
+`OUT_FAN`/`OUT_SEC` first-hop consumer for P28, P29, P30, or P31 in their stock
+`INT_IOI_S3A_SN` tiles. P29's actual `IOI[1].MUX_O` is `NONE`, so it is not the
+live SIN return through the normal user-I/O path. The earlier `OUTPUT_ENABLE=01`
+observation described an IOB configuration field; treating every nonzero value as
+proof of a live fabric output was too strong.
 
-The best alternative containing a clock-capable input uses P44 as SIN and includes
-P41 (`GCLK7`) and P43 (`GCLK0`). It has a materially wider package span and ranks
-below P28-P31 on physical locality. The generated JSON records that alternative
-separately rather than hiding it below many variants of the leading cluster.
+The other locality-ranked quartets are likewise only heuristics. They are retained
+in the original inventory for reproducibility, but no candidate should now be
+treated as a signal assignment until its configured route is decoded.
 
 ## Extracted inventory
 
@@ -43,6 +44,8 @@ Artifacts:
 - `research/fpga_iob_mode_inventory.py` — reproducible read-only extractor
 - `research/AR172_FPGA_IOB_MODE_INVENTORY.json` — full bit evidence and rankings
 - `research/AR172_FPGA_IOB_MODE_INVENTORY.csv` — compact 68-pin inventory
+- `research/fpga_dspi_net_trace.py` — reproducible IOI/INT first-hop decoder
+- `research/AR172_FPGA_DSPI_FIRST_HOP_TRACE.json` — negative gate rejecting P28-P31
 
 ## Geometry and validation
 
@@ -69,11 +72,9 @@ The coordinates are pinned to Project Combine commit
 
 ## Next gate
 
-Resolve P28/P30/P31 into PCS0, SCK and SOUT by tracing their input routing from the
-IOBs toward the first shared receiver logic. The expected topology is that SCK
-drives clocking/edge-detect resources, PCS0 gates or resets packet framing, and SOUT
-feeds the 16-bit serial shift path. P29 should be traced in the opposite direction
-to the SIN serializer response path. Board continuity testing remains the independent
-hardware confirmation.
+Enumerate the live package-pad nets from configured IOI muxes, including dedicated
+`CLKPAD` paths and fixed/branch routing beyond the local `INT_IOI` tile, then rank
+the remaining three-input/one-output sets by shared receiver/serializer topology.
+Board continuity testing remains the independent hardware confirmation.
 
 This work is read-only. Nothing here is a flashable FPGA or firmware modification.
