@@ -1,11 +1,10 @@
 /*
  * Minimal MCF5441x DSPI0/DSPI1 model for Analog Rytm MKII emulation.
  *
- * DSPI0 also exposes an optional emulator-only SPI NOR calibration profile.
- * It is deliberately disabled unless AR_MK2_MOCK_CALIBRATION is set.  This
- * models persistent factory state for QEMU only; hardware-validation paths
- * must run without the environment variable and therefore see the physical
- * unit's real calibration storage and measurements.
+ * DSPI0 exposes optional emulator-only persistent factory records. Calibration
+ * and factory/sample state are independently gated so hardware-validation
+ * paths can disable every synthetic record and exercise the physical unit's
+ * real measurements/storage unchanged.
  */
 
 #include "qemu/osdep.h"
@@ -22,12 +21,9 @@
 #define AR_DSPI_SR_RXCTR_SHIFT 4
 #define AR_DSPI_SR_RXCTR_MASK  (0xFu << AR_DSPI_SR_RXCTR_SHIFT)
 
-/* MCF DSPI PUSHR control bits used by the firmware. */
 #define AR_DSPI_PUSHR_CONT  (1u << 31)
 #define AR_DSPI_PUSHR_EOQ   (1u << 27)
 #define AR_DSPI_PUSHR_CTCNT (1u << 26)
-
-/* MCR write-one FIFO clear commands. */
 #define AR_DSPI_MCR_CLR_TXF (1u << 11)
 #define AR_DSPI_MCR_CLR_RXF (1u << 10)
 
@@ -47,6 +43,12 @@
 #define AR_CAL_CHECKSUM2_BIAS     0x30E4u
 #define AR_CAL_V5_FLAGS_OFF       0x3DD0u
 #define AR_CAL_V5_FLAGS_COUNT     6u
+
+/* Separate sample-verification record used by 0x4012AED0. */
+#define AR_SAMPLE_VERIFY_ADDR     0x00380000u
+#define AR_SAMPLE_VERIFY_SIZE     0x4Cu
+#define AR_SAMPLE_TAG_OFF         0x10u
+#define AR_SAMPLE_STATUS_OFF      0x12u
 
 void ar_mk2_dtim_init(MemoryRegion *sysmem);
 
@@ -68,6 +70,7 @@ typedef struct ARDspiState {
     unsigned spi_address_bytes;
 
     bool mock_calibration;
+    bool mock_factory_state;
     uint8_t *mock_calibration_record;
 } ARDspiState;
 
@@ -87,7 +90,6 @@ static void ar_put_be32(uint8_t *p, uint32_t value)
     p[3] = value;
 }
 
-/* Exact checksum used by OS 1.72's calibration validator at 0x400F707C. */
 static uint32_t ar_cal_checksum(const uint8_t *data, size_t len)
 {
     uint32_t sum = 0;
@@ -108,25 +110,19 @@ static uint8_t *ar_build_mock_calibration(void)
     ar_put_be32(record + 0x00, AR_CAL_MAGIC);
     ar_put_be32(record + 0x04, AR_CAL_HEADER_SIZE_FIELD);
     ar_put_be32(record + 0x08, AR_CAL_VERSION);
-
-    /* Status 1 is the firmware's normal-current calibration state. */
     ar_put_be16(record + AR_CAL_STATUS_OFF, 1);
 
-    /* OS 1.72's v4->v5 migration initializes these six fields to one. */
     for (i = 0; i < AR_CAL_V5_FLAGS_COUNT; i++) {
         record[AR_CAL_V5_FLAGS_OFF + i] = 1;
     }
 
     ar_put_be32(record + AR_CAL_TOTAL_SIZE_OFF, AR_CAL_RECORD_SIZE);
-
     checksum = ar_cal_checksum(record + AR_CAL_CHECKSUM1_DATA_OFF,
                                AR_CAL_CHECKSUM1_LEN);
     ar_put_be32(record + AR_CAL_CHECKSUM1_OFF, checksum);
-
     checksum = ar_cal_checksum(record + AR_CAL_CHECKSUM2_DATA_OFF,
                                AR_CAL_RECORD_SIZE - AR_CAL_CHECKSUM2_BIAS);
     ar_put_be32(record + AR_CAL_CHECKSUM2_OFF, checksum);
-
     return record;
 }
 
@@ -168,6 +164,23 @@ static uint32_t ar_dspi_pop_rx(ARDspiState *s)
     return value;
 }
 
+static uint8_t ar_sample_verify_byte(uint32_t offset)
+{
+    if (offset == AR_SAMPLE_TAG_OFF) {
+        return 'S';
+    }
+    if (offset == AR_SAMPLE_TAG_OFF + 1) {
+        return 'M';
+    }
+    if (offset == AR_SAMPLE_STATUS_OFF) {
+        return 0;
+    }
+    if (offset == AR_SAMPLE_STATUS_OFF + 1) {
+        return 2; /* firmware's verified/current state */
+    }
+    return 0;
+}
+
 static uint8_t ar_mock_flash_read(const ARDspiState *s, uint32_t address)
 {
     if (s->mock_calibration &&
@@ -176,7 +189,12 @@ static uint8_t ar_mock_flash_read(const ARDspiState *s, uint32_t address)
         return s->mock_calibration_record[address - AR_CAL_PRIMARY_ADDR];
     }
 
-    /* Preserve the pre-profile discovery behavior outside modeled ranges. */
+    if (s->mock_factory_state &&
+        address >= AR_SAMPLE_VERIFY_ADDR &&
+        address < AR_SAMPLE_VERIFY_ADDR + AR_SAMPLE_VERIFY_SIZE) {
+        return ar_sample_verify_byte(address - AR_SAMPLE_VERIFY_ADDR);
+    }
+
     return 0;
 }
 
@@ -190,7 +208,6 @@ static uint8_t ar_dspi_spi_exchange(ARDspiState *s, uint8_t tx)
         return 0;
     }
 
-    /* Standard 0x03 READ, used by the firmware's SPI NOR abstraction. */
     if (s->index == 0 && s->spi_command == 0x03) {
         if (s->spi_address_bytes < 3) {
             s->spi_address = (s->spi_address << 8) | tx;
@@ -244,8 +261,6 @@ static void ar_dspi_write(void *opaque, hwaddr addr,
     uint32_t v = value;
     switch (off) {
     case 0x00:
-        /* CLR_TXF/CLR_RXF are commands, not persistent state bits.  The
-         * firmware writes both before each synchronous SPI transfer. */
         if (v & AR_DSPI_MCR_CLR_RXF) {
             s->rx_head = 0;
             s->rx_count = 0;
@@ -265,11 +280,6 @@ static void ar_dspi_write(void *opaque, hwaddr addr,
     case 0x30: s->rser = v; break;
     case 0x34: {
         uint8_t rx;
-
-        /* Firmware asserts CTCNT on the command word that begins a new
-         * peripheral transaction (for SPI NOR READ this is 0x84020003).
-         * Treat that as the authoritative frame boundary so an earlier DSPI
-         * user cannot leave the attached-device parser in stale state. */
         if (v & AR_DSPI_PUSHR_CTCNT) {
             ar_dspi_end_spi_transaction(s);
         }
@@ -296,6 +306,7 @@ void ar_mk2_dspi_init(MemoryRegion *sysmem)
 {
     static const hwaddr bases[2] = { AR_DSPI0_BASE, AR_DSPI1_BASE };
     const char *mock_cal = g_getenv("AR_MK2_MOCK_CALIBRATION");
+    const char *mock_factory = g_getenv("AR_MK2_MOCK_FACTORY_STATE");
     unsigned i;
 
     if (ar_dspi) {
@@ -309,13 +320,15 @@ void ar_mk2_dspi_init(MemoryRegion *sysmem)
             s->mock_calibration = true;
             s->mock_calibration_record = ar_build_mock_calibration();
         }
+        if (i == 0 && mock_factory && *mock_factory &&
+            strcmp(mock_factory, "0") != 0) {
+            s->mock_factory_state = true;
+        }
         memory_region_init_io(&s->iomem, NULL, &ar_dspi_ops, s,
                               i ? "ar-mk2-dspi1" : "ar-mk2-dspi0",
                               AR_DSPI_SIZE);
         memory_region_add_subregion_overlap(sysmem, bases[i], &s->iomem, 40);
     }
 
-    /* The machine already calls this constructor during topology creation;
-     * initialize the higher-priority DTIM overlay in the same safe phase. */
     ar_mk2_dtim_init(sysmem);
 }
