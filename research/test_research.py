@@ -136,6 +136,49 @@ class FpgaIobGeometryTests(unittest.TestCase):
         )
 
 
+class QemuEmacPatchTests(unittest.TestCase):
+    def test_load_operand_and_fractional_scale_patch(self):
+        patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0003-m68k-fix-coldfire-emac-load-operands.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DREG(ext, 12)", patch)
+        self.assertIn("if (ext & 0x100)", patch)
+        self.assertIn("(int64_t)(int32_t)op1 * (int32_t)op2", patch)
+        self.assertIn("product >>= 23", patch)
+
+
+class DesktopPanelInputTests(unittest.TestCase):
+    def test_qwerty_layout_and_knob_clamp(self):
+        from qemu.desktop_panel import QWERTY_TRIGS, clamp_panel_value
+
+        self.assertEqual(
+            [QWERTY_TRIGS[key] for key in "qwertyuiasdfghjk"],
+            list(range(1, 17)),
+        )
+        self.assertEqual(clamp_panel_value(-1), 0)
+        self.assertEqual(clamp_panel_value(64), 64)
+        self.assertEqual(clamp_panel_value(128), 127)
+
+    def test_knob_delta_uses_validated_signed_encoder_frame(self):
+        from qemu.panel_event_bridge import PanelLink
+
+        class SocketStub:
+            def __init__(self):
+                self.frames = []
+
+            def sendall(self, data):
+                self.frames.append(data)
+
+        sock = SocketStub()
+        link = PanelLink(sock)
+        link.encoder("A", 127)
+        link.encoder("I", -127)
+        self.assertEqual(sock.frames, [bytes((0x30, 0x7F)), bytes((0x38, 0x81))])
+
+
 @unittest.skipUnless(
     (HERE / "extracted_stock_nrv" / "section_2_id_1.decompressed.bin").exists(),
     "extracted proprietary FPGA image not present",
@@ -532,6 +575,21 @@ class MiniColdFirePeripheralTests(unittest.TestCase):
         self.assertEqual(cpu.macc[1], 6)
         self.assertEqual(cpu.d[0], 0x12345678)
         self.assertEqual(cpu.macc[0], 0)
+
+    def test_emac_fractional_word_subtract_uses_extension_bit(self):
+        module = self.load_emulator()
+        bus = module.Bus()
+        cpu = module.CPU(bus)
+        # MSAC.W D3.U,D1.L,ACC0 followed by MOVE.L ACC0,D0.
+        bus.write(module.ENTRY, 2, 0xA203)
+        bus.write(module.ENTRY + 2, 2, 0x0140)
+        bus.write(module.ENTRY + 4, 2, 0xA1C0)
+        cpu.macsr = 0x20  # signed fractional, truncate
+        cpu.d[3] = 0x80000000  # -1.0 in Q1.31
+        cpu.d[1] = 0x00000200  # low-word lane
+        self.assertEqual(cpu.step(), "EMAC")
+        self.assertEqual(cpu.step(), "FROM_MAC ACC0")
+        self.assertEqual(cpu.d[0], 0x02000000)
 
 
     def test_ext_register_encoding_overrides_movem(self):

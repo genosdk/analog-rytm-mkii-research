@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_TRANSIENT_TRIGGER_SMOOTHER_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_QEMU_EMAC_DECODE_FIXED_SAMPLE_SLOT_REACHES_CONSUMER",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "transient_trigger_contract": {
+    "builder": "0x40081008..0x400811C8",
+    "machine_descriptor_base": "0x407C48D3 for active index 0 / track 0",
+    "machine_class": "0x0E",
+    "machine_flags": "0x0380",
+    "command_event": "0x00020381",
+    "event_bit_5": false,
+    "timing_scalar": "0x00000000",
+    "seed_scalar": "0x00000000",
+    "update_list_counts": [0, 0, 0],
+    "conclusion": "The stock live-pad trigger intentionally uses the transient fallback record with bit 5 clear, zero timing/seed scalars, and no parameter-lock update list. Those values are valid and do not block Sample Slot propagation."
+  },
+  "qemu_defects": {
+    "load_form_rx_selector": {
+      "stock_instruction": "0xA2A8 0x0142 0x0004 at 0x4011C6C0",
+      "decoded_operation": "MSAC.W D2.U,D0.L,(4,A0),D1",
+      "before": "The data-register Rx path selected bits 12..14 from the primary opcode word.",
+      "after": "The data-register Rx path selects bits 12..14 from the extension word, matching the address-register path and opcode encoding."
+    },
+    "add_subtract_selector": {
+      "before": "The primary accumulate selected add/subtract from primary opcode bit 8.",
+      "after": "The primary accumulate selects add/subtract from extension bit 8."
+    },
+    "fractional_product_alignment": {
+      "macsr": "0x20",
+      "before": "Unsigned product shifted by 24 bits.",
+      "after": "Signed Q1.31 product shifted by 23 bits into the accumulator's eight guard bits; rounding masks move from 24-bit to 23-bit alignment."
+    },
+    "patch": "qemu/patches/0003-m68k-fix-coldfire-emac-load-operands.patch"
+  },
+  "causal_trace": {
+    "sample_slot_control": "0x8000E5D6 = 0x0200",
+    "before_new_patch": {
+      "first_transform_long": "0x1F0A01EC",
+      "packed_result_long": "0x000000F6",
+      "sample_slot_byte": "0x00"
+    },
+    "rx_selector_only_diagnostic": {
+      "first_transform_long": "0x20000100",
+      "packed_result_long": "0x10000080",
+      "interpretation": "Two successive half-scale results isolated the remaining fractional alignment error."
+    },
+    "fully_corrected": {
+      "first_transform_long": "0x40000200",
+      "packed_result_long": "0x40000200",
+      "sample_slot_byte": "0x02",
+      "timing_scalar": "0x00000000",
+      "seed_scalar": "0x00000000",
+      "packed_source": "0x00000000",
+      "coefficient": "0x00000000"
+    },
+    "consumer": {
+      "callsite": "0x4011C97C",
+      "current_voice_mask": "0x00000001",
+      "runtime_sample_slot": "0x02",
+      "sample_branch": "0x40117A78",
+      "sample_predicate_after_known_one_frame_prime": "0x00000001"
+    }
+  },
+  "conclusion": "The voice descriptor and transient smoother were false blockers. Correcting QEMU's remaining ColdFire EMAC decode and fractional alignment defects preserves Sample Slot 2 through both stock transforms and delivers it to the native sample consumer.",
+  "next_step": {
+    "name": "DESKTOP_QWERTY_AND_VIRTUAL_KNOB_INPUT",
+    "objective": "Add key-down/key-up pad triggering with repeat suppression and focus-loss cleanup, plus mouse-grabbable 0..127 virtual knobs that emit validated signed encoder deltas."
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "All firmware execution and trace interventions remained local. No firmware, extracted MAIN, project data, sample names, or proprietary PCM are included."
+}

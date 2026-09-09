@@ -1,0 +1,60 @@
+From: Analog Rytm MKII research
+Subject: [PATCH] target/m68k: fix ColdFire EMAC load operands and fractional scale
+
+Load-form EMAC instructions encode Rx in extension bits 12..14 and the
+add/subtract selector in extension bit 8.  QEMU instead read both fields from
+the primary opcode word.  Fractional products also require signed Q1.31
+arithmetic aligned into the accumulator's eight guard bits with a 23-bit
+shift, not an unsigned product shifted by 24.
+
+diff --git a/target/m68k/translate.c b/target/m68k/translate.c
+--- a/target/m68k/translate.c
++++ b/target/m68k/translate.c
+@@ -5454,7 +5454,7 @@ DISAS_INSN(mac)
+         loadval = gen_load(s, OS_LONG, addr, 0, IS_USER(s));
+ 
+         acc ^= 1;
+-        rx = (ext & 0x8000) ? AREG(ext, 12) : DREG(insn, 12);
++        rx = (ext & 0x8000) ? AREG(ext, 12) : DREG(ext, 12);
+         ry = (ext & 8) ? AREG(ext, 0) : DREG(ext, 0);
+     } else {
+         loadval = addr = NULL_QREG;
+@@ -5516,7 +5516,7 @@ DISAS_INSN(mac)
+     }
+ #endif
+ 
+-    if (insn & 0x100)
++    if (ext & 0x100)
+         tcg_gen_sub_i64(MACREG(acc), MACREG(acc), s->mactmp);
+     else
+         tcg_gen_add_i64(MACREG(acc), MACREG(acc), s->mactmp);
+diff --git a/target/m68k/helper.c b/target/m68k/helper.c
+--- a/target/m68k/helper.c
++++ b/target/m68k/helper.c
+@@ -1122,19 +1122,19 @@ uint64_t HELPER(macmulu)(CPUM68KState *env, uint32_t op1, uint32_t op2)
+ 
+ uint64_t HELPER(macmulf)(CPUM68KState *env, uint32_t op1, uint32_t op2)
+ {
+-    uint64_t product;
++    int64_t product;
+     uint32_t remainder;
+ 
+-    product = (uint64_t)op1 * op2;
++    product = (int64_t)(int32_t)op1 * (int32_t)op2;
+     if (env->macsr & MACSR_RT) {
+-        remainder = product & 0xffffff;
+-        product >>= 24;
+-        if (remainder > 0x800000)
++        remainder = product & 0x7fffff;
++        product >>= 23;
++        if (remainder > 0x400000)
+             product++;
+-        else if (remainder == 0x800000)
++        else if (remainder == 0x400000)
+             product += (product & 1);
+     } else {
+-        product >>= 24;
++        product >>= 23;
+     }
+     return product;
+ }

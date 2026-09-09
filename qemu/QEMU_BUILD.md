@@ -19,6 +19,8 @@ cd /path/to/qemu
 patch -p1 < /path/to/0001-m68k-reset-coldfire-emac-mask.patch
 # Keep load-form MAC instructions single-accumulator operations.
 patch -p1 < /path/to/0002-m68k-fix-coldfire-emac-dual-detection.patch
+# Decode load-form operands and fractional products from the correct fields.
+patch -p1 < /path/to/0003-m68k-fix-coldfire-emac-load-operands.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -26,10 +28,13 @@ patch -p1 < /path/to/meson.build.patch
 The EMAC patch is required for this machine. The MCF5441x MASK register resets
 to `0xFFFF_FFFF`; QEMU otherwise zero-initializes it, causing EMAC-with-load
 instructions to mask valid SRAM operands down to address zero. The pinned build
-workflows apply both required EMAC patches automatically. The second patch
+workflows apply all required EMAC patches automatically. The second patch
 corrects QEMU's reversed load/no-load test for EMAC_B dual-accumulation
 opcodes; without it, ordinary MAC-with-load instructions can perform an
-unintended second accumulation.
+unintended second accumulation. The third patch selects the load-form Rx and
+add/subtract operation from the extension word, then restores signed Q1.31
+product alignment; without it, packed parameter lanes are halved or sourced
+from the wrong register.
 
 ## Configure
 

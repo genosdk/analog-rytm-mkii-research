@@ -652,7 +652,7 @@ class CPU:
             elif shift==3:
                 prod=prod>>1 if signed_product else (prod&0xffffffffffffffff)>>1
             if self.macsr&0x020:prod>>=23
-            targets=[(acc,bool(op&0x100))]
+            targets=[(acc,bool(ext&0x100))]
             if dual:targets.append(((ext>>2)&3,bool(ext&2)))
             for anum,subtract in targets:
                 cur=sx(self.macc[anum]&0xffffffffffffffff,64)

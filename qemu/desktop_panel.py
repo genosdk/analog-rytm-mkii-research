@@ -12,11 +12,81 @@ import json
 from pathlib import Path
 import time
 import tkinter as tk
+from collections.abc import Callable
 
 W, H = 128, 64
 RAW_W, RAW_H = 64, 128
 FRAME_BYTES = 1024
 PROVEN_BUTTONS = ("TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO", "YES", "NO")
+QWERTY_TRIGS = {
+    key: trig
+    for trig, key in enumerate("qwertyuiasdfghjk", start=1)
+}
+
+
+def clamp_panel_value(value: int) -> int:
+    return max(0, min(127, value))
+
+
+class VirtualKnob(tk.Canvas):
+    """Mouse-draggable 0..127 control that emits relative encoder deltas."""
+
+    def __init__(self, parent, name: str, callback: Callable[[str, int, int], None]):
+        super().__init__(
+            parent,
+            width=58,
+            height=76,
+            bg="#181818",
+            highlightthickness=0,
+            cursor="sb_v_double_arrow",
+        )
+        self.name = name
+        self.callback = callback
+        self.value = 64
+        self.drag_y = 0
+        self.drag_value = self.value
+        self.bind("<ButtonPress-1>", self.begin_drag)
+        self.bind("<B1-Motion>", self.drag)
+        self.bind("<MouseWheel>", self.wheel)
+        self.bind("<Button-4>", lambda _event: self.adjust(1))
+        self.bind("<Button-5>", lambda _event: self.adjust(-1))
+        self.redraw()
+
+    def begin_drag(self, event) -> None:
+        self.focus_set()
+        self.drag_y = event.y_root
+        self.drag_value = self.value
+
+    def drag(self, event) -> None:
+        self.set_value(self.drag_value + round((self.drag_y - event.y_root) / 2))
+
+    def wheel(self, event) -> str:
+        self.adjust(1 if event.delta > 0 else -1)
+        return "break"
+
+    def adjust(self, delta: int) -> None:
+        self.set_value(self.value + delta)
+
+    def set_value(self, value: int) -> None:
+        value = clamp_panel_value(value)
+        delta = value - self.value
+        if not delta:
+            return
+        self.value = value
+        self.redraw()
+        self.callback(self.name, delta, value)
+
+    def redraw(self) -> None:
+        import math
+
+        self.delete("all")
+        self.create_text(29, 8, text=self.name, fill="white", font=("TkDefaultFont", 9, "bold"))
+        self.create_oval(10, 17, 48, 55, fill="#303030", outline="#777777", width=2)
+        angle = math.radians(225 - (270 * self.value / 127))
+        x = 29 + 14 * math.cos(angle)
+        y = 36 - 14 * math.sin(angle)
+        self.create_line(29, 36, x, y, fill="#f2f2f2", width=3)
+        self.create_text(29, 67, text=str(self.value), fill="#bbbbbb")
 
 
 class PanelApp:
@@ -28,6 +98,8 @@ class PanelApp:
         self.scale = scale
         self.last_mtime = 0
         self.photo = None
+        self.held_trigs: dict[int, set[str]] = {}
+        self.pending_key_releases: dict[str, str] = {}
 
         root.title("Analog Rytm MKII — Firmware Emulator")
         root.configure(bg="#181818")
@@ -77,19 +149,19 @@ class PanelApp:
         enc_frame = tk.Frame(shell, bg="#181818")
         enc_frame.grid(row=4, column=0, columnspan=9)
         for col, name in enumerate("ABCDEFGHI"):
-            f = tk.Frame(enc_frame, bg="#181818")
-            f.grid(row=0, column=col, padx=4)
-            tk.Label(f, text=name, fg="white", bg="#181818").pack()
-            tk.Button(
-                f, text="−", width=2,
-                command=lambda n=name: self.encoder(n, -1),
-            ).pack(side="left")
-            tk.Button(
-                f, text="+", width=2,
-                command=lambda n=name: self.encoder(n, +1),
-            ).pack(side="left")
+            VirtualKnob(enc_frame, name, self.encoder).grid(row=0, column=col, padx=1)
+
+        tk.Label(
+            shell,
+            text="Pads: QWERTYUI / ASDFGHJK  •  Knobs: drag vertically or use wheel",
+            fg="#888888",
+            bg="#181818",
+        ).grid(row=5, column=0, columnspan=9, sticky="w", pady=(8, 0))
 
         self.root.protocol("WM_DELETE_WINDOW", self.close)
+        self.root.bind_all("<KeyPress>", self.key_press, add="+")
+        self.root.bind_all("<KeyRelease>", self.key_release, add="+")
+        self.root.bind("<FocusOut>", self.focus_lost, add="+")
         self.poll()
 
     def emit(self, kind: str, name: str, value) -> None:
@@ -102,13 +174,68 @@ class PanelApp:
         self.emit("button", name, "press" if pressed else "release")
         self.status.set(f"{name} {'down' if pressed else 'up'}")
 
-    def trig(self, trig: int, pressed: bool) -> None:
-        self.emit("trig", str(trig), "press" if pressed else "release")
-        self.status.set(f"Trig {trig} {'down' if pressed else 'up'}")
+    def trig(self, trig: int, pressed: bool, source: str = "mouse") -> None:
+        held = self.held_trigs.setdefault(trig, set())
+        was_pressed = bool(held)
+        if pressed:
+            held.add(source)
+        else:
+            held.discard(source)
+        is_pressed = bool(held)
+        if was_pressed == is_pressed:
+            return
+        self.emit("trig", str(trig), "press" if is_pressed else "release")
+        self.status.set(f"Trig {trig} {'down' if is_pressed else 'up'}")
 
-    def encoder(self, name: str, delta: int) -> None:
+    def encoder(self, name: str, delta: int, value: int | None = None) -> None:
         self.emit("encoder", name, delta)
-        self.status.set(f"Encoder {name}: {delta:+d}")
+        suffix = f" → {value}" if value is not None else ""
+        self.status.set(f"Encoder {name}: {delta:+d}{suffix}")
+
+    def key_press(self, event) -> str | None:
+        key = event.keysym.lower()
+        trig = QWERTY_TRIGS.get(key)
+        if trig is None:
+            return None
+        pending = self.pending_key_releases.pop(key, None)
+        if pending is not None:
+            self.root.after_cancel(pending)
+        self.trig(trig, True, f"key:{key}")
+        return "break"
+
+    def key_release(self, event) -> str | None:
+        key = event.keysym.lower()
+        trig = QWERTY_TRIGS.get(key)
+        if trig is None:
+            return None
+        pending = self.pending_key_releases.pop(key, None)
+        if pending is not None:
+            self.root.after_cancel(pending)
+        self.pending_key_releases[key] = self.root.after(
+            12, lambda k=key, t=trig: self.finish_key_release(k, t)
+        )
+        return "break"
+
+    def finish_key_release(self, key: str, trig: int) -> None:
+        self.pending_key_releases.pop(key, None)
+        self.trig(trig, False, f"key:{key}")
+
+    def release_all_trigs(self) -> None:
+        for callback in self.pending_key_releases.values():
+            self.root.after_cancel(callback)
+        self.pending_key_releases.clear()
+        for trig, sources in list(self.held_trigs.items()):
+            if sources:
+                sources.clear()
+                self.emit("trig", str(trig), "release")
+
+    def focus_lost(self, _event=None) -> None:
+        self.root.after_idle(self.release_if_unfocused)
+
+    def release_if_unfocused(self) -> None:
+        focused = self.root.focus_get()
+        if focused is None or focused.winfo_toplevel() != self.root:
+            self.release_all_trigs()
 
     @staticmethod
     def decode_presented(data: bytes) -> list[list[int]]:
@@ -167,6 +294,7 @@ class PanelApp:
         self.root.after(33, self.poll)
 
     def close(self) -> None:
+        self.release_all_trigs()
         self.root.destroy()
 
 

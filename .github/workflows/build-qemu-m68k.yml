@@ -39,6 +39,7 @@ jobs:
         run: |
           patch -d qemu-src -p1 < research/qemu/patches/0001-m68k-reset-coldfire-emac-mask.patch
           patch -d qemu-src -p1 < research/qemu/patches/0002-m68k-fix-coldfire-emac-dual-detection.patch
+          patch -d qemu-src -p1 < research/qemu/patches/0003-m68k-fix-coldfire-emac-load-operands.patch
           cp research/qemu/hw/m68k/elektron_ar_mk2.c qemu-src/hw/m68k/
           cp research/qemu/hw/m68k/ar_mk2_intc_pit.c qemu-src/hw/m68k/
           cp research/qemu/hw/m68k/ar_mk2_dspi.c qemu-src/hw/m68k/

@@ -43,6 +43,18 @@ Therefore Trig 1 reaches **UI dispatch case 0**.
 
 Parser header `0x3n` selects encoder index `n`; the payload is a signed delta. Firmware mapping shows live encoder indices 0..8.
 
+## Desktop bindings
+
+The desktop panel maps `QWERTYUI` to Trigs 1–8 and `ASDFGHJK` to Trigs
+9–16. Key-down and key-up emit the same validated press/release records as the
+mouse buttons. Repeated key-down events are suppressed, and losing window
+focus releases every held trig so the firmware cannot retain a stuck pad.
+
+Encoders A–I are displayed as virtual knobs. Vertical mouse drag changes one
+step per two pixels and the wheel changes one step per notch. Each knob keeps a
+host-side value clamped to 0–127 and emits only the corresponding signed delta
+through the native `0x3n` encoder packet.
+
 ## Current target
 
 Trace UI dispatch case 0 through its state mutation and redraw/presentation calls. The goal is to prove one native panel frame causes a visible change in the presented framebuffer at pointer global `0x4026F474`.
