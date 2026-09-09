@@ -122,8 +122,9 @@
       "sm_validator_result": 2,
       "drive_error_global_0x405AFDF0": 0,
       "storage_failure_branch_0x400A1D76": "NOT_TAKEN_DURING_55_SECOND_TRACE",
-      "panel": "NO FACTORY SAMPLES",
-      "framebuffer_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109"
+      "panel": "NORMAL_PARAMETER_UI",
+      "framebuffer_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
+      "interactive_no_button_after_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca"
     },
     "result": "PASS_KNOWN_EMMC_AND_STOCK_EKFS_CREATE_EMPTY_MANIFEST_EXPECTED"
   },

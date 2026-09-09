@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_NORMAL_UI_SMOKE_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "firmware_fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "profiles": [
+    "AR_MK2_MOCK_CALIBRATION=1",
+    "AR_MK2_MOCK_FACTORY_STATE=1"
+  ],
+  "transport": {
+    "panel_identity_reply": "70 07 05 05 00",
+    "event": "NO",
+    "press_packet": "24 01",
+    "release_packet": "24 00",
+    "rx_edma_channel": 34
+  },
+  "before": {
+    "state": "NORMAL_PARAMETER_UI",
+    "bytes": 1024,
+    "nonzero_bytes": 793,
+    "lit_bits": 2730,
+    "sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109"
+  },
+  "after": {
+    "bytes": 1024,
+    "nonzero_bytes": 679,
+    "lit_bits": 2541,
+    "sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca"
+  },
+  "result": "PASS_STOCK_BOOT_TO_INTERACTIVE_UI",
+  "reproducer": "qemu/headless_ui_smoke.py",
+  "correction": "The pre-event hash was previously labeled NO FACTORY SAMPLES. A clean capture and visual decode show the normal parameter UI; the storage error branch is not taken.",
+  "boundary": "This proves firmware UI interaction, not sample PCM availability or analog/audio output.",
+  "next_step": {
+    "name": "AR172_QEMU_PROJECT_SAMPLE_SLOT_GATE",
+    "objective": "Trace a non-proprietary project sample-slot descriptor path while leaving factory PCM absent."
+  },
+  "github_actions": {
+    "triggered": false
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "No firmware, project, factory sample, descriptor slab, or PCM was embedded or committed."
+}

@@ -41,9 +41,9 @@
     "storage_failure_branch_0x400A1D76": "NOT_TAKEN_DURING_55_SECOND_TRACE"
   },
   "visible_state": {
-    "panel": "NO FACTORY SAMPLES",
+    "panel": "NORMAL_PARAMETER_UI",
     "framebuffer_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
-    "interpretation": "The storage gate passes, but an empty manifest still supplies no factory or project sample assignment."
+    "interpretation": "The storage gate passes into the normal UI. The empty manifest still supplies no factory or project sample assignment."
   },
   "validation": {
     "qemu_build": "PASS",

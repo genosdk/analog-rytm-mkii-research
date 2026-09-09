@@ -189,7 +189,7 @@ def main() -> None:
         env.pop("AR_MK2_MOCK_FACTORY_STATE", None)
     else:
         # Supply only non-proprietary metadata and volatile storage. The empty
-        # manifest intentionally advances to the real NO FACTORY SAMPLES gate.
+        # manifest boots the normal UI but provides no sample assignment/PCM.
         env["AR_MK2_MOCK_FACTORY_STATE"] = "1"
 
     qemu_cmd = [

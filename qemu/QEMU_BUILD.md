@@ -73,6 +73,18 @@ boundary. The opt-in `AR_MK2_MOCK_FACTORY_STATE=1` profile now models only the
 eSDHC/eMMC behavior proven necessary for stock startup; see
 `qemu/MOCK_STORAGE.md` for its volatile-storage and empty-manifest limits.
 
+For a display-free end-to-end check with a caller-supplied MAIN image:
+
+```bash
+python qemu/headless_ui_smoke.py \
+  --qemu /path/to/qemu-system-m68k \
+  --main /path/to/decompressed-main.bin
+```
+
+The smoke test boots with the two emulator-only profiles, completes the panel
+identity exchange, waits for a stable native framebuffer, injects a `NO`
+button packet, and requires a second stable framebuffer hash.
+
 ## GUI bridge
 
 The desktop GUI scaffold is independent of the physical OLED. Once the firmware-side 128×64 Bitmap source is identified, the QEMU machine can periodically write its 1024-byte framebuffer to:

@@ -43,9 +43,11 @@ The untouched stock initializer now reports:
 - sample-verification (`SM`) result `2`;
 - drive error global `0x405AFDF0 = 0`.
 
-The storage-failure branch at `0x400A1D76` is no longer taken. The last
-exported panel frame still reads `NO FACTORY SAMPLES`: the manifest is
-deliberately empty, and no project assignment, sample descriptor, or PCM
-payload is invented by this profile.
+The storage-failure branch at `0x400A1D76` is no longer taken. A clean
+framebuffer capture reaches the normal parameter UI, not the earlier
+`NO FACTORY SAMPLES` error path. A native `NO` press/release (`24 01`,
+`24 00`) also produces a stable framebuffer change through the live UART/UI
+queue. The empty manifest still invents no factory sample, project sample
+assignment, descriptor, or PCM payload.
 
 No conclusion from this emulator-only profile applies to physical hardware.
