@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_PACKED_SAMPLE_LANE_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_PACKED_PIPELINE_MAPPED_BLOCKED_VOICE_TIMING_DESCRIPTOR",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "packed_transform": {
+    "range": "0x4011C69E..0x4011C6E4",
+    "geometry": "13 records by 21 longwords (42 words) with a one-iteration output pipeline",
+    "sample_output_long": "0x8000F7CC",
+    "sample_output_byte": "0x8000F7CE",
+    "sample_store_iteration_one_based": 11,
+    "associated_packed_source_long": "0x80005F34",
+    "associated_packed_source_byte": "0x80005F36",
+    "pipeline_note": "Iteration 10 computes the value stored to 0x8000F7CC by iteration 11."
+  },
+  "native_trace": {
+    "first_transform_seed_long": "0x1F0A01EC",
+    "packed_source_long": "0x00000000",
+    "per_track_coefficient": "0x8000E438 = 0x00000000",
+    "packed_result_long": "0x000000F6",
+    "sample_byte_after_store": "0x00",
+    "interpretation": "The integer-mode EMAC smoother halves the low word 0x01EC to 0x00F6 when its source and per-track coefficient are zero."
+  },
+  "settling_test": {
+    "method": "Replay the unmodified transform body while retaining live SRAM and captured entry registers.",
+    "frames": 32,
+    "observed_result_long": "0x000000F6 on every frame",
+    "observed_sample_byte": "0x00 on every frame",
+    "conclusion": "Normal settling cannot recover the sample byte while the upstream coefficient inputs remain zero."
+  },
+  "upstream_prerequisite": {
+    "active_track_event": "0x00020381",
+    "conditional_event_bit": "bit 5",
+    "trace_only_bit5_test_event": "0x000203A1",
+    "timing_pointer_table": "0x8000E4A0",
+    "seed_pointer_table": "0x8000E46C",
+    "track0_timing_pointer": "0x00000000",
+    "track0_seed_pointer": "0x00000000",
+    "coefficient_builder": "0x4011C5F0..0x4011C69C",
+    "descriptor_writer_sites": [
+      "0x4011B9A0",
+      "0x4011BDE8"
+    ],
+    "conclusion": "Adding event bit 5 cannot initialize the coefficient because the native voice-activation descriptor fields feeding both pointer tables are absent."
+  },
+  "ruled_out": [
+    "A third signed-fractional QEMU helper defect: this loop is executing integer EMAC semantics and the observed half-scale is consistent with its operands.",
+    "A packed-source writer race: the parameter bridge intentionally clears 0x80005F36 at 0x4011ACD2.",
+    "A simple multi-frame settling delay while the descriptor inputs remain zero."
+  ],
+  "next_step": {
+    "name": "AR172_QEMU_VOICE_TIMING_DESCRIPTOR_GATE",
+    "objective": "Trace the activation paths at 0x4011B940..0x4011BA00 and 0x4011BD70..0x4011BE0A, identify the missing non-proprietary voice descriptor object that should populate 0x8000E4A0/0x8000E46C, and then re-run the native sample consumer."
+  },
+  "downstream_input_milestone": {
+    "name": "QWERTY_PAD_TRIGGERING",
+    "plan": "Map desktop key-down and key-up events to the validated panel press/release frames after the native sample voice reaches the consumer gate."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "No firmware, extracted MAIN, project data, sample names, descriptor slabs, or proprietary PCM are included. All event-bit and replay interventions were trace-only and remain outside the repository."
+}
