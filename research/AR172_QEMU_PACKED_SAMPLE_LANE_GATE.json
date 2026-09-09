@@ -42,7 +42,16 @@
       "0x4011B9A0",
       "0x4011BDE8"
     ],
-    "conclusion": "Adding event bit 5 cannot initialize the coefficient because the native voice-activation descriptor fields feeding both pointer tables are absent."
+    "observed_activation_path": {
+      "primary_writer_0x4011B9A0_hits": 0,
+      "fallback_writer_0x4011BDE8_hits": 1,
+      "fallback_object": "0x42AC4038",
+      "field_0x0C_timing_pointer": "0x00000000",
+      "field_0x10_seed_pointer": "0x00000000",
+      "field_0x14_event": "0x00020381",
+      "field_0x20": "0x00000000"
+    },
+    "conclusion": "The fallback activation writer executes, but object 0x42AC4038 carries null timing and seed pointer fields. Adding event bit 5 cannot initialize the coefficient because those descriptor fields feeding both pointer tables are absent."
   },
   "ruled_out": [
     "A third signed-fractional QEMU helper defect: this loop is executing integer EMAC semantics and the observed half-scale is consistent with its operands.",
