@@ -1,82 +1,77 @@
-# Analog Rytm MKII OS 1.72 — SRR functional research build
+# Analog Rytm MKII OS 1.72 — historical SRR research build
 
-**Status: STATICALLY VALIDATED RESEARCH BUILD — DO NOT FLASH YET**
+**STATUS: SUPERSEDED — DO NOT FLASH**
 
-This image is the first build containing an actual Sample Rate Reduction experiment rather than an inert detour.
-
-## Corrected BR identity
-
-The OS 1.72 master descriptor at `0x401ABC48` points directly to `Bit Reduction` / `BR`.
-
-- Physical parameter ID: `0x15`
-- Internal maximum: `0x7800`
-- Stock terminal BR read: `0x4011870E`
-
-Any earlier interim note identifying BR as `0x14` is superseded by this direct descriptor-table verification.
-
-## Laboratory behavior
-
-Below internal BR `0x7400`, the firmware follows the stock render path.
-
-At the top five internal BR bands, the first hook makes the stock bit-reduction stage see BR=0, while the original BR value remains in parameter state and selects SRR:
-
-| Internal BR | Experimental behavior |
-|---|---|
-| `0x7400..0x74FF` | hold 2 samples |
-| `0x7500..0x75FF` | hold 4 samples |
-| `0x7600..0x76FF` | hold 8 samples |
-| `0x7700..0x77FF` | hold 16 samples |
-| `0x7800+` | hold 32 samples |
-
-This is a lab control scheme only. A production implementation should give SRR its own UI/storage parameter.
-
-## Render-loop proof
-
-The stock loop:
-
-- initializes `D0=16` at `0x40118778`
-- starts at `0x4011877A`
-- emits two `MOVE.L A0,(A6)+` writes per iteration at `0x40118798` and `0x4011879C`
-- decrements at `0x4011879E`
-- branches back at `0x401187A0`
-
-That yields 32 rendered 32-bit samples = `0x80` bytes.
-
-The SRR post-pass subtracts `0x80` from A6, performs a conventional sample-and-hold across those 32 longs, and advances A6 naturally back to its original end pointer.
-
-## Patch layout
-
-- `0x4011870E` → `JMP 0x402B4200`
-- `0x402B4200` → BR/SRR selector pre-hook
-- `0x401187A6` → `JMP 0x402B4300` + NOP
-- `0x402B4300` → 32-sample SRR post-pass
-- return → `0x401187AE`
-
-The stock cave area was zero-filled and static scans found no literal references, absolute JMP/JSR targets, or relative branch targets into the used range.
-
-## Integrity validation
-
-- SysEx packet checksums: **14,137 / 14,137 valid**
-- ELE3 content checksum: **`0x9930D853`**, recomputes exactly
-- MAIN decompressed size: **2,903,032 bytes**
-- MAIN changes vs stock: **244 bytes**
-- MAIN recompress → redecompress: **byte-for-byte exact**
-- META: unchanged
-- bootstrap/recovery section: unchanged
-- FPGA section: unchanged
-- authentication trailer: none
-
-Output SHA-256:
-
+The historical artifact with SHA-256
 `ac077fe3d2262494265a12f1b8264e53e637091323c2306cf90573560b06a82e`
+was a checksum-valid research image, but its BR-selector premise has since been
+disproven. It must not be used as the basis for Photon OS SRR/BR work or flashed
+to hardware.
 
-## Hardware gate
+## Why it is superseded
 
-Do not flash this image before the staged hardware protocol has first proven:
+The image detoured `0x4011870E` under the assumption that this instruction read
+sample Bit Reduction. Later control-frame and renderer tracing proved the actual
+stock sample-BR field is destination/record word 11, track-0 address
+`0x8000F7BE`, and machine renderer 0 reads it at `0x4010CC58`.
 
-1. stock recovery over physical MIDI,
-2. the byte-identical stock round-trip image,
-3. bootloader acceptance of a checksum-correct modified MAIN,
-4. the inert safe-cave detour.
+The real CPU-side BR path is now:
 
-Only then should this functional SRR image be considered for a disposable one-track test.
+```text
+0x8000F7BE                 stock sample-BR word
+    -> 0x4010CC58          renderer read/cache
+    -> 0x4010D16E          case-3 BR hardware-control conversion
+    -> 0x80006544          packed per-voice hardware command
+    -> 0x40077D14          DSPI packetizer
+    -> eDMA channel 15
+    -> DSPI1 PUSHR 0xFC03C034
+    -> external FPGA/audio hardware
+```
+
+`0x4011870E` belongs to a different per-voice coefficient/render path. The
+D2/D3/D4 arithmetic reconstructed around that address remains valid firmware
+arithmetic, but it is **not** the stock sample-BR quantizer.
+
+## What remains valid from the historical artifact
+
+The following historical facts remain useful only as engineering/provenance data:
+
+- the package could be decoded, modified, recompressed and checksummed correctly;
+- the candidate cave beginning at `0x402B4200` was statically unreferenced in the
+  stock image;
+- the post-pass itself implemented a conventional 32-longword sample-and-hold;
+- the modified package had valid SysEx/ELE3 integrity fields;
+- original output SHA-256 was
+  `ac077fe3d2262494265a12f1b8264e53e637091323c2306cf90573560b06a82e`.
+
+Those facts do **not** establish that the build implemented SRR on the intended
+sample-BR path.
+
+## Historical patch layout — reference only
+
+- `0x4011870E` -> `JMP 0x402B4200`
+- `0x402B4200` -> historical selector pre-hook
+- `0x401187A6` -> `JMP 0x402B4300` + NOP
+- `0x402B4300` -> 32-longword sample-and-hold post-pass
+
+Do not recreate or flash this layout.
+
+## Replacement direction
+
+Any new SRR implementation must start from one of two proven architectures:
+
+1. **Hardware-control route:** preserve the stock BR command encoder and add SRR
+   as a separate parameter/control command only after the FPGA/audio-side command
+   semantics are understood; or
+2. **MAIN sample route:** insert SRR only at a genuinely proven active sample PCM
+   boundary, with OFF/bypass shown bit-identical and cycle headroom measured.
+
+The stock BR hardware command itself is now reconstructed separately in
+`research/br_runtime_command_reconstruct.py`; physical BR audio behavior is
+characterized by `research/br_hardware_characterize.py` once hardware is present.
+
+## Safety boundary
+
+This historical image is permanently classified **DO NOT FLASH**. Hardware tests
+must follow `docs/AR172_FIRST_HARDWARE_TEST_PROTOCOL.md`; no SRR build should be
+introduced until a replacement prototype is based on the corrected architecture.
