@@ -49,7 +49,10 @@
 
 #define AR_CMD_SEND_OP_COND    1u
 #define AR_CMD_SEND_EXT_CSD    8u
+#define AR_CMD_TUNING_READ     14u
 #define AR_CMD_READ_MULTIPLE   18u
+#define AR_CMD_TUNING_WRITE    19u
+#define AR_XFERTYP_DPSEL       (1u << 21)
 
 #define AR_STREAM_MAX          65536u
 
@@ -79,6 +82,13 @@ static void ar_store_be32(uint8_t *p, uint32_t v)
     p[1] = v >> 16;
     p[2] = v >> 8;
     p[3] = v;
+}
+
+static bool ar_edma59_enabled(void)
+{
+    uint8_t raw[4];
+    physical_memory_read(AR_EDMA_ERQH, raw, sizeof(raw));
+    return (ldl_be_p(raw) & (1u << (AR_EDMA_CH - 32))) != 0;
 }
 
 static void ar_esdhc_set_irq(bool level)
@@ -148,7 +158,7 @@ static void ar_prepare_storage_read(AREsdhcState *s)
     if (!blocks) {
         blocks = 1;
     }
-    blocks = MIN(blocks, AR_STREAM_MAX / AR_SECTOR_SIZE);
+    blocks = MIN(blocks, (uint32_t)(AR_STREAM_MAX / AR_SECTOR_SIZE));
     memset(s->stream, 0, AR_STREAM_MAX);
     for (i = 0; i < blocks; i++) {
         ar_virtual_sector(sector + i, s->stream + i * AR_SECTOR_SIZE);
@@ -195,7 +205,8 @@ static uint32_t ar_stream_read(AREsdhcState *s, unsigned size)
 static void ar_command(AREsdhcState *s, uint32_t value)
 {
     unsigned cmd = (value >> 24) & 0x3fu;
-    bool data = false;
+    bool dma_data = false;
+    bool pio_data = false;
 
     s->xfertyp = value;
     memset(s->response, 0, sizeof(s->response));
@@ -207,22 +218,37 @@ static void ar_command(AREsdhcState *s, uint32_t value)
         break;
     case AR_CMD_SEND_EXT_CSD:
         ar_prepare_ext_csd(s);
-        data = true;
+        dma_data = true;
         break;
     case AR_CMD_READ_MULTIPLE:
         ar_prepare_storage_read(s);
-        data = true;
+        dma_data = true;
+        break;
+    case AR_CMD_TUNING_READ:
+        s->pio_latch = 0x5a;
+        pio_data = true;
+        break;
+    case AR_CMD_TUNING_WRITE:
+        pio_data = true;
         break;
     default:
+        if (value & AR_XFERTYP_DPSEL) {
+            pio_data = true;
+        }
         break;
     }
 
     /* Every command used by the startup driver completes successfully. */
     s->irqstat |= AR_IRQ_CC;
 
-    if (data) {
+    if (dma_data) {
         /* Channel 59 has already been programmed/enabled before the command. */
         ar_pump_edma59();
+        s->irqstat |= AR_IRQ_TC;
+    } else if (pio_data) {
+        /* The tuning commands are synchronous one-word PIO transfers.  Mark
+         * transfer complete at command issue so the firmware's TC semaphore
+         * is ready before its subsequent DATPORT access. */
         s->irqstat |= AR_IRQ_TC;
     }
 
@@ -234,7 +260,13 @@ static uint64_t ar_esdhc_read(void *opaque, hwaddr addr, unsigned size)
     AREsdhcState *s = opaque;
     unsigned off = addr & 0x3fff;
 
-    if (off >= AR_ESDHC_DATPORT && off < AR_ESDHC_DATPORT + 0x10) {
+    /* The current generic eDMA helper performs a 16-byte minor-loop read as
+     * four sequential 32-bit MMIO accesses.  While channel 59 is enabled,
+     * interpret the controller's 0x20..0x2f window as repeated DATPORT FIFO
+     * reads.  Once the major loop completes D_REQ clears ERQ, so ordinary CPU
+     * reads of PRSSTAT/PROCTL/SYSCTL retain their normal register meanings. */
+    if (off >= AR_ESDHC_DATPORT && off < AR_ESDHC_DATPORT + 0x10 &&
+        ar_edma59_enabled()) {
         return ar_stream_read(s, size);
     }
 
@@ -246,6 +278,7 @@ static uint64_t ar_esdhc_read(void *opaque, hwaddr addr, unsigned size)
     case AR_ESDHC_CMDRSP1: return s->response[1];
     case AR_ESDHC_CMDRSP2: return s->response[2];
     case AR_ESDHC_CMDRSP3: return s->response[3];
+    case AR_ESDHC_DATPORT: return ar_stream_read(s, size);
     case AR_ESDHC_PRSSTAT:
         return AR_PRSSTAT_DAT0 | AR_PRSSTAT_BWEN | AR_PRSSTAT_BREN;
     case AR_ESDHC_PROCTL: return s->proctl;
@@ -265,7 +298,7 @@ static void ar_esdhc_write(void *opaque, hwaddr addr,
     unsigned off = addr & 0x3fff;
     uint32_t v = value;
 
-    if (off >= AR_ESDHC_DATPORT && off < AR_ESDHC_DATPORT + 0x10) {
+    if (off == AR_ESDHC_DATPORT) {
         s->pio_latch = v;
         return;
     }
