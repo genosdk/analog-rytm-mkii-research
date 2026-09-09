@@ -51,3 +51,36 @@ invents no factory sample, project sample assignment, descriptor, or PCM
 payload.
 
 No conclusion from this emulator-only profile applies to physical hardware.
+
+## Generated project-sample descriptor
+
+Set `AR_MK2_MOCK_PROJECT_SAMPLE=1` together with the factory-state profile to
+publish one emulator-generated sample descriptor in otherwise-empty slot 1.
+This test boundary is disabled by default and contains no firmware-derived or
+factory PCM. It generates a 256-frame, 48 kHz, signed 16-bit square wave in
+guest RAM and names it `QEMU TEST`.
+
+Publication is deliberately guarded. The injector waits for ekFS readiness,
+accepts only the stock blank-name sentinel with zero metadata, and refuses to
+replace any non-empty slot. A one-second monitor republishes the descriptor if
+later initialization restores the blank sentinel; it does not overwrite user
+or firmware content.
+
+The live tables used by OS 1.72 are:
+
+- name pointer: `0x41928DCC + slot * 4`;
+- packed byte-length metadata: `0x419289CC + slot * 4`;
+- secondary metadata: `0x41928BCC + slot * 4`;
+- status byte: `0x4192894C + slot`;
+- playback registry: `0x41310D30 + slot * 16`.
+
+For slot 1, the generated sample is stored at `0x4FF00000`, its name at
+`0x4FF00400`, and the registry records a 48 kHz rate, 256-frame extent, and
+`0x40000000` rate ratio. A live post-initialization trace confirms all of
+these values persist.
+
+This gate does not yet produce sample voice output. The blank project still
+returns sample-slot parameter 0 (`OFF`), and changing only the observed track
+slot byte does not enter the sample renderer. The next boundary is the missing
+project parameter provider or voice-enable state; descriptor presence alone is
+not treated as proof of playback.

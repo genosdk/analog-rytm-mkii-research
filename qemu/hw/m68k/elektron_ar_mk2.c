@@ -44,6 +44,17 @@
 #define AR_GPIO_MEDIA_CLEAR  0xEC094027u
 #define AR_GPIO_MEDIA_SENSE  0x08u
 #define AR_GPIO_MEDIA_DRIVE  0x10u
+#define AR_SAMPLE_NAMES       0x41928DCCu
+#define AR_SAMPLE_METADATA    0x419289CCu
+#define AR_SAMPLE_SECONDARY   0x41928BCCu
+#define AR_SAMPLE_STATUS      0x4192894Cu
+#define AR_SAMPLE_REGISTRY    0x41310D30u
+#define AR_BLANK_NAME         0x40228E97u
+#define AR_EKFS_READY         0x4182A6FCu
+#define AR_SYNTH_SAMPLE_ADDR  0x4FF00000u
+#define AR_SYNTH_NAME_ADDR    0x4FF00400u
+#define AR_SYNTH_SAMPLE_SLOT  1u
+#define AR_SYNTH_SAMPLE_FRAMES 256u
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu);
 void ar_mk2_dspi_init(MemoryRegion *sysmem);
@@ -127,6 +138,7 @@ typedef struct ARBoardState {
     uint64_t mmio_writes;
     GHashTable *mmio_bytes; /* sparse byte-addressed register backing */
     QEMUTimer *frame_timer;
+    QEMUTimer *sample_timer;
     char *frame_out;
     uint8_t frame_candidate[AR_FB_BYTES];
     uint8_t frame_published[AR_FB_BYTES];
@@ -135,6 +147,7 @@ typedef struct ARBoardState {
     bool frame_candidate_valid;
     bool frame_published_valid;
     bool mock_factory_state;
+    bool mock_project_sample;
     bool media_probe_high;
 } ARBoardState;
 
@@ -340,6 +353,83 @@ static void ar_export_framebuffer(void *opaque)
     timer_mod(s->frame_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
 }
 
+static void ar_inject_project_sample(void *opaque)
+{
+    ARBoardState *s = opaque;
+    uint8_t word[4];
+    uint8_t pcm[AR_SYNTH_SAMPLE_FRAMES * 2];
+    uint8_t registry[16] = { 0 };
+    static const uint8_t name[16] = "QEMU TEST";
+    uint32_t name_ptr;
+    uint32_t metadata;
+    uint32_t ekfs_ready;
+    unsigned i;
+
+    physical_memory_read(AR_EKFS_READY, word, sizeof(word));
+    ekfs_ready = ldl_be_p(word);
+    if (ekfs_ready == 0) {
+        timer_mod(s->sample_timer,
+                  qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 100);
+        return;
+    }
+
+    physical_memory_read(AR_SAMPLE_NAMES + AR_SYNTH_SAMPLE_SLOT * 4,
+                         word, sizeof(word));
+    name_ptr = ldl_be_p(word);
+    if (name_ptr == AR_SYNTH_NAME_ADDR) {
+        timer_mod(s->sample_timer,
+                  qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 1000);
+        return;
+    }
+    if (name_ptr == 0) {
+        timer_mod(s->sample_timer,
+                  qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 100);
+        return;
+    }
+    physical_memory_read(AR_SAMPLE_METADATA + AR_SYNTH_SAMPLE_SLOT * 4,
+                         word, sizeof(word));
+    metadata = ldl_be_p(word);
+    if (name_ptr != AR_BLANK_NAME || metadata != 0) {
+        qemu_log_mask(LOG_GUEST_ERROR,
+                      "AR-MK2: refusing synthetic sample overwrite for slot %u\n",
+                      AR_SYNTH_SAMPLE_SLOT);
+        return;
+    }
+
+    for (i = 0; i < AR_SYNTH_SAMPLE_FRAMES; i++) {
+        int16_t sample = (i / 16) & 1 ? 0x5000 : -0x5000;
+        stw_be_p(pcm + i * 2, (uint16_t)sample);
+    }
+    stl_be_p(registry, AR_SYNTH_SAMPLE_ADDR);
+    stw_be_p(registry + 4, 48000);
+    stl_be_p(registry + 8, AR_SYNTH_SAMPLE_FRAMES);
+    stl_be_p(registry + 12, 0x40000000u);
+
+    physical_memory_write(AR_SYNTH_SAMPLE_ADDR, pcm, sizeof(pcm));
+    physical_memory_write(AR_SYNTH_NAME_ADDR, name, sizeof(name));
+    physical_memory_write(AR_SAMPLE_REGISTRY + AR_SYNTH_SAMPLE_SLOT * 16,
+                          registry, sizeof(registry));
+
+    stl_be_p(word, AR_SYNTH_SAMPLE_FRAMES * 2);
+    physical_memory_write(AR_SAMPLE_METADATA + AR_SYNTH_SAMPLE_SLOT * 4,
+                          word, sizeof(word));
+    stl_be_p(word, 0);
+    physical_memory_write(AR_SAMPLE_SECONDARY + AR_SYNTH_SAMPLE_SLOT * 4,
+                          word, sizeof(word));
+    word[0] = 0xff;
+    physical_memory_write(AR_SAMPLE_STATUS + AR_SYNTH_SAMPLE_SLOT,
+                          word, 1);
+    stl_be_p(word, AR_SYNTH_NAME_ADDR);
+    physical_memory_write(AR_SAMPLE_NAMES + AR_SYNTH_SAMPLE_SLOT * 4,
+                          word, sizeof(word));
+
+    qemu_log_mask(LOG_UNIMP,
+                  "AR-MK2: injected generated 16-bit test sample in slot %u\n",
+                  AR_SYNTH_SAMPLE_SLOT);
+    timer_mod(s->sample_timer,
+              qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 1000);
+}
+
 static void ar_write_boot_argument(MachineState *machine)
 {
     uint8_t *ram = memory_region_get_ram_ptr(machine->ram);
@@ -377,6 +467,10 @@ static void elektron_ar_mk2_init(MachineState *machine)
     {
         const char *mock = g_getenv("AR_MK2_MOCK_FACTORY_STATE");
         s->mock_factory_state = mock && *mock && strcmp(mock, "0") != 0;
+    }
+    {
+        const char *mock = g_getenv("AR_MK2_MOCK_PROJECT_SAMPLE");
+        s->mock_project_sample = mock && *mock && strcmp(mock, "0") != 0;
     }
     {
         const char *out = g_getenv("AR_MK2_FRAMEBUFFER_OUT");
@@ -441,6 +535,11 @@ static void elektron_ar_mk2_init(MachineState *machine)
     if (s->frame_out) {
         s->frame_timer = timer_new_ms(QEMU_CLOCK_VIRTUAL, ar_export_framebuffer, s);
         timer_mod(s->frame_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
+    }
+    if (s->mock_project_sample) {
+        s->sample_timer = timer_new_ms(QEMU_CLOCK_VIRTUAL,
+                                       ar_inject_project_sample, s);
+        timer_mod(s->sample_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 100);
     }
 
     qemu_log_mask(LOG_UNIMP,

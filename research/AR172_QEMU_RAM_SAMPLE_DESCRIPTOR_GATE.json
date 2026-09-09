@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_RAM_SAMPLE_DESCRIPTOR_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_SYNTHETIC_SLOT_DESCRIPTOR_PERSISTENT_VOICE_ACTIVATION_BLOCKED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "configuration": {
+    "environment": "AR_MK2_MOCK_PROJECT_SAMPLE=1",
+    "default_enabled": false,
+    "validated_with": "AR_MK2_MOCK_FACTORY_STATE=1",
+    "slot": 1,
+    "overwrite_policy": "Publish only over the stock blank-name sentinel with zero packed metadata; refuse any other non-empty occupant."
+  },
+  "generated_payload": {
+    "kind": "emulator-generated signed 16-bit square wave",
+    "proprietary_pcm": false,
+    "address": "0x4FF00000",
+    "frames": 256,
+    "sample_rate_hz": 48000,
+    "name": "QEMU TEST",
+    "name_address": "0x4FF00400"
+  },
+  "runtime_tables": {
+    "name_pointer_base": "0x41928DCC",
+    "packed_metadata_base": "0x419289CC",
+    "secondary_metadata_base": "0x41928BCC",
+    "status_base": "0x4192894C",
+    "playback_registry_base": "0x41310D30",
+    "registry_entry_stride_bytes": 16
+  },
+  "live_post_initialization_proof": {
+    "name_pointer": "0x4FF00400",
+    "packed_metadata": "0x00000200",
+    "secondary_metadata": "0x00000000",
+    "status": "0xFF",
+    "registry_slot_1": [
+      "0x4FF00000",
+      "0xBB800000",
+      "0x00000100",
+      "0x40000000"
+    ],
+    "name_string": "QEMU TEST",
+    "pcm_first_word": "0xB000",
+    "result": "PASS"
+  },
+  "initialization_behavior": {
+    "observation": "The firmware can restore the shared blank sentinel during later initialization.",
+    "emulator_response": "A one-second test-only monitor republishes after a blank reset and otherwise refuses overwrite."
+  },
+  "voice_activation": {
+    "sample_page_parameter_0x29": "0x00000000 (OFF)",
+    "trace_only_experiment": "Changed observed track-0 sample-slot SRAM byte 0x8000F7CE from 0 to 1, then pressed pad 1.",
+    "sample_renderer_entries": [
+      "0x40117A7E",
+      "0x40117A92"
+    ],
+    "renderer_entry_observed": false,
+    "conclusion": "Slot registry plus the observed track byte are necessary but not sufficient; the blank-project parameter provider or voice-enable state remains missing."
+  },
+  "next_step": {
+    "name": "AR172_QEMU_PROJECT_SAMPLE_PROVIDER_GATE",
+    "objective": "Trace the sample-page owner/provider and parameter-0x29 setter to identify the minimum stock project state required before a pad event can enter the sample renderer."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Local compile and runtime proof first; push with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Firmware bytes, project data, factory sample names, descriptor slabs, and proprietary PCM were not embedded, modified, or committed."
+}
