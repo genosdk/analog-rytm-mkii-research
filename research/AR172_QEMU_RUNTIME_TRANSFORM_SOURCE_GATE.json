@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_RUNTIME_TRANSFORM_SOURCE_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PASS_EMAC_MASK_RESET_AND_SOURCE_ALIGNMENT_RESOLVED",
+  "status": "PASS_EMAC_MASK_RESET_AND_PIPELINE_MAPPING_RESOLVED",
   "repository": "genosdk/analog-rytm-mkii-research",
   "fixture": {
     "kind": "locally extracted stock OS 1.72 MAIN; not committed",
@@ -25,33 +25,47 @@
     "observed_after": {
       "postincrement_address_register": "0x8000E5DC",
       "target_iteration_output_d1": "0x1F0A0000",
-      "effect": "The source walk remains in the firmware control bank and produces nonzero transform output."
+      "effect": "The source walk remains in the firmware control bank and produces nonzero high-lane transform output."
     }
+  },
+  "stock_buffer_initialization": {
+    "function": "0x40119316",
+    "record_bytes": 84,
+    "track": 0,
+    "source_object": "0x4123C911",
+    "control_destination": "0x8000E5B0",
+    "seed_destination": "0x8000F7A8",
+    "sample_slot_offset_bytes": 38,
+    "sample_slot_source_byte": "0x4123C937",
+    "sample_slot_control_word": "0x8000E5D6",
+    "sample_slot_seed_byte": "0x8000F7CE",
+    "observed_value_before_transform": "0x02",
+    "conclusion": "The same 84-byte sound record is copied into the control and seed banks. Sample Slot is correctly aligned at byte offset 38 in both."
   },
   "exact_pipeline_trace": {
     "transform_loop": "0x4011C56E..0x4011C594",
     "seed_store": "0x4011C576 MOVE.L D1,(A5)+",
-    "sample_slot_control_word": {
-      "address": "0x8000E5D6",
+    "pipeline_contract": "The store at the loop head writes the result prepared during the preceding iteration; the final store at 0x4011C596 flushes the last result.",
+    "sample_slot_control": {
+      "word_address": "0x8000E5D6",
       "value": "0x0200",
-      "containing_long": {
-        "address": "0x8000E5D4",
-        "value": "0x40000200"
-      },
-      "associated_seed_long": "0x8000F7C8",
-      "observed_seed_output": "0x1F0A0000"
+      "containing_long_address": "0x8000E5D4",
+      "containing_long_value": "0x40000200"
     },
-    "runtime_voice_long": {
-      "address": "0x8000F7CC",
-      "sample_slot_byte": "0x8000F7CE",
-      "actual_source_long": {
-        "address": "0x8000E5D8",
-        "value": "0x00000000"
-      },
-      "observed_output": "0x1F0A0000",
-      "observed_sample_slot_byte": "0x00"
+    "associated_runtime_output": {
+      "long_address": "0x8000F7CC",
+      "value_after_store": "0x1F0A0000",
+      "sample_slot_byte_address": "0x8000F7CE",
+      "sample_slot_byte_value": "0x00"
     },
-    "correction": "The earlier two-words-per-iteration lane estimate was off by one 32-bit pipeline stage. Control word 0x8000E5D6 feeds seed long 0x8000F7C8, while runtime voice long 0x8000F7CC is derived from source long 0x8000E5D8."
+    "correction_to_initial_trace_interpretation": "After accounting for the one-iteration pipeline, source long 0x8000E5D4 maps to output long 0x8000F7CC. There is no four-byte source/destination skew."
+  },
+  "low_lane_observation": {
+    "source_low_word": "0x0200",
+    "output_high_lane": "0x1F0A",
+    "output_low_lane": "0x0000",
+    "relevant_emac_sequence": "0x4011C56E, 0x4011C572, 0x4011C578, 0x4011C57E, followed by FROM_MAC at 0x4011C582 and 0x4011C586",
+    "conclusion": "The remaining sample-slot zero is produced by the low accumulator lane, not by a parameter index or buffer alignment error."
   },
   "smoothing_hypothesis": {
     "result": "RULED_OUT_FOR_THIS_BYTE",
@@ -66,10 +80,10 @@
     "note": "All 32 observed frames were 0x00.",
     "limit": "Repeated-body execution is a trace-only causal experiment, not a claim about physical interrupt cadence."
   },
-  "conclusion": "The ColdFire EMAC reset defect is fixed and the transform source map is exact. The remaining zero is not settling latency: the sample-slot setter writes 0x8000E5D6, but runtime byte 0x8000F7CE is sourced from the next control long beginning at 0x8000E5D8.",
+  "conclusion": "The ColdFire MASK reset defect is fixed, stock parameter/seed alignment is correct, and settling latency is ruled out. The remaining blocker is the EMAC dual-accumulator low lane, which converts the aligned Sample Slot input 0x0200 to output 0x0000.",
   "next_step": {
-    "name": "AR172_QEMU_SAMPLE_CONTROL_ALIGNMENT_GATE",
-    "objective": "Trace why mapped parameter 19 lands at 0x8000E5D6 while the voice record consumes the lane derived from 0x8000E5D8; distinguish a bridge-index interpretation error from missing project/factory layout initialization."
+    "name": "AR172_QEMU_EMAC_LOW_LANE_GATE",
+    "objective": "Decode the exact four EMAC instructions and expanded-lane operands for the Sample Slot pair, then compare QEMU's dual-accumulator/FI-mode behavior with the MCF5441x specification to distinguish a second CPU-model defect from missing coefficient initialization."
   },
   "downstream_input_milestone": {
     "name": "QWERTY_PAD_TRIGGERING",
