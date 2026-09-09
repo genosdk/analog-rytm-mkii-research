@@ -2,13 +2,13 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_VOICE_EVENT_STATE_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "BLOCKED_MISSING_ACTIVE_VOICE_STATE_AND_EVENT",
+  "status": "PASS_NATIVE_STATE_AND_EVENT_WITH_TRIGGER_HELD_TO_FIRST_ISR",
   "repository": "genosdk/analog-rytm-mkii-research",
   "fixture": {
     "kind": "locally extracted stock OS 1.72 MAIN; not committed",
     "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
   },
-  "native_observation": {
+  "released_before_first_isr_observation": {
     "aggregator_loop": "0x4011C8D8..0x4011C96E",
     "active_state_required_at_0x4011C8EC": 1,
     "state_table": "0x8000E508..0x8000E537",
@@ -19,13 +19,38 @@
     "track_0_state_address": "0x8000E508",
     "track_0_event_address": "0x8000E53C",
     "frame_mask_d3_at_0x4011C97C": "0x00000000",
-    "sustain_mask_d5_at_0x4011C97C": "0x00000000"
+    "sustain_mask_d5_at_0x4011C97C": "0x00000000",
+    "cause": "The original fixture released Trig 1 after 80 ms while the trace-only audio interrupt was deliberately delayed. Both stock note-on and note-off commands were therefore consumed before the first ISR."
+  },
+  "held_trigger_native_observation": {
+    "intervention_scope": "The panel trigger was held through the first delayed ISR. No voice-state, event-table, frame-mask, or runtime-record memory was injected.",
+    "voice_command": "0x401199FC",
+    "command_object": "0x41952EFC",
+    "command_words": [
+      "0x00000000",
+      "0x0000003C",
+      "0x00000064",
+      "0x00000001",
+      "0x00020381",
+      "0xFFFFFFFF",
+      "0x00000000",
+      "0x00000000",
+      "0x00000040"
+    ],
+    "decoded": "track 0, note 60, velocity 100, operation 1 (press)",
+    "track_0_state_after_voice_manager": "0x00000001",
+    "track_0_event_after_voice_manager": "0x00020381",
+    "trigger_event_bit_0x100_present": true,
+    "frame_mask_d3_at_0x4011C97C": "0x00000001",
+    "sustain_mask_d5_at_0x4011C97C": "0x00000000",
+    "conclusion": "The stock command path and voice manager natively produce the exact state/event condition required by the ISR aggregator. The earlier zero state was a fixture scheduling artifact."
   },
   "one_frame_contract": {
     "audio_routine": "0x40117A28",
     "current_frame_storage": "0x8000586C",
     "sample_predicate": "0x40117A78 tests bit 0 of the previous frame mask",
-    "conclusion": "The first post-trigger false predicate is expected only if the current frame mask is nonzero. Here the current frame mask is also zero, so frame delay is not the native blocker."
+    "held_trigger_first_frame": "current frame mask 0x00000001, previous frame mask 0x00000000, predicate 0x00000000",
+    "conclusion": "The first post-trigger false predicate is the expected one-frame delay. The native current frame mask is nonzero when the trigger remains held to the first ISR."
   },
   "causal_trace_only_intervention": {
     "track_0_state": "0x00000001",
@@ -52,7 +77,8 @@
       "0x4011B7EC sets state 2",
       "0x4011C086 and 0x4011C12C copy internal voice state into 0x8000E508"
     ],
-    "next_objective": "Trace the 0x4011B790 voice-manager loop and its 0x42AACA68-family state to find why the queued trigger is never promoted to active state 1."
+    "result": "Resolved: the held-trigger trace promotes track 0 to state 1 with event 0x00020381.",
+    "next_objective": "Trace why the 0x4011C542 transform overwrites the UI-staged runtime sample slot from 0x02 to 0x00 before 0x40117A78."
   },
   "github_actions": {
     "triggered_for_this_checkpoint": false,
@@ -61,5 +87,5 @@
   "railway": {
     "touched": false
   },
-  "safety": "Firmware bytes, project data, sample names, descriptor slabs, and proprietary PCM were not embedded, modified, or committed. All state/event and frame-delay interventions remained scratch-only."
+  "safety": "Firmware bytes, project data, sample names, descriptor slabs, and proprietary PCM were not embedded, modified, or committed. The passing held-trigger result used stock state/event production; earlier causal memory interventions remained scratch-only."
 }

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_RUNTIME_SAMPLE_LATCH_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PASS_PARAMETER_BRIDGE_BLOCKED_VOICE_STATE_AND_RUNTIME_LATCH",
+  "status": "PASS_PARAMETER_BRIDGE_AND_VOICE_STATE_BLOCKED_RUNTIME_TRANSFORM",
   "repository": "genosdk/analog-rytm-mkii-research",
   "fixture": {
     "kind": "locally extracted stock OS 1.72 MAIN; not committed",
@@ -61,7 +61,10 @@
     "base_expression_at_0x40117A72": "0x8000F776 + 84 * (track + 1)",
     "base": "0x8000F7CA",
     "sample_slot_byte": "0x8000F7CE",
-    "hardware_watchpoint_writes_observed": 0,
+    "held_trigger_hardware_watchpoint_writes": [
+      "0x40095C0C writes 0x02 before the audio transform",
+      "0x4011C578 writes 0x00 during the audio transform"
+    ],
     "first_four_longs_at_sample_branch": [
       "0x00000000",
       "0x00000000",
@@ -78,19 +81,33 @@
   "voice_event_prerequisite": {
     "state_table": "0x8000E508..0x8000E537",
     "event_table": "0x8000E53C..0x8000E56B",
-    "native_track_0_state": "0x00000000",
-    "native_track_0_event": "0x00000000",
+    "released_before_delayed_isr_track_0_state": "0x00000000",
+    "released_before_delayed_isr_track_0_event": "0x00000000",
+    "held_through_first_isr_track_0_state": "0x00000001",
+    "held_through_first_isr_track_0_event": "0x00020381",
     "required_active_state": "0x00000001",
     "trigger_event_flag": "0x00000100",
-    "native_frame_mask_d3": "0x00000000",
-    "native_sustain_mask_d5": "0x00000000",
+    "held_trigger_native_frame_mask_d3": "0x00000001",
+    "held_trigger_native_sustain_mask_d5": "0x00000000",
+    "fixture_timing_correction": "The prior fixture released Trig 1 before the deliberately delayed first audio ISR, so the stock release canceled the press before aggregation.",
     "causal_test": "Trace-only state=1 and event=0x100 for track 0 produced d3=1. Priming the known one-frame delay at 0x8000586C made 0x40117A78 true and reached 0x40117A7E.",
     "causal_test_limit": "The runtime slot remained zero for selected slots 1 and 2, so the event-state intervention does not solve the separate parameter latch."
   },
-  "conclusion": "The UI assignment, stock setter, parameter mapper, and audio control-bank write are complete. The current QEMU environment is missing both the active voice-event state consumed by the ISR aggregator and the conversion/latch of parameter 19 into the track runtime record.",
+  "held_trigger_transform_observation": {
+    "runtime_slot_before_transform": "0x02",
+    "write_before_transform": "0x40095C0C",
+    "transform_begin": "0x4011C542",
+    "clearing_write": "0x4011C578",
+    "runtime_slot_after_transform": "0x00",
+    "first_audio_frame_mask": "0x00000001",
+    "first_audio_previous_frame_mask": "0x00000000",
+    "first_sample_predicate": "0x00000000",
+    "conclusion": "The stock UI path does stage slot 2 in the runtime byte, and the native voice event is healthy. The audio transform then deterministically overwrites the staged slot with zero before sample selection."
+  },
+  "conclusion": "The UI assignment, stock setter, parameter mapper, control-bank write, and native voice-event production are complete. The remaining blocker is the 0x4011C542 transform path that replaces runtime sample slot 2 with zero at 0x4011C578.",
   "next_step": {
-    "name": "AR172_QEMU_VOICE_STATE_PRODUCER_GATE",
-    "objective": "Trace why the software voice command is not promoted into track state 1/event bit 8, then determine whether that same missing producer also supplies the parameter-19 runtime latch."
+    "name": "AR172_QEMU_RUNTIME_TRANSFORM_SOURCE_GATE",
+    "objective": "Identify the exact 0x8000E57C control word and 0x8000F774 seed inputs consumed by the ColdFire EMAC sequence at 0x4011C56E..0x4011C584, then determine why its output clears 0x8000F7CE."
   },
   "github_actions": {
     "triggered_for_this_checkpoint": false,
