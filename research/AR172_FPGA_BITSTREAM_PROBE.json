@@ -1,0 +1,56 @@
+{
+  "result": "PASS",
+  "fpga": {
+    "path": "research/extracted_stock_nrv/section_2_id_1.decompressed.bin",
+    "size": 149516,
+    "sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f"
+  },
+  "format": {
+    "bus_width": 16,
+    "preamble_ff_bytes": 32,
+    "sync_and_first_packet": "AA9930A1",
+    "array_idcode": "0x02218093",
+    "identified_device": "Xilinx XC3S200A Spartan-3A"
+  },
+  "fdri": {
+    "type2_header": "0x5060",
+    "word_count_16bit": 74658,
+    "byte_offset": 124,
+    "byte_length": 149316,
+    "end_byte_offset": 149440,
+    "device_frame_bits": 2208,
+    "device_frame_words_16bit": 138,
+    "device_configuration_frames": 540,
+    "transmitted_frame_sized_blocks": 541,
+    "extra_frame_sized_blocks_vs_device": 1,
+    "last_block_all_zero": true,
+    "all_zero_block_count": 77,
+    "first_five": [
+      {"index":0,"sha256":"0774c1279ad9ebb5dd68ad9123e4c9e0b8d6124585e6de061dd4fdb1e89bc4e3","population_count":8,"all_zero":false},
+      {"index":1,"sha256":"1b85afb3d7644634824376057d40f122022a40bc4fbf46fec4d33967308e4baf","population_count":6,"all_zero":false},
+      {"index":2,"sha256":"b0dea14855eb8508e5095bceb03fdfd8be078da642dd864d7953eb8a47609b20","population_count":7,"all_zero":false},
+      {"index":3,"sha256":"d489001ff88ed206b56f44bd0789a8332510f33bf40a312a7b2e5d60c3fe3e03","population_count":0,"all_zero":true},
+      {"index":4,"sha256":"2123715d4e20eccb9678aa60ca2aa85f5ce259115bc7d4104c1affa1a517b7ba","population_count":113,"all_zero":false}
+    ],
+    "last_five": [
+      {"index":536,"sha256":"85ad05fd675f1690dd5c7f50d89ca45a14318e53149f3f153acd578402da6153","population_count":315,"all_zero":false},
+      {"index":537,"sha256":"bd78811ad98a5429a39c9ade006ac65d222961ed2f18965def0259ec11893762","population_count":153,"all_zero":false},
+      {"index":538,"sha256":"a026eae2b5d675b28196cb97986e0015a02c6e52ad8d1f89375ebcd24357dc11","population_count":143,"all_zero":false},
+      {"index":539,"sha256":"cf99655582eadb0041c0bc94aaf1ad152ca539d2196fffadc25acfef04e22361","population_count":139,"all_zero":false},
+      {"index":540,"sha256":"d489001ff88ed206b56f44bd0789a8332510f33bf40a312a7b2e5d60c3fe3e03","population_count":0,"all_zero":true}
+    ]
+  },
+  "configuration_header": {
+    "idcode_write": ["0x31C2","0x0221","0x8093"],
+    "far_zero_write": ["0x3022","0x0000","0x0000"],
+    "wcfg": ["0x30A1","0x0001"],
+    "fdri_type2": ["0x5060","0x0001","0x23A2"]
+  },
+  "trailing_configuration_bytes": {
+    "length": 76,
+    "hex": "300200330ECD30A1000A30A10003200020002000200030A1000530E1008130C1008130020008549730A1000D2000200020002000200020002000200020002000200020002000200020002000"
+  },
+  "interpretation": "The OS payload is a complete XC3S200A configuration stream. The FDRI block contains 541 frame-sized chunks for a 540-frame device; the final chunk is all zero, consistent with a frame-sized pad/dummy block. A single bitstream does not by itself identify which configuration bits implement the BR command decoder.",
+  "next_target": "Use Spartan-3A bitstream databases/tooling (Project Combine spartan3 database) to map FDRI bits to tiles/PIPs/LUTs, then trace the DSPI command receiver around the BR control field. Hardware BR audio characterization remains the independent oracle.",
+  "safety": "Read-only FPGA bitstream inspection; no configuration bits are modified."
+}
