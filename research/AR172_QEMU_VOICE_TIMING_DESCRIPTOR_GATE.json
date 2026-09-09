@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_VOICE_TIMING_DESCRIPTOR_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_PRODUCER_PATH_MAPPED_BLOCKED_EMPTY_PROJECT_AUDIO_PROFILE",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "trigger_record": {
+    "builder": "0x40081008..0x400811C8",
+    "voice_command": "0x401199FC",
+    "observed_words": [
+      "0x00000000",
+      "0x0000003C",
+      "0x00000064",
+      "0x00000001",
+      "0x00020381",
+      "0xFFFFFFFF",
+      "0x00000000",
+      "0x00000000",
+      "0x00000040"
+    ],
+    "correction": "The zero longwords at command offsets +0x18 and +0x1C are written deliberately by the stock trigger builder. They are not evidence of a malformed panel event or failed Sample Slot setter."
+  },
+  "fallback_activation": {
+    "writer": "0x401188C6..0x40118AF0",
+    "object": "0x42AC4038",
+    "observed_words_before_consume": [
+      "0x00000001",
+      "0x64000000",
+      "0x003C0000",
+      "0x00000000",
+      "0x00000000",
+      "0x00020381",
+      "0xFFFFFFFF",
+      "0x00000000",
+      "0x00000000"
+    ],
+    "descriptor_writer": "0x4011BDE8 / 0x4011BE06",
+    "result": "The fallback correctly publishes the command's zero +0x18/+0x1C fields, then is consumed and cleared. It is a transient trigger record, not the persistent voice descriptor producer."
+  },
+  "persistent_descriptor_path": {
+    "source_table": "0x42AA7318",
+    "source_geometry": "13 records by 56 bytes",
+    "destination_table": "0x42AABED0",
+    "destination_geometry": "13 tracks by 4 voices by 56 bytes",
+    "native_initializer": "0x40097106..0x40097298",
+    "native_callsite": "0x4009BC90 on project/audio-profile state 3",
+    "primary_runtime_writer": "0x4011B9A0 / 0x4011B9B0",
+    "runtime_outputs": {
+      "timing_value_table": "0x8000E4A0",
+      "seed_value_table": "0x8000E46C"
+    },
+    "semantic_correction": "The runtime fields are scalar timing/coefficient seed values. The coefficient builder multiplies the timing value by 9000 and copies the seed value; they are not dereferenced as guest pointers."
+  },
+  "live_trace": {
+    "sample_slot": 2,
+    "sample_slot_q8": "0x00000200",
+    "audio_timeline_irq44_hits_before_result": 1911,
+    "audio_timeline_irq57_hits_before_result": 1911,
+    "project_profile_service_0x4009729A_hits": 0,
+    "profile_ready_final": "0x42AA76D4 = 0x00000001",
+    "source_track0_record": "all zero",
+    "persistent_track0_voice0_record": "all zero",
+    "runtime_timing_value": "0x00000000",
+    "runtime_seed_value": "0x00000000",
+    "conclusion": "The Type-8 bootstrap successfully starts both stock audio-timeline interrupts, but the blank headless project never emits the state-3 project/audio-profile transition that initializes the persistent descriptor table. The remaining gap is project audio-profile activation, not another interrupt, EMAC, panel, or Sample Slot defect."
+  },
+  "next_step": {
+    "name": "AR172_QEMU_PROJECT_AUDIO_PROFILE_GATE",
+    "objective": "Construct the smallest emulator-generated track-0 audio-profile source record, deliver the native state-3 initialization transition so 0x40097106 copies it into the persistent voice table, and then rerun the packed sample consumer without directly patching 0x8000E4A0 or 0x8000E46C."
+  },
+  "desktop_input_milestone": {
+    "sequence": "Immediately after the native sample voice reaches the consumer gate.",
+    "qwerty": "Map host key-down and key-up events to the already validated panel press/release frames, with auto-repeat suppression and focus-loss release cleanup.",
+    "virtual_knobs": "Replace encoder +/- controls with mouse-grabbable knobs. Vertical drag and wheel input maintain a clamped 0..127 host value and emit only the corresponding validated signed encoder deltas to firmware."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "No firmware, extracted MAIN, project data, sample names, descriptor slabs, or proprietary PCM are included. All runtime observation and control-flow experiments remained local and trace-only."
+}
