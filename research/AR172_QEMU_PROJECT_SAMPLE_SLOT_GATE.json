@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_PROJECT_SAMPLE_SLOT_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_SAMPLE_SLOT_UI_AND_EMPTY_TABLE_BOUNDARY",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "sample_page": {
+    "object": "0x41B5FA60",
+    "vtable": "0x401CE138",
+    "parameter_refresh": "0x400CECE6",
+    "sample_slot_parameter_id": "0x29",
+    "encoding": "Q8 fixed point",
+    "picker_index_conversion": "arithmetic shift right by 8",
+    "observed_blank_project_raw_value": "0x00000000",
+    "meaning": "OFF"
+  },
+  "picker_dispatch": {
+    "key_handler": "0x400CF2DC",
+    "smp_event_id": "0x32",
+    "qualifier_bit": "KeyEvent flags bit 1",
+    "show_and_update_entry": "0x400CEE30",
+    "constructor": "0x400E0526",
+    "control_index": 3,
+    "entry_count": 128,
+    "domain": "OFF plus sample slots 1..127",
+    "live_constructor_arguments": {
+      "object": "0x41BE5170",
+      "track": 0,
+      "slot": 0,
+      "control_index": 3,
+      "x": 70,
+      "y": 58,
+      "enabled": 1
+    }
+  },
+  "blank_project_runtime": {
+    "sample_context": "0x41AE8428",
+    "project_parameter_provider": 0,
+    "name_pointer_table": {
+      "base": "0x41928DCC",
+      "stride_bytes": 4,
+      "accessor": "0x40099FAA",
+      "observed_entries_0_15": "all 0x40228E97",
+      "shared_target": "empty string"
+    },
+    "packed_metadata_table": {
+      "base": "0x419289CC",
+      "stride_bytes": 4,
+      "accessor": "0x40099FBA",
+      "observed_entries_0_15": "all zero"
+    }
+  },
+  "sentinels": {
+    "index_0": "OFF",
+    "empty_slot": "---",
+    "blank_name_pointer": "0x40228E97"
+  },
+  "empty_predicate": "Slot 0 is OFF. For indices 1..127, a null name pointer or a pointer to a zero-length string is treated as empty and rendered as ---.",
+  "trace_method": {
+    "normal_path": "boot, dismiss startup modal with NO, open SMP page",
+    "picker_path": "stock key handler and stock picker code",
+    "trace_only_intervention": "GDB set KeyEvent flags bit 1 on one SMP press because the minimal panel bridge does not yet synthesize that higher-level qualifier",
+    "persistent_guest_or_emulator_change": false
+  },
+  "implementation": {
+    "script": "research/sample_slot_trace.py",
+    "tests": "research.test_research.SampleSlotTraceTests",
+    "result": "PASS"
+  },
+  "next_step": {
+    "name": "AR172_QEMU_RAM_SAMPLE_DESCRIPTOR_GATE",
+    "objective": "Trace the writer that replaces one blank name pointer and zero packed-metadata entry with a minimal non-proprietary RAM sample descriptor, then prove a non-OFF slot is accepted without factory PCM."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Local signature and runtime proof first; push with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Firmware bytes, project data, factory sample names, descriptor slabs, and PCM were not embedded, modified, or committed."
+}

@@ -1,0 +1,3918 @@
+{
+  "result": "PASS",
+  "fpga": {
+    "path": "research/extracted_stock_nrv/section_2_id_1.decompressed.bin",
+    "sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f"
+  },
+  "device": {
+    "part": "XC3S200A",
+    "package": "VQ100",
+    "bond": "BOND57"
+  },
+  "coordinate_source": {
+    "project": "Project Combine",
+    "commit": "234343d23e737e57f2727630e19008b509d7d522",
+    "database": "databases/spartan3.txt",
+    "placement": "public/virtex2/src/expanded.rs",
+    "logical_iob_mapping": "public/virtex2/src/iob.rs"
+  },
+  "geometry": {
+    "west": "term_w_frame=4; four Vertical(rev 2, rev 64) rectangles",
+    "east": "term_e_frame=348; four Vertical(rev 2, rev 64) rectangles",
+    "south": "owning column frame; two Vertical(rev 19, rev 6) rectangles at bit 0",
+    "north": "owning column frame; two Vertical(rev 19, rev 6) rectangles at bit 2192",
+    "bram_column_fixups": {
+      "3": 502,
+      "4": 350,
+      "5": 369,
+      "6": 388,
+      "19": 521,
+      "20": 426,
+      "21": 445,
+      "22": 464
+    }
+  },
+  "summary": {
+    "bonded_user_pins": 68,
+    "directions": {
+      "bidirectional": 2,
+      "input": 15,
+      "output": 8,
+      "unused": 37,
+      "unused-input-only": 6
+    },
+    "ibuf_modes": {
+      "CMOS_VCCO": 12,
+      "DIFF": 5,
+      "NONE": 51
+    },
+    "output_enable_values": {
+      "0": 52,
+      "1": 2,
+      "3": 8,
+      "None": 6
+    },
+    "ibuf_enum_is_exhaustive": true
+  },
+  "inventory": [
+    {
+      "package_pin": 3,
+      "edge_iob": "IOB_W32_1",
+      "side": "W",
+      "coordinate": 32,
+      "iob_index": 1,
+      "internal_bel": "IOB[7]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 2089,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 2085,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 2086,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 4,
+          "bit": 2081,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 2079,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 4,
+      "edge_iob": "IOB_W32_0",
+      "side": "W",
+      "coordinate": 32,
+      "iob_index": 0,
+      "internal_bel": "IOB[6]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 2109,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 2113,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 4,
+          "bit": 2113,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 2119,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 2120,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 5,
+      "edge_iob": "IOB_W30_1",
+      "side": "W",
+      "coordinate": 30,
+      "iob_index": 1,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1978,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1975,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1974,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1967,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1969,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 6,
+      "edge_iob": "IOB_W30_0",
+      "side": "W",
+      "coordinate": 30,
+      "iob_index": 0,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1993,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1872,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1873,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1879,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1880,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 7,
+      "edge_iob": "IOB_W29_0",
+      "side": "W",
+      "coordinate": 29,
+      "iob_index": 0,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "input-only",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": null,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused-input-only",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1922,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1923,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1924,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": []
+    },
+    {
+      "package_pin": 9,
+      "edge_iob": "IOB_W19_1",
+      "side": "W",
+      "coordinate": 19,
+      "iob_index": 1,
+      "internal_bel": "IOB[5]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1266,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1262,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1261,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1255,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1256,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 10,
+      "edge_iob": "IOB_W19_0",
+      "side": "W",
+      "coordinate": 19,
+      "iob_index": 0,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 4,
+          "bit": 1288,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1288,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1289,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1295,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1168,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 12,
+      "edge_iob": "IOB_W18_1",
+      "side": "W",
+      "coordinate": 18,
+      "iob_index": 1,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1210,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1207,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1206,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1199,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1201,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 13,
+      "edge_iob": "IOB_W18_0",
+      "side": "W",
+      "coordinate": 18,
+      "iob_index": 0,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1225,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1104,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1105,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1111,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1112,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 15,
+      "edge_iob": "IOB_W15_1",
+      "side": "W",
+      "coordinate": 15,
+      "iob_index": 1,
+      "internal_bel": "IOB[5]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1010,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1006,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1005,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 999,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1000,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 16,
+      "edge_iob": "IOB_W15_0",
+      "side": "W",
+      "coordinate": 15,
+      "iob_index": 0,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 4,
+          "bit": 1032,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 1032,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 1033,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 1039,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 912,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 19,
+      "edge_iob": "IOB_W2_1",
+      "side": "W",
+      "coordinate": 2,
+      "iob_index": 1,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 186,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 183,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 182,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 175,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 177,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 20,
+      "edge_iob": "IOB_W2_0",
+      "side": "W",
+      "coordinate": 2,
+      "iob_index": 0,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 201,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 80,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 81,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 87,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 88,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 21,
+      "edge_iob": "IOB_W1_1",
+      "side": "W",
+      "coordinate": 1,
+      "iob_index": 1,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "input-only",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": null,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused-input-only",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 5,
+          "bit": 116,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 5,
+          "bit": 113,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 5,
+          "bit": 112,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": []
+    },
+    {
+      "package_pin": 23,
+      "edge_iob": "IOB_S1_0",
+      "side": "S",
+      "coordinate": 1,
+      "iob_index": 0,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "M1",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 30,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 29,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 29,
+          "bit": 2,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 28,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 28,
+          "bit": 4,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 24,
+      "edge_iob": "IOB_S2_0",
+      "side": "S",
+      "coordinate": 2,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "M2",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 52,
+          "bit": 2,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 49,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 49,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 50,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 50,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 25,
+      "edge_iob": "IOB_S1_1",
+      "side": "S",
+      "coordinate": 1,
+      "iob_index": 1,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": "M0",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 37,
+          "bit": 5,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 38,
+          "bit": 1,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 38,
+          "bit": 2,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 39,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 39,
+          "bit": 4,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 27,
+      "edge_iob": "IOB_S2_1",
+      "side": "S",
+      "coordinate": 2,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": "CSO_B",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 57,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 56,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 56,
+          "bit": 1,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 61,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 61,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 28,
+      "edge_iob": "IOB_S3_0",
+      "side": "S",
+      "coordinate": 3,
+      "iob_index": 0,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "RDWR_B",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 507,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 506,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 506,
+          "bit": 2,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 505,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 505,
+          "bit": 4,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 29,
+      "edge_iob": "IOB_S3_1",
+      "side": "S",
+      "coordinate": 3,
+      "iob_index": 1,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 1,
+      "input_enabled": true,
+      "output_enabled": true,
+      "direction": "bidirectional",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 514,
+          "bit": 5,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 515,
+          "bit": 1,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 515,
+          "bit": 2,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 516,
+          "bit": 3,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 516,
+          "bit": 4,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 30,
+      "edge_iob": "IOB_S5_0",
+      "side": "S",
+      "coordinate": 5,
+      "iob_index": 0,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 374,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 373,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 373,
+          "bit": 2,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 372,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 372,
+          "bit": 4,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 31,
+      "edge_iob": "IOB_S5_1",
+      "side": "S",
+      "coordinate": 5,
+      "iob_index": 1,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 381,
+          "bit": 5,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 382,
+          "bit": 1,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 382,
+          "bit": 2,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 383,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 383,
+          "bit": 4,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 32,
+      "edge_iob": "IOB_S6_0",
+      "side": "S",
+      "coordinate": 6,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 396,
+          "bit": 2,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 393,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 393,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 394,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 394,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 33,
+      "edge_iob": "IOB_S6_1",
+      "side": "S",
+      "coordinate": 6,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 6,
+      "ibuf_mode": "DIFF",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 401,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 400,
+          "bit": 0,
+          "value": 1
+        },
+        {
+          "vector_bit": 2,
+          "frame": 400,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 405,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 405,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 34,
+      "edge_iob": "IOB_S8_0",
+      "side": "S",
+      "coordinate": 8,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "D7",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 90,
+          "bit": 2,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 87,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 87,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 88,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 88,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 35,
+      "edge_iob": "IOB_S8_1",
+      "side": "S",
+      "coordinate": 8,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 6,
+      "ibuf_mode": "DIFF",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "D6",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 95,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 94,
+          "bit": 0,
+          "value": 1
+        },
+        {
+          "vector_bit": 2,
+          "frame": 94,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 99,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 99,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 36,
+      "edge_iob": "IOB_S10_0",
+      "side": "S",
+      "coordinate": 10,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "D5",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 128,
+          "bit": 2,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 125,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 125,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 126,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 126,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 37,
+      "edge_iob": "IOB_S10_1",
+      "side": "S",
+      "coordinate": 10,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 6,
+      "ibuf_mode": "DIFF",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "D4",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 133,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 132,
+          "bit": 0,
+          "value": 1
+        },
+        {
+          "vector_bit": 2,
+          "frame": 132,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 137,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 137,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 39,
+      "edge_iob": "IOB_S11_2",
+      "side": "S",
+      "coordinate": 11,
+      "iob_index": 2,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "input-only",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": null,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused-input-only",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 139,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 139,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 139,
+          "bit": 2,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": []
+    },
+    {
+      "package_pin": 40,
+      "edge_iob": "IOB_S12_0",
+      "side": "S",
+      "coordinate": 12,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": "GCLK6",
+      "shared_config": "D3",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 166,
+          "bit": 2,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 163,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 163,
+          "bit": 1,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 164,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 164,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 41,
+      "edge_iob": "IOB_S12_1",
+      "side": "S",
+      "coordinate": 12,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 6,
+      "ibuf_mode": "DIFF",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": "GCLK7",
+      "shared_config": "D2",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 171,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 170,
+          "bit": 0,
+          "value": 1
+        },
+        {
+          "vector_bit": 2,
+          "frame": 170,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 175,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 175,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 43,
+      "edge_iob": "IOB_S13_0",
+      "side": "S",
+      "coordinate": 13,
+      "iob_index": 0,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": "GCLK0",
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 182,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 181,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 181,
+          "bit": 2,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 180,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 180,
+          "bit": 4,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 44,
+      "edge_iob": "IOB_S13_1",
+      "side": "S",
+      "coordinate": 13,
+      "iob_index": 1,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 1,
+      "input_enabled": true,
+      "output_enabled": true,
+      "direction": "bidirectional",
+      "clock_capability": "GCLK1",
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 189,
+          "bit": 5,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 190,
+          "bit": 1,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 190,
+          "bit": 2,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 191,
+          "bit": 3,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 191,
+          "bit": 4,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 46,
+      "edge_iob": "IOB_S16_1",
+      "side": "S",
+      "coordinate": 16,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": "CSI_B",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 247,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 246,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 246,
+          "bit": 1,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 251,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 251,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 48,
+      "edge_iob": "IOB_S20_0",
+      "side": "S",
+      "coordinate": 20,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": "INIT_B",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 434,
+          "bit": 2,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 431,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 431,
+          "bit": 1,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 432,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 432,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 49,
+      "edge_iob": "IOB_S20_1",
+      "side": "S",
+      "coordinate": 20,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": "D3",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 439,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 438,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 438,
+          "bit": 1,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 443,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 443,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 50,
+      "edge_iob": "IOB_S22_0",
+      "side": "S",
+      "coordinate": 22,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 4,
+      "ibuf_mode": "CMOS_VCCO",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "D2",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 472,
+          "bit": 2,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 469,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 469,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 470,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 470,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 51,
+      "edge_iob": "IOB_S24_0",
+      "side": "S",
+      "coordinate": 24,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": "D0",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 318,
+          "bit": 2,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 315,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 315,
+          "bit": 1,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 316,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 316,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 52,
+      "edge_iob": "IOB_S22_1",
+      "side": "S",
+      "coordinate": 22,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 6,
+      "ibuf_mode": "DIFF",
+      "output_enable_value": 0,
+      "input_enabled": true,
+      "output_enabled": false,
+      "direction": "input",
+      "clock_capability": null,
+      "shared_config": "D1",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 477,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 476,
+          "bit": 0,
+          "value": 1
+        },
+        {
+          "vector_bit": 2,
+          "frame": 476,
+          "bit": 1,
+          "value": 1
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 481,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 481,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 53,
+      "edge_iob": "IOB_S24_1",
+      "side": "S",
+      "coordinate": 24,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": "CCLK",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 323,
+          "bit": 3,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 322,
+          "bit": 0,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 322,
+          "bit": 1,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 327,
+          "bit": 4,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 327,
+          "bit": 5,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 56,
+      "edge_iob": "IOB_E3_0",
+      "side": "E",
+      "coordinate": 3,
+      "iob_index": 0,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 229,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 232,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 233,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 238,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 240,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 57,
+      "edge_iob": "IOB_E3_1",
+      "side": "E",
+      "coordinate": 3,
+      "iob_index": 1,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 214,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 335,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 334,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 327,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 328,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 59,
+      "edge_iob": "IOB_E14_0",
+      "side": "E",
+      "coordinate": 14,
+      "iob_index": 0,
+      "internal_bel": "IOB[5]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 941,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 945,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 946,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 951,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 952,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 60,
+      "edge_iob": "IOB_E14_1",
+      "side": "E",
+      "coordinate": 14,
+      "iob_index": 1,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 348,
+          "bit": 919,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 919,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 918,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1039,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 912,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 61,
+      "edge_iob": "IOB_E15_0",
+      "side": "E",
+      "coordinate": 15,
+      "iob_index": 0,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 997,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1000,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 1001,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1006,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1008,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 62,
+      "edge_iob": "IOB_E15_1",
+      "side": "E",
+      "coordinate": 15,
+      "iob_index": 1,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 982,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1103,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 1102,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1095,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1096,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 64,
+      "edge_iob": "IOB_E18_0",
+      "side": "E",
+      "coordinate": 18,
+      "iob_index": 0,
+      "internal_bel": "IOB[5]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1197,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1201,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 1202,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1207,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1208,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 65,
+      "edge_iob": "IOB_E18_1",
+      "side": "E",
+      "coordinate": 18,
+      "iob_index": 1,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 348,
+          "bit": 1175,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1175,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 1174,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1295,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1168,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 68,
+      "edge_iob": "IOB_E28_0",
+      "side": "E",
+      "coordinate": 28,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "input-only",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": null,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused-input-only",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1835,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1838,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 1839,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": []
+    },
+    {
+      "package_pin": 70,
+      "edge_iob": "IOB_E29_0",
+      "side": "E",
+      "coordinate": 29,
+      "iob_index": 0,
+      "internal_bel": "IOB[7]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1910,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1914,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 1913,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 348,
+          "bit": 1918,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1920,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 71,
+      "edge_iob": "IOB_E29_1",
+      "side": "E",
+      "coordinate": 29,
+      "iob_index": 1,
+      "internal_bel": "IOB[6]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1890,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1886,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 348,
+          "bit": 1886,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 1879,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 1880,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 72,
+      "edge_iob": "IOB_E31_0",
+      "side": "E",
+      "coordinate": 31,
+      "iob_index": 0,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 2021,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 2024,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 2025,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 2030,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 2032,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 73,
+      "edge_iob": "IOB_E31_1",
+      "side": "E",
+      "coordinate": 31,
+      "iob_index": 1,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 2006,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 2127,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 349,
+          "bit": 2126,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 349,
+          "bit": 2119,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 349,
+          "bit": 2120,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 77,
+      "edge_iob": "IOB_N23_1",
+      "side": "N",
+      "coordinate": 23,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 3,
+      "input_enabled": false,
+      "output_enabled": true,
+      "direction": "output",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 297,
+          "bit": 2196,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 295,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 295,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 293,
+          "bit": 2196,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 294,
+          "bit": 2193,
+          "value": 1
+        }
+      ]
+    },
+    {
+      "package_pin": 78,
+      "edge_iob": "IOB_N23_0",
+      "side": "N",
+      "coordinate": 23,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 3,
+      "input_enabled": false,
+      "output_enabled": true,
+      "direction": "output",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 304,
+          "bit": 2193,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 305,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 305,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 306,
+          "bit": 2196,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 307,
+          "bit": 2193,
+          "value": 1
+        }
+      ]
+    },
+    {
+      "package_pin": 82,
+      "edge_iob": "IOB_N13_2",
+      "side": "N",
+      "coordinate": 13,
+      "iob_index": 2,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "input-only",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": null,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused-input-only",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 196,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 196,
+          "bit": 2195,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 196,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": []
+    },
+    {
+      "package_pin": 83,
+      "edge_iob": "IOB_N14_1",
+      "side": "N",
+      "coordinate": 14,
+      "iob_index": 1,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 206,
+          "bit": 2192,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 209,
+          "bit": 2192,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 201,
+          "bit": 2193,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 212,
+          "bit": 2195,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 213,
+          "bit": 2192,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 84,
+      "edge_iob": "IOB_N14_0",
+      "side": "N",
+      "coordinate": 14,
+      "iob_index": 0,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 205,
+          "bit": 2196,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 203,
+          "bit": 2193,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 205,
+          "bit": 2193,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 200,
+          "bit": 2195,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 202,
+          "bit": 2193,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 85,
+      "edge_iob": "IOB_N13_1",
+      "side": "N",
+      "coordinate": 13,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 3,
+      "input_enabled": false,
+      "output_enabled": true,
+      "direction": "output",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 183,
+          "bit": 2196,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 181,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 181,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 179,
+          "bit": 2196,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 180,
+          "bit": 2193,
+          "value": 1
+        }
+      ]
+    },
+    {
+      "package_pin": 86,
+      "edge_iob": "IOB_N13_0",
+      "side": "N",
+      "coordinate": 13,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 3,
+      "input_enabled": false,
+      "output_enabled": true,
+      "direction": "output",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 190,
+          "bit": 2193,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 191,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 191,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 192,
+          "bit": 2196,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 193,
+          "bit": 2193,
+          "value": 1
+        }
+      ]
+    },
+    {
+      "package_pin": 88,
+      "edge_iob": "IOB_N12_1",
+      "side": "N",
+      "coordinate": 12,
+      "iob_index": 1,
+      "internal_bel": "IOB[4]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 168,
+          "bit": 2192,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 171,
+          "bit": 2192,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 163,
+          "bit": 2193,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 174,
+          "bit": 2195,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 175,
+          "bit": 2192,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 89,
+      "edge_iob": "IOB_N12_0",
+      "side": "N",
+      "coordinate": 12,
+      "iob_index": 0,
+      "internal_bel": "IOB[3]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 167,
+          "bit": 2196,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 165,
+          "bit": 2193,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 167,
+          "bit": 2193,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 162,
+          "bit": 2195,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 164,
+          "bit": 2193,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 90,
+      "edge_iob": "IOB_N11_0",
+      "side": "N",
+      "coordinate": 11,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 0,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 152,
+          "bit": 2193,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 153,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 153,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 154,
+          "bit": 2196,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 155,
+          "bit": 2193,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "package_pin": 93,
+      "edge_iob": "IOB_N5_1",
+      "side": "N",
+      "coordinate": 5,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 3,
+      "input_enabled": false,
+      "output_enabled": true,
+      "direction": "output",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 375,
+          "bit": 2196,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 373,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 373,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 371,
+          "bit": 2196,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 372,
+          "bit": 2193,
+          "value": 1
+        }
+      ]
+    },
+    {
+      "package_pin": 94,
+      "edge_iob": "IOB_N5_0",
+      "side": "N",
+      "coordinate": 5,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 3,
+      "input_enabled": false,
+      "output_enabled": true,
+      "direction": "output",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 382,
+          "bit": 2193,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 383,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 383,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 384,
+          "bit": 2196,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 385,
+          "bit": 2193,
+          "value": 1
+        }
+      ]
+    },
+    {
+      "package_pin": 97,
+      "edge_iob": "IOB_N1_2",
+      "side": "N",
+      "coordinate": 1,
+      "iob_index": 2,
+      "internal_bel": "IOB[2]",
+      "physical_kind": "input-only",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": null,
+      "input_enabled": false,
+      "output_enabled": false,
+      "direction": "unused-input-only",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 44,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 44,
+          "bit": 2195,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 44,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": []
+    },
+    {
+      "package_pin": 98,
+      "edge_iob": "IOB_N1_1",
+      "side": "N",
+      "coordinate": 1,
+      "iob_index": 1,
+      "internal_bel": "IOB[0]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 3,
+      "input_enabled": false,
+      "output_enabled": true,
+      "direction": "output",
+      "clock_capability": null,
+      "shared_config": null,
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 31,
+          "bit": 2196,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 29,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 29,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 27,
+          "bit": 2196,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 28,
+          "bit": 2193,
+          "value": 1
+        }
+      ]
+    },
+    {
+      "package_pin": 99,
+      "edge_iob": "IOB_N1_0",
+      "side": "N",
+      "coordinate": 1,
+      "iob_index": 0,
+      "internal_bel": "IOB[1]",
+      "physical_kind": "iob",
+      "ibuf_mode_value": 0,
+      "ibuf_mode": "NONE",
+      "output_enable_value": 3,
+      "input_enabled": false,
+      "output_enabled": true,
+      "direction": "output",
+      "clock_capability": null,
+      "shared_config": "HSWAP_EN",
+      "ibuf_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 38,
+          "bit": 2193,
+          "value": 0
+        },
+        {
+          "vector_bit": 1,
+          "frame": 39,
+          "bit": 2194,
+          "value": 0
+        },
+        {
+          "vector_bit": 2,
+          "frame": 39,
+          "bit": 2196,
+          "value": 0
+        }
+      ],
+      "output_enable_evidence": [
+        {
+          "vector_bit": 0,
+          "frame": 40,
+          "bit": 2196,
+          "value": 1
+        },
+        {
+          "vector_bit": 1,
+          "frame": 41,
+          "bit": 2193,
+          "value": 1
+        }
+      ]
+    }
+  ],
+  "dspi_candidate_clusters": [
+    {
+      "rank_score": 32,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P28 / IOB_S3_0",
+        "P30 / IOB_S5_0",
+        "P31 / IOB_S5_1"
+      ],
+      "package_pins": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "package_span": 3,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 2,
+      "clock_capable_inputs": [],
+      "rank": 1
+    },
+    {
+      "rank_score": 33,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P30 / IOB_S5_0",
+        "P31 / IOB_S5_1",
+        "P32 / IOB_S6_0"
+      ],
+      "package_pins": [
+        29,
+        30,
+        31,
+        32
+      ],
+      "package_span": 3,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 2
+    },
+    {
+      "rank_score": 43,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P28 / IOB_S3_0",
+        "P30 / IOB_S5_0",
+        "P32 / IOB_S6_0"
+      ],
+      "package_pins": [
+        28,
+        29,
+        30,
+        32
+      ],
+      "package_span": 4,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 3
+    },
+    {
+      "rank_score": 43,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P28 / IOB_S3_0",
+        "P31 / IOB_S5_1",
+        "P32 / IOB_S6_0"
+      ],
+      "package_pins": [
+        28,
+        29,
+        31,
+        32
+      ],
+      "package_span": 4,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 4
+    },
+    {
+      "rank_score": 43,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P30 / IOB_S5_0",
+        "P31 / IOB_S5_1",
+        "P33 / IOB_S6_1"
+      ],
+      "package_pins": [
+        29,
+        30,
+        31,
+        33
+      ],
+      "package_span": 4,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 5
+    },
+    {
+      "rank_score": 43,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P30 / IOB_S5_0",
+        "P32 / IOB_S6_0",
+        "P33 / IOB_S6_1"
+      ],
+      "package_pins": [
+        29,
+        30,
+        32,
+        33
+      ],
+      "package_span": 4,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 6
+    },
+    {
+      "rank_score": 43,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P31 / IOB_S5_1",
+        "P32 / IOB_S6_0",
+        "P33 / IOB_S6_1"
+      ],
+      "package_pins": [
+        29,
+        31,
+        32,
+        33
+      ],
+      "package_span": 4,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 7
+    },
+    {
+      "rank_score": 53,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P28 / IOB_S3_0",
+        "P30 / IOB_S5_0",
+        "P33 / IOB_S6_1"
+      ],
+      "package_pins": [
+        28,
+        29,
+        30,
+        33
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 8
+    },
+    {
+      "rank_score": 53,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P28 / IOB_S3_0",
+        "P31 / IOB_S5_1",
+        "P33 / IOB_S6_1"
+      ],
+      "package_pins": [
+        28,
+        29,
+        31,
+        33
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 9
+    },
+    {
+      "rank_score": 53,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P28 / IOB_S3_0",
+        "P32 / IOB_S6_0",
+        "P33 / IOB_S6_1"
+      ],
+      "package_pins": [
+        28,
+        29,
+        32,
+        33
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 10
+    },
+    {
+      "rank_score": 55,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P30 / IOB_S5_0",
+        "P31 / IOB_S5_1",
+        "P34 / IOB_S8_0"
+      ],
+      "package_pins": [
+        29,
+        30,
+        31,
+        34
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 5,
+      "clock_capable_inputs": [],
+      "rank": 11
+    },
+    {
+      "rank_score": 55,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P30 / IOB_S5_0",
+        "P32 / IOB_S6_0",
+        "P34 / IOB_S8_0"
+      ],
+      "package_pins": [
+        29,
+        30,
+        32,
+        34
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 5,
+      "clock_capable_inputs": [],
+      "rank": 12
+    },
+    {
+      "rank_score": 55,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P30 / IOB_S5_0",
+        "P33 / IOB_S6_1",
+        "P34 / IOB_S8_0"
+      ],
+      "package_pins": [
+        29,
+        30,
+        33,
+        34
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 5,
+      "clock_capable_inputs": [],
+      "rank": 13
+    },
+    {
+      "rank_score": 55,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P31 / IOB_S5_1",
+        "P32 / IOB_S6_0",
+        "P34 / IOB_S8_0"
+      ],
+      "package_pins": [
+        29,
+        31,
+        32,
+        34
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 5,
+      "clock_capable_inputs": [],
+      "rank": 14
+    },
+    {
+      "rank_score": 55,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P31 / IOB_S5_1",
+        "P33 / IOB_S6_1",
+        "P34 / IOB_S8_0"
+      ],
+      "package_pins": [
+        29,
+        31,
+        33,
+        34
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 5,
+      "clock_capable_inputs": [],
+      "rank": 15
+    },
+    {
+      "rank_score": 55,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P32 / IOB_S6_0",
+        "P33 / IOB_S6_1",
+        "P34 / IOB_S8_0"
+      ],
+      "package_pins": [
+        29,
+        32,
+        33,
+        34
+      ],
+      "package_span": 5,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 5,
+      "clock_capable_inputs": [],
+      "rank": 16
+    },
+    {
+      "rank_score": 62,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P23 / IOB_S1_0",
+        "P24 / IOB_S2_0",
+        "P28 / IOB_S3_0"
+      ],
+      "package_pins": [
+        23,
+        24,
+        28,
+        29
+      ],
+      "package_span": 6,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 2,
+      "clock_capable_inputs": [],
+      "rank": 17
+    },
+    {
+      "rank_score": 63,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P24 / IOB_S2_0",
+        "P28 / IOB_S3_0",
+        "P30 / IOB_S5_0"
+      ],
+      "package_pins": [
+        24,
+        28,
+        29,
+        30
+      ],
+      "package_span": 6,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 3,
+      "clock_capable_inputs": [],
+      "rank": 18
+    },
+    {
+      "rank_score": 65,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P28 / IOB_S3_0",
+        "P30 / IOB_S5_0",
+        "P34 / IOB_S8_0"
+      ],
+      "package_pins": [
+        28,
+        29,
+        30,
+        34
+      ],
+      "package_span": 6,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 5,
+      "clock_capable_inputs": [],
+      "rank": 19
+    },
+    {
+      "rank_score": 65,
+      "sin_output": "P29 / IOB_S3_1",
+      "mcu_to_fpga_inputs_unassigned": [
+        "P28 / IOB_S3_0",
+        "P31 / IOB_S5_1",
+        "P34 / IOB_S8_0"
+      ],
+      "package_pins": [
+        28,
+        29,
+        31,
+        34
+      ],
+      "package_span": 6,
+      "sides": [
+        "S"
+      ],
+      "edge_coordinate_span": 5,
+      "clock_capable_inputs": [],
+      "rank": 20
+    }
+  ],
+  "best_clock_capable_dspi_candidate": {
+    "rank_score": 65,
+    "sin_output": "P44 / IOB_S13_1",
+    "mcu_to_fpga_inputs_unassigned": [
+      "P37 / IOB_S10_1",
+      "P41 / IOB_S12_1",
+      "P43 / IOB_S13_0"
+    ],
+    "package_pins": [
+      37,
+      41,
+      43,
+      44
+    ],
+    "package_span": 7,
+    "sides": [
+      "S"
+    ],
+    "edge_coordinate_span": 3,
+    "clock_capable_inputs": [
+      "GCLK7",
+      "GCLK0"
+    ],
+    "rank": 33
+  },
+  "interpretation": "The strongest package-local 3-input + 1-output match is P28-P31: P28/P30/P31 are FPGA inputs and P29 is bidirectional/output-enabled. This identifies the quartet but does not assign PCS0/SCK/SOUT among the three inputs. The best clock-capable alternative is centered on P41/P43/P44 and is less package-local.",
+  "safety": "Read-only stock-bitstream extraction; no FPGA or firmware bits are modified."
+}

@@ -1,6 +1,6 @@
 # Analog Rytm MKII OS 1.72 Research
 
-Private reverse-engineering workspace for the Analog Rytm MKII OS 1.72 research project.
+Public reverse-engineering workspace for the Analog Rytm MKII OS 1.72 research project.
 
 ## Current milestone
 
@@ -48,6 +48,9 @@ and reproducible tooling.
 
 ## Key results
 
+- Sample Slot is parameter `0x29` in Q8 format. Index 0 is `OFF`; the picker
+  domain is `OFF + slots 1..127`, with blank slots rendered as `---` from the
+  name-pointer table at `0x41928DCC` and packed metadata at `0x419289CC`.
 - OS package: ELE3 over Elektron SysEx transport.
 - Device ID: `0x0C`.
 - MAIN load address: `0x40000400`.
@@ -67,6 +70,12 @@ and reproducible tooling.
 - BR 127 endpoint: `0xB31807FF`.
 - The command is packetized by the `0x40077Dxx` path and submitted through eDMA
   channel 15 to DSPI1 PUSHR; MAIN does not show a proven BR-dependent PCM mask/shift.
+- DSPI1 sends 16-bit payloads as `0x8001xxxx` PUSHR entries: `CONT=1`, PCS mask
+  `0x01`; the BR/control link is therefore PCS0, SCK, SOUT and SIN.
+- Direct XC3S200A/VQ100 IOB-bit extraction classifies all 68 BOND57 user pins.
+  The strongest package-local 3-input + 1-output quartet is FPGA pins P28-P31:
+  P28/P30/P31 are inputs and P29 is bidirectional/output-enabled. Signal assignment
+  among PCS0/SCK/SOUT remains unproven.
 - Section ID 2 is the temporary ColdFire bootstrap/updater, not the runtime sample DSP.
 - Section ID 1 is an FPGA configuration stream, not ColdFire code.
 - Renderer combiner `0x4010A2E0` writes 32 frames × 8 lanes and consumes three

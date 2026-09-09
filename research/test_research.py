@@ -19,9 +19,42 @@ from br_consumer_trace import trace as trace_br_consumer
 from br_quantizer_runtime_trace import trace as trace_br_quantizer_runtime
 from control_frame_trace import trace as trace_control_frame
 from filter2_bypass_timing_trace import trace as trace_filter2_bypass_timing
+from fpga_iob_mode_inventory import inventory as inventory_fpga_iobs
 from lfo2_filter2_reference import run_tests
 from runtime_descriptor_probe import probe as probe_runtime_descriptors
 from sample_storage_trace import trace as trace_sample_storage
+from sample_slot_trace import trace as trace_sample_slot
+
+
+class FpgaIobGeometryTests(unittest.TestCase):
+    def test_bond_and_iob_coordinate_tables(self):
+        from fpga_iob_mode_inventory import BOND57, IOB_BITS, bel_for
+
+        self.assertEqual(len(BOND57), 68)
+        self.assertEqual(len({pin for pin, *_ in BOND57}), 68)
+        self.assertEqual([len(IOB_BITS[x]) for x in "WESN"], [8, 8, 5, 5])
+        self.assertEqual(bel_for("W", 29, 0), 0)
+        self.assertEqual(bel_for("E", 29, 1), 6)
+        self.assertEqual(bel_for("S", 11, 2), 2)
+        self.assertEqual(bel_for("N", 13, 2), 2)
+
+
+@unittest.skipUnless(
+    (HERE / "extracted_stock_nrv" / "section_2_id_1.decompressed.bin").exists(),
+    "extracted proprietary FPGA image not present",
+)
+class FpgaIobInventoryTests(unittest.TestCase):
+    def test_stock_iob_inventory_and_top_dspi_cluster(self):
+        image = HERE / "extracted_stock_nrv" / "section_2_id_1.decompressed.bin"
+        result = inventory_fpga_iobs(image)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["summary"]["bonded_user_pins"], 68)
+        self.assertEqual(result["summary"]["directions"]["input"], 15)
+        self.assertEqual(result["summary"]["directions"]["bidirectional"], 2)
+        self.assertEqual(result["summary"]["directions"]["output"], 8)
+        top = result["dspi_candidate_clusters"][0]
+        self.assertEqual(top["package_pins"], [28, 29, 30, 31])
+        self.assertEqual(top["sin_output"], "P29 / IOB_S3_1")
 
 
 @unittest.skipUnless(
@@ -103,6 +136,23 @@ class SampleStorageTraceTests(unittest.TestCase):
             gates["factory_manifest"]["storage"],
             gates["sample_verification"]["storage"],
         )
+
+
+@unittest.skipUnless(
+    (HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin").exists(),
+    "extracted proprietary MAIN image not present",
+)
+class SampleSlotTraceTests(unittest.TestCase):
+    def test_project_sample_slot_boundary(self):
+        main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
+        result = trace_sample_slot(main_image)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["sample_slot_parameter"]["id"], "0x29")
+        self.assertEqual(result["sample_slot_parameter"]["zero_meaning"], "OFF")
+        self.assertEqual(result["picker"]["entry_count"], 128)
+        self.assertEqual(result["picker"]["domain"], "OFF plus sample slots 1..127")
+        self.assertEqual(result["sentinels"]["empty"], "---")
+        self.assertEqual(result["runtime_tables"]["name_pointer_table"], "0x41928DCC")
 
 
 class ReferenceModelTests(unittest.TestCase):
