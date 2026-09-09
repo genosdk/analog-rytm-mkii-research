@@ -27,6 +27,10 @@
 #define AR_DSPI_PUSHR_EOQ   (1u << 27)
 #define AR_DSPI_PUSHR_CTCNT (1u << 26)
 
+/* MCR write-one FIFO clear commands. */
+#define AR_DSPI_MCR_CLR_TXF (1u << 11)
+#define AR_DSPI_MCR_CLR_RXF (1u << 10)
+
 /* OS 1.72 calibration record recovered from its normal validator. */
 #define AR_CAL_PRIMARY_ADDR       0x00340000u
 #define AR_CAL_RECORD_SIZE        110706u
@@ -239,7 +243,15 @@ static void ar_dspi_write(void *opaque, hwaddr addr,
     unsigned off = addr & 0x3fff;
     uint32_t v = value;
     switch (off) {
-    case 0x00: s->mcr = v; break;
+    case 0x00:
+        /* CLR_TXF/CLR_RXF are commands, not persistent state bits.  The
+         * firmware writes both before each synchronous SPI transfer. */
+        if (v & AR_DSPI_MCR_CLR_RXF) {
+            s->rx_head = 0;
+            s->rx_count = 0;
+        }
+        s->mcr = v & ~(AR_DSPI_MCR_CLR_TXF | AR_DSPI_MCR_CLR_RXF);
+        break;
     case 0x08: s->tcr = v; break;
     case 0x0c: s->ctar[0] = v; break;
     case 0x10: s->ctar[1] = v; break;
