@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_RUNTIME_SAMPLE_LATCH_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PASS_PARAMETER_BRIDGE_BLOCKED_CONTROL_TO_RUNTIME_LATCH",
+  "status": "PASS_PARAMETER_BRIDGE_BLOCKED_VOICE_STATE_AND_RUNTIME_LATCH",
   "repository": "genosdk/analog-rytm-mkii-research",
   "fixture": {
     "kind": "locally extracted stock OS 1.72 MAIN; not committed",
@@ -47,7 +47,13 @@
     "control_word_at_end": "0x0100",
     "candidate_expanded_lane": "0x8000EF38",
     "candidate_expanded_lane_value": "0x00000000",
-    "candidate_lane_basis": "The first transform reads two source words per iteration and emits two longs; source word index 45 is the second word of input pair 22. This lane address is an inference, not yet a proven semantic mapping."
+    "candidate_lane_basis": "The first transform reads two source words per iteration and emits two longs; source word index 45 is the second word of input pair 22. This lane address is an inference, not yet a proven semantic mapping.",
+    "off_vs_slot_1_full_buffer_comparison": {
+      "range": "0x8000EE84..0x8000F773",
+      "bytes": 2288,
+      "identical": true,
+      "sha256": "2f329134686a44ee0362fd0c8b5d071e38bade32a5389e31282f64f565e76759"
+    }
   },
   "runtime_voice_record": {
     "track": 0,
@@ -64,12 +70,27 @@
     ],
     "sample_branch": "0x40117A78",
     "sample_branch_predicate": "0x00000000",
-    "sample_slot_value": "0x00"
+    "sample_slot_value_for_selected_slot_1": "0x00",
+    "sample_slot_value_for_selected_slot_2": "0x00",
+    "slot_2_control_word": "0x0200",
+    "slot_2_conclusion": "The unchanged runtime byte for selected slot 2 rules out a healthy zero-based slot mapping."
   },
-  "conclusion": "The UI assignment, stock setter, parameter mapper, and audio control-bank write are complete. The current QEMU environment does not convert or latch that control value into the track-0 runtime voice record before the stock sample branch, so the sample path remains disabled.",
+  "voice_event_prerequisite": {
+    "state_table": "0x8000E508..0x8000E537",
+    "event_table": "0x8000E53C..0x8000E56B",
+    "native_track_0_state": "0x00000000",
+    "native_track_0_event": "0x00000000",
+    "required_active_state": "0x00000001",
+    "trigger_event_flag": "0x00000100",
+    "native_frame_mask_d3": "0x00000000",
+    "native_sustain_mask_d5": "0x00000000",
+    "causal_test": "Trace-only state=1 and event=0x100 for track 0 produced d3=1. Priming the known one-frame delay at 0x8000586C made 0x40117A78 true and reached 0x40117A7E.",
+    "causal_test_limit": "The runtime slot remained zero for selected slots 1 and 2, so the event-state intervention does not solve the separate parameter latch."
+  },
+  "conclusion": "The UI assignment, stock setter, parameter mapper, and audio control-bank write are complete. The current QEMU environment is missing both the active voice-event state consumed by the ISR aggregator and the conversion/latch of parameter 19 into the track runtime record.",
   "next_step": {
-    "name": "AR172_QEMU_AUDIO_CONTROL_CONVERSION_ENABLE_GATE",
-    "objective": "Identify the stock enable/precondition or missing peripheral state that makes the 0x4011C542 conversion emit and latch audio parameter 19 into the 84-byte per-track runtime record."
+    "name": "AR172_QEMU_VOICE_STATE_PRODUCER_GATE",
+    "objective": "Trace why the software voice command is not promoted into track state 1/event bit 8, then determine whether that same missing producer also supplies the parameter-19 runtime latch."
   },
   "github_actions": {
     "triggered_for_this_checkpoint": false,
