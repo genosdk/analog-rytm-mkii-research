@@ -125,6 +125,14 @@ def main() -> None:
                     help="already-decompressed MAIN image (development only)")
     ap.add_argument("--scale", type=int, default=6)
     ap.add_argument("--keep-runtime", action="store_true")
+    ap.add_argument(
+        "--no-mock-calibration",
+        action="store_true",
+        help=(
+            "disable emulator-only passed-calibration SPI state and expose the "
+            "firmware's real missing-calibration path (research/hardware-validation mode)"
+        ),
+    )
     ap.add_argument("--self-test", action="store_true",
                     help="verify the bundled QEMU backend and exit")
     args = ap.parse_args()
@@ -161,6 +169,14 @@ def main() -> None:
 
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
+    if args.no_mock_calibration:
+        env.pop("AR_MK2_MOCK_CALIBRATION", None)
+    else:
+        # Desktop emulation has no physical analog circuitry to measure. Feed
+        # the untouched firmware a structurally valid synthetic factory
+        # calibration record through the emulated SPI NOR. Raw/research mode
+        # can disable this explicitly; the firmware image itself is unchanged.
+        env["AR_MK2_MOCK_CALIBRATION"] = "1"
 
     qemu_cmd = [
         str(qemu),
