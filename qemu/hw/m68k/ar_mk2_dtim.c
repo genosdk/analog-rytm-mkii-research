@@ -16,6 +16,8 @@
 #define AR_DTMR_RST        0x0001u
 #define AR_DTER_REF        0x02u
 
+void ar_mk2_esdhc_init(MemoryRegion *sysmem);
+
 typedef struct ARDtimState {
     MemoryRegion iomem;
     QEMUTimer *ref_timer;
@@ -171,4 +173,8 @@ void ar_mk2_dtim_init(MemoryRegion *sysmem)
                                             AR_DTIM0_BASE + i * AR_DTIM_STRIDE,
                                             &s->iomem, 50);
     }
+
+    /* Keep storage topology construction in the same early machine phase.
+     * The eMMC overlay is itself a no-op unless factory-state mocking is on. */
+    ar_mk2_esdhc_init(sysmem);
 }
