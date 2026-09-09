@@ -1,0 +1,72 @@
+{
+  "result": "PASS",
+  "fpga": {
+    "path": "research/extracted_stock_nrv/section_2_id_1.decompressed.bin",
+    "sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f"
+  },
+  "device": {
+    "part": "XC3S200A Spartan-3A",
+    "project_combine_chip": "CHIP17",
+    "columns": 26,
+    "rows": 34,
+    "frame_bits": 2208,
+    "frame_words_16bit": 138,
+    "physical_frames": 540,
+    "transmitted_frame_blocks": 541,
+    "trailing_pad_frame_index": 540
+  },
+  "frame_allocation": {
+    "type0_logic_routing": 350,
+    "type1_bram_data": 152,
+    "type2_bram_main": 38,
+    "total": 540,
+    "ordering": [
+      "type0 major0: spine (4)",
+      "type0 major1: west termination (2)",
+      "type0 majors2..19: 18 non-BRAM columns x19",
+      "type0 major20: east termination (2)",
+      "type1 majors0..1: BRAM columns X3/X19 x76",
+      "type2 majors0..1: BRAM columns X3/X19 x19"
+    ]
+  },
+  "type_stats": {
+    "0": {"frames":350,"population_count":101705,"zero_frames":16},
+    "1": {"frames":152,"population_count":1520,"zero_frames":58},
+    "2": {"frames":38,"population_count":8231,"zero_frames":2}
+  },
+  "role_stats": {
+    "spine": {"frames":4,"population_count":21,"zero_frames":1,"max_frame_population":8},
+    "term_w": {"frames":2,"population_count":124,"zero_frames":0,"max_frame_population":113},
+    "io": {"frames":38,"population_count":839,"zero_frames":15,"max_frame_population":276},
+    "logic": {"frames":304,"population_count":100588,"zero_frames":0,"max_frame_population":1405},
+    "term_e": {"frames":2,"population_count":133,"zero_frames":0,"max_frame_population":127},
+    "bram_data": {"frames":152,"population_count":1520,"zero_frames":58,"max_frame_population":106},
+    "bram_main": {"frames":38,"population_count":8231,"zero_frames":2,"max_frame_population":866}
+  },
+  "type_frame_ranges": [
+    {"type":0,"first_frame":0,"last_frame":349,"frames":350},
+    {"type":1,"first_frame":350,"last_frame":501,"frames":152},
+    {"type":2,"first_frame":502,"last_frame":539,"frames":38}
+  ],
+  "top_logic_columns_by_population": [
+    {"column":2,"population_count":7462},
+    {"column":7,"population_count":7219},
+    {"column":17,"population_count":7178},
+    {"column":18,"population_count":6986},
+    {"column":8,"population_count":6977},
+    {"column":1,"population_count":6881},
+    {"column":23,"population_count":6881},
+    {"column":24,"population_count":6145}
+  ],
+  "bram_columns": [
+    {"column":3,"frames":95,"population_count":5986,"zero_frames":1},
+    {"column":19,"frames":95,"population_count":3765,"zero_frames":59}
+  ],
+  "pad_frame": {
+    "index": 540,
+    "all_zero": true,
+    "sha256": "d489001ff88ed206b56f44bd0789a8332510f33bf40a312a7b2e5d60c3fe3e03"
+  },
+  "interpretation": "The Elektron FDRI payload can now be indexed in the same type/major/minor coordinate system used by Project Combine for XC3S200A. This removes frame-order ambiguity required for LUT/PIP decoding; it does not by itself identify BR logic.",
+  "safety": "Read-only frame mapping; no FPGA bits are modified."
+}
