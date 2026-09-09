@@ -23,8 +23,9 @@
 #define AR_DSPI_SR_RXCTR_MASK  (0xFu << AR_DSPI_SR_RXCTR_SHIFT)
 
 /* MCF DSPI PUSHR control bits used by the firmware. */
-#define AR_DSPI_PUSHR_CONT (1u << 31)
-#define AR_DSPI_PUSHR_EOQ  (1u << 27)
+#define AR_DSPI_PUSHR_CONT  (1u << 31)
+#define AR_DSPI_PUSHR_EOQ   (1u << 27)
+#define AR_DSPI_PUSHR_CTCNT (1u << 26)
 
 /* OS 1.72 calibration record recovered from its normal validator. */
 #define AR_CAL_PRIMARY_ADDR       0x00340000u
@@ -251,7 +252,16 @@ static void ar_dspi_write(void *opaque, hwaddr addr,
     case 0x2c: s->sr_flags &= ~v; break;
     case 0x30: s->rser = v; break;
     case 0x34: {
-        uint8_t rx = ar_dspi_spi_exchange(s, (uint8_t)v);
+        uint8_t rx;
+
+        /* Firmware asserts CTCNT on the command word that begins a new
+         * peripheral transaction (for SPI NOR READ this is 0x84020003).
+         * Treat that as the authoritative frame boundary so an earlier DSPI
+         * user cannot leave the attached-device parser in stale state. */
+        if (v & AR_DSPI_PUSHR_CTCNT) {
+            ar_dspi_end_spi_transaction(s);
+        }
+        rx = ar_dspi_spi_exchange(s, (uint8_t)v);
         ar_dspi_push_rx(s, rx);
         if (!(v & AR_DSPI_PUSHR_CONT) || (v & AR_DSPI_PUSHR_EOQ)) {
             ar_dspi_end_spi_transaction(s);
