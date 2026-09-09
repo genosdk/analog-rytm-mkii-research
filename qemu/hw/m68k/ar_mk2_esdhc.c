@@ -44,13 +44,15 @@
 #define AR_PRSSTAT_DLSL0       (1u << 3)
 
 #define AR_SECTOR_SIZE         512u
-#define AR_EMMC_SECTORS        0x00400000u /* 2 GiB */
+#define AR_EMMC_SECTORS        0x003B0000u /* Toshiba 004GE0 active partition */
 #define AR_COKI_PRIMARY_SECTOR 0x0007A000u
 #define AR_MAJG_SECTOR         0x00180000u
 #define AR_EKFS_SECTOR         0x001C0000u
 
 #define AR_CMD_SEND_OP_COND    1u
+#define AR_CMD_ALL_SEND_CID    2u
 #define AR_CMD_SEND_EXT_CSD    8u
+#define AR_CMD_SEND_CID        10u
 #define AR_CMD_TUNING_READ     14u
 #define AR_CMD_READ_MULTIPLE   18u
 #define AR_CMD_TUNING_WRITE    19u
@@ -150,13 +152,7 @@ static void ar_esdhc_update_irq(AREsdhcState *s)
 static void ar_virtual_sector(AREsdhcState *s, uint32_t sector,
                               uint8_t out[AR_SECTOR_SIZE])
 {
-    const uint8_t *stored = g_hash_table_lookup(
-        s->media, GUINT_TO_POINTER((guint)sector + 1));
-
-    if (stored) {
-        memcpy(out, stored, AR_SECTOR_SIZE);
-        return;
-    }
+    const uint8_t *stored;
 
     memset(out, 0, AR_SECTOR_SIZE);
 
@@ -186,12 +182,26 @@ static void ar_virtual_sector(AREsdhcState *s, uint32_t sector,
         out[10] = 0x00;
         out[11] = 0x01; /* version 1 */
         ar_store_be32(out + 12, 16u);
+        return;
+    }
+
+    stored = g_hash_table_lookup(s->media,
+                                 GUINT_TO_POINTER((guint)sector + 1));
+    if (stored) {
+        memcpy(out, stored, AR_SECTOR_SIZE);
     }
 }
 
 static void ar_prepare_ext_csd(AREsdhcState *s)
 {
     memset(s->stream, 0, AR_SECTOR_SIZE);
+    /* Identity fields checked alongside the CID against the firmware's
+     * built-in Toshiba 004GE0 profile. */
+    s->stream[0x98] = 0x01;
+    s->stream[0x9D] = 0x01;
+    s->stream[0x9E] = 0xD8;
+    s->stream[0xDE] = 0x01;
+    s->stream[0xE3] = 0x08;
     /* Firmware reads the 32-bit sector count directly from EXT_CSD + 0xD4. */
     ar_store_be32(s->stream + 0xD4, AR_EMMC_SECTORS);
     s->stream_len = AR_SECTOR_SIZE;
@@ -321,6 +331,14 @@ static void ar_command(AREsdhcState *s, uint32_t value)
     case AR_CMD_SEND_OP_COND:
         /* Ready + sector-addressed/high-capacity eMMC. */
         s->response[0] = 0xC0000000u;
+        break;
+    case AR_CMD_ALL_SEND_CID:
+    case AR_CMD_SEND_CID:
+        /* Toshiba 004GE0, one of the stock firmware's known eMMC IDs.
+         * The eSDHC exposes the 136-bit response shifted across CMDRSP0..3. */
+        s->response[1] = 0x45300000u; /* "E0" */
+        s->response[2] = 0x30303447u; /* "004G" */
+        s->response[3] = 0x00110000u; /* MID 0x11 */
         break;
     case AR_CMD_SEND_EXT_CSD:
         ar_prepare_ext_csd(s);

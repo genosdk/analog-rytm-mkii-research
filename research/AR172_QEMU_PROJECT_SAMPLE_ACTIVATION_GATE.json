@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_PROJECT_SAMPLE_ACTIVATION_GATE",
   "recorded_at_utc": "2026-09-09",
-  "status": "IN_PROGRESS_FACTORY_METADATA_PASS_SAMPLE_ACTIVATION_BLOCKED",
+  "status": "PASS_EMMC_IDENTITY_EKFS_READY_SAMPLE_ACTIVATION_BLOCKED",
   "repository": "genosdk/analog-rytm-mkii-research",
   "fixture": {
     "kind": "locally extracted stock OS 1.72 MAIN; not committed",
@@ -80,7 +80,19 @@
     "environment_gate": "AR_MK2_MOCK_FACTORY_STATE=1",
     "initializer_result": 0,
     "ready_global_0x41901B08": 1,
-    "logical_block_count_0x41901B2C": "0x00400000",
+    "card_identity": {
+      "checker": "0x4008F260",
+      "result": 0,
+      "manufacturer_id": "0x11",
+      "product_name": "004GE0",
+      "ext_csd_identity_tuple": [
+        "0x000001D8",
+        1,
+        8
+      ],
+      "profile_table": "0x4026DE60"
+    },
+    "logical_block_count_0x41901B2C": "0x003B0000",
     "address_multiplier_0x41901B30": 1,
     "read_transfer_result": 0,
     "edma_channel": 59,
@@ -102,13 +114,18 @@
       "MaGj_record_count": 0
     },
     "runtime_positive_control": {
+      "storage_state_global_0x41994D38": 0,
+      "ekfs_creator_entry": "0x4007C690",
+      "ekfs_creator_result": 0,
+      "ekfs_ready_global_0x4182A6FC": 1,
       "magj_validator_result": 1,
       "sm_validator_result": 2,
       "drive_error_global_0x405AFDF0": 0,
+      "storage_failure_branch_0x400A1D76": "NOT_TAKEN_DURING_55_SECOND_TRACE",
       "panel": "NO FACTORY SAMPLES",
       "framebuffer_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109"
     },
-    "result": "PASS_FACTORY_METADATA_EMPTY_MANIFEST_EXPECTED"
+    "result": "PASS_KNOWN_EMMC_AND_STOCK_EKFS_CREATE_EMPTY_MANIFEST_EXPECTED"
   },
   "next_step": {
     "name": "AR172_QEMU_PROJECT_SAMPLE_SLOT_GATE",

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_EMMC_IDENTITY_EKFS_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "failure_cause": {
+    "card_checker": "0x4008F260",
+    "identity_lookup": "0x4008F00C",
+    "allowlist": "0x4026DE60..0x4026DF1F",
+    "prior_result": -1,
+    "effect": "storage state 0x41994D38 became 6, skipping ekFS validation and creation"
+  },
+  "implemented_boundary": {
+    "environment_gate": "AR_MK2_MOCK_FACTORY_STATE=1",
+    "cid_commands": [2, 10],
+    "profile": {
+      "manufacturer_id": "0x11",
+      "product_name": "004GE0",
+      "ext_csd_identity_tuple": ["0x000001D8", 1, 8],
+      "active_partition_sectors": "0x003B0000"
+    },
+    "scope": "emulator-only opt-in identity and volatile media; disabled by default"
+  },
+  "runtime_proof": {
+    "card_checker_result": 0,
+    "storage_state_global_0x41994D38": 0,
+    "ekfs_creator_entry": "0x4007C690",
+    "ekfs_creator_result": 0,
+    "ekfs_ready_global_0x4182A6FC": 1,
+    "startup_gate_0x400A0E68": {
+      "ekfs_query": "nonzero",
+      "magj_validator_result": 1,
+      "sm_validator_result": 2,
+      "drive_error_global_0x405AFDF0": 0
+    },
+    "storage_failure_branch_0x400A1D76": "NOT_TAKEN_DURING_55_SECOND_TRACE"
+  },
+  "visible_state": {
+    "panel": "NO FACTORY SAMPLES",
+    "framebuffer_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
+    "interpretation": "The storage gate passes, but an empty manifest still supplies no factory or project sample assignment."
+  },
+  "validation": {
+    "qemu_build": "PASS",
+    "method": "local QEMU plus GDB breakpoints; no hosted CI minutes used"
+  },
+  "next_step": {
+    "name": "AR172_QEMU_PROJECT_SAMPLE_SLOT_GATE",
+    "objective": "Trace the smallest non-proprietary project sample-slot assignment and RAM descriptor path without supplying factory PCM."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "push with [skip ci] after local compile and runtime proof"
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Firmware bytes and proprietary storage contents were not modified, embedded, or committed."
+}
