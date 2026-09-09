@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_PROJECT_SAMPLE_PROVIDER_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_STOCK_PARAMETER_SETTER_SLOT1_PERSISTENT_VOICE_TRIGGER_BLOCKED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "sample_page": {
+    "object": "0x41B5FA60",
+    "vtable": "0x401CE138",
+    "fields_after_construction": {
+      "+104": "0x41AE7260",
+      "+108": "0x41B54060 (manager)",
+      "+112": "0x41B54360",
+      "+116": "0x41AE7290",
+      "+120": "0x41AE7348",
+      "+124": "0x41B5F880"
+    },
+    "manager_current_provider_offset": 440,
+    "manager_current_provider": "0x00000000"
+  },
+  "provider_path": {
+    "manager_getter": "0x40034F46",
+    "manager_setter": "0x40034F26",
+    "static_setter_callsites": [
+      "0x400CBFEA",
+      "0x400CDD4E"
+    ],
+    "provider_index_helpers": [
+      "0x400A9C2E",
+      "0x400B520C"
+    ],
+    "provider_address_rule": "base + 44 + index * 12",
+    "conclusion": "The current-provider pointer is absent in the blank headless project, but it is not required by the stock parameter setter once the picker callback is emitted."
+  },
+  "parameter_0x29": {
+    "sample_page_getter": "0x400CE600",
+    "resolver": "0x40037EF8",
+    "before": {
+      "resolver_result": "0x00000000",
+      "special_flag": "0x00000000",
+      "getter_result": "0x00000000"
+    },
+    "stock_setter_call": {
+      "address": "0x400A59C4",
+      "context": "0x41AE8428",
+      "parameter": "0x00000029",
+      "value": "0x00000100",
+      "track": "0x00000000",
+      "argument_4": "0x00000001",
+      "argument_5": "0x00000001"
+    },
+    "after": "0x00000100 on every observed sample-page refresh",
+    "meaning": "slot 1 encoded as Q8"
+  },
+  "picker_path": {
+    "handler": "0x400CF2DC",
+    "show": "0x400CEE30",
+    "constructor": "0x400E0526",
+    "object": "0x41BE5170",
+    "vtable": "0x401D1FC8",
+    "selected_field_offset": 164,
+    "validation": "0x400B49AA",
+    "nonempty_name_result": "QEMU TEST follows the normal valid/non-empty branch",
+    "headless_limit": "The minimal panel path did not deliver the encoder-selection callback or the registered picker confirmation callback."
+  },
+  "trace_only_interventions": [
+    "Set SamplePage KeyEvent flags bit 1 so the stock SMP handler invokes the picker.",
+    "Set the picker selected index to slot 1 because the native encoder-D frame did not reach its selection callback.",
+    "Set confirmation KeyEvent flags bit 4 and invoke the exact stock closure 0x400CE658 through a temporary guest-RAM callable to supply the missing signal emission."
+  ],
+  "stock_callback_proof": {
+    "closure": "0x400CE658",
+    "temporary_outer_pointer": "0x4FF00500",
+    "temporary_closure": "0x4FF00510",
+    "selected_slot": 1,
+    "setter_implementation_modified": false,
+    "persistent_firmware_or_guest_project_mutation": false,
+    "result": "PASS: the stock callback called the stock setter and persisted parameter 0x29 as 0x00000100."
+  },
+  "voice_trigger": {
+    "test": "Press Trig 1 after the stock setter persisted slot 1.",
+    "sample_renderer_entries": [
+      "0x40117A7E",
+      "0x40117A92"
+    ],
+    "renderer_entry_observed": false,
+    "conclusion": "The remaining blocker is downstream of sample assignment in voice or trigger activation."
+  },
+  "next_step": {
+    "name": "AR172_QEMU_VOICE_TRIGGER_ROUTING_GATE",
+    "objective": "Follow one filtered Trig 1 event from the panel parser into the stock voice-trigger path and identify the earliest missing or rejected state."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Local validation first; publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Firmware bytes, project data, factory sample names, descriptor slabs, and proprietary PCM were not embedded, modified, or committed. Temporary GDB callables and trace-only state changes were not added to product code."
+}
