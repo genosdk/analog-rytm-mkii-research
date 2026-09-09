@@ -17,24 +17,32 @@
     "event": "NO",
     "press_packet": "24 01",
     "release_packet": "24 00",
+    "smp_press_packet": "25 10",
+    "smp_release_packet": "25 00",
     "rx_edma_channel": 34
   },
   "before": {
-    "state": "NORMAL_PARAMETER_UI",
+    "state": "DISMISSIBLE_STARTUP_MODAL",
     "bytes": 1024,
     "nonzero_bytes": 793,
     "lit_bits": 2730,
     "sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109"
   },
-  "after": {
+  "normal_ui_after_no": {
     "bytes": 1024,
     "nonzero_bytes": 679,
     "lit_bits": 2541,
     "sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca"
   },
-  "result": "PASS_STOCK_BOOT_TO_INTERACTIVE_UI",
+  "smp_page": {
+    "bytes": 1024,
+    "nonzero_bytes": 679,
+    "lit_bits": 2489,
+    "sha256": "592a43e29c1f63cca43fa15d899abd671743761ad00f805f78b01a78575a6030"
+  },
+  "result": "PASS_STOCK_BOOT_TO_INTERACTIVE_UI_AND_SMP_PAGE",
   "reproducer": "qemu/headless_ui_smoke.py",
-  "correction": "The pre-event hash was previously labeled NO FACTORY SAMPLES. A clean capture and visual decode show the normal parameter UI; the storage error branch is not taken.",
+  "correction": "The pre-event hash is a dismissible modal, not proof that the storage-failure branch ran. The branch is not taken; NO reaches the normal UI and SMP reaches its page.",
   "boundary": "This proves firmware UI interaction, not sample PCM availability or analog/audio output.",
   "next_step": {
     "name": "AR172_QEMU_PROJECT_SAMPLE_SLOT_GATE",

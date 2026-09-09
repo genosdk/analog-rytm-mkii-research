@@ -111,12 +111,22 @@ def main() -> None:
         time.sleep(0.08)
         panel_writer.write(bytes.fromhex("24 00"))
         time.sleep(args.event_settle_seconds)
-        after = wait_frame(frame, deadline, different_from=before)
+        normal_ui = wait_frame(frame, deadline, different_from=before)
+        time.sleep(1.0)
+        panel_writer.write(bytes.fromhex("25 10"))
+        time.sleep(0.08)
+        panel_writer.write(bytes.fromhex("25 00"))
+        time.sleep(args.event_settle_seconds)
+        smp_page = wait_frame(frame, deadline, different_from=normal_ui)
         print(json.dumps({
             "result": "PASS",
-            "event": {"control": "NO", "press": "24 01", "release": "24 00"},
-            "before": metrics(before),
-            "after": metrics(after),
+            "events": [
+                {"control": "NO", "press": "24 01", "release": "24 00"},
+                {"control": "SMP", "press": "25 10", "release": "25 00"},
+            ],
+            "startup_modal": metrics(before),
+            "normal_ui": metrics(normal_ui),
+            "smp_page": metrics(smp_page),
             "firmware_embedded": False,
         }, indent=2))
     finally:

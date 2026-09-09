@@ -82,8 +82,9 @@ python qemu/headless_ui_smoke.py \
 ```
 
 The smoke test boots with the two emulator-only profiles, completes the panel
-identity exchange, waits for a stable native framebuffer, injects a `NO`
-button packet, and requires a second stable framebuffer hash.
+identity exchange, dismisses the remaining startup modal with `NO`, then
+opens `SMP`. It requires distinct stable framebuffer hashes for the modal,
+normal UI, and SMP page.
 
 ## GUI bridge
 

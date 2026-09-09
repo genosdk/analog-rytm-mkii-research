@@ -122,9 +122,10 @@
       "sm_validator_result": 2,
       "drive_error_global_0x405AFDF0": 0,
       "storage_failure_branch_0x400A1D76": "NOT_TAKEN_DURING_55_SECOND_TRACE",
-      "panel": "NORMAL_PARAMETER_UI",
+      "panel": "DISMISSIBLE_STARTUP_MODAL",
       "framebuffer_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
-      "interactive_no_button_after_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca"
+      "normal_ui_after_no_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+      "smp_page_after_sha256": "592a43e29c1f63cca43fa15d899abd671743761ad00f805f78b01a78575a6030"
     },
     "result": "PASS_KNOWN_EMMC_AND_STOCK_EKFS_CREATE_EMPTY_MANIFEST_EXPECTED"
   },
