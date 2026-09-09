@@ -10,6 +10,7 @@
 #include "qemu/osdep.h"
 #include "qemu/log.h"
 #include "qemu/timer.h"
+#include "chardev/char.h"
 #include "hw/core/irq.h"
 #include "hw/core/sysbus.h"
 #include "hw/m68k/mcf.h"
@@ -27,11 +28,21 @@
 #define AR_DTIM0_BASE 0xFC070000u
 #define AR_DTIM_STRIDE 0x00004000u
 #define AR_UART8_BASE 0xEC070000u
+#define AR_UART9_BASE 0xEC074000u
 #define AR_EDMA_BASE  0xFC044000u
 #define AR_EDMA_SIZE  0x00002000u
 #define AR_EDMA_TCD_BASE 0x1000u
 #define AR_EDMA_TCD_SIZE 0x20u
 #define AR_EDMA_CHANNELS 64u
+#define AR_TYPE8_RECORD 0xF8u
+#define AR_TYPE8_START_NS 5000000000LL
+#define AR_TYPE8_PERIOD_NS 10000000LL
+#define AR_AUDIO_TIMELINE_ADDR 0x8000FE54u
+#define AR_ACTIVE_PROFILE_ADDR 0x412FF99Fu
+#define AR_PROFILE_STATE_BASE 0x413001DBu
+#define AR_PROFILE_STATE_STRIDE 228u
+#define AR_PROFILE_READY_OFFSET 88u
+#define AR_PROFILE_COUNT 128u
 
 #define AR_EDMA_TCD_SADDR 0x00
 #define AR_EDMA_TCD_ATTR  0x04
@@ -113,9 +124,21 @@ struct ARCoreState {
     ARDtimState dtim[4];
     AREdmaState edma;
     DeviceState *uart8;
+    Chardev *uart8_chr;
     qemu_irq uart8_irq;
     MemoryRegion uart8_proxy;
     bool uart8_boot_applied;
+    DeviceState *uart9;
+    Chardev *uart9_chr;
+    qemu_irq uart9_irq;
+    QEMUTimer *type8_timer;
+    uint64_t type8_feed_count;
+    uint32_t type8_last_timeline;
+    bool type8_timeline_seen;
+    bool type8_dma_seen;
+    bool type8_bootstrap_done;
+    bool source44_seen;
+    bool source57_seen;
 };
 
 static ARCoreState *ar_core;
@@ -235,6 +258,18 @@ static void ar_intc_write(void *opaque, hwaddr addr,
         s->imr = (s->imr & 0xffffffff00000000ULL) | (uint32_t)value;
         break;
     case 0x10:
+        if (s->index == 0 && (value & (1u << 12)) && !s->core->source44_seen) {
+            s->core->source44_seen = true;
+            qemu_log_mask(LOG_UNIMP,
+                          "AR-MK2 TYPE8: firmware forced INTC0 source 44 "
+                          "(vector 108)\n");
+        }
+        if (s->index == 0 && (value & (1u << 25)) && !s->core->source57_seen) {
+            s->core->source57_seen = true;
+            qemu_log_mask(LOG_UNIMP,
+                          "AR-MK2 TYPE8: firmware forced INTC0 source 57 "
+                          "(vector 121)\n");
+        }
         s->ifr = (s->ifr & 0xffffffffULL) | ((uint64_t)(uint32_t)value << 32);
         break;
     case 0x14:
@@ -475,6 +510,16 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     dmod = (attr >> 3) & 0x1f;
 
     physical_memory_read(saddr, buffer, nbytes);
+    if (channel == 36 && buffer[0] == AR_TYPE8_RECORD &&
+        !s->core->type8_dma_seen) {
+        s->core->type8_dma_seen = true;
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 TYPE8: eDMA36 transferred 0xF8 to 0x%08x "
+                      "nbytes=%u citer=%u biter=%u uart_isr=%02x\n",
+                      daddr, nbytes, citer,
+                      lduw_be_p(tcd + AR_EDMA_TCD_BITER) & 0x7fff,
+                      (unsigned)mcf_uart_read(s->core->uart9, 0x14, 1));
+    }
     physical_memory_write(daddr, buffer, nbytes);
     saddr = ar_edma_advance(saddr, soff, smod);
     daddr = ar_edma_advance(daddr, doff, dmod);
@@ -497,29 +542,41 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     return true;
 }
 
-static void ar_edma_pump_uart(ARCoreState *c)
+static void ar_edma_pump_one_uart(AREdmaState *s, DeviceState *uart,
+                                  unsigned rx_channel, unsigned tx_channel)
 {
-    AREdmaState *s = &c->edma;
     unsigned guard = 0;
 
-    if (!c->uart8 || s->uart_busy) {
-        return;
-    }
-
-    s->uart_busy = true;
     while (guard++ < 64) {
-        uint8_t isr = mcf_uart_read(c->uart8, 0x14, 1);
+        uint8_t isr = mcf_uart_read(uart, 0x14, 1);
         bool progress = false;
 
-        if ((isr & 0x02) && (s->erq & (1ULL << 34))) {
-            progress |= ar_edma_service(s, 34);
+        if ((isr & 0x02) && (s->erq & (1ULL << rx_channel))) {
+            progress |= ar_edma_service(s, rx_channel);
         }
-        if ((isr & 0x01) && (s->erq & (1ULL << 35))) {
-            progress |= ar_edma_service(s, 35);
+        if ((isr & 0x01) && (s->erq & (1ULL << tx_channel))) {
+            progress |= ar_edma_service(s, tx_channel);
         }
         if (!progress) {
             break;
         }
+    }
+}
+
+static void ar_edma_pump_uarts(ARCoreState *c)
+{
+    AREdmaState *s = &c->edma;
+
+    if (s->uart_busy) {
+        return;
+    }
+
+    s->uart_busy = true;
+    if (c->uart8) {
+        ar_edma_pump_one_uart(s, c->uart8, 34, 35);
+    }
+    if (c->uart9) {
+        ar_edma_pump_one_uart(s, c->uart9, 36, 37);
     }
     s->uart_busy = false;
 }
@@ -567,7 +624,7 @@ static void ar_edma_write(void *opaque, hwaddr addr,
         unsigned rel = off - AR_EDMA_TCD_BASE;
         ar_edma_store(&s->tcd[rel / AR_EDMA_TCD_SIZE]
                             [rel % AR_EDMA_TCD_SIZE], value, size);
-        ar_edma_pump_uart(s->core);
+        ar_edma_pump_uarts(s->core);
         return;
     }
     if (off >= 0x100 && off < 0x140 && size == 1) {
@@ -594,7 +651,7 @@ static void ar_edma_write(void *opaque, hwaddr addr,
             } else {
                 s->erq |= 1ULL << (value & 0x3f);
             }
-            ar_edma_pump_uart(s->core);
+            ar_edma_pump_uarts(s->core);
         }
         break;
     case 0x19:
@@ -798,7 +855,102 @@ static void ar_uart8_dma_request(void *opaque, int n, int level)
 {
     ARCoreState *c = opaque;
 
-    ar_edma_pump_uart(c);
+    ar_edma_pump_uarts(c);
+}
+
+/*
+ * The standalone MAIN image has neither the persistent project loader nor the
+ * external audio-clock device that normally completes this state.  Supply the
+ * smallest non-proprietary bootstrap: one boolean readiness word for the
+ * firmware-selected profile and the two audio-timeline interrupt masks.  Wait
+ * for the firmware to install both ICRs so this cannot bypass initialization.
+ */
+static bool ar_type8_bootstrap(ARCoreState *c)
+{
+    uint8_t raw[4];
+    uint32_t profile;
+    uint32_t ready;
+    hwaddr ready_addr;
+
+    if (c->type8_bootstrap_done) {
+        return true;
+    }
+    if (!c->intc[0].icr[44] || !c->intc[0].icr[57]) {
+        return false;
+    }
+
+    physical_memory_read(AR_ACTIVE_PROFILE_ADDR, raw, sizeof(raw));
+    profile = ldl_be_p(raw);
+    if (profile >= AR_PROFILE_COUNT) {
+        qemu_log_mask(LOG_GUEST_ERROR,
+                      "AR-MK2 TYPE8: invalid active profile %u\n", profile);
+        return false;
+    }
+
+    ready_addr = AR_PROFILE_STATE_BASE +
+                 (profile * AR_PROFILE_STATE_STRIDE) +
+                 AR_PROFILE_READY_OFFSET;
+    physical_memory_read(ready_addr, raw, sizeof(raw));
+    ready = ldl_be_p(raw);
+    if (!ready) {
+        stl_be_p(raw, 1);
+        physical_memory_write(ready_addr, raw, sizeof(raw));
+    }
+
+    c->intc[0].imr &= ~((1ULL << 44) | (1ULL << 57));
+    ar_intc_update(c);
+    c->type8_bootstrap_done = true;
+    qemu_log_mask(LOG_UNIMP,
+                  "AR-MK2 TYPE8: bootstrapped profile %u and unmasked "
+                  "vectors 108/121\n", profile);
+    return true;
+}
+
+/*
+ * UART9 is the firmware's stream/control input: eDMA channel 36 passes each
+ * received byte to callback 0x4007E648 and its byte-stream parser.  F8 is a
+ * complete one-byte asynchronous type-8 record there.  Callback 0x400805AC
+ * samples DTIM0 and starts the source-44/source-57 audio timeline interrupt
+ * chain.  No firmware bytes or proprietary payload are synthesized here: the
+ * type-8 record has no body.
+ */
+static void ar_type8_feed(void *opaque)
+{
+    ARCoreState *c = opaque;
+    const uint8_t record = AR_TYPE8_RECORD;
+    uint8_t raw[4];
+    uint32_t timeline;
+
+    if (!ar_type8_bootstrap(c)) {
+        timer_mod_ns(c->type8_timer,
+                     qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
+                     AR_TYPE8_PERIOD_NS);
+        return;
+    }
+
+    if (c->uart9_chr && qemu_chr_be_can_write(c->uart9_chr) > 0) {
+        qemu_chr_be_write(c->uart9_chr, &record, sizeof(record));
+        c->type8_feed_count++;
+        if (c->type8_feed_count == 1) {
+            qemu_log_mask(LOG_UNIMP,
+                          "AR-MK2 TYPE8: injected UART9 record 0xF8\n");
+        }
+    }
+
+    physical_memory_read(AR_AUDIO_TIMELINE_ADDR, raw, sizeof(raw));
+    timeline = ldl_be_p(raw);
+    if (timeline != c->type8_last_timeline) {
+        c->type8_last_timeline = timeline;
+        if (!c->type8_timeline_seen) {
+            c->type8_timeline_seen = true;
+            qemu_log_mask(LOG_UNIMP,
+                          "AR-MK2 TYPE8: audio timeline advanced to 0x%08x\n",
+                          timeline);
+        }
+    }
+
+    timer_mod_ns(c->type8_timer,
+                 qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + AR_TYPE8_PERIOD_NS);
 }
 
 static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
@@ -806,7 +958,8 @@ static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
     MemoryRegion *mr;
 
     c->uart8_irq = qemu_allocate_irq(ar_uart8_dma_request, c, 34);
-    c->uart8 = mcf_uart_create(c->uart8_irq, serial_hd(0));
+    c->uart8_chr = serial_hd(0);
+    c->uart8 = mcf_uart_create(c->uart8_irq, c->uart8_chr);
     mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(c->uart8), 0);
     memory_region_add_subregion_overlap(sysmem, AR_UART8_BASE, mr, 20);
 
@@ -815,6 +968,29 @@ static void ar_uart8_init(MemoryRegion *sysmem, ARCoreState *c)
     memory_region_add_subregion_overlap(sysmem, AR_UART8_BASE,
                                         &c->uart8_proxy, 30);
     qemu_register_reset(ar_uart8_mark_boot_unapplied, c);
+
+}
+
+static void ar_uart9_dma_request(void *opaque, int n, int level)
+{
+    ARCoreState *c = opaque;
+
+    ar_edma_pump_uarts(c);
+}
+
+static void ar_uart9_init(MemoryRegion *sysmem, ARCoreState *c)
+{
+    MemoryRegion *mr;
+
+    c->uart9_irq = qemu_allocate_irq(ar_uart9_dma_request, c, 36);
+    c->uart9_chr = qemu_chr_new("ar-mk2-uart9", "null", NULL);
+    c->uart9 = mcf_uart_create(c->uart9_irq, c->uart9_chr);
+    mr = sysbus_mmio_get_region(SYS_BUS_DEVICE(c->uart9), 0);
+    memory_region_add_subregion_overlap(sysmem, AR_UART9_BASE, mr, 20);
+
+    c->type8_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, ar_type8_feed, c);
+    timer_mod_ns(c->type8_timer,
+                 qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + AR_TYPE8_START_NS);
 }
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu)
@@ -853,4 +1029,5 @@ void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu)
     ar_dtim_init(sysmem, ar_core);
     ar_edma_init(sysmem, ar_core);
     ar_uart8_init(sysmem, ar_core);
+    ar_uart9_init(sysmem, ar_core);
 }

@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_TYPE8_AUDIO_FEED_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_TIMELINE_AND_SMP_SAMPLE_CONTENT_BLOCKED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "build": {
+    "base_source_commit": "8b60465444930eb63d9a8359d0de8eadaa00ddea",
+    "qemu_upstream_ref": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "local_qemu_system_m68k_sha256": "6feb3e42f088990b441d5a9bbc547cb22148dc3f90619d856f333f19fb7843b2",
+    "result": "local Linux compile and link passed"
+  },
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "type8_producer_trace": {
+    "peripheral": "UART9 at 0xEC074000",
+    "edma_rx_channel": 36,
+    "tcd_destination": "0x4B800000",
+    "edma_interrupt_vector": 156,
+    "receive_callback": "0x4007E648",
+    "byte_stream_parser": "0x4007E0E6",
+    "queue": "0x418E4348",
+    "dispatcher": "0x4007FDE0",
+    "type8_dispatch_slot": "0x401C2B84",
+    "type8_callback": "0x400805AC",
+    "record": {
+      "bytes": "F8",
+      "layout": "one complete asynchronous type-8 record with no body"
+    },
+    "negative_control": "UART8 is the panel/control parser; a bare F8 there opens an Fn length envelope and is not the audio-clock producer."
+  },
+  "minimal_emulator_bootstrap": {
+    "reason": "The standalone MAIN fixture does not include the external persistent project loader or audio-clock state that a complete machine supplies.",
+    "guard": "Wait until firmware has installed nonzero ICR values for INTC0 sources 44 and 57.",
+    "active_profile_pointer": "0x412FF99F",
+    "profile_state_base": "0x413001DB",
+    "profile_stride_bytes": 228,
+    "readiness_word_offset": 88,
+    "actions": [
+      "Set only the selected profile's zero readiness word to one.",
+      "Unmask only INTC0 sources 44 and 57.",
+      "Inject the bodyless F8 record through UART9 every 10 ms after a 5 s virtual-time start delay."
+    ],
+    "proprietary_payload_synthesized": false,
+    "scope": "QEMU research machine only; no firmware-update artifact is modified."
+  },
+  "runtime_proof": {
+    "edma36_first_transfer": {
+      "byte": "0xF8",
+      "destination": "0x4B800000",
+      "nbytes": 1,
+      "citer": 1,
+      "biter": 1
+    },
+    "interrupt_chain": [
+      {
+        "source": 44,
+        "vector": 108,
+        "handler": "0x400968BC",
+        "qemu_vector_offset": "0x1B0",
+        "observed_entries": 297
+      },
+      {
+        "source": 57,
+        "vector": 121,
+        "handler": "0x400980C0",
+        "qemu_vector_offset": "0x1E4",
+        "observed_entries": 297
+      }
+    ],
+    "timeline_address": "0x8000FE54",
+    "initial_timeline": "0x00000000",
+    "first_observed_advance": "0x000DBBA0",
+    "later_observed_value": "0x17C3ADE0",
+    "result": "PASS"
+  },
+  "smp_retest": {
+    "live_queue_pointer_global": "0x4026D4C8",
+    "observed_live_queue": "0x4192A9D0",
+    "packet_press": "25 10",
+    "packet_release": "25 00",
+    "initial_modal_diagnosis": {
+      "active_view": "0x41B55160",
+      "button_handler_tree_root": "0x00000000",
+      "screen": "Improved tuning / calibration takes approximately 2.5 hours / run now Y/N",
+      "result": "SMP was intentionally ignored by the startup modal; NO remained a valid positive control."
+    },
+    "safe_startup_dismissal": {
+      "packet_press": "24 01",
+      "packet_release": "24 00",
+      "control": "NO",
+      "repetitions": 4,
+      "screens_advanced": [
+        "Drive error 10",
+        "Missing cal: synth / no factory samples",
+        "Analog calibration missing / unit needs calibration",
+        "normal main UI"
+      ]
+    },
+    "uart8_vector_154_entries_for_complete_control_run": 14,
+    "raw_press_event": [
+      "0x00000000",
+      "0x00000032",
+      "0x00000001",
+      "0x0541D340"
+    ],
+    "raw_release_event": [
+      "0x00000000",
+      "0x00000032",
+      "0x00000010",
+      "0x05E69EC0"
+    ],
+    "timestamp_result": "The formerly zero event timeline field is now nonzero and advances.",
+    "stable_main_ui_before_sha256": "f656fb2acb07cb56485bc296c0bf63a593834ffdb51ee7a342f9b6043daabc4e",
+    "stable_smp_page_after_sha256": "5356ab8159921036d2731d6e725cb1b40d1efaeb7a693ddde0cb0ca1377415c6",
+    "persistent_framebuffer_delta": true,
+    "positive_control": {
+      "packet": "24 01, 24 00",
+      "control": "NO",
+      "after_sha256": "65c3a47ed921fa13e4691aa2aec985cb87f36331d4976fc163de605eacaa416a",
+      "persistent_framebuffer_delta": true
+    },
+    "conclusion": "The UART9 type-8 timeline and native SMP page path are both live. The earlier no-delta observation occurred under startup modal views that intentionally reject page buttons."
+  },
+  "sample_voice_activation": {
+    "result": "BLOCKED",
+    "boundary": "The stock firmware reaches and renders the SMP page, but explicitly reports that no factory samples are present; there is no eligible sample voice to trigger.",
+    "unsafe_shortcut_rejected": "No proprietary project, sample PCM, descriptor slab, or fabricated voice payload was embedded in QEMU."
+  },
+  "next_gate": {
+    "name": "AR172_QEMU_PROJECT_SAMPLE_ACTIVATION_GATE",
+    "objective": "Identify the smallest non-proprietary project, active-track and sample-descriptor state accepted by stock MAIN, activate one sample voice, and prove SMP or TRIG reaches the existing render path."
+  },
+  "github_actions": {
+    "triggered_for_this_gate": false,
+    "policy": "Complete local compile, runtime and research tests before spending one Linux hosted run."
+  },
+  "railway": {
+    "touched": false
+  }
+}
