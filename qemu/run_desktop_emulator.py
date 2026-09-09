@@ -141,6 +141,14 @@ def main() -> None:
             "the firmware's physical-storage startup path"
         ),
     )
+    ap.add_argument(
+        "--mock-audio-service",
+        action="store_true",
+        help=(
+            "enable the experimental external audio-service clock; this is "
+            "slow under TCG and intended only for tracing"
+        ),
+    )
     ap.add_argument("--self-test", action="store_true",
                     help="verify the bundled QEMU backend and exit")
     args = ap.parse_args()
@@ -191,6 +199,10 @@ def main() -> None:
         # Supply only non-proprietary metadata and volatile storage. The empty
         # manifest boots the normal UI but provides no sample assignment/PCM.
         env["AR_MK2_MOCK_FACTORY_STATE"] = "1"
+    if args.mock_audio_service:
+        env["AR_MK2_MOCK_AUDIO_SERVICE"] = "1"
+    else:
+        env.pop("AR_MK2_MOCK_AUDIO_SERVICE", None)
 
     qemu_cmd = [
         str(qemu),

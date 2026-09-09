@@ -54,3 +54,16 @@ The application starts QEMU paused, connects the emulated front-panel UART first
 ## Limitations
 
 This is an experimental research emulator, not an Elektron product. Persistent drive/calibration/factory-sample state, audio hardware, LEDs and a number of MCF5441x peripherals remain incomplete or unmodeled. Do not treat emulator behavior as validation that a modified `.syx` image is safe to flash to hardware.
+
+## Experimental audio-service trace
+
+`--mock-audio-service` enables a default-off research shim for the external
+audio-service clock. After the stock firmware installs INTC1 source 63 at
+vector 191, the shim unmasks it and raises its self-clearing force bit on the
+existing 10 ms Type-8 cadence. The untouched ISR clears that bit on entry and
+reaches the stock audio routine at `0x40117A28`.
+
+This option is currently for tracing, not realtime audio. The stock per-voice
+DSP loop is slow under the present ColdFire TCG model, and the physical device
+cadence has not yet been measured. Without the option, emulator behavior is
+unchanged.

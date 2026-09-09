@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_VOICE_TRIGGER_ROUTING_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_STOCK_VOICE_COMMAND_AND_AUDIO_ISR_RUNTIME_SAMPLE_LATCH_BLOCKED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "panel_event": {
+    "parser": "0x4007EFC8",
+    "group": 3,
+    "bitmap": "0x00000001",
+    "control_table": "0x4026D518",
+    "control_id": 0,
+    "control_id_semantics": "numeric Trig 1 ID, not a pointer",
+    "press_state": "0x00000001",
+    "release_state": "0x00000010",
+    "key_event_vtable": "0x401C14F0"
+  },
+  "ui_dispatch": {
+    "active_view": "0x41B55460",
+    "pre_observer": "0x400C4A74",
+    "page_wrapper": "0x40076134",
+    "non_consumers": [
+      ["0x41B5DEE0", "0x40129D56"],
+      ["0x41B5DC60", "0x4011E87E"],
+      ["0x41B61460", "0x40075BAA"],
+      ["0x41B56960", "0x4003E93E"],
+      ["0x41B5FA60", "0x400CF2DC"]
+    ],
+    "consumer": ["0x41B5D360", "0x400C439C"],
+    "consumer_result": 1,
+    "conclusion": "The native UI route is complete; no missing page dispatcher blocks Trig 1."
+  },
+  "trigger_command": {
+    "builder": "0x400C3F46",
+    "arguments": [0, 0, 0, 60, 100, -1],
+    "queue_begin": "0x41B5E260",
+    "queue_end_before": "0x41B5E260",
+    "queue_end_after": "0x41B5E274",
+    "record_words": [1, 0, 60, 0, 1]
+  },
+  "engine_trigger": {
+    "entry": "0x40081008",
+    "track": 0,
+    "note": 60,
+    "velocity": 100,
+    "mode": "0x00000040",
+    "voice_command": "0x401199FC",
+    "packed": "0x00020381",
+    "voice_command_result": "0x00000C30",
+    "output_event": {"type": "0x0D", "track": 0, "note": 60, "velocity": 100},
+    "sound_lock_selector": "0xFFFFFFFF",
+    "sound_lock_conclusion": "The -1 selector is an optional sound-lock sentinel, not a playback blocker."
+  },
+  "audio_service": {
+    "vector_table_slot": "0x400002FC",
+    "vector": 191,
+    "intc_bank": 1,
+    "source": 63,
+    "icr_address": "0xFC04C07F",
+    "icr_value": 5,
+    "observed_mask_before_shim": "INTC1 IMRH 0xFFFFBFFF; source 63 masked",
+    "isr": "0x4011B3AE",
+    "acknowledgement": "ISR clears IFRH bit 31 at 0xFC04C010 on entry",
+    "tcd_observations": {
+      "0xFC0456C0": "0x80000920",
+      "0xFC045690": "0x80003000"
+    },
+    "stock_audio_callsite": "0x4011C97C",
+    "stock_audio_routine": "0x40117A28",
+    "sample_branch": "0x40117A78",
+    "sample_branch_correction": "0x40117A7E and 0x40117A92 are inner conditional addresses, not renderer entries"
+  },
+  "emulator_shim": {
+    "enable": "AR_MK2_MOCK_AUDIO_SERVICE=1 or desktop --mock-audio-service",
+    "default_enabled": false,
+    "cadence_ns": 10000000,
+    "physical_cadence_proven": false,
+    "delivery": "unmask INTC1 source 63 after stock ICR installation and set its force bit periodically",
+    "validation": "Vector 191 entered the stock ISR, which reached 0x4011C97C, returned from 0x40117A28, and reached 0x40117A78.",
+    "performance": "The later stock per-voice DSP loop is currently slow under ColdFire TCG; this remains a trace-only option."
+  },
+  "runtime_sample_gate": {
+    "parameter_0x29_after_stock_setter": "0x00000100",
+    "sample_branch_predicate": "0x00000000",
+    "runtime_parameter_block": "0x8000F7CA",
+    "runtime_slot_byte_at_plus_4": "0x00",
+    "conclusion": "The assigned project parameter reaches the stock voice command, but the audio runtime voice record has not latched the sample selection."
+  },
+  "next_step": {
+    "name": "AR172_QEMU_RUNTIME_SAMPLE_LATCH_GATE",
+    "objective": "Trace the conversion from track parameter 0x29/Q8 slot selection into the per-voice runtime record consumed at 0x40117A78."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Local validation first; publish with [skip ci]."
+  },
+  "railway": {"touched": false},
+  "safety": "Firmware bytes, project data, factory sample names, descriptor slabs, and proprietary PCM were not embedded, modified, or committed. Delayed-pulse and GDB interventions remained scratch-only."
+}

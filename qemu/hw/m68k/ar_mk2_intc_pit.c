@@ -137,6 +137,8 @@ struct ARCoreState {
     bool type8_timeline_seen;
     bool type8_dma_seen;
     bool type8_bootstrap_done;
+    bool mock_audio_service;
+    bool audio_service_seen;
     bool source44_seen;
     bool source57_seen;
 };
@@ -889,8 +891,10 @@ static void ar_uart8_dma_request(void *opaque, int n, int level)
  * The standalone MAIN image has neither the persistent project loader nor the
  * external audio-clock device that normally completes this state.  Supply the
  * smallest non-proprietary bootstrap: one boolean readiness word for the
- * firmware-selected profile and the two audio-timeline interrupt masks.  Wait
- * for the firmware to install both ICRs so this cannot bypass initialization.
+ * firmware-selected profile and the audio-timeline interrupt masks.  The
+ * optional audio-service clock is gated separately and remains disabled by
+ * default.  Wait for the firmware to install the relevant ICRs so this cannot
+ * bypass initialization.
  */
 static bool ar_type8_bootstrap(ARCoreState *c)
 {
@@ -925,11 +929,15 @@ static bool ar_type8_bootstrap(ARCoreState *c)
     }
 
     c->intc[0].imr &= ~((1ULL << 44) | (1ULL << 57));
+    if (c->mock_audio_service && c->intc[1].icr[63]) {
+        c->intc[1].imr &= ~(1ULL << 63);
+    }
     ar_intc_update(c);
     c->type8_bootstrap_done = true;
     qemu_log_mask(LOG_UNIMP,
                   "AR-MK2 TYPE8: bootstrapped profile %u and unmasked "
-                  "vectors 108/121\n", profile);
+                  "vectors 108/121%s\n", profile,
+                  c->mock_audio_service ? "/191" : "");
     return true;
 }
 
@@ -961,6 +969,22 @@ static void ar_type8_feed(void *opaque)
         if (c->type8_feed_count == 1) {
             qemu_log_mask(LOG_UNIMP,
                           "AR-MK2 TYPE8: injected UART9 record 0xF8\n");
+        }
+    }
+
+    /* Vector 191 is installed at 0x400002fc with INTC1 source 63 priority 5.
+     * Its stock ISR clears IFRH bit 31 on entry, so model the absent external
+     * audio clock as a periodic forced event rather than a persistent level.
+     * Reusing the observed Type-8 10 ms cadence keeps this research shim
+     * narrow until physical hardware timing is measured. */
+    if (c->mock_audio_service && c->intc[1].icr[63]) {
+        c->intc[1].ifr |= 1ULL << 63;
+        ar_intc_update(c);
+        if (!c->audio_service_seen) {
+            c->audio_service_seen = true;
+            qemu_log_mask(LOG_UNIMP,
+                          "AR-MK2 AUDIO: forced INTC1 source 63 "
+                          "(vector 191)\n");
         }
     }
 
@@ -1008,6 +1032,10 @@ static void ar_uart9_dma_request(void *opaque, int n, int level)
 static void ar_uart9_init(MemoryRegion *sysmem, ARCoreState *c)
 {
     MemoryRegion *mr;
+    const char *mock_audio = g_getenv("AR_MK2_MOCK_AUDIO_SERVICE");
+
+    c->mock_audio_service = mock_audio && *mock_audio &&
+                            strcmp(mock_audio, "0") != 0;
 
     c->uart9_irq = qemu_allocate_irq(ar_uart9_dma_request, c, 36);
     c->uart9_chr = qemu_chr_new("ar-mk2-uart9", "null", NULL);
