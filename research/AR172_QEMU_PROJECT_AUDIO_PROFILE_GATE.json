@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_PROJECT_AUDIO_PROFILE_GATE",
+  "recorded_at_utc": "2026-09-09",
+  "status": "PASS_NATIVE_DESCRIPTOR_COPY_PERSISTENT_PROFILE_RULED_OUT_AS_PAD_TRIGGER_PRODUCER",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "test_boundary": {
+    "kind": "local trace-only emulator-generated track-0 audio-profile record",
+    "persistent_firmware_modified": false,
+    "runtime_output_tables_patched": false,
+    "proprietary_project_or_pcm_data_used": false
+  },
+  "synthetic_source_record": {
+    "address": "0x42AA7318",
+    "stride_bytes": 56,
+    "words_0x00_through_0x14": [
+      "0x00000001",
+      "0x64000000",
+      "0x003C0000",
+      "0x00000001",
+      "0x01000000",
+      "0x000203A1"
+    ]
+  },
+  "native_initialization_proof": {
+    "routine": "0x40097106..0x40097298",
+    "invocation": "local guest-RAM call trampoline after the stock Sample Slot setter and before the track trigger",
+    "destination": "track 0 / voice 0 at 0x42AABED0",
+    "destination_words_0x00_through_0x14": [
+      "0x00000001",
+      "0x64000000",
+      "0x003C0000",
+      "0x00000001",
+      "0x01000000",
+      "0x000203A1"
+    ],
+    "result": "PASS: the untouched native initializer copied the complete 56-byte source record into the persistent voice table."
+  },
+  "post_trigger_profile_service": {
+    "routine": "0x4009729A",
+    "queued_voice_mask": "0x42AAF558 = 0x00000040",
+    "profile_ready": "0x42AA76D4 = 0x00000001",
+    "source_record_after_return": "retained",
+    "destination_record_after_return": "retained",
+    "scheduler_guard_result": "0x00000000 (service proceeds)",
+    "schedule_table_changed": true,
+    "track0_voice0_eligibility": "recomputed from the live timeline; observed as both 0x00 and 0xFF across trace runs",
+    "representative_voice_scan": [
+      {"slot": 0, "record_state": 1, "eligibility": 255},
+      {"slot": 1, "record_state": 0, "eligibility": 255},
+      {"slot": 2, "record_state": 0, "eligibility": 255},
+      {"slot": 3, "record_state": 0, "eligibility": 0}
+    ],
+    "primary_writer_0x4011B9A0_hits": 0,
+    "queued_trigger_mask": "0x42AAF558 = 0x00000040",
+    "conclusion": "The persistent descriptor is structurally accepted, but it is not the post-trigger promotion source. The live scheduler may mark it eligible, after which the queued-trigger path can retire the pre-existing record before the primary writer. The stock pad trigger still correctly enters through the transient 0x42AC4038 record."
+  },
+  "packed_consumer_result": {
+    "timing_value": "0x00000000",
+    "seed_value": "0x00000000",
+    "coefficient": "0x00000000",
+    "packed_long": "0x000000F6",
+    "sample_slot_byte": "0x00",
+    "interpretation": "The packed result remains unchanged. This experiment rules out preloading the persistent project/audio-profile descriptor as the correct way to supply timing and seed values for a live pad trigger."
+  },
+  "next_step": {
+    "name": "AR172_QEMU_TRANSIENT_TRIGGER_SMOOTHER_GATE",
+    "objective": "Trace how the stock parameter class determines event bit 5 and the timing/seed scalars for transient record 0x42AC4038, verify whether Sample Slot is intentionally immediate or smoothed, and identify the correct packed-byte extraction contract before adding any emulator state."
+  },
+  "desktop_input_milestone": {
+    "qwerty": "Host key-down/up to validated panel press/release frames, with repeat suppression and release-on-focus-loss.",
+    "virtual_knobs": "Mouse vertical-drag and wheel control over a clamped host-side 0..127 value, emitting validated signed encoder deltas.",
+    "sequence": "Implement immediately after the native sample voice reaches the consumer gate."
+  },
+  "github_actions": {
+    "triggered_for_this_checkpoint": false,
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "The source record and guest call trampoline were trace-only and remained outside the repository. No firmware, extracted MAIN, descriptor slab, project data, or proprietary PCM is included."
+}
