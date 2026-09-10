@@ -162,6 +162,20 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("ar_edma_software_start", source)
         self.assertIn("ar_edma_pump_audio_channel(&c->edma, 30)", source)
 
+    def test_desktop_audio_tap_is_stable_passive_and_stereo(self):
+        source = (
+            ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_RENDER_RING_COUNT   4u", source)
+        self.assertIn("AR_RENDER_INDEX_ADDR   0x42F78044u", source)
+        self.assertIn("AR_RENDER_FRAME_BYTES  0x40u", source)
+        self.assertIn("AR_RENDER_LANES        8u", source)
+        self.assertIn("ar_capture_renderer_block", source)
+        self.assertIn("audio_candidate_valid", source)
+        self.assertIn("audio_be_write", source)
+        self.assertIn("AR_MK2_AUDIO_TAP", source)
+        self.assertNotIn("ar_mk2_audio_service_request", source)
+
 
 class DesktopPanelInputTests(unittest.TestCase):
     def test_qwerty_layout_and_knob_clamp(self):

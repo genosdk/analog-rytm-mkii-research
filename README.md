@@ -87,6 +87,9 @@ and reproducible tooling.
 - The live external-audio channel-30 chain contains 18 ESG-linked TCDs. The
   QEMU model now decodes ELINK counts and follows DLASTSG descriptors, allowing
   the stock audio ISR to return from `0x40109F04` instead of spinning.
+- The opt-in desktop audio tap follows selector `0x42F78044`, waits for a stable
+  completed renderer block, mixes its eight signed lanes, and supplies 48 kHz
+  stereo PCM through QEMU's paced host-audio backend.
 - A BR-low/high test with deterministic nonzero CPU render planes produces identical
   CPU PCM/combined output while the hardware control word diverges.
 

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_DESKTOP_AUDIO_TAP_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_STABLE_RENDERER_BLOCK_REACHES_HOST_PCM",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "renderer_boundary": {
+    "selector": "0x42F78044",
+    "observed_selector": 3,
+    "observed_block": "0x80001800..0x80001FFF",
+    "ring_blocks": 4,
+    "block_bytes": 2048,
+    "frames_per_block": 32,
+    "frame_stride_bytes": 64,
+    "mixed_lanes": 8
+  },
+  "host_stream": {
+    "enable": "AR_MK2_AUDIO_TAP=1 or desktop --audio",
+    "requested_rate_hz": 48000,
+    "channels": 2,
+    "format": "signed 16-bit little-endian PCM",
+    "pacing": "QEMU host-audio callback",
+    "stability_rule": "The selected ring index and all 2048 bytes must match twice before publication.",
+    "duplicate_rule": "The native selector sequence identifies new generations, so byte-identical blocks are retained after a ring transition.",
+    "mix": "Sum eight signed renderer lanes, shift six guard/fractional bits, saturate to s16, mirror to stereo."
+  },
+  "runtime_proof": {
+    "fixture": "emulator-generated QEMU TEST sample in slot 1",
+    "stock_renderer": "0x4010A2E0",
+    "source_nonzero_longwords": 18,
+    "captured_nonzero_s16_samples": 40,
+    "captured_min": 0,
+    "captured_max": 19153,
+    "container": "QEMU WAV backend",
+    "result": "PASS: nonzero output from the untouched stock renderer crossed the passive tap into a host audio stream."
+  },
+  "cadence_finding": {
+    "result": "The existing 10 ms trace-only audio interrupt causes UI starvation under the current ColdFire TCG model even without GDB breakpoints.",
+    "decision": "Keep the renderer tap passive and keep --mock-audio-service separately opt-in; do not let the host callback synthesize or continuously reassert guest audio interrupts."
+  },
+  "desktop_controls": {
+    "qwerty_triggering": "complete",
+    "mouse_virtual_knobs": "complete",
+    "knob_range": "0..127",
+    "audio_option": "--audio"
+  },
+  "next_gate": {
+    "name": "AR172_QEMU_AUDIO_CADENCE_GATE",
+    "objective": "Replace the trace-only 10 ms forced interrupt with completion-aware audio scheduling that advances renderer blocks without starving the firmware UI."
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "All firmware execution and audio capture remained local. No firmware, extracted MAIN, project data, factory sample names, or proprietary PCM are included."
+}

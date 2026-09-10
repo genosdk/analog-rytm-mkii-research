@@ -15,6 +15,7 @@
 #include "qemu/osdep.h"
 #include "qemu/units.h"
 #include "qemu/error-report.h"
+#include "qapi/error.h"
 #include "qemu/log.h"
 #include "qemu/datadir.h"
 #include "target/m68k/cpu.h"
@@ -24,6 +25,7 @@
 #include "system/address-spaces.h"
 #include "system/memory.h"
 #include "system/physmem.h"
+#include "qemu/audio.h"
 #include "qemu/timer.h"
 
 #define AR_MAIN_LOAD_ADDR    0x40000400u
@@ -55,6 +57,14 @@
 #define AR_SYNTH_NAME_ADDR    0x4FF00400u
 #define AR_SYNTH_SAMPLE_SLOT  1u
 #define AR_SYNTH_SAMPLE_FRAMES 256u
+#define AR_RENDER_RING_COUNT   4u
+#define AR_RENDER_INDEX_ADDR   0x42F78044u
+#define AR_RENDER_BLOCK_BYTES  0x800u
+#define AR_RENDER_FRAMES       32u
+#define AR_RENDER_FRAME_BYTES  0x40u
+#define AR_RENDER_LANES        8u
+#define AR_AUDIO_CHANNELS      2u
+#define AR_AUDIO_PCM_BYTES     (AR_RENDER_FRAMES * AR_AUDIO_CHANNELS * 2u)
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu);
 void ar_mk2_dspi_init(MemoryRegion *sysmem);
@@ -139,6 +149,20 @@ typedef struct ARBoardState {
     GHashTable *mmio_bytes; /* sparse byte-addressed register backing */
     QEMUTimer *frame_timer;
     QEMUTimer *sample_timer;
+    AudioBackend *audio_be;
+    SWVoiceOut *audio_voice;
+    uint8_t audio_candidate[AR_RENDER_RING_COUNT][AR_RENDER_BLOCK_BYTES];
+    uint8_t audio_published[AR_RENDER_RING_COUNT][AR_RENDER_BLOCK_BYTES];
+    bool audio_candidate_valid[AR_RENDER_RING_COUNT];
+    bool audio_published_valid[AR_RENDER_RING_COUNT];
+    uint32_t audio_candidate_ring;
+    uint32_t audio_last_ring;
+    bool audio_last_ring_valid;
+    uint8_t audio_pcm[AR_AUDIO_PCM_BYTES];
+    size_t audio_pcm_pos;
+    size_t audio_pcm_len;
+    bool audio_tap;
+    bool audio_nonzero_seen;
     char *frame_out;
     uint8_t frame_candidate[AR_FB_BYTES];
     uint8_t frame_published[AR_FB_BYTES];
@@ -150,6 +174,155 @@ typedef struct ARBoardState {
     bool mock_project_sample;
     bool media_probe_high;
 } ARBoardState;
+
+static bool ar_renderer_block_nonzero(const uint8_t *block)
+{
+    unsigned i;
+
+    for (i = 0; i < AR_RENDER_BLOCK_BYTES; i++) {
+        if (block[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static void ar_mix_renderer_block(ARBoardState *s, const uint8_t *block)
+{
+    unsigned frame;
+
+    for (frame = 0; frame < AR_RENDER_FRAMES; frame++) {
+        int64_t mixed = 0;
+        int32_t sample;
+        unsigned lane;
+
+        for (lane = 0; lane < AR_RENDER_LANES; lane++) {
+            const uint8_t *src = block + frame * AR_RENDER_FRAME_BYTES +
+                                 lane * sizeof(uint32_t);
+            mixed += (int32_t)ldl_be_p(src);
+        }
+
+        /* The renderer stores signed samples with six fractional/guard bits.
+         * Sum the physical lanes, retain natural saturation, and mirror the
+         * result to stereo until the hardware pan/return mapping is known. */
+        mixed >>= 6;
+        sample = CLAMP(mixed, INT16_MIN, INT16_MAX);
+        stw_le_p(s->audio_pcm + frame * 4, (uint16_t)sample);
+        stw_le_p(s->audio_pcm + frame * 4 + 2, (uint16_t)sample);
+    }
+    s->audio_pcm_pos = 0;
+    s->audio_pcm_len = sizeof(s->audio_pcm);
+}
+
+static bool ar_capture_renderer_block(ARBoardState *s)
+{
+    uint8_t raw[4];
+    uint32_t ring;
+    const uint8_t *block;
+    bool new_generation;
+    bool changed_content;
+
+    physical_memory_read(AR_RENDER_INDEX_ADDR, raw, sizeof(raw));
+    ring = ldl_be_p(raw);
+    if (ring >= AR_RENDER_RING_COUNT) {
+        return false;
+    }
+    block = s->sram_bytes + ring * AR_RENDER_BLOCK_BYTES;
+
+    /* Observe the same selector and bytes twice before publishing so the host
+     * never consumes a renderer block while the guest is still filling it. */
+    if (!s->audio_candidate_valid[ring] ||
+        s->audio_candidate_ring != ring ||
+        memcmp(s->audio_candidate[ring], block, AR_RENDER_BLOCK_BYTES) != 0) {
+        memcpy(s->audio_candidate[ring], block, AR_RENDER_BLOCK_BYTES);
+        s->audio_candidate_valid[ring] = true;
+        s->audio_candidate_ring = ring;
+        return false;
+    }
+
+    new_generation = !s->audio_last_ring_valid || s->audio_last_ring != ring;
+    changed_content = !s->audio_published_valid[ring] ||
+                      memcmp(s->audio_published[ring], block,
+                             AR_RENDER_BLOCK_BYTES) != 0;
+    s->audio_last_ring = ring;
+    s->audio_last_ring_valid = true;
+    if (!new_generation && !changed_content) {
+        return false;
+    }
+    memcpy(s->audio_published[ring], block, AR_RENDER_BLOCK_BYTES);
+    s->audio_published_valid[ring] = true;
+    if (!ar_renderer_block_nonzero(block)) {
+        return false;
+    }
+
+    ar_mix_renderer_block(s, block);
+    if (!s->audio_nonzero_seen) {
+        s->audio_nonzero_seen = true;
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 AUDIO: streaming stock renderer ring %u\n",
+                      ring);
+    }
+    return true;
+}
+
+static void ar_audio_callback(void *opaque, int avail)
+{
+    ARBoardState *s = opaque;
+    uint8_t silence[256] = { 0 };
+
+    while (avail > 0) {
+        size_t remaining;
+        size_t requested;
+        size_t written;
+
+        if (s->audio_pcm_pos == s->audio_pcm_len) {
+            s->audio_pcm_pos = 0;
+            s->audio_pcm_len = 0;
+            ar_capture_renderer_block(s);
+        }
+        remaining = s->audio_pcm_len - s->audio_pcm_pos;
+        if (remaining) {
+            requested = MIN(remaining, (size_t)avail);
+            written = audio_be_write(s->audio_be, s->audio_voice,
+                                     s->audio_pcm + s->audio_pcm_pos,
+                                     requested);
+            s->audio_pcm_pos += written;
+        } else {
+            requested = MIN(sizeof(silence), (size_t)avail);
+            written = audio_be_write(s->audio_be, s->audio_voice,
+                                     silence, requested);
+        }
+        if (!written) {
+            break;
+        }
+        avail -= written;
+    }
+}
+
+static void ar_audio_init(ARBoardState *s)
+{
+    struct audsettings settings = {
+        .freq = 48000,
+        .nchannels = AR_AUDIO_CHANNELS,
+        .fmt = AUDIO_FORMAT_S16,
+        .big_endian = false,
+    };
+    Error *local_err = NULL;
+
+    s->audio_be = audio_get_default_audio_be(&local_err);
+    if (!s->audio_be) {
+        error_report_err(local_err);
+        return;
+    }
+    s->audio_voice = audio_be_open_out(s->audio_be, NULL,
+                                       "ar-mk2-renderer", s,
+                                       ar_audio_callback, &settings);
+    if (!s->audio_voice) {
+        error_report("AR-MK2: could not open renderer audio voice");
+        return;
+    }
+    audio_be_set_active_out(s->audio_be, s->audio_voice, true);
+}
 
 static const char *ar_mmio_name(hwaddr absolute)
 {
@@ -478,6 +651,10 @@ static void elektron_ar_mk2_init(MachineState *machine)
             s->frame_out = g_strdup(out);
         }
     }
+    {
+        const char *tap = g_getenv("AR_MK2_AUDIO_TAP");
+        s->audio_tap = tap && *tap && strcmp(tap, "0") != 0;
+    }
     s->cpu = M68K_CPU(cpu_create(machine->cpu_type));
     env = &s->cpu->env;
 
@@ -540,6 +717,9 @@ static void elektron_ar_mk2_init(MachineState *machine)
         s->sample_timer = timer_new_ms(QEMU_CLOCK_VIRTUAL,
                                        ar_inject_project_sample, s);
         timer_mod(s->sample_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 100);
+    }
+    if (s->audio_tap) {
+        ar_audio_init(s);
     }
 
     qemu_log_mask(LOG_UNIMP,

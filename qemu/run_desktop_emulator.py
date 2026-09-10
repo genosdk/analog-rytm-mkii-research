@@ -142,6 +142,14 @@ def main() -> None:
         ),
     )
     ap.add_argument(
+        "--audio",
+        action="store_true",
+        help=(
+            "enable the passive 48 kHz stereo tap from the stock renderer ring; "
+            "use with --mock-audio-service only when tracing needs the absent clock"
+        ),
+    )
+    ap.add_argument(
         "--mock-audio-service",
         action="store_true",
         help=(
@@ -203,6 +211,10 @@ def main() -> None:
         env["AR_MK2_MOCK_AUDIO_SERVICE"] = "1"
     else:
         env.pop("AR_MK2_MOCK_AUDIO_SERVICE", None)
+    if args.audio:
+        env["AR_MK2_AUDIO_TAP"] = "1"
+    else:
+        env.pop("AR_MK2_AUDIO_TAP", None)
 
     qemu_cmd = [
         str(qemu),

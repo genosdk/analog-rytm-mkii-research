@@ -109,6 +109,22 @@ identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,
 normal UI, and SMP page.
 
+The standalone desktop launcher can expose the stock renderer ring through
+QEMU's host-audio backend:
+
+```bash
+python qemu/run_desktop_emulator.py \
+  --qemu /path/to/qemu-system-m68k \
+  --firmware /path/to/Analog-Rytm_MKII_OS1.72.syx \
+  --audio
+```
+
+`--audio` is a passive tap: it does not manufacture renderer work or enable the
+experimental external audio interrupt. QEMU builds need a platform output
+driver (for example CoreAudio, PipeWire, PulseAudio, SDL, or OSS). For a
+deterministic capture, QEMU can instead be launched with its WAV default audio
+driver while `AR_MK2_AUDIO_TAP=1` is set.
+
 ## GUI bridge
 
 The desktop GUI scaffold is independent of the physical OLED. Once the firmware-side 128×64 Bitmap source is identified, the QEMU machine can periodically write its 1024-byte framebuffer to:

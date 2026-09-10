@@ -55,9 +55,9 @@
     "mouse_virtual_knobs": "complete",
     "range": "0..127"
   },
-  "next_gate": {
+  "completed_next_gate": {
     "name": "AR172_QEMU_DESKTOP_AUDIO_TAP_GATE",
-    "objective": "Expose the nonzero stock renderer ring as a paced host-audio stream, mixing the eight rendered lanes without depending on absent physical analog-interface return lanes."
+    "evidence": "research/AR172_QEMU_DESKTOP_AUDIO_TAP_GATE.json"
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

@@ -57,6 +57,16 @@ This is an experimental research emulator, not an Elektron product. Persistent d
 
 ## Experimental audio-service trace
 
+`--audio` enables a passive host-paced stereo tap at the proven stock renderer
+boundary. It follows the firmware's four-block selector at `0x42F78044`, waits
+until the selected 2 KiB block is stable, sums the eight physical-voice lanes,
+converts the signed renderer words to little-endian 16-bit PCM, and hands the
+result to QEMU at 48 kHz. The same mono mix is currently sent to left and right;
+the hardware pan/return mapping is not yet proven.
+
+The audio tap and audio-service clock are deliberately separate. The tap does
+not raise interrupts, so enabling it cannot by itself starve the UI.
+
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at
 vector 191, the shim unmasks it and raises its self-clearing force bit on the
