@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_ENCODER_DELTA_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_NATIVE_SIGNED_DELTA_SEMANTICS",
+  "decoder": {
+    "parser": "0x4007F30C",
+    "handler": "0x4007F252",
+    "header": "0x3n selects encoder index n",
+    "payload": "signed 8-bit movement delta",
+    "magnitude_call": "0x401524B8",
+    "accumulator_base": "0x418B7644",
+    "accumulator_read_pc": "0x4007F2A8"
+  },
+  "runtime_watchpoint": {
+    "gdb_feature": "org.gnu.gdb.coldfire.core",
+    "encoder": "A",
+    "payloads": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "accumulator_before_each_add": [0, 0, 1, 3, 6, 10, 15, 21, 28, 36, 45],
+    "final_accumulator": 55,
+    "interpretation": "sum(abs(payload)); incompatible with an absolute wrapping counter"
+  },
+  "desktop_correction": {
+    "relative_motion": "one signed delta frame per host movement",
+    "absolute_fallback": "signed -127 saturation sweep followed by target delta",
+    "zero_delta": "not transmitted"
+  },
+  "runtime_probe": {
+    "authoritative_parameter_readback": false
+  },
+  "decision": "Reject the wrapping-counter model. Keep displayed 0..127 values experimental until active-page parameter readback is proven.",
+  "next_gate": {
+    "name": "AR172_QEMU_ACTIVE_ENCODER_BINDING_GATE",
+    "objective": "Trace the signed encoder accumulator into the selected page's encoder object and live Q8 parameter word, then export A..I readback to the desktop."
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Untouched stock firmware ran locally; proprietary runtime memory was not committed."
+}

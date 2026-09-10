@@ -268,12 +268,7 @@ def main() -> None:
             state_before = save_guest_memory(
                 monitor_port, runtime / "encoder-state-before.bin", state_base, state_size
             )
-            encoder_counter = 0
-            encoder_frames = [bytes((0x30, encoder_counter))]
-            for direction, steps in ((-1, 127), (1, 64)):
-                for _ in range(steps):
-                    encoder_counter = (encoder_counter + direction) & 0xFF
-                    encoder_frames.append(bytes((0x30, encoder_counter)))
+            encoder_frames = [bytes((0x30, 0x81)), bytes((0x30, 0x40))]
             panel_writer.write(b"".join(encoder_frames))
             time.sleep(args.event_settle_seconds)
             encoder_frame = wait_frame(frame, deadline, different_from=normal_ui)
@@ -285,8 +280,8 @@ def main() -> None:
                 {
                     "control": "ENCODER A",
                     "absolute_value": 64,
-                    "counter_frames": len(encoder_frames),
-                    "final_counter": encoder_counter,
+                    "delta_frames": len(encoder_frames),
+                    "signed_deltas": [-127, 64],
                 }
             )
         if args.exercise_trigger_audio:

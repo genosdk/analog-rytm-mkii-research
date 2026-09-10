@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_ENCODER_COUNTER_GATE",
   "recorded_at_utc": "2026-09-11",
-  "status": "PASS_NATIVE_COUNTER_SEMANTICS_READBACK_OPEN",
+  "status": "SUPERSEDED_BY_SIGNED_DELTA_WATCHPOINT_PROOF",
   "decoder": {
     "parser": "0x4007F30C",
     "counter_handler": "0x4007F252",
@@ -35,7 +35,7 @@
     "observation": "paired guest-memory snapshots are now captured around encoder probes",
     "remaining_work": "resolve active page/encoder binding to its live Q8 word and separate it from continuously changing renderer state"
   },
-  "decision": "The desktop now speaks the physical encoder counter protocol correctly. Keep first-grab endpoint synchronization as an experimental fallback; do not present its number as firmware-authoritative until active-context readback is proven.",
+  "decision": "Superseded: a native GDB read watchpoint later proved that the handler consumes a signed delta, not a wrapping counter. See AR172_QEMU_ENCODER_DELTA_GATE.json.",
   "next_gate": {
     "name": "AR172_QEMU_ACTIVE_ENCODER_BINDING_GATE",
     "objective": "Trace page event 0x30..0x35 and encoder object A..I to the selected track's live Q8 parameter word, then export those nine values to the desktop frontend."

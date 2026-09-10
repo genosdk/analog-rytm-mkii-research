@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_DESKTOP_INPUT_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PASS_QWERTY_AND_MOUSE_KNOBS_COUNTER_CORRECTED",
+  "status": "PASS_QWERTY_AND_MOUSE_KNOBS_DELTA_CORRECTED",
   "qwerty": {
     "mapping": "QWERTYUI / ASDFGHJK -> Trigs 1..16",
     "transport": "keydown/keyup -> validated group-3/group-2 press/release bitmaps",
@@ -13,23 +13,23 @@
     "controls": "A..I",
     "range": "0..127",
     "interaction": "vertical mouse drag or wheel",
-    "absolute_sync": "experimental: first grab expands a -127 endpoint sweep into unit changes of the wrapping panel counter, then advances by the displayed value; direct firmware readback remains open",
-    "subsequent_motion": "host deltas expanded into unit changes of the wrapping 8-bit panel counter",
+    "absolute_sync": "experimental: first grab sends signed -127 to saturate at zero, then sends the displayed value; direct firmware readback remains open",
+    "subsequent_motion": "host movement is sent as a signed 8-bit delta",
     "page_change_behavior": "invalidate synchronization because A..I address new functions"
   },
   "runtime_proof": {
     "encoder": "A",
     "requested_absolute_value": 64,
-    "superseded_probe_frames": ["30 81", "30 40"],
-    "framebuffer_before_sha256": "a395ede930fbbc35f38d72841fd4923c7154f7e0087c5aef9e243c6127317ab3",
-    "framebuffer_after_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+    "validated_probe_frames": ["30 81", "30 40"],
+    "framebuffer_before_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+    "framebuffer_after_sha256": "488829bcb69852e604b8e3922a572c4b513a952e21ca3e1c8dd2519ac22c061d",
     "visible_firmware_change": true,
     "trig_1_press_release": "PASS",
     "later_smp_page_transition": "PASS",
     "minimum_completed_audio_services": 64,
     "nonzero_host_audio": true
   },
-  "decision": "Desktop key and mouse controls traverse the native panel UART parser. A later decoder trace corrected encoder payload semantics from signed delta to a wrapping hardware counter; the bridge now expands host movement into unit counter transitions. Do not claim the displayed knob number is authoritative until active-page readback is mapped.",
+  "decision": "Desktop key and mouse controls traverse the native panel UART parser. A GDB read watchpoint proved the encoder payload is a signed delta: payloads 1..10 made the native magnitude accumulator follow 0, 1, 3, 6 ... 55. The earlier wrapping-counter interpretation is superseded. Do not claim the displayed knob number is authoritative until active-page readback is mapped.",
   "next_gate": {
     "name": "AR172_QEMU_DESKTOP_CONTROL_CONTEXT_GATE",
     "objective": "Read or infer the active page parameter values so all nine knob indicators initialize from firmware state without requiring first-grab endpoint synchronization."

@@ -29,7 +29,7 @@ def clamp_panel_value(value: int) -> int:
 
 
 class VirtualKnob(tk.Canvas):
-    """Mouse-draggable 0..127 control using a wrapping encoder counter."""
+    """Mouse-draggable 0..127 control using signed encoder deltas."""
 
     def __init__(self, parent, name: str,
                  callback: Callable[[str, int, int], None],

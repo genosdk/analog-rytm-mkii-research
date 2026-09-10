@@ -10,7 +10,7 @@ Proven OS 1.72 mappings:
 - group 2 bits 0..7 -> Trig 9..16
 - group 5 bits 2..7 -> TRIG/SYN/SMP/FLTR/AMP/LFO pages
 - group 5 bit 0 -> YES; group 4 bit 0 -> NO
-- encoder packet 0x3n + wrapping 8-bit hardware counter, indices 0..8
+- encoder packet 0x3n + signed 8-bit movement delta, indices 0..8
 """
 from __future__ import annotations
 
@@ -44,8 +44,6 @@ class PanelLink:
         self.rx = bytearray()
         self.identity_replied = False
         self.button_groups = {2: 0, 3: 0, 4: 0, 5: 0}
-        self.encoder_counters = {name: 0 for name in ENCODERS}
-        self.encoder_primed: set[str] = set()
 
     def send(self, data: bytes, label: str = "host -> firmware") -> None:
         with self.lock:
@@ -99,25 +97,17 @@ class PanelLink:
     def encoder(self, name: str, delta: int) -> None:
         name = name.upper()
         idx = ENCODERS.get(name)
-        if idx is None or not -128 <= delta <= 127:
+        if idx is None or not -127 <= delta <= 127:
             return
-        if name not in self.encoder_primed:
-            self.send(bytes((0x30 | idx, self.encoder_counters[name])))
-            self.encoder_primed.add(name)
-        direction = 1 if delta > 0 else -1
-        for _ in range(abs(delta)):
-            self.encoder_counters[name] = (
-                self.encoder_counters[name] + direction
-            ) & 0xFF
-            self.send(bytes((0x30 | idx, self.encoder_counters[name])))
+        if delta:
+            self.send(bytes((0x30 | idx, delta & 0xFF)))
 
     def set_encoder_value(self, name: str, value: int) -> None:
-        """Establish an absolute 0..127 value via unit counter transitions."""
+        """Establish an absolute 0..127 value using relative deltas."""
         if not 0 <= value <= 127 or name.upper() not in ENCODERS:
             return
-        # Firmware derives movement from a wrapping hardware counter. Expand
-        # the endpoint sweep into unit counter transitions; sending -127 as a
-        # single payload would instead look like one absolute counter sample.
+        # Saturate at zero first, then move to the requested value. This is an
+        # experimental fallback until native parameter readback is mapped.
         self.encoder(name, -127)
         if value:
             self.encoder(name, value)

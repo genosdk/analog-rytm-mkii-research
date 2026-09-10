@@ -198,11 +198,11 @@ class DesktopPanelInputTests(unittest.TestCase):
             (HERE / "AR172_QEMU_DESKTOP_INPUT_GATE.json").read_text(encoding="utf-8")
         )
         self.assertEqual(
-            report["status"], "PASS_QWERTY_AND_MOUSE_KNOBS_COUNTER_CORRECTED"
+            report["status"], "PASS_QWERTY_AND_MOUSE_KNOBS_DELTA_CORRECTED"
         )
         self.assertTrue(report["runtime_proof"]["visible_firmware_change"])
         self.assertEqual(
-            report["runtime_proof"]["superseded_probe_frames"],
+            report["runtime_proof"]["validated_probe_frames"],
             ["30 81", "30 40"],
         )
 
@@ -217,7 +217,7 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertEqual(clamp_panel_value(64), 64)
         self.assertEqual(clamp_panel_value(128), 127)
 
-    def test_knob_delta_uses_wrapping_encoder_counter_frames(self):
+    def test_knob_delta_uses_signed_encoder_frames(self):
         from qemu.panel_event_bridge import PanelLink
 
         class SocketStub:
@@ -235,10 +235,7 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertEqual(
             sock.frames,
             [
-                bytes((0x30, 0x00)),
-                bytes((0x30, 0x01)),
                 bytes((0x30, 0x02)),
-                bytes((0x38, 0x00)),
                 bytes((0x38, 0xFF)),
             ],
         )
@@ -246,21 +243,19 @@ class DesktopPanelInputTests(unittest.TestCase):
         absolute = PanelLink(absolute_sock)
         with redirect_stdout(io.StringIO()):
             absolute.set_encoder_value("A", 2)
-        self.assertEqual(len(absolute_sock.frames), 130)
         self.assertEqual(
-            absolute_sock.frames[:2],
-            [bytes((0x30, 0)), bytes((0x30, 0xFF))],
+            absolute_sock.frames,
+            [bytes((0x30, 0x81)), bytes((0x30, 0x02))],
         )
-        self.assertEqual(absolute_sock.frames[-1], bytes((0x30, 0x83)))
 
-    def test_encoder_counter_gate(self):
+    def test_encoder_delta_gate(self):
         report = json.loads(
-            (HERE / "AR172_QEMU_ENCODER_COUNTER_GATE.json").read_text(
+            (HERE / "AR172_QEMU_ENCODER_DELTA_GATE.json").read_text(
                 encoding="utf-8"
             )
         )
         self.assertEqual(
-            report["status"], "PASS_NATIVE_COUNTER_SEMANTICS_READBACK_OPEN"
+            report["status"], "PASS_NATIVE_SIGNED_DELTA_SEMANTICS"
         )
         self.assertFalse(
             report["runtime_probe"]["authoritative_parameter_readback"]

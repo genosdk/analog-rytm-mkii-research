@@ -95,7 +95,7 @@ and reproducible tooling.
   audio event prevents the firmware's EOQ wait from stalling repeated blocks.
 - QWERTY key-down/up drives the native Trig 1..16 panel frames, with repeat and
   focus-loss protection. Mouse-grabbable knobs A..I now establish a real
-  target from 0..127 on first grab, then emit native wrapping-counter changes;
+  target from 0..127 on first grab, then emit native signed-delta changes;
   an A=64 runtime test changed the stock OLED and left later UI/audio service
   responsive. Exact active-value readback remains open, so the pre-grab number
   is not yet presented as firmware-authoritative.
