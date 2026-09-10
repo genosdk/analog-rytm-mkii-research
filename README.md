@@ -81,6 +81,12 @@ and reproducible tooling.
 - Section ID 1 is an FPGA configuration stream, not ColdFire code.
 - Renderer combiner `0x4010A2E0` writes 32 frames × 8 lanes and consumes three
   256-longword source planes.
+- The emulator-generated slot-1 sample now follows the stock setter, trigger,
+  registry, resampler and renderer path: 32 nonzero voice-slab longwords become
+  18 nonzero words in the live renderer ring at `0x80001800`.
+- The live external-audio channel-30 chain contains 18 ESG-linked TCDs. The
+  QEMU model now decodes ELINK counts and follows DLASTSG descriptors, allowing
+  the stock audio ISR to return from `0x40109F04` instead of spinning.
 - A BR-low/high test with deterministic nonzero CPU render planes produces identical
   CPU PCM/combined output while the hardware control word diverges.
 

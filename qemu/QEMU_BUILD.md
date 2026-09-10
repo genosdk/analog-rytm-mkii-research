@@ -36,6 +36,12 @@ add/subtract operation from the extension word, then restores signed Q1.31
 product alignment; without it, packed parameter lanes are halved or sourced
 from the wrong register.
 
+The board eDMA model also implements ELINK count decoding, per-element
+SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
+These behaviors are required by the stock channel-30 external-audio chain;
+treating DLASTSG as an ordinary destination adjustment leaves the live audio
+ISR spinning at `0x40109FFE`.
+
 ## Configure
 
 Example development build:

@@ -150,6 +150,19 @@ class QemuEmacPatchTests(unittest.TestCase):
         self.assertIn("product >>= 23", patch)
 
 
+class QemuAudioEdmaTests(unittest.TestCase):
+    def test_linked_audio_descriptor_semantics_are_modeled(self):
+        source = (
+            ROOT / "qemu" / "hw" / "m68k" / "ar_mk2_intc_pit.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_EDMA_CSR_ESG", source)
+        self.assertIn("ar_edma_iterations(citer_word)", source)
+        self.assertIn("ar_edma_set_iterations(citer_word, citer)", source)
+        self.assertIn("physical_memory_read(scatter_gather, tcd, AR_EDMA_TCD_SIZE)", source)
+        self.assertIn("ar_edma_software_start", source)
+        self.assertIn("ar_edma_pump_audio_channel(&c->edma, 30)", source)
+
+
 class DesktopPanelInputTests(unittest.TestCase):
     def test_qwerty_layout_and_knob_clamp(self):
         from qemu.desktop_panel import QWERTY_TRIGS, clamp_panel_value

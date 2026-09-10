@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_SAMPLE_RENDER_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_GENERATED_SAMPLE_REACHES_STOCK_RENDERER_EDMA_SCATTER_GATHER_FIXED",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "fixture": {
+    "sample": "emulator-generated QEMU TEST square wave",
+    "slot": 1,
+    "pcm_address": "0x4FF00000",
+    "frames": 256,
+    "sample_rate_hz": 48000,
+    "proprietary_pcm": false
+  },
+  "native_sample_path": {
+    "runtime_slot": "0x01",
+    "registry_entry": [
+      "0x4FF00000",
+      "0xBB800000",
+      "0x00000100",
+      "0x40000000"
+    ],
+    "sample_start": "0x40117A7E",
+    "sample_dma_sources": ["0x4FF00000", "0x4FF00090"],
+    "post_sample_voice_slab": "0x800067F8..0x80006BF7",
+    "nonzero_voice_slab_longwords": 32,
+    "renderer_call": "0x4010A2E0",
+    "live_renderer_frame_base": "0x80001800",
+    "nonzero_renderer_frame_longwords": 18,
+    "result": "PASS: generated PCM is selected, resampled into the voice slab and emitted by the untouched stock renderer."
+  },
+  "live_pipeline_correction": {
+    "previous_simplification": "The compact static harness called the outbound handoff directly with the renderer frame slab.",
+    "observed_isr": "The live ISR adds external-audio lanes, runs ring selection/extraction, and passes 0x80007440 to 0x40109F04.",
+    "ring_extract_sources": ["0x80004111", "0x80004201"],
+    "interpretation": "Those sources belong to the external audio-interface ring and are distinct from the successfully rendered sample ring. A zero 0x80007440 buffer does not invalidate native sample rendering."
+  },
+  "edma_gate": {
+    "channel": 30,
+    "initial_descriptor": "0xFC0453C0",
+    "scatter_gather_head": "0x8000E1A0",
+    "descriptor_count": 18,
+    "terminal_descriptor": "0x8000D1C0",
+    "terminal_csr": "0x0001",
+    "defects_fixed": [
+      "ELINK-enabled CITER/BITER counts use the low 9 bits rather than all low 15 bits.",
+      "SOFF and DOFF advance after each transfer element, not once per minor loop.",
+      "CSR.START initiates a software request and supports self-linked minor loops.",
+      "CSR.ESG loads the next 32-byte TCD from DLASTSG instead of adding that pointer to DADDR."
+    ],
+    "runtime_proof": "Channel 30 reached CSR 0x0081, the stock ISR returned from handoff 0x40109F04, and channel 42 was programmed/completed with CSR 0x0081."
+  },
+  "desktop_controls": {
+    "qwerty_triggering": "complete",
+    "mouse_virtual_knobs": "complete",
+    "range": "0..127"
+  },
+  "next_gate": {
+    "name": "AR172_QEMU_DESKTOP_AUDIO_TAP_GATE",
+    "objective": "Expose the nonzero stock renderer ring as a paced host-audio stream, mixing the eight rendered lanes without depending on absent physical analog-interface return lanes."
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "All firmware execution and trace interventions remained local. No firmware, extracted MAIN, project data, factory sample names, or proprietary PCM are included."
+}

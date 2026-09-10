@@ -79,8 +79,9 @@ For slot 1, the generated sample is stored at `0x4FF00000`, its name at
 `0x40000000` rate ratio. A live post-initialization trace confirms all of
 these values persist.
 
-This gate does not yet produce sample voice output. The blank project still
-returns sample-slot parameter 0 (`OFF`), and changing only the observed track
-slot byte does not enter the sample renderer. The next boundary is the missing
-project parameter provider or voice-enable state; descriptor presence alone is
-not treated as proof of playback.
+With the stock Sample Slot setter and trigger route now traced, assigning slot
+1 selects this registry entry, resamples its PCM into the eight-voice slab, and
+produces nonzero words in the stock renderer ring. The physical external-audio
+return lanes are still absent; desktop audio therefore needs a paced host tap
+at the proven renderer boundary rather than treating the external-input ring as
+sample output.

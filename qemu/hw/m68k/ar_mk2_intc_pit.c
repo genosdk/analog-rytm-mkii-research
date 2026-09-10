@@ -58,7 +58,9 @@
 
 #define AR_EDMA_CSR_INT_MAJOR 0x0002u
 #define AR_EDMA_CSR_D_REQ     0x0008u
+#define AR_EDMA_CSR_ESG       0x0010u
 #define AR_EDMA_CSR_DONE      0x0080u
+#define AR_EDMA_CSR_START     0x0001u
 
 #define AR_PIT_PCSR_EN   0x0001
 #define AR_PIT_PCSR_RLD  0x0002
@@ -455,6 +457,18 @@ static uint32_t ar_edma_advance(uint32_t address, int16_t offset,
     return next;
 }
 
+static unsigned ar_edma_iterations(uint16_t word)
+{
+    return word & ((word & 0x8000u) ? 0x01ffu : 0x7fffu);
+}
+
+static uint16_t ar_edma_set_iterations(uint16_t word, unsigned iterations)
+{
+    uint16_t mask = (word & 0x8000u) ? 0x01ffu : 0x7fffu;
+
+    return (word & ~mask) | (iterations & mask);
+}
+
 static void ar_edma_set_irq(AREdmaState *s, unsigned channel, bool level)
 {
     if (channel >= 56 && channel <= 63) {
@@ -491,7 +505,8 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     uint8_t *tcd;
     g_autofree uint8_t *buffer = NULL;
     uint32_t saddr, daddr, nbytes;
-    uint16_t attr, citer, biter;
+    uint16_t attr, citer_word, csr;
+    unsigned citer;
     int16_t soff, doff;
     unsigned smod, dmod, ssize, dsize, pos;
 
@@ -501,7 +516,8 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     }
 
     tcd = s->tcd[channel];
-    citer = lduw_be_p(tcd + AR_EDMA_TCD_CITER) & 0x7fff;
+    citer_word = lduw_be_p(tcd + AR_EDMA_TCD_CITER);
+    citer = ar_edma_iterations(citer_word);
     nbytes = ldl_be_p(tcd + AR_EDMA_TCD_NBYTES) & 0x3fffffff;
     if (!citer || !nbytes || nbytes > 65536) {
         return false;
@@ -516,17 +532,13 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     smod = (attr >> 11) & 0x1f;
     dmod = (attr >> 3) & 0x1f;
 
-    /* A fixed peripheral source is a FIFO register, not a linear MMIO byte
-     * window. Respect SSIZE and reread the same address for every element in
-     * the minor loop (notably eSDHC DATPORT -> eDMA59). */
+    /* Transfer one source and destination element at a time. SOFF/DOFF apply
+     * after each element; zero naturally models a fixed FIFO register. */
     ssize = 1u << ((attr >> 8) & 0x7);
-    if (soff == 0 && ssize <= 4 && nbytes > ssize) {
-        for (pos = 0; pos < nbytes; pos += ssize) {
-            physical_memory_read(saddr, buffer + pos,
-                                 MIN(ssize, nbytes - pos));
-        }
-    } else {
-        physical_memory_read(saddr, buffer, nbytes);
+    for (pos = 0; pos < nbytes; pos += ssize) {
+        physical_memory_read(saddr, buffer + pos,
+                             MIN(ssize, nbytes - pos));
+        saddr = ar_edma_advance(saddr, soff, smod);
     }
     if (channel == 36 && buffer[0] == AR_TYPE8_RECORD &&
         !s->core->type8_dma_seen) {
@@ -535,40 +547,95 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
                       "AR-MK2 TYPE8: eDMA36 transferred 0xF8 to 0x%08x "
                       "nbytes=%u citer=%u biter=%u uart_isr=%02x\n",
                       daddr, nbytes, citer,
-                      lduw_be_p(tcd + AR_EDMA_TCD_BITER) & 0x7fff,
+                      ar_edma_iterations(lduw_be_p(tcd + AR_EDMA_TCD_BITER)),
                       (unsigned)mcf_uart_read(s->core->uart9, 0x14, 1));
     }
-    /* The symmetric memory-to-peripheral case also targets one FIFO
-     * register repeatedly.  A linear 16-byte write would spill across the
-     * eSDHC register window and retain only the first word of each loop. */
     dsize = 1u << (attr & 0x7);
-    if (doff == 0 && dsize <= 4 && nbytes > dsize) {
-        for (pos = 0; pos < nbytes; pos += dsize) {
-            physical_memory_write(daddr, buffer + pos,
-                                  MIN(dsize, nbytes - pos));
-        }
-    } else {
-        physical_memory_write(daddr, buffer, nbytes);
+    for (pos = 0; pos < nbytes; pos += dsize) {
+        physical_memory_write(daddr, buffer + pos,
+                              MIN(dsize, nbytes - pos));
+        daddr = ar_edma_advance(daddr, doff, dmod);
     }
-    saddr = ar_edma_advance(saddr, soff, smod);
-    daddr = ar_edma_advance(daddr, doff, dmod);
     stl_be_p(tcd + AR_EDMA_TCD_SADDR, saddr);
     stl_be_p(tcd + AR_EDMA_TCD_DADDR, daddr);
 
     citer--;
     if (citer) {
-        stw_be_p(tcd + AR_EDMA_TCD_CITER, citer);
+        stw_be_p(tcd + AR_EDMA_TCD_CITER,
+                 ar_edma_set_iterations(citer_word, citer));
         return true;
     }
 
     saddr += (int32_t)ldl_be_p(tcd + AR_EDMA_TCD_SLAST);
-    daddr += (int32_t)ldl_be_p(tcd + AR_EDMA_TCD_DLAST);
     stl_be_p(tcd + AR_EDMA_TCD_SADDR, saddr);
+    csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
+    if (csr & AR_EDMA_CSR_ESG) {
+        uint32_t scatter_gather = ldl_be_p(tcd + AR_EDMA_TCD_DLAST);
+
+        if (csr & AR_EDMA_CSR_D_REQ) {
+            s->erq &= ~(1ULL << channel);
+        }
+        if (csr & AR_EDMA_CSR_INT_MAJOR) {
+            s->intr |= 1ULL << channel;
+            ar_edma_set_irq(s, channel, true);
+        }
+        physical_memory_read(scatter_gather, tcd, AR_EDMA_TCD_SIZE);
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 eDMA scatter/gather channel=%u next=%08x\n",
+                      channel, scatter_gather);
+        return true;
+    }
+
+    daddr += (int32_t)ldl_be_p(tcd + AR_EDMA_TCD_DLAST);
     stl_be_p(tcd + AR_EDMA_TCD_DADDR, daddr);
-    biter = lduw_be_p(tcd + AR_EDMA_TCD_BITER) & 0x7fff;
-    stw_be_p(tcd + AR_EDMA_TCD_CITER, biter);
+    stw_be_p(tcd + AR_EDMA_TCD_CITER,
+             lduw_be_p(tcd + AR_EDMA_TCD_BITER));
     ar_edma_complete(s, channel);
     return true;
+}
+
+static void ar_edma_pump_audio_channel(AREdmaState *s, unsigned channel)
+{
+    unsigned guard = 0;
+
+    while (guard++ < 4096 && (s->erq & (1ULL << channel))) {
+        uint16_t csr = lduw_be_p(s->tcd[channel] + AR_EDMA_TCD_CSR);
+
+        if (csr & AR_EDMA_CSR_DONE) {
+            break;
+        }
+        if (!ar_edma_service(s, channel)) {
+            break;
+        }
+    }
+}
+
+static void ar_edma_software_start(AREdmaState *s, unsigned channel)
+{
+    uint8_t *tcd = s->tcd[channel];
+    uint16_t csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
+    uint16_t citer = lduw_be_p(tcd + AR_EDMA_TCD_CITER);
+    bool self_link = (citer & 0x8000u) &&
+                     (((citer >> 9) & 0x3fu) == channel);
+    bool request_was_enabled = s->erq & (1ULL << channel);
+    unsigned guard = 0;
+
+    if (!(csr & AR_EDMA_CSR_START)) {
+        return;
+    }
+
+    stw_be_p(tcd + AR_EDMA_TCD_CSR, csr & ~AR_EDMA_CSR_START);
+    s->erq |= 1ULL << channel;
+    do {
+        if (!ar_edma_service(s, channel)) {
+            break;
+        }
+        csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
+    } while (self_link && !(csr & AR_EDMA_CSR_DONE) && guard++ < 511);
+
+    if (!request_was_enabled) {
+        s->erq &= ~(1ULL << channel);
+    }
 }
 
 static void ar_edma_pump_one_uart(AREdmaState *s, DeviceState *uart,
@@ -651,8 +718,12 @@ static void ar_edma_write(void *opaque, hwaddr addr,
         off + size <= AR_EDMA_TCD_BASE +
                       AR_EDMA_CHANNELS * AR_EDMA_TCD_SIZE) {
         unsigned rel = off - AR_EDMA_TCD_BASE;
-        ar_edma_store(&s->tcd[rel / AR_EDMA_TCD_SIZE]
-                            [rel % AR_EDMA_TCD_SIZE], value, size);
+        channel = rel / AR_EDMA_TCD_SIZE;
+        ar_edma_store(&s->tcd[channel][rel % AR_EDMA_TCD_SIZE], value, size);
+        if ((rel % AR_EDMA_TCD_SIZE) <= AR_EDMA_TCD_CSR &&
+            (rel % AR_EDMA_TCD_SIZE) + size > AR_EDMA_TCD_CSR) {
+            ar_edma_software_start(s, channel);
+        }
         ar_edma_pump_uarts(s->core);
         return;
     }
@@ -978,6 +1049,12 @@ static void ar_type8_feed(void *opaque)
      * Reusing the observed Type-8 10 ms cadence keeps this research shim
      * narrow until physical hardware timing is measured. */
     if (c->mock_audio_service && c->intc[1].icr[63]) {
+        /* The external audio interface requests both linked eDMA streams
+         * before raising the block-service interrupt.  Finish the prior
+         * outbound chain first, then populate the input chain consumed by
+         * the ISR. */
+        ar_edma_pump_audio_channel(&c->edma, 42);
+        ar_edma_pump_audio_channel(&c->edma, 30);
         c->intc[1].ifr |= 1ULL << 63;
         ar_intc_update(c);
         if (!c->audio_service_seen) {
