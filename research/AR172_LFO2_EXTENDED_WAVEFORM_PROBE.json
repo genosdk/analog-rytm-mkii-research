@@ -6,7 +6,7 @@
   },
   "disabled_candidate": {
     "path": "temporary execution image",
-    "sha256": "015a5c2e3a84dde40de71b5e5206ce2138505fc2213e0396d692872e281a9dbd",
+    "sha256": "d0e1c427c5593f2d53aa8d8c58b1119150fc2e183cbea540a1559ccfdd2d8cd7",
     "inherited": {
       "note_trigger_reset": {
         "publication": {
@@ -243,7 +243,7 @@
     "armed": false
   },
   "armed_emulation_probe": {
-    "sha256": "3b0c930b2766dac0377db422a692bf66774692bc0687b7984c28c5dca2d71f15",
+    "sha256": "57a70c1cbb663c04af25ac11ad7b3b25d38193a7544ea296b90314eb11125587",
     "inherited": {
       "note_trigger_reset": {
         "publication": {

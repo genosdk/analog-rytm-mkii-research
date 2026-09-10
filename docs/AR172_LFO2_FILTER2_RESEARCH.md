@@ -534,6 +534,12 @@ New state must use a versioned extension or verified-unused storage; existing
   deterministic random using two locked 256-entry tables. Their reports are
   `research/AR172_LFO2_WAVEFORM_MODE_PROBE.json` and
   `research/AR172_LFO2_EXTENDED_WAVEFORM_PROBE.json`.
+- `research/lfo2_controller_sequence_probe.py` drives the same virtual-index
+  ABI through the desktop controller across 22 consecutive callbacks. It
+  proves dynamic waveform/depth/mode changes, hold/resume behavior, exact
+  one-shot and half-shot terminal phases, stable terminal modulation/targets,
+  and per-block Filter 2 oracle agreement. Its report is
+  `research/AR172_LFO2_CONTROLLER_SEQUENCE_PROBE.json`.
 - `controller/filter2_controller_service.py` serves the local control surface
   and owns the long-lived emulator bridge. `controller/static/` contains the
   eight-knob and QWERTY interface, while `controller/validate_controller.py`
@@ -639,9 +645,15 @@ The DSPI1 spare-field route is closed: every candidate lies in a stock-managed
 structure. LFO2 therefore remains CPU-resident in the versioned shadow-state
 extension and modulates the proven CPU-side Filter 2 effective-cutoff path.
 All seven waveform shapes and four run modes now execute under emulation. The
-next gate is a multi-callback reset/retrigger matrix for sine, exponential and
-random, followed by exposing waveform and mode through the existing desktop
-controller without disturbing its QWERTY note path or 0..127 mouse controls.
+nonlinear multi-callback reset/retrigger matrix passes, and the desktop
+controller exposes waveform, mode, rate, depth, enable, retrigger and phase
+reset without disturbing its QWERTY note path or 0..127 mouse controls. A
+22-callback controller-driven sequence also passes exact audio oracles and
+proves one-shot clamps at `0xFFFFFFFF`, half-shot clamps at `0x80000000`, and
+hold resumes without phase drift. This sequence exposed and corrected an
+earlier half-shot immediate encoded as `0x00008000`. The next gate is active
+enable/disable and reset-transition testing plus runtime phase/status telemetry
+through the desktop state endpoint.
 
 For Filter 2, state-loaded Q1.31 coefficients, per-sample control slew, all
 eight audio/state lanes, the foreground publication boundary, its

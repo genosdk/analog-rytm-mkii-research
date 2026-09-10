@@ -57,6 +57,7 @@ from lfo2_control_publication_probe import probe as probe_lfo2_control_publicati
 from lfo2_note_trigger_reset_probe import probe as probe_lfo2_note_trigger_reset
 from lfo2_waveform_mode_probe import probe as probe_lfo2_waveform_mode
 from lfo2_extended_waveform_probe import probe as probe_lfo2_extended_waveform
+from lfo2_controller_sequence_probe import probe as probe_lfo2_controller_sequence
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -755,6 +756,16 @@ class Lfo2CpuIntegrationProbeTests(StockProbeTest):
             all(row["bit_identical"].values())
             for row in result["disabled_callback_stock_equivalence"]
         ))
+
+    def test_controller_sequence_and_terminal_modes(self):
+        result = probe_lfo2_controller_sequence(STOCK, EMULATOR)
+        self.assertEqual(result["result"], "PASS")
+        terminal = result["terminal_behavior"]
+        self.assertEqual(terminal["one_shot_first_terminal_callback"], 14)
+        self.assertEqual(terminal["half_shot_first_terminal_callback"], 9)
+        self.assertEqual(terminal["hold_callbacks"], [4, 5])
+        self.assertTrue(terminal["phase_modulation_and_target_stable_after_terminal"])
+        self.assertTrue(terminal["every_audio_block_matches_filter_oracle"])
 
 
 

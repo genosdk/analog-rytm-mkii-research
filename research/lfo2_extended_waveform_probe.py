@@ -192,7 +192,7 @@ def assemble_extended_updater() -> tuple[bytes, dict[str, int]]:
     b.label("half_mode")
     b.emit("b0a80004")
     b.branch_word(0x6500, "half_clamp")
-    b.emit("0c8000008000")
+    b.emit("0c8080000000")
     b.branch_word(0x6400, "half_clamp")
     b.branch_word(0x6000, "store_phase")
     b.label("half_clamp")
