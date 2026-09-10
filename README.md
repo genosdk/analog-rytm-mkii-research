@@ -114,6 +114,11 @@ and reproducible tooling.
 - Static MAIN cross-references find 255 exact address literals for 77 of the 165
   candidates, grouped into 24 neighborhoods that now prioritize dynamic
   parameter/event tracing; 88 may still use base-relative/computed addressing.
+- Track-0 canaries survive into all 170 stock packets, but the ranked 197/198
+  pair is rejected by logical track 1. A full eight-lane sweep now covers 1,360
+  machine/state/voice contexts, expands callback ownership to 368 fields, and
+  leaves 124 eight-lane writer-unobserved candidates. Fifty-eight adjacent
+  pairs are also read-isolated; the new ranked winner is words 67/68.
 - The opt-in continuous research clock now applies interrupt backpressure and
   has sustained 2,303 completed native services while accepting later UI input.
   Its provisional 10 ms period is not yet a claim of physical-device cadence.

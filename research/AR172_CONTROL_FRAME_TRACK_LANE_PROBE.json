@@ -1,0 +1,428 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "record_clear_loop": {
+    "pc": "0x4011CD20",
+    "write_pc": "0x4011CD3C",
+    "record_stride_bytes": 8,
+    "records": 56,
+    "first_cleared_byte": "0x8000646C",
+    "last_cleared_byte": "0x80006624",
+    "cleared_offset_in_record": 4
+  },
+  "candidate": {
+    "words": [
+      197,
+      198
+    ],
+    "addresses": [
+      "0x80006548",
+      "0x8000654A"
+    ],
+    "record_base": "0x80006548",
+    "record_clear_byte": "0x8000654C",
+    "classification": "logical-track renderer lane, not globally spare padding",
+    "rejected_for_universal_filter2_transport": true
+  },
+  "coverage": {
+    "logical_tracks": [
+      0,
+      1,
+      2
+    ],
+    "matrix_sha256": "3fa47e5551718ace38890f7682df8c6744f7c2c64cb2f3e9f101a75f2b0b418d"
+  },
+  "tracks": [
+    {
+      "track": 0,
+      "renderer_arguments": [
+        [
+          0,
+          2147509184,
+          2147547066,
+          3932160
+        ]
+      ],
+      "candidate_write_events": [],
+      "candidate_packet_values": [
+        "0xF27A",
+        "0x0D85"
+      ],
+      "all_control_writes": [
+        {
+          "pc": "0x4010D00C",
+          "address": "0x80006528",
+          "size": 2,
+          "value": "0x0000"
+        },
+        {
+          "pc": "0x4010D010",
+          "address": "0x80006530",
+          "size": 2,
+          "value": "0x0000"
+        },
+        {
+          "pc": "0x4010D018",
+          "address": "0x8000652C",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x4010D024",
+          "address": "0x80006534",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x40108A5A",
+          "address": "0x80006524",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x40108A66",
+          "address": "0x80006520",
+          "size": 2,
+          "value": "0x8000"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006524",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000652C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006534",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000653C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006544",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000654C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006554",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000655C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006564",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000656C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006574",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000657C",
+          "size": 1,
+          "value": "0x00"
+        }
+      ]
+    },
+    {
+      "track": 1,
+      "renderer_arguments": [
+        [
+          2,
+          2147509184,
+          2147547150,
+          3932160
+        ]
+      ],
+      "candidate_write_events": [
+        {
+          "pc": "0x4010D00C",
+          "address": "0x80006548",
+          "size": 2,
+          "value": "0x0000"
+        }
+      ],
+      "candidate_packet_values": [
+        "0x0000",
+        "0x0D85"
+      ],
+      "all_control_writes": [
+        {
+          "pc": "0x4010D00C",
+          "address": "0x80006548",
+          "size": 2,
+          "value": "0x0000"
+        },
+        {
+          "pc": "0x4010D010",
+          "address": "0x80006550",
+          "size": 2,
+          "value": "0x0000"
+        },
+        {
+          "pc": "0x4010D018",
+          "address": "0x8000654C",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x4010D024",
+          "address": "0x80006554",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x40108A5A",
+          "address": "0x80006524",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x40108A66",
+          "address": "0x80006520",
+          "size": 2,
+          "value": "0x8000"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006524",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000652C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006534",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000653C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006544",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000654C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006554",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000655C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006564",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000656C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006574",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000657C",
+          "size": 1,
+          "value": "0x00"
+        }
+      ]
+    },
+    {
+      "track": 2,
+      "renderer_arguments": [
+        [
+          7,
+          2147509184,
+          2147547234,
+          3932160
+        ]
+      ],
+      "candidate_write_events": [],
+      "candidate_packet_values": [
+        "0xF27A",
+        "0x0D85"
+      ],
+      "all_control_writes": [
+        {
+          "pc": "0x4010D00C",
+          "address": "0x80006568",
+          "size": 2,
+          "value": "0x0000"
+        },
+        {
+          "pc": "0x4010D010",
+          "address": "0x80006570",
+          "size": 2,
+          "value": "0x0000"
+        },
+        {
+          "pc": "0x4010D018",
+          "address": "0x8000656C",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x4010D024",
+          "address": "0x80006574",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x40108A5A",
+          "address": "0x80006524",
+          "size": 1,
+          "value": "0x90"
+        },
+        {
+          "pc": "0x40108A66",
+          "address": "0x80006520",
+          "size": 2,
+          "value": "0x8000"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006524",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000652C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006534",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000653C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006544",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000654C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006554",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000655C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006564",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000656C",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x80006574",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "pc": "0x4011CD3C",
+          "address": "0x8000657C",
+          "size": 1,
+          "value": "0x00"
+        }
+      ]
+    }
+  ],
+  "conclusion": "Words 197/198 are the first four bytes of an 8-byte renderer-control record. A logical-track-1 note writes word 197 at 0x80006548 and destroys its seeded canary, so the track-0-only candidate is not globally spare.",
+  "next_target": "Extend ownership across all eight physical-voice/logical-track mappings before selecting any replacement Filter 2 transport slot.",
+  "safety": "Stock emulation and static byte checks only; firmware was not modified."
+}

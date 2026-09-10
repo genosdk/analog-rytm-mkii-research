@@ -37,6 +37,10 @@ from control_setup_ownership_probe import probe as probe_control_setup_ownership
 from control_candidate_absolute_reference_probe import (
     probe as probe_control_candidate_absolute_reference,
 )
+from control_frame_eight_lane_ownership_probe import (
+    probe as probe_control_frame_eight_lane_ownership,
+)
+from control_frame_track_lane_probe import probe as probe_control_frame_track_lane
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -613,6 +617,34 @@ class ControlCandidateAbsoluteReferenceProbeTests(StockProbeTest):
         self.assertEqual(summary["unreferenced_field_count"], 88)
         self.assertEqual(summary["literal_reference_count"], 255)
         self.assertEqual(summary["cluster_count"], 24)
+
+
+class ControlFrameTrackLaneProbeTests(StockProbeTest):
+    def test_track_zero_candidate_is_owned_by_logical_track_one(self):
+        result = probe_control_frame_track_lane(STOCK, EMULATOR)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["candidate"]["words"], [197, 198])
+        self.assertTrue(result["candidate"]["rejected_for_universal_filter2_transport"])
+        self.assertEqual(result["coverage"]["logical_tracks"], [0, 1, 2])
+
+
+class ControlFrameEightLaneOwnershipProbeTests(StockProbeTest):
+    def test_all_physical_voice_logical_track_mappings(self):
+        result = probe_control_frame_eight_lane_ownership(STOCK, EMULATOR, jobs=4)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["coverage"]["contexts"], 1360)
+        self.assertEqual(
+            result["coverage"]["physical_voice_to_logical_track"],
+            [0, 4, 1, 5, 8, 6, 10, 2],
+        )
+        ownership = result["ownership"]
+        self.assertEqual(ownership["renderer_field_count"], 164)
+        self.assertEqual(ownership["nonrenderer_field_count"], 233)
+        self.assertEqual(ownership["any_callback_writer_field_count"], 368)
+        self.assertEqual(ownership["writer_free_field_count"], 124)
+        self.assertEqual(result["ranking"]["adjacent_writer_free_pairs"], 58)
+        self.assertEqual(result["ranking"]["fully_read_isolated_pairs"], 58)
+        self.assertEqual(result["ranking"]["winner"]["words"], [67, 68])
 
 
 

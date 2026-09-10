@@ -563,6 +563,17 @@ New state must use a versioned extension or verified-unused storage; existing
 - `research/control_candidate_absolute_reference_probe.py` indexes exact MAIN
   address literals for the remaining candidates. Its field and cluster map is
   `research/AR172_CONTROL_CANDIDATE_ABSOLUTE_REFERENCE_PROBE.json`.
+- `research/control_frame_global_ownership_probe.py`,
+  `control_frame_canary_persistence_probe.py`,
+  `control_frame_candidate_pair_probe.py` and
+  `control_frame_two_word_locality_probe.py` form the track-0 ownership,
+  persistence, ranking and exact packet-locality chain. Their corresponding
+  `AR172_CONTROL_FRAME_*_PROBE.json` reports preserve every context.
+- `research/control_frame_track_lane_probe.py` rejects words 197/198 after a
+  logical-track-1 write, and `control_frame_eight_lane_ownership_probe.py`
+  extends ownership across the complete physical-voice mapping. Their reports
+  are `AR172_CONTROL_FRAME_TRACK_LANE_PROBE.json` and
+  `AR172_CONTROL_FRAME_EIGHT_LANE_OWNERSHIP_PROBE.json`.
 - `recovered_library/minicoldfire_audio.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply, correct fractional-product scaling, and the
@@ -668,6 +679,29 @@ into 24 neighborhoods. The densest are `0x401040B2..0x401049A0`,
 operands or data, so each still needs dynamic classification. The 88 fields
 without exact literals remain reachable through base-register-relative or
 computed addressing and are not cleared by this negative static result.
+
+The first controlled canary chain proved that all 165 track-0 writer-free
+halfwords persist from callback entry through packetizer read and final DSPI1
+serialization in all 170 machine/state contexts. Pair ranking selected words
+197/198, and a separately executed stock-versus-seeded comparison changed
+exactly those two packet indices in every context. The subsequent structural
+test correctly rejected the pair: logical track 1 dispatches physical voice 2
+and writes the repeated 8-byte record beginning at word 197. This established
+that track-0 persistence is insufficient for a universal transport claim.
+
+Ownership now covers all eight physical voices and their stock logical-track
+mapping `[0,4,1,5,8,6,10,2]`. The expanded sweep executes 34 public machines ×
+five forced states × eight mappings, or 1,360 authentic callbacks. Renderer
+ownership grows from 117 to 164 fields; combined renderer/non-renderer callback
+ownership grows from 327 to 368. Forty-one track-0 false positives are rejected,
+including words 197/198, leaving 124 fields with no observed writer across the
+eight-lane matrix. These remain software candidates only. The next offline gate
+reranks adjacent pairs within this 124-field intersection. Fifty-three fields
+have no observed non-packet read, and all 58 adjacent pairs are fully
+read-isolated. The deterministic winner is words 67/68 at
+`0x80006444/0x80006446`, 20 words from the nearest known control field. The next
+gate is bounded eight-lane persistence and exact packet-locality testing of only
+that pair.
 
 ## External format cross-checks
 

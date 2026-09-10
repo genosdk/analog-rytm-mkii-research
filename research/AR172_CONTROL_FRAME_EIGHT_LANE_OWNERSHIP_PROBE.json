@@ -1,0 +1,10087 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "coverage": {
+    "public_machines": 34,
+    "states": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "physical_voice_to_logical_track": [
+      0,
+      4,
+      1,
+      5,
+      8,
+      6,
+      10,
+      2
+    ],
+    "contexts_per_lane": 170,
+    "contexts": 1360,
+    "matrix_sha256": "960e108d7305c968231f2bf6059c93f20bdb11711bc1f802faf2961eb4c2377b"
+  },
+  "lanes": [
+    {
+      "physical_voice": 0,
+      "logical_track": 0,
+      "contexts": 170,
+      "context_sha256": "b9f12aba6a63787a31362499c8fbb64fa5d4c0394f7e4ac635c9e42292d27e36",
+      "renderer_field_count": 117,
+      "nonrenderer_field_count": 233,
+      "all_writer_field_count": 327,
+      "writer_free_field_count": 165,
+      "nonpacket_read_field_count": 55
+    },
+    {
+      "physical_voice": 1,
+      "logical_track": 4,
+      "contexts": 170,
+      "context_sha256": "7256f1c3c52be82192b958e9caff0ebccfc12844a6708f1f398d92384155933f",
+      "renderer_field_count": 119,
+      "nonrenderer_field_count": 233,
+      "all_writer_field_count": 329,
+      "writer_free_field_count": 163,
+      "nonpacket_read_field_count": 55
+    },
+    {
+      "physical_voice": 2,
+      "logical_track": 1,
+      "contexts": 170,
+      "context_sha256": "7f6331b0e062ad9fcb328a294eaf8f0444ef2e74a71a7c238e2a34005ef71806",
+      "renderer_field_count": 117,
+      "nonrenderer_field_count": 233,
+      "all_writer_field_count": 327,
+      "writer_free_field_count": 165,
+      "nonpacket_read_field_count": 55
+    },
+    {
+      "physical_voice": 3,
+      "logical_track": 5,
+      "contexts": 170,
+      "context_sha256": "4870416688fff01485ec1f598bfc90d14c4d11aeb2a32816b444007214c8de3f",
+      "renderer_field_count": 119,
+      "nonrenderer_field_count": 233,
+      "all_writer_field_count": 329,
+      "writer_free_field_count": 163,
+      "nonpacket_read_field_count": 55
+    },
+    {
+      "physical_voice": 4,
+      "logical_track": 8,
+      "contexts": 170,
+      "context_sha256": "bf52e6423cee7b88d983653a1e400ef6bc3f1cabbad71605e04b1137555e80ad",
+      "renderer_field_count": 117,
+      "nonrenderer_field_count": 233,
+      "all_writer_field_count": 327,
+      "writer_free_field_count": 165,
+      "nonpacket_read_field_count": 55
+    },
+    {
+      "physical_voice": 5,
+      "logical_track": 6,
+      "contexts": 170,
+      "context_sha256": "6b8f16f7a2b18e42dacf632acefacba90ef4a736d951d80e2065741ffc9b91bb",
+      "renderer_field_count": 119,
+      "nonrenderer_field_count": 233,
+      "all_writer_field_count": 329,
+      "writer_free_field_count": 163,
+      "nonpacket_read_field_count": 55
+    },
+    {
+      "physical_voice": 6,
+      "logical_track": 10,
+      "contexts": 170,
+      "context_sha256": "0f12e929309d12c63c9c271f61848c44430c4179633deca7542d2645e7611534",
+      "renderer_field_count": 117,
+      "nonrenderer_field_count": 233,
+      "all_writer_field_count": 327,
+      "writer_free_field_count": 165,
+      "nonpacket_read_field_count": 55
+    },
+    {
+      "physical_voice": 7,
+      "logical_track": 2,
+      "contexts": 170,
+      "context_sha256": "8f5c666255778a208f9c3d9a4db857877160b1cb866579bd362bdf443c8e7590",
+      "renderer_field_count": 109,
+      "nonrenderer_field_count": 233,
+      "all_writer_field_count": 322,
+      "writer_free_field_count": 170,
+      "nonpacket_read_field_count": 51
+    }
+  ],
+  "ownership": {
+    "renderer_field_count": 164,
+    "nonrenderer_field_count": 233,
+    "any_callback_writer_field_count": 368,
+    "writer_free_field_count": 124,
+    "writer_free_ranges": [
+      {
+        "first_word": 67,
+        "last_word": 70,
+        "first_address": "0x80006444",
+        "last_address": "0x8000644A"
+      },
+      {
+        "first_word": 73,
+        "last_word": 79,
+        "first_address": "0x80006450",
+        "last_address": "0x8000645C"
+      },
+      {
+        "first_word": 150,
+        "last_word": 150,
+        "first_address": "0x800064EA",
+        "last_address": "0x800064EA"
+      },
+      {
+        "first_word": 152,
+        "last_word": 152,
+        "first_address": "0x800064EE",
+        "last_address": "0x800064EE"
+      },
+      {
+        "first_word": 154,
+        "last_word": 154,
+        "first_address": "0x800064F2",
+        "last_address": "0x800064F2"
+      },
+      {
+        "first_word": 156,
+        "last_word": 156,
+        "first_address": "0x800064F6",
+        "last_address": "0x800064F6"
+      },
+      {
+        "first_word": 158,
+        "last_word": 158,
+        "first_address": "0x800064FA",
+        "last_address": "0x800064FA"
+      },
+      {
+        "first_word": 160,
+        "last_word": 160,
+        "first_address": "0x800064FE",
+        "last_address": "0x800064FE"
+      },
+      {
+        "first_word": 162,
+        "last_word": 162,
+        "first_address": "0x80006502",
+        "last_address": "0x80006502"
+      },
+      {
+        "first_word": 164,
+        "last_word": 164,
+        "first_address": "0x80006506",
+        "last_address": "0x80006506"
+      },
+      {
+        "first_word": 166,
+        "last_word": 166,
+        "first_address": "0x8000650A",
+        "last_address": "0x8000650A"
+      },
+      {
+        "first_word": 168,
+        "last_word": 168,
+        "first_address": "0x8000650E",
+        "last_address": "0x8000650E"
+      },
+      {
+        "first_word": 170,
+        "last_word": 170,
+        "first_address": "0x80006512",
+        "last_address": "0x80006512"
+      },
+      {
+        "first_word": 172,
+        "last_word": 172,
+        "first_address": "0x80006516",
+        "last_address": "0x80006516"
+      },
+      {
+        "first_word": 174,
+        "last_word": 174,
+        "first_address": "0x8000651A",
+        "last_address": "0x8000651A"
+      },
+      {
+        "first_word": 176,
+        "last_word": 176,
+        "first_address": "0x8000651E",
+        "last_address": "0x8000651E"
+      },
+      {
+        "first_word": 178,
+        "last_word": 178,
+        "first_address": "0x80006522",
+        "last_address": "0x80006522"
+      },
+      {
+        "first_word": 180,
+        "last_word": 180,
+        "first_address": "0x80006526",
+        "last_address": "0x80006526"
+      },
+      {
+        "first_word": 281,
+        "last_word": 282,
+        "first_address": "0x800065F0",
+        "last_address": "0x800065F2"
+      },
+      {
+        "first_word": 284,
+        "last_word": 286,
+        "first_address": "0x800065F6",
+        "last_address": "0x800065FA"
+      },
+      {
+        "first_word": 288,
+        "last_word": 290,
+        "first_address": "0x800065FE",
+        "last_address": "0x80006602"
+      },
+      {
+        "first_word": 292,
+        "last_word": 294,
+        "first_address": "0x80006606",
+        "last_address": "0x8000660A"
+      },
+      {
+        "first_word": 296,
+        "last_word": 298,
+        "first_address": "0x8000660E",
+        "last_address": "0x80006612"
+      },
+      {
+        "first_word": 300,
+        "last_word": 302,
+        "first_address": "0x80006616",
+        "last_address": "0x8000661A"
+      },
+      {
+        "first_word": 304,
+        "last_word": 306,
+        "first_address": "0x8000661E",
+        "last_address": "0x80006622"
+      },
+      {
+        "first_word": 308,
+        "last_word": 308,
+        "first_address": "0x80006626",
+        "last_address": "0x80006626"
+      },
+      {
+        "first_word": 334,
+        "last_word": 340,
+        "first_address": "0x8000665A",
+        "last_address": "0x80006666"
+      },
+      {
+        "first_word": 342,
+        "last_word": 342,
+        "first_address": "0x8000666A",
+        "last_address": "0x8000666A"
+      },
+      {
+        "first_word": 344,
+        "last_word": 344,
+        "first_address": "0x8000666E",
+        "last_address": "0x8000666E"
+      },
+      {
+        "first_word": 346,
+        "last_word": 346,
+        "first_address": "0x80006672",
+        "last_address": "0x80006672"
+      },
+      {
+        "first_word": 348,
+        "last_word": 348,
+        "first_address": "0x80006676",
+        "last_address": "0x80006676"
+      },
+      {
+        "first_word": 350,
+        "last_word": 350,
+        "first_address": "0x8000667A",
+        "last_address": "0x8000667A"
+      },
+      {
+        "first_word": 352,
+        "last_word": 352,
+        "first_address": "0x8000667E",
+        "last_address": "0x8000667E"
+      },
+      {
+        "first_word": 354,
+        "last_word": 354,
+        "first_address": "0x80006682",
+        "last_address": "0x80006682"
+      },
+      {
+        "first_word": 356,
+        "last_word": 356,
+        "first_address": "0x80006686",
+        "last_address": "0x80006686"
+      },
+      {
+        "first_word": 358,
+        "last_word": 358,
+        "first_address": "0x8000668A",
+        "last_address": "0x8000668A"
+      },
+      {
+        "first_word": 360,
+        "last_word": 360,
+        "first_address": "0x8000668E",
+        "last_address": "0x8000668E"
+      },
+      {
+        "first_word": 362,
+        "last_word": 362,
+        "first_address": "0x80006692",
+        "last_address": "0x80006692"
+      },
+      {
+        "first_word": 364,
+        "last_word": 364,
+        "first_address": "0x80006696",
+        "last_address": "0x80006696"
+      },
+      {
+        "first_word": 366,
+        "last_word": 366,
+        "first_address": "0x8000669A",
+        "last_address": "0x8000669A"
+      },
+      {
+        "first_word": 368,
+        "last_word": 368,
+        "first_address": "0x8000669E",
+        "last_address": "0x8000669E"
+      },
+      {
+        "first_word": 370,
+        "last_word": 370,
+        "first_address": "0x800066A2",
+        "last_address": "0x800066A2"
+      },
+      {
+        "first_word": 372,
+        "last_word": 372,
+        "first_address": "0x800066A6",
+        "last_address": "0x800066A6"
+      },
+      {
+        "first_word": 374,
+        "last_word": 374,
+        "first_address": "0x800066AA",
+        "last_address": "0x800066AA"
+      },
+      {
+        "first_word": 376,
+        "last_word": 376,
+        "first_address": "0x800066AE",
+        "last_address": "0x800066AE"
+      },
+      {
+        "first_word": 378,
+        "last_word": 378,
+        "first_address": "0x800066B2",
+        "last_address": "0x800066B2"
+      },
+      {
+        "first_word": 380,
+        "last_word": 380,
+        "first_address": "0x800066B6",
+        "last_address": "0x800066B6"
+      },
+      {
+        "first_word": 382,
+        "last_word": 382,
+        "first_address": "0x800066BA",
+        "last_address": "0x800066BA"
+      },
+      {
+        "first_word": 384,
+        "last_word": 384,
+        "first_address": "0x800066BE",
+        "last_address": "0x800066BE"
+      },
+      {
+        "first_word": 386,
+        "last_word": 386,
+        "first_address": "0x800066C2",
+        "last_address": "0x800066C2"
+      },
+      {
+        "first_word": 388,
+        "last_word": 388,
+        "first_address": "0x800066C6",
+        "last_address": "0x800066C6"
+      },
+      {
+        "first_word": 390,
+        "last_word": 390,
+        "first_address": "0x800066CA",
+        "last_address": "0x800066CA"
+      },
+      {
+        "first_word": 428,
+        "last_word": 428,
+        "first_address": "0x80006716",
+        "last_address": "0x80006716"
+      },
+      {
+        "first_word": 430,
+        "last_word": 430,
+        "first_address": "0x8000671A",
+        "last_address": "0x8000671A"
+      },
+      {
+        "first_word": 436,
+        "last_word": 436,
+        "first_address": "0x80006726",
+        "last_address": "0x80006726"
+      },
+      {
+        "first_word": 438,
+        "last_word": 438,
+        "first_address": "0x8000672A",
+        "last_address": "0x8000672A"
+      },
+      {
+        "first_word": 444,
+        "last_word": 444,
+        "first_address": "0x80006736",
+        "last_address": "0x80006736"
+      },
+      {
+        "first_word": 446,
+        "last_word": 450,
+        "first_address": "0x8000673A",
+        "last_address": "0x80006742"
+      },
+      {
+        "first_word": 452,
+        "last_word": 452,
+        "first_address": "0x80006746",
+        "last_address": "0x80006746"
+      },
+      {
+        "first_word": 454,
+        "last_word": 454,
+        "first_address": "0x8000674A",
+        "last_address": "0x8000674A"
+      },
+      {
+        "first_word": 456,
+        "last_word": 456,
+        "first_address": "0x8000674E",
+        "last_address": "0x8000674E"
+      },
+      {
+        "first_word": 458,
+        "last_word": 458,
+        "first_address": "0x80006752",
+        "last_address": "0x80006752"
+      },
+      {
+        "first_word": 460,
+        "last_word": 460,
+        "first_address": "0x80006756",
+        "last_address": "0x80006756"
+      },
+      {
+        "first_word": 462,
+        "last_word": 472,
+        "first_address": "0x8000675A",
+        "last_address": "0x8000676E"
+      },
+      {
+        "first_word": 474,
+        "last_word": 490,
+        "first_address": "0x80006772",
+        "last_address": "0x80006792"
+      },
+      {
+        "first_word": 492,
+        "last_word": 492,
+        "first_address": "0x80006796",
+        "last_address": "0x80006796"
+      }
+    ],
+    "renderer_fields": [
+      {
+        "address": "0x8000641A",
+        "dspi1_word_index": 46,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000641C",
+        "dspi1_word_index": 47,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000641E",
+        "dspi1_word_index": 48,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006420",
+        "dspi1_word_index": 49,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006422",
+        "dspi1_word_index": 50,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006424",
+        "dspi1_word_index": 51,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006426",
+        "dspi1_word_index": 52,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006428",
+        "dspi1_word_index": 53,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000642A",
+        "dspi1_word_index": 54,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x8000642C",
+        "dspi1_word_index": 55,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x8000642E",
+        "dspi1_word_index": 56,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006430",
+        "dspi1_word_index": 57,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006432",
+        "dspi1_word_index": 58,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006434",
+        "dspi1_word_index": 59,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006436",
+        "dspi1_word_index": 60,
+        "physical_voices": [
+          1
+        ],
+        "logical_tracks": [
+          4
+        ]
+      },
+      {
+        "address": "0x80006438",
+        "dspi1_word_index": 61,
+        "physical_voices": [
+          1
+        ],
+        "logical_tracks": [
+          4
+        ]
+      },
+      {
+        "address": "0x8000643A",
+        "dspi1_word_index": 62,
+        "physical_voices": [
+          3
+        ],
+        "logical_tracks": [
+          5
+        ]
+      },
+      {
+        "address": "0x8000643C",
+        "dspi1_word_index": 63,
+        "physical_voices": [
+          3
+        ],
+        "logical_tracks": [
+          5
+        ]
+      },
+      {
+        "address": "0x8000643E",
+        "dspi1_word_index": 64,
+        "physical_voices": [
+          5
+        ],
+        "logical_tracks": [
+          6
+        ]
+      },
+      {
+        "address": "0x80006440",
+        "dspi1_word_index": 65,
+        "physical_voices": [
+          5
+        ],
+        "logical_tracks": [
+          6
+        ]
+      },
+      {
+        "address": "0x80006442",
+        "dspi1_word_index": 66,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000644C",
+        "dspi1_word_index": 71,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000644E",
+        "dspi1_word_index": 72,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000645E",
+        "dspi1_word_index": 80,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006460",
+        "dspi1_word_index": 81,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006462",
+        "dspi1_word_index": 82,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006464",
+        "dspi1_word_index": 83,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006466",
+        "dspi1_word_index": 84,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006528",
+        "dspi1_word_index": 181,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000652A",
+        "dspi1_word_index": 182,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000652C",
+        "dspi1_word_index": 183,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000652E",
+        "dspi1_word_index": 184,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006530",
+        "dspi1_word_index": 185,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006532",
+        "dspi1_word_index": 186,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006534",
+        "dspi1_word_index": 187,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006536",
+        "dspi1_word_index": 188,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006538",
+        "dspi1_word_index": 189,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000653A",
+        "dspi1_word_index": 190,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000653C",
+        "dspi1_word_index": 191,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000653E",
+        "dspi1_word_index": 192,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006540",
+        "dspi1_word_index": 193,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006542",
+        "dspi1_word_index": 194,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006544",
+        "dspi1_word_index": 195,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006546",
+        "dspi1_word_index": 196,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006548",
+        "dspi1_word_index": 197,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000654A",
+        "dspi1_word_index": 198,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000654C",
+        "dspi1_word_index": 199,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000654E",
+        "dspi1_word_index": 200,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006550",
+        "dspi1_word_index": 201,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006552",
+        "dspi1_word_index": 202,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006554",
+        "dspi1_word_index": 203,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006556",
+        "dspi1_word_index": 204,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006558",
+        "dspi1_word_index": 205,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000655A",
+        "dspi1_word_index": 206,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000655C",
+        "dspi1_word_index": 207,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000655E",
+        "dspi1_word_index": 208,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006560",
+        "dspi1_word_index": 209,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006562",
+        "dspi1_word_index": 210,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006564",
+        "dspi1_word_index": 211,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006566",
+        "dspi1_word_index": 212,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006568",
+        "dspi1_word_index": 213,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x8000656A",
+        "dspi1_word_index": 214,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x8000656C",
+        "dspi1_word_index": 215,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x8000656E",
+        "dspi1_word_index": 216,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006570",
+        "dspi1_word_index": 217,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006572",
+        "dspi1_word_index": 218,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006574",
+        "dspi1_word_index": 219,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006576",
+        "dspi1_word_index": 220,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006578",
+        "dspi1_word_index": 221,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x8000657A",
+        "dspi1_word_index": 222,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000657C",
+        "dspi1_word_index": 223,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000657E",
+        "dspi1_word_index": 224,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006580",
+        "dspi1_word_index": 225,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006582",
+        "dspi1_word_index": 226,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006584",
+        "dspi1_word_index": 227,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006586",
+        "dspi1_word_index": 228,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006588",
+        "dspi1_word_index": 229,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000658A",
+        "dspi1_word_index": 230,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000658C",
+        "dspi1_word_index": 231,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000658E",
+        "dspi1_word_index": 232,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006590",
+        "dspi1_word_index": 233,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006592",
+        "dspi1_word_index": 234,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006594",
+        "dspi1_word_index": 235,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006596",
+        "dspi1_word_index": 236,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006598",
+        "dspi1_word_index": 237,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000659A",
+        "dspi1_word_index": 238,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000659C",
+        "dspi1_word_index": 239,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000659E",
+        "dspi1_word_index": 240,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065A0",
+        "dspi1_word_index": 241,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065A2",
+        "dspi1_word_index": 242,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065A4",
+        "dspi1_word_index": 243,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065A6",
+        "dspi1_word_index": 244,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065A8",
+        "dspi1_word_index": 245,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065AA",
+        "dspi1_word_index": 246,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065AC",
+        "dspi1_word_index": 247,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065AE",
+        "dspi1_word_index": 248,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065B0",
+        "dspi1_word_index": 249,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065B2",
+        "dspi1_word_index": 250,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065B4",
+        "dspi1_word_index": 251,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065B6",
+        "dspi1_word_index": 252,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065B8",
+        "dspi1_word_index": 253,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065BA",
+        "dspi1_word_index": 254,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065BC",
+        "dspi1_word_index": 255,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065BE",
+        "dspi1_word_index": 256,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065C0",
+        "dspi1_word_index": 257,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065C2",
+        "dspi1_word_index": 258,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065C4",
+        "dspi1_word_index": 259,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065C6",
+        "dspi1_word_index": 260,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065C8",
+        "dspi1_word_index": 261,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065CA",
+        "dspi1_word_index": 262,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065CC",
+        "dspi1_word_index": 263,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065CE",
+        "dspi1_word_index": 264,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065D0",
+        "dspi1_word_index": 265,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065D2",
+        "dspi1_word_index": 266,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065D4",
+        "dspi1_word_index": 267,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065D6",
+        "dspi1_word_index": 268,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065D8",
+        "dspi1_word_index": 269,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065DA",
+        "dspi1_word_index": 270,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065DC",
+        "dspi1_word_index": 271,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065DE",
+        "dspi1_word_index": 272,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065E0",
+        "dspi1_word_index": 273,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065E2",
+        "dspi1_word_index": 274,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065E4",
+        "dspi1_word_index": 275,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065E6",
+        "dspi1_word_index": 276,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065E8",
+        "dspi1_word_index": 277,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065EA",
+        "dspi1_word_index": 278,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065EC",
+        "dspi1_word_index": 279,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065EE",
+        "dspi1_word_index": 280,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006628",
+        "dspi1_word_index": 309,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000662A",
+        "dspi1_word_index": 310,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000662C",
+        "dspi1_word_index": 311,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000662E",
+        "dspi1_word_index": 312,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006630",
+        "dspi1_word_index": 313,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006632",
+        "dspi1_word_index": 314,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006634",
+        "dspi1_word_index": 315,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006636",
+        "dspi1_word_index": 316,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006638",
+        "dspi1_word_index": 317,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000663A",
+        "dspi1_word_index": 318,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000663C",
+        "dspi1_word_index": 319,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000663E",
+        "dspi1_word_index": 320,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006640",
+        "dspi1_word_index": 321,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006642",
+        "dspi1_word_index": 322,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006644",
+        "dspi1_word_index": 323,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006646",
+        "dspi1_word_index": 324,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006648",
+        "dspi1_word_index": 325,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000664A",
+        "dspi1_word_index": 326,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000664C",
+        "dspi1_word_index": 327,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000664E",
+        "dspi1_word_index": 328,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006650",
+        "dspi1_word_index": 329,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006652",
+        "dspi1_word_index": 330,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006654",
+        "dspi1_word_index": 331,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006656",
+        "dspi1_word_index": 332,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000670C",
+        "dspi1_word_index": 423,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000670E",
+        "dspi1_word_index": 424,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006710",
+        "dspi1_word_index": 425,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006712",
+        "dspi1_word_index": 426,
+        "physical_voices": [
+          0,
+          1,
+          3,
+          4,
+          5,
+          6
+        ],
+        "logical_tracks": [
+          0,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000671C",
+        "dspi1_word_index": 431,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000671E",
+        "dspi1_word_index": 432,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006720",
+        "dspi1_word_index": 433,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x80006722",
+        "dspi1_word_index": 434,
+        "physical_voices": [
+          2
+        ],
+        "logical_tracks": [
+          1
+        ]
+      },
+      {
+        "address": "0x8000672C",
+        "dspi1_word_index": 439,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x8000672E",
+        "dspi1_word_index": 440,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006730",
+        "dspi1_word_index": 441,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      },
+      {
+        "address": "0x80006732",
+        "dspi1_word_index": 442,
+        "physical_voices": [
+          7
+        ],
+        "logical_tracks": [
+          2
+        ]
+      }
+    ],
+    "nonrenderer_fields": [
+      {
+        "address": "0x800063C0",
+        "dspi1_word_index": 1,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063C2",
+        "dspi1_word_index": 2,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063C4",
+        "dspi1_word_index": 3,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063C6",
+        "dspi1_word_index": 4,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063C8",
+        "dspi1_word_index": 5,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063CA",
+        "dspi1_word_index": 6,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063CC",
+        "dspi1_word_index": 7,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063CE",
+        "dspi1_word_index": 8,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063D0",
+        "dspi1_word_index": 9,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063D2",
+        "dspi1_word_index": 10,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063D4",
+        "dspi1_word_index": 11,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063D6",
+        "dspi1_word_index": 12,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063D8",
+        "dspi1_word_index": 13,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063DA",
+        "dspi1_word_index": 14,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063DC",
+        "dspi1_word_index": 15,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063DE",
+        "dspi1_word_index": 16,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063E0",
+        "dspi1_word_index": 17,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063E2",
+        "dspi1_word_index": 18,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063E4",
+        "dspi1_word_index": 19,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063E6",
+        "dspi1_word_index": 20,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063E8",
+        "dspi1_word_index": 21,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063EA",
+        "dspi1_word_index": 22,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063EC",
+        "dspi1_word_index": 23,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063EE",
+        "dspi1_word_index": 24,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063F0",
+        "dspi1_word_index": 25,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063F2",
+        "dspi1_word_index": 26,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063F4",
+        "dspi1_word_index": 27,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063F6",
+        "dspi1_word_index": 28,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063F8",
+        "dspi1_word_index": 29,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063FA",
+        "dspi1_word_index": 30,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063FC",
+        "dspi1_word_index": 31,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800063FE",
+        "dspi1_word_index": 32,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006400",
+        "dspi1_word_index": 33,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006402",
+        "dspi1_word_index": 34,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006404",
+        "dspi1_word_index": 35,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006406",
+        "dspi1_word_index": 36,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006408",
+        "dspi1_word_index": 37,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000640A",
+        "dspi1_word_index": 38,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000640C",
+        "dspi1_word_index": 39,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000640E",
+        "dspi1_word_index": 40,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006410",
+        "dspi1_word_index": 41,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006412",
+        "dspi1_word_index": 42,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006414",
+        "dspi1_word_index": 43,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006416",
+        "dspi1_word_index": 44,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006418",
+        "dspi1_word_index": 45,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006460",
+        "dspi1_word_index": 81,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006462",
+        "dspi1_word_index": 82,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006464",
+        "dspi1_word_index": 83,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006466",
+        "dspi1_word_index": 84,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006468",
+        "dspi1_word_index": 85,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000646A",
+        "dspi1_word_index": 86,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000646C",
+        "dspi1_word_index": 87,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000646E",
+        "dspi1_word_index": 88,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006470",
+        "dspi1_word_index": 89,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006472",
+        "dspi1_word_index": 90,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006474",
+        "dspi1_word_index": 91,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006476",
+        "dspi1_word_index": 92,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006478",
+        "dspi1_word_index": 93,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000647A",
+        "dspi1_word_index": 94,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000647C",
+        "dspi1_word_index": 95,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000647E",
+        "dspi1_word_index": 96,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006480",
+        "dspi1_word_index": 97,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006482",
+        "dspi1_word_index": 98,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006484",
+        "dspi1_word_index": 99,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006486",
+        "dspi1_word_index": 100,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006488",
+        "dspi1_word_index": 101,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000648A",
+        "dspi1_word_index": 102,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000648C",
+        "dspi1_word_index": 103,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000648E",
+        "dspi1_word_index": 104,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006490",
+        "dspi1_word_index": 105,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006492",
+        "dspi1_word_index": 106,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006494",
+        "dspi1_word_index": 107,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006496",
+        "dspi1_word_index": 108,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006498",
+        "dspi1_word_index": 109,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000649A",
+        "dspi1_word_index": 110,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000649C",
+        "dspi1_word_index": 111,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000649E",
+        "dspi1_word_index": 112,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064A0",
+        "dspi1_word_index": 113,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064A2",
+        "dspi1_word_index": 114,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064A4",
+        "dspi1_word_index": 115,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064A6",
+        "dspi1_word_index": 116,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064A8",
+        "dspi1_word_index": 117,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064AA",
+        "dspi1_word_index": 118,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064AC",
+        "dspi1_word_index": 119,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064AE",
+        "dspi1_word_index": 120,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064B0",
+        "dspi1_word_index": 121,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064B2",
+        "dspi1_word_index": 122,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064B4",
+        "dspi1_word_index": 123,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064B6",
+        "dspi1_word_index": 124,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064B8",
+        "dspi1_word_index": 125,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064BA",
+        "dspi1_word_index": 126,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064BC",
+        "dspi1_word_index": 127,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064BE",
+        "dspi1_word_index": 128,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064C0",
+        "dspi1_word_index": 129,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064C2",
+        "dspi1_word_index": 130,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064C4",
+        "dspi1_word_index": 131,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064C6",
+        "dspi1_word_index": 132,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064C8",
+        "dspi1_word_index": 133,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064CA",
+        "dspi1_word_index": 134,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064CC",
+        "dspi1_word_index": 135,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064CE",
+        "dspi1_word_index": 136,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064D0",
+        "dspi1_word_index": 137,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064D2",
+        "dspi1_word_index": 138,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064D4",
+        "dspi1_word_index": 139,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064D6",
+        "dspi1_word_index": 140,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064D8",
+        "dspi1_word_index": 141,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064DA",
+        "dspi1_word_index": 142,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064DC",
+        "dspi1_word_index": 143,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064DE",
+        "dspi1_word_index": 144,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064E0",
+        "dspi1_word_index": 145,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064E2",
+        "dspi1_word_index": 146,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064E4",
+        "dspi1_word_index": 147,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064E6",
+        "dspi1_word_index": 148,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064E8",
+        "dspi1_word_index": 149,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064EC",
+        "dspi1_word_index": 151,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064F0",
+        "dspi1_word_index": 153,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064F4",
+        "dspi1_word_index": 155,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064F8",
+        "dspi1_word_index": 157,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800064FC",
+        "dspi1_word_index": 159,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006500",
+        "dspi1_word_index": 161,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006504",
+        "dspi1_word_index": 163,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006508",
+        "dspi1_word_index": 165,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000650C",
+        "dspi1_word_index": 167,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006510",
+        "dspi1_word_index": 169,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006514",
+        "dspi1_word_index": 171,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006518",
+        "dspi1_word_index": 173,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000651C",
+        "dspi1_word_index": 175,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006520",
+        "dspi1_word_index": 177,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006524",
+        "dspi1_word_index": 179,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000652C",
+        "dspi1_word_index": 183,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006534",
+        "dspi1_word_index": 187,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000653C",
+        "dspi1_word_index": 191,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006544",
+        "dspi1_word_index": 195,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000654C",
+        "dspi1_word_index": 199,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006554",
+        "dspi1_word_index": 203,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000655C",
+        "dspi1_word_index": 207,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006564",
+        "dspi1_word_index": 211,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000656C",
+        "dspi1_word_index": 215,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006574",
+        "dspi1_word_index": 219,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000657C",
+        "dspi1_word_index": 223,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006584",
+        "dspi1_word_index": 227,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000658C",
+        "dspi1_word_index": 231,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006594",
+        "dspi1_word_index": 235,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000659C",
+        "dspi1_word_index": 239,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065A4",
+        "dspi1_word_index": 243,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065AC",
+        "dspi1_word_index": 247,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065B4",
+        "dspi1_word_index": 251,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065BC",
+        "dspi1_word_index": 255,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065C4",
+        "dspi1_word_index": 259,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065CC",
+        "dspi1_word_index": 263,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065D4",
+        "dspi1_word_index": 267,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065DC",
+        "dspi1_word_index": 271,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065E4",
+        "dspi1_word_index": 275,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065EC",
+        "dspi1_word_index": 279,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065F4",
+        "dspi1_word_index": 283,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800065FC",
+        "dspi1_word_index": 287,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006604",
+        "dspi1_word_index": 291,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000660C",
+        "dspi1_word_index": 295,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006614",
+        "dspi1_word_index": 299,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000661C",
+        "dspi1_word_index": 303,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006624",
+        "dspi1_word_index": 307,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006658",
+        "dspi1_word_index": 333,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006668",
+        "dspi1_word_index": 341,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000666C",
+        "dspi1_word_index": 343,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006670",
+        "dspi1_word_index": 345,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006674",
+        "dspi1_word_index": 347,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006678",
+        "dspi1_word_index": 349,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000667C",
+        "dspi1_word_index": 351,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006680",
+        "dspi1_word_index": 353,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006684",
+        "dspi1_word_index": 355,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006688",
+        "dspi1_word_index": 357,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000668C",
+        "dspi1_word_index": 359,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006690",
+        "dspi1_word_index": 361,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006694",
+        "dspi1_word_index": 363,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006698",
+        "dspi1_word_index": 365,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000669C",
+        "dspi1_word_index": 367,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066A0",
+        "dspi1_word_index": 369,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066A4",
+        "dspi1_word_index": 371,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066A8",
+        "dspi1_word_index": 373,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066AC",
+        "dspi1_word_index": 375,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066B0",
+        "dspi1_word_index": 377,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066B4",
+        "dspi1_word_index": 379,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066B8",
+        "dspi1_word_index": 381,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066BC",
+        "dspi1_word_index": 383,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066C0",
+        "dspi1_word_index": 385,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066C4",
+        "dspi1_word_index": 387,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066C8",
+        "dspi1_word_index": 389,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066CC",
+        "dspi1_word_index": 391,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066CE",
+        "dspi1_word_index": 392,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066D0",
+        "dspi1_word_index": 393,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066D2",
+        "dspi1_word_index": 394,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066D4",
+        "dspi1_word_index": 395,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066D6",
+        "dspi1_word_index": 396,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066D8",
+        "dspi1_word_index": 397,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066DA",
+        "dspi1_word_index": 398,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066DC",
+        "dspi1_word_index": 399,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066DE",
+        "dspi1_word_index": 400,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066E0",
+        "dspi1_word_index": 401,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066E2",
+        "dspi1_word_index": 402,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066E4",
+        "dspi1_word_index": 403,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066E6",
+        "dspi1_word_index": 404,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066E8",
+        "dspi1_word_index": 405,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066EA",
+        "dspi1_word_index": 406,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066EC",
+        "dspi1_word_index": 407,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066EE",
+        "dspi1_word_index": 408,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066F0",
+        "dspi1_word_index": 409,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066F2",
+        "dspi1_word_index": 410,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066F4",
+        "dspi1_word_index": 411,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066F6",
+        "dspi1_word_index": 412,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066F8",
+        "dspi1_word_index": 413,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066FA",
+        "dspi1_word_index": 414,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066FC",
+        "dspi1_word_index": 415,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x800066FE",
+        "dspi1_word_index": 416,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006700",
+        "dspi1_word_index": 417,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006702",
+        "dspi1_word_index": 418,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006704",
+        "dspi1_word_index": 419,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006706",
+        "dspi1_word_index": 420,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006708",
+        "dspi1_word_index": 421,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000670A",
+        "dspi1_word_index": 422,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006714",
+        "dspi1_word_index": 427,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006718",
+        "dspi1_word_index": 429,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006724",
+        "dspi1_word_index": 435,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006728",
+        "dspi1_word_index": 437,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006734",
+        "dspi1_word_index": 443,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006738",
+        "dspi1_word_index": 445,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006744",
+        "dspi1_word_index": 451,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006748",
+        "dspi1_word_index": 453,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x8000674C",
+        "dspi1_word_index": 455,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006750",
+        "dspi1_word_index": 457,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006754",
+        "dspi1_word_index": 459,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006758",
+        "dspi1_word_index": 461,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006770",
+        "dspi1_word_index": 473,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      },
+      {
+        "address": "0x80006794",
+        "dspi1_word_index": 491,
+        "physical_voices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "logical_tracks": [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6,
+          8,
+          10
+        ]
+      }
+    ],
+    "warning": "Eight-lane writer-free means unobserved in 1,360 synthetic note contexts; it does not establish FPGA semantics or live-hardware safety."
+  },
+  "read_isolation": {
+    "definition": "callback reads excluding the four packetizer loop PCs",
+    "writer_free_fields_with_nonpacket_reads": 71,
+    "writer_free_fields_without_nonpacket_reads": 53
+  },
+  "ranking": {
+    "adjacent_writer_free_pairs": 58,
+    "fully_read_isolated_pairs": 58,
+    "criteria": [
+      "fewest physical voices with non-packet reads",
+      "nearest known control field",
+      "lowest word index"
+    ],
+    "winner": {
+      "words": [
+        67,
+        68
+      ],
+      "addresses": [
+        "0x80006444",
+        "0x80006446"
+      ],
+      "nonpacket_read_physical_voices": [],
+      "nonpacket_read_logical_tracks": [],
+      "nearest_known_control_distance_words": 20
+    },
+    "pairs": [
+      {
+        "words": [
+          67,
+          68
+        ],
+        "addresses": [
+          "0x80006444",
+          "0x80006446"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 20
+      },
+      {
+        "words": [
+          68,
+          69
+        ],
+        "addresses": [
+          "0x80006446",
+          "0x80006448"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 21
+      },
+      {
+        "words": [
+          69,
+          70
+        ],
+        "addresses": [
+          "0x80006448",
+          "0x8000644A"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 22
+      },
+      {
+        "words": [
+          73,
+          74
+        ],
+        "addresses": [
+          "0x80006450",
+          "0x80006452"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 26
+      },
+      {
+        "words": [
+          74,
+          75
+        ],
+        "addresses": [
+          "0x80006452",
+          "0x80006454"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 27
+      },
+      {
+        "words": [
+          75,
+          76
+        ],
+        "addresses": [
+          "0x80006454",
+          "0x80006456"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 28
+      },
+      {
+        "words": [
+          76,
+          77
+        ],
+        "addresses": [
+          "0x80006456",
+          "0x80006458"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 29
+      },
+      {
+        "words": [
+          77,
+          78
+        ],
+        "addresses": [
+          "0x80006458",
+          "0x8000645A"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 30
+      },
+      {
+        "words": [
+          78,
+          79
+        ],
+        "addresses": [
+          "0x8000645A",
+          "0x8000645C"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 31
+      },
+      {
+        "words": [
+          281,
+          282
+        ],
+        "addresses": [
+          "0x800065F0",
+          "0x800065F2"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 85
+      },
+      {
+        "words": [
+          284,
+          285
+        ],
+        "addresses": [
+          "0x800065F6",
+          "0x800065F8"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 88
+      },
+      {
+        "words": [
+          285,
+          286
+        ],
+        "addresses": [
+          "0x800065F8",
+          "0x800065FA"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 89
+      },
+      {
+        "words": [
+          288,
+          289
+        ],
+        "addresses": [
+          "0x800065FE",
+          "0x80006600"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 92
+      },
+      {
+        "words": [
+          289,
+          290
+        ],
+        "addresses": [
+          "0x80006600",
+          "0x80006602"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 93
+      },
+      {
+        "words": [
+          292,
+          293
+        ],
+        "addresses": [
+          "0x80006606",
+          "0x80006608"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 96
+      },
+      {
+        "words": [
+          293,
+          294
+        ],
+        "addresses": [
+          "0x80006608",
+          "0x8000660A"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 97
+      },
+      {
+        "words": [
+          296,
+          297
+        ],
+        "addresses": [
+          "0x8000660E",
+          "0x80006610"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 100
+      },
+      {
+        "words": [
+          297,
+          298
+        ],
+        "addresses": [
+          "0x80006610",
+          "0x80006612"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 101
+      },
+      {
+        "words": [
+          300,
+          301
+        ],
+        "addresses": [
+          "0x80006616",
+          "0x80006618"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 104
+      },
+      {
+        "words": [
+          301,
+          302
+        ],
+        "addresses": [
+          "0x80006618",
+          "0x8000661A"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 105
+      },
+      {
+        "words": [
+          304,
+          305
+        ],
+        "addresses": [
+          "0x8000661E",
+          "0x80006620"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 108
+      },
+      {
+        "words": [
+          305,
+          306
+        ],
+        "addresses": [
+          "0x80006620",
+          "0x80006622"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 109
+      },
+      {
+        "words": [
+          334,
+          335
+        ],
+        "addresses": [
+          "0x8000665A",
+          "0x8000665C"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 138
+      },
+      {
+        "words": [
+          335,
+          336
+        ],
+        "addresses": [
+          "0x8000665C",
+          "0x8000665E"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 139
+      },
+      {
+        "words": [
+          336,
+          337
+        ],
+        "addresses": [
+          "0x8000665E",
+          "0x80006660"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 140
+      },
+      {
+        "words": [
+          337,
+          338
+        ],
+        "addresses": [
+          "0x80006660",
+          "0x80006662"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 141
+      },
+      {
+        "words": [
+          338,
+          339
+        ],
+        "addresses": [
+          "0x80006662",
+          "0x80006664"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 142
+      },
+      {
+        "words": [
+          339,
+          340
+        ],
+        "addresses": [
+          "0x80006664",
+          "0x80006666"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 143
+      },
+      {
+        "words": [
+          446,
+          447
+        ],
+        "addresses": [
+          "0x8000673A",
+          "0x8000673C"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 250
+      },
+      {
+        "words": [
+          447,
+          448
+        ],
+        "addresses": [
+          "0x8000673C",
+          "0x8000673E"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 251
+      },
+      {
+        "words": [
+          448,
+          449
+        ],
+        "addresses": [
+          "0x8000673E",
+          "0x80006740"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 252
+      },
+      {
+        "words": [
+          449,
+          450
+        ],
+        "addresses": [
+          "0x80006740",
+          "0x80006742"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 253
+      },
+      {
+        "words": [
+          462,
+          463
+        ],
+        "addresses": [
+          "0x8000675A",
+          "0x8000675C"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 266
+      },
+      {
+        "words": [
+          463,
+          464
+        ],
+        "addresses": [
+          "0x8000675C",
+          "0x8000675E"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 267
+      },
+      {
+        "words": [
+          464,
+          465
+        ],
+        "addresses": [
+          "0x8000675E",
+          "0x80006760"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 268
+      },
+      {
+        "words": [
+          465,
+          466
+        ],
+        "addresses": [
+          "0x80006760",
+          "0x80006762"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 269
+      },
+      {
+        "words": [
+          466,
+          467
+        ],
+        "addresses": [
+          "0x80006762",
+          "0x80006764"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 270
+      },
+      {
+        "words": [
+          467,
+          468
+        ],
+        "addresses": [
+          "0x80006764",
+          "0x80006766"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 271
+      },
+      {
+        "words": [
+          468,
+          469
+        ],
+        "addresses": [
+          "0x80006766",
+          "0x80006768"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 272
+      },
+      {
+        "words": [
+          469,
+          470
+        ],
+        "addresses": [
+          "0x80006768",
+          "0x8000676A"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 273
+      },
+      {
+        "words": [
+          470,
+          471
+        ],
+        "addresses": [
+          "0x8000676A",
+          "0x8000676C"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 274
+      },
+      {
+        "words": [
+          471,
+          472
+        ],
+        "addresses": [
+          "0x8000676C",
+          "0x8000676E"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 275
+      },
+      {
+        "words": [
+          474,
+          475
+        ],
+        "addresses": [
+          "0x80006772",
+          "0x80006774"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 278
+      },
+      {
+        "words": [
+          475,
+          476
+        ],
+        "addresses": [
+          "0x80006774",
+          "0x80006776"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 279
+      },
+      {
+        "words": [
+          476,
+          477
+        ],
+        "addresses": [
+          "0x80006776",
+          "0x80006778"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 280
+      },
+      {
+        "words": [
+          477,
+          478
+        ],
+        "addresses": [
+          "0x80006778",
+          "0x8000677A"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 281
+      },
+      {
+        "words": [
+          478,
+          479
+        ],
+        "addresses": [
+          "0x8000677A",
+          "0x8000677C"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 282
+      },
+      {
+        "words": [
+          479,
+          480
+        ],
+        "addresses": [
+          "0x8000677C",
+          "0x8000677E"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 283
+      },
+      {
+        "words": [
+          480,
+          481
+        ],
+        "addresses": [
+          "0x8000677E",
+          "0x80006780"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 284
+      },
+      {
+        "words": [
+          481,
+          482
+        ],
+        "addresses": [
+          "0x80006780",
+          "0x80006782"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 285
+      },
+      {
+        "words": [
+          482,
+          483
+        ],
+        "addresses": [
+          "0x80006782",
+          "0x80006784"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 286
+      },
+      {
+        "words": [
+          483,
+          484
+        ],
+        "addresses": [
+          "0x80006784",
+          "0x80006786"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 287
+      },
+      {
+        "words": [
+          484,
+          485
+        ],
+        "addresses": [
+          "0x80006786",
+          "0x80006788"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 288
+      },
+      {
+        "words": [
+          485,
+          486
+        ],
+        "addresses": [
+          "0x80006788",
+          "0x8000678A"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 289
+      },
+      {
+        "words": [
+          486,
+          487
+        ],
+        "addresses": [
+          "0x8000678A",
+          "0x8000678C"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 290
+      },
+      {
+        "words": [
+          487,
+          488
+        ],
+        "addresses": [
+          "0x8000678C",
+          "0x8000678E"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 291
+      },
+      {
+        "words": [
+          488,
+          489
+        ],
+        "addresses": [
+          "0x8000678E",
+          "0x80006790"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 292
+      },
+      {
+        "words": [
+          489,
+          490
+        ],
+        "addresses": [
+          "0x80006790",
+          "0x80006792"
+        ],
+        "nonpacket_read_physical_voices": [],
+        "nonpacket_read_logical_tracks": [],
+        "nearest_known_control_distance_words": 293
+      }
+    ]
+  },
+  "conclusion": "Ownership now covers every stock physical-voice/logical-track mapping across all public machines and forced states. Only the resulting eight-lane writer-free fields may advance to renewed candidate ranking.",
+  "next_target": "Rank adjacent pairs from the eight-lane writer-free set, then apply bounded software-only persistence and packet-locality canaries.",
+  "safety": "Stock emulation and synthetic state selection only; no firmware was modified."
+}

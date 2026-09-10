@@ -1,0 +1,3869 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "coverage": {
+    "public_machines": 34,
+    "logical_tracks": [
+      0
+    ],
+    "states": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "contexts": 170,
+    "writer_free_fields": 165,
+    "source_checks": 28050,
+    "packet_checks": 28050,
+    "matrix_sha256": "5673a1c343fca7041be2596e357b10e6ca65e71090f5348dba859db56badbcc4"
+  },
+  "canaries": {
+    "injection_boundary": "callback entry 0x4011B3AE",
+    "word_ranges": [
+      {
+        "first_word": 50,
+        "last_word": 57,
+        "first_address": "0x80006422",
+        "last_address": "0x80006430"
+      },
+      {
+        "first_word": 60,
+        "last_word": 65,
+        "first_address": "0x80006436",
+        "last_address": "0x80006440"
+      },
+      {
+        "first_word": 67,
+        "last_word": 70,
+        "first_address": "0x80006444",
+        "last_address": "0x8000644A"
+      },
+      {
+        "first_word": 73,
+        "last_word": 79,
+        "first_address": "0x80006450",
+        "last_address": "0x8000645C"
+      },
+      {
+        "first_word": 150,
+        "last_word": 150,
+        "first_address": "0x800064EA",
+        "last_address": "0x800064EA"
+      },
+      {
+        "first_word": 152,
+        "last_word": 152,
+        "first_address": "0x800064EE",
+        "last_address": "0x800064EE"
+      },
+      {
+        "first_word": 154,
+        "last_word": 154,
+        "first_address": "0x800064F2",
+        "last_address": "0x800064F2"
+      },
+      {
+        "first_word": 156,
+        "last_word": 156,
+        "first_address": "0x800064F6",
+        "last_address": "0x800064F6"
+      },
+      {
+        "first_word": 158,
+        "last_word": 158,
+        "first_address": "0x800064FA",
+        "last_address": "0x800064FA"
+      },
+      {
+        "first_word": 160,
+        "last_word": 160,
+        "first_address": "0x800064FE",
+        "last_address": "0x800064FE"
+      },
+      {
+        "first_word": 162,
+        "last_word": 162,
+        "first_address": "0x80006502",
+        "last_address": "0x80006502"
+      },
+      {
+        "first_word": 164,
+        "last_word": 164,
+        "first_address": "0x80006506",
+        "last_address": "0x80006506"
+      },
+      {
+        "first_word": 166,
+        "last_word": 166,
+        "first_address": "0x8000650A",
+        "last_address": "0x8000650A"
+      },
+      {
+        "first_word": 168,
+        "last_word": 168,
+        "first_address": "0x8000650E",
+        "last_address": "0x8000650E"
+      },
+      {
+        "first_word": 170,
+        "last_word": 170,
+        "first_address": "0x80006512",
+        "last_address": "0x80006512"
+      },
+      {
+        "first_word": 172,
+        "last_word": 172,
+        "first_address": "0x80006516",
+        "last_address": "0x80006516"
+      },
+      {
+        "first_word": 174,
+        "last_word": 174,
+        "first_address": "0x8000651A",
+        "last_address": "0x8000651A"
+      },
+      {
+        "first_word": 176,
+        "last_word": 176,
+        "first_address": "0x8000651E",
+        "last_address": "0x8000651E"
+      },
+      {
+        "first_word": 178,
+        "last_word": 178,
+        "first_address": "0x80006522",
+        "last_address": "0x80006522"
+      },
+      {
+        "first_word": 180,
+        "last_word": 180,
+        "first_address": "0x80006526",
+        "last_address": "0x80006526"
+      },
+      {
+        "first_word": 197,
+        "last_word": 198,
+        "first_address": "0x80006548",
+        "last_address": "0x8000654A"
+      },
+      {
+        "first_word": 200,
+        "last_word": 202,
+        "first_address": "0x8000654E",
+        "last_address": "0x80006552"
+      },
+      {
+        "first_word": 204,
+        "last_word": 206,
+        "first_address": "0x80006556",
+        "last_address": "0x8000655A"
+      },
+      {
+        "first_word": 208,
+        "last_word": 210,
+        "first_address": "0x8000655E",
+        "last_address": "0x80006562"
+      },
+      {
+        "first_word": 212,
+        "last_word": 214,
+        "first_address": "0x80006566",
+        "last_address": "0x8000656A"
+      },
+      {
+        "first_word": 216,
+        "last_word": 218,
+        "first_address": "0x8000656E",
+        "last_address": "0x80006572"
+      },
+      {
+        "first_word": 220,
+        "last_word": 221,
+        "first_address": "0x80006576",
+        "last_address": "0x80006578"
+      },
+      {
+        "first_word": 281,
+        "last_word": 282,
+        "first_address": "0x800065F0",
+        "last_address": "0x800065F2"
+      },
+      {
+        "first_word": 284,
+        "last_word": 286,
+        "first_address": "0x800065F6",
+        "last_address": "0x800065FA"
+      },
+      {
+        "first_word": 288,
+        "last_word": 290,
+        "first_address": "0x800065FE",
+        "last_address": "0x80006602"
+      },
+      {
+        "first_word": 292,
+        "last_word": 294,
+        "first_address": "0x80006606",
+        "last_address": "0x8000660A"
+      },
+      {
+        "first_word": 296,
+        "last_word": 298,
+        "first_address": "0x8000660E",
+        "last_address": "0x80006612"
+      },
+      {
+        "first_word": 300,
+        "last_word": 302,
+        "first_address": "0x80006616",
+        "last_address": "0x8000661A"
+      },
+      {
+        "first_word": 304,
+        "last_word": 306,
+        "first_address": "0x8000661E",
+        "last_address": "0x80006622"
+      },
+      {
+        "first_word": 308,
+        "last_word": 308,
+        "first_address": "0x80006626",
+        "last_address": "0x80006626"
+      },
+      {
+        "first_word": 334,
+        "last_word": 340,
+        "first_address": "0x8000665A",
+        "last_address": "0x80006666"
+      },
+      {
+        "first_word": 342,
+        "last_word": 342,
+        "first_address": "0x8000666A",
+        "last_address": "0x8000666A"
+      },
+      {
+        "first_word": 344,
+        "last_word": 344,
+        "first_address": "0x8000666E",
+        "last_address": "0x8000666E"
+      },
+      {
+        "first_word": 346,
+        "last_word": 346,
+        "first_address": "0x80006672",
+        "last_address": "0x80006672"
+      },
+      {
+        "first_word": 348,
+        "last_word": 348,
+        "first_address": "0x80006676",
+        "last_address": "0x80006676"
+      },
+      {
+        "first_word": 350,
+        "last_word": 350,
+        "first_address": "0x8000667A",
+        "last_address": "0x8000667A"
+      },
+      {
+        "first_word": 352,
+        "last_word": 352,
+        "first_address": "0x8000667E",
+        "last_address": "0x8000667E"
+      },
+      {
+        "first_word": 354,
+        "last_word": 354,
+        "first_address": "0x80006682",
+        "last_address": "0x80006682"
+      },
+      {
+        "first_word": 356,
+        "last_word": 356,
+        "first_address": "0x80006686",
+        "last_address": "0x80006686"
+      },
+      {
+        "first_word": 358,
+        "last_word": 358,
+        "first_address": "0x8000668A",
+        "last_address": "0x8000668A"
+      },
+      {
+        "first_word": 360,
+        "last_word": 360,
+        "first_address": "0x8000668E",
+        "last_address": "0x8000668E"
+      },
+      {
+        "first_word": 362,
+        "last_word": 362,
+        "first_address": "0x80006692",
+        "last_address": "0x80006692"
+      },
+      {
+        "first_word": 364,
+        "last_word": 364,
+        "first_address": "0x80006696",
+        "last_address": "0x80006696"
+      },
+      {
+        "first_word": 366,
+        "last_word": 366,
+        "first_address": "0x8000669A",
+        "last_address": "0x8000669A"
+      },
+      {
+        "first_word": 368,
+        "last_word": 368,
+        "first_address": "0x8000669E",
+        "last_address": "0x8000669E"
+      },
+      {
+        "first_word": 370,
+        "last_word": 370,
+        "first_address": "0x800066A2",
+        "last_address": "0x800066A2"
+      },
+      {
+        "first_word": 372,
+        "last_word": 372,
+        "first_address": "0x800066A6",
+        "last_address": "0x800066A6"
+      },
+      {
+        "first_word": 374,
+        "last_word": 374,
+        "first_address": "0x800066AA",
+        "last_address": "0x800066AA"
+      },
+      {
+        "first_word": 376,
+        "last_word": 376,
+        "first_address": "0x800066AE",
+        "last_address": "0x800066AE"
+      },
+      {
+        "first_word": 378,
+        "last_word": 378,
+        "first_address": "0x800066B2",
+        "last_address": "0x800066B2"
+      },
+      {
+        "first_word": 380,
+        "last_word": 380,
+        "first_address": "0x800066B6",
+        "last_address": "0x800066B6"
+      },
+      {
+        "first_word": 382,
+        "last_word": 382,
+        "first_address": "0x800066BA",
+        "last_address": "0x800066BA"
+      },
+      {
+        "first_word": 384,
+        "last_word": 384,
+        "first_address": "0x800066BE",
+        "last_address": "0x800066BE"
+      },
+      {
+        "first_word": 386,
+        "last_word": 386,
+        "first_address": "0x800066C2",
+        "last_address": "0x800066C2"
+      },
+      {
+        "first_word": 388,
+        "last_word": 388,
+        "first_address": "0x800066C6",
+        "last_address": "0x800066C6"
+      },
+      {
+        "first_word": 390,
+        "last_word": 390,
+        "first_address": "0x800066CA",
+        "last_address": "0x800066CA"
+      },
+      {
+        "first_word": 428,
+        "last_word": 428,
+        "first_address": "0x80006716",
+        "last_address": "0x80006716"
+      },
+      {
+        "first_word": 430,
+        "last_word": 434,
+        "first_address": "0x8000671A",
+        "last_address": "0x80006722"
+      },
+      {
+        "first_word": 436,
+        "last_word": 436,
+        "first_address": "0x80006726",
+        "last_address": "0x80006726"
+      },
+      {
+        "first_word": 438,
+        "last_word": 442,
+        "first_address": "0x8000672A",
+        "last_address": "0x80006732"
+      },
+      {
+        "first_word": 444,
+        "last_word": 444,
+        "first_address": "0x80006736",
+        "last_address": "0x80006736"
+      },
+      {
+        "first_word": 446,
+        "last_word": 450,
+        "first_address": "0x8000673A",
+        "last_address": "0x80006742"
+      },
+      {
+        "first_word": 452,
+        "last_word": 452,
+        "first_address": "0x80006746",
+        "last_address": "0x80006746"
+      },
+      {
+        "first_word": 454,
+        "last_word": 454,
+        "first_address": "0x8000674A",
+        "last_address": "0x8000674A"
+      },
+      {
+        "first_word": 456,
+        "last_word": 456,
+        "first_address": "0x8000674E",
+        "last_address": "0x8000674E"
+      },
+      {
+        "first_word": 458,
+        "last_word": 458,
+        "first_address": "0x80006752",
+        "last_address": "0x80006752"
+      },
+      {
+        "first_word": 460,
+        "last_word": 460,
+        "first_address": "0x80006756",
+        "last_address": "0x80006756"
+      },
+      {
+        "first_word": 462,
+        "last_word": 472,
+        "first_address": "0x8000675A",
+        "last_address": "0x8000676E"
+      },
+      {
+        "first_word": 474,
+        "last_word": 490,
+        "first_address": "0x80006772",
+        "last_address": "0x80006792"
+      },
+      {
+        "first_word": 492,
+        "last_word": 492,
+        "first_address": "0x80006796",
+        "last_address": "0x80006796"
+      }
+    ],
+    "values": [
+      {
+        "word": 50,
+        "address": "0x80006422",
+        "value": "0xA9EF"
+      },
+      {
+        "word": 51,
+        "address": "0x80006424",
+        "value": "0xAA20"
+      },
+      {
+        "word": 52,
+        "address": "0x80006426",
+        "value": "0xAA51"
+      },
+      {
+        "word": 53,
+        "address": "0x80006428",
+        "value": "0xAA82"
+      },
+      {
+        "word": 54,
+        "address": "0x8000642A",
+        "value": "0xAAB3"
+      },
+      {
+        "word": 55,
+        "address": "0x8000642C",
+        "value": "0xAAE4"
+      },
+      {
+        "word": 56,
+        "address": "0x8000642E",
+        "value": "0xAB15"
+      },
+      {
+        "word": 57,
+        "address": "0x80006430",
+        "value": "0xAB46"
+      },
+      {
+        "word": 60,
+        "address": "0x80006436",
+        "value": "0xABD9"
+      },
+      {
+        "word": 61,
+        "address": "0x80006438",
+        "value": "0xAC0A"
+      },
+      {
+        "word": 62,
+        "address": "0x8000643A",
+        "value": "0xAC3B"
+      },
+      {
+        "word": 63,
+        "address": "0x8000643C",
+        "value": "0xAC6C"
+      },
+      {
+        "word": 64,
+        "address": "0x8000643E",
+        "value": "0xAC9D"
+      },
+      {
+        "word": 65,
+        "address": "0x80006440",
+        "value": "0xACCE"
+      },
+      {
+        "word": 67,
+        "address": "0x80006444",
+        "value": "0xAD30"
+      },
+      {
+        "word": 68,
+        "address": "0x80006446",
+        "value": "0xAD61"
+      },
+      {
+        "word": 69,
+        "address": "0x80006448",
+        "value": "0xAD92"
+      },
+      {
+        "word": 70,
+        "address": "0x8000644A",
+        "value": "0xADC3"
+      },
+      {
+        "word": 73,
+        "address": "0x80006450",
+        "value": "0xAE56"
+      },
+      {
+        "word": 74,
+        "address": "0x80006452",
+        "value": "0xAE87"
+      },
+      {
+        "word": 75,
+        "address": "0x80006454",
+        "value": "0xAEB8"
+      },
+      {
+        "word": 76,
+        "address": "0x80006456",
+        "value": "0xAEE9"
+      },
+      {
+        "word": 77,
+        "address": "0x80006458",
+        "value": "0xAF1A"
+      },
+      {
+        "word": 78,
+        "address": "0x8000645A",
+        "value": "0xAF4B"
+      },
+      {
+        "word": 79,
+        "address": "0x8000645C",
+        "value": "0xAF7C"
+      },
+      {
+        "word": 150,
+        "address": "0x800064EA",
+        "value": "0xAD13"
+      },
+      {
+        "word": 152,
+        "address": "0x800064EE",
+        "value": "0xAD75"
+      },
+      {
+        "word": 154,
+        "address": "0x800064F2",
+        "value": "0xADD7"
+      },
+      {
+        "word": 156,
+        "address": "0x800064F6",
+        "value": "0xAE39"
+      },
+      {
+        "word": 158,
+        "address": "0x800064FA",
+        "value": "0xAE9B"
+      },
+      {
+        "word": 160,
+        "address": "0x800064FE",
+        "value": "0xAEFD"
+      },
+      {
+        "word": 162,
+        "address": "0x80006502",
+        "value": "0xAF5F"
+      },
+      {
+        "word": 164,
+        "address": "0x80006506",
+        "value": "0xAFC1"
+      },
+      {
+        "word": 166,
+        "address": "0x8000650A",
+        "value": "0xA023"
+      },
+      {
+        "word": 168,
+        "address": "0x8000650E",
+        "value": "0xA085"
+      },
+      {
+        "word": 170,
+        "address": "0x80006512",
+        "value": "0xA0E7"
+      },
+      {
+        "word": 172,
+        "address": "0x80006516",
+        "value": "0xA149"
+      },
+      {
+        "word": 174,
+        "address": "0x8000651A",
+        "value": "0xA1AB"
+      },
+      {
+        "word": 176,
+        "address": "0x8000651E",
+        "value": "0xA20D"
+      },
+      {
+        "word": 178,
+        "address": "0x80006522",
+        "value": "0xA26F"
+      },
+      {
+        "word": 180,
+        "address": "0x80006526",
+        "value": "0xA2D1"
+      },
+      {
+        "word": 197,
+        "address": "0x80006548",
+        "value": "0xA612"
+      },
+      {
+        "word": 198,
+        "address": "0x8000654A",
+        "value": "0xA643"
+      },
+      {
+        "word": 200,
+        "address": "0x8000654E",
+        "value": "0xA6A5"
+      },
+      {
+        "word": 201,
+        "address": "0x80006550",
+        "value": "0xA6D6"
+      },
+      {
+        "word": 202,
+        "address": "0x80006552",
+        "value": "0xA707"
+      },
+      {
+        "word": 204,
+        "address": "0x80006556",
+        "value": "0xA769"
+      },
+      {
+        "word": 205,
+        "address": "0x80006558",
+        "value": "0xA79A"
+      },
+      {
+        "word": 206,
+        "address": "0x8000655A",
+        "value": "0xA7CB"
+      },
+      {
+        "word": 208,
+        "address": "0x8000655E",
+        "value": "0xA82D"
+      },
+      {
+        "word": 209,
+        "address": "0x80006560",
+        "value": "0xA85E"
+      },
+      {
+        "word": 210,
+        "address": "0x80006562",
+        "value": "0xA88F"
+      },
+      {
+        "word": 212,
+        "address": "0x80006566",
+        "value": "0xA8F1"
+      },
+      {
+        "word": 213,
+        "address": "0x80006568",
+        "value": "0xA922"
+      },
+      {
+        "word": 214,
+        "address": "0x8000656A",
+        "value": "0xA953"
+      },
+      {
+        "word": 216,
+        "address": "0x8000656E",
+        "value": "0xA9B5"
+      },
+      {
+        "word": 217,
+        "address": "0x80006570",
+        "value": "0xA9E6"
+      },
+      {
+        "word": 218,
+        "address": "0x80006572",
+        "value": "0xAA17"
+      },
+      {
+        "word": 220,
+        "address": "0x80006576",
+        "value": "0xAA79"
+      },
+      {
+        "word": 221,
+        "address": "0x80006578",
+        "value": "0xAAAA"
+      },
+      {
+        "word": 281,
+        "address": "0x800065F0",
+        "value": "0xA626"
+      },
+      {
+        "word": 282,
+        "address": "0x800065F2",
+        "value": "0xA657"
+      },
+      {
+        "word": 284,
+        "address": "0x800065F6",
+        "value": "0xA6B9"
+      },
+      {
+        "word": 285,
+        "address": "0x800065F8",
+        "value": "0xA6EA"
+      },
+      {
+        "word": 286,
+        "address": "0x800065FA",
+        "value": "0xA71B"
+      },
+      {
+        "word": 288,
+        "address": "0x800065FE",
+        "value": "0xA77D"
+      },
+      {
+        "word": 289,
+        "address": "0x80006600",
+        "value": "0xA7AE"
+      },
+      {
+        "word": 290,
+        "address": "0x80006602",
+        "value": "0xA7DF"
+      },
+      {
+        "word": 292,
+        "address": "0x80006606",
+        "value": "0xA841"
+      },
+      {
+        "word": 293,
+        "address": "0x80006608",
+        "value": "0xA872"
+      },
+      {
+        "word": 294,
+        "address": "0x8000660A",
+        "value": "0xA8A3"
+      },
+      {
+        "word": 296,
+        "address": "0x8000660E",
+        "value": "0xA905"
+      },
+      {
+        "word": 297,
+        "address": "0x80006610",
+        "value": "0xA936"
+      },
+      {
+        "word": 298,
+        "address": "0x80006612",
+        "value": "0xA967"
+      },
+      {
+        "word": 300,
+        "address": "0x80006616",
+        "value": "0xA9C9"
+      },
+      {
+        "word": 301,
+        "address": "0x80006618",
+        "value": "0xA9FA"
+      },
+      {
+        "word": 302,
+        "address": "0x8000661A",
+        "value": "0xAA2B"
+      },
+      {
+        "word": 304,
+        "address": "0x8000661E",
+        "value": "0xAA8D"
+      },
+      {
+        "word": 305,
+        "address": "0x80006620",
+        "value": "0xAABE"
+      },
+      {
+        "word": 306,
+        "address": "0x80006622",
+        "value": "0xAAEF"
+      },
+      {
+        "word": 308,
+        "address": "0x80006626",
+        "value": "0xAB51"
+      },
+      {
+        "word": 334,
+        "address": "0x8000665A",
+        "value": "0xA04B"
+      },
+      {
+        "word": 335,
+        "address": "0x8000665C",
+        "value": "0xA07C"
+      },
+      {
+        "word": 336,
+        "address": "0x8000665E",
+        "value": "0xA0AD"
+      },
+      {
+        "word": 337,
+        "address": "0x80006660",
+        "value": "0xA0DE"
+      },
+      {
+        "word": 338,
+        "address": "0x80006662",
+        "value": "0xA10F"
+      },
+      {
+        "word": 339,
+        "address": "0x80006664",
+        "value": "0xA140"
+      },
+      {
+        "word": 340,
+        "address": "0x80006666",
+        "value": "0xA171"
+      },
+      {
+        "word": 342,
+        "address": "0x8000666A",
+        "value": "0xA1D3"
+      },
+      {
+        "word": 344,
+        "address": "0x8000666E",
+        "value": "0xA235"
+      },
+      {
+        "word": 346,
+        "address": "0x80006672",
+        "value": "0xA297"
+      },
+      {
+        "word": 348,
+        "address": "0x80006676",
+        "value": "0xA2F9"
+      },
+      {
+        "word": 350,
+        "address": "0x8000667A",
+        "value": "0xA35B"
+      },
+      {
+        "word": 352,
+        "address": "0x8000667E",
+        "value": "0xA3BD"
+      },
+      {
+        "word": 354,
+        "address": "0x80006682",
+        "value": "0xA41F"
+      },
+      {
+        "word": 356,
+        "address": "0x80006686",
+        "value": "0xA481"
+      },
+      {
+        "word": 358,
+        "address": "0x8000668A",
+        "value": "0xA4E3"
+      },
+      {
+        "word": 360,
+        "address": "0x8000668E",
+        "value": "0xA545"
+      },
+      {
+        "word": 362,
+        "address": "0x80006692",
+        "value": "0xA5A7"
+      },
+      {
+        "word": 364,
+        "address": "0x80006696",
+        "value": "0xA609"
+      },
+      {
+        "word": 366,
+        "address": "0x8000669A",
+        "value": "0xA66B"
+      },
+      {
+        "word": 368,
+        "address": "0x8000669E",
+        "value": "0xA6CD"
+      },
+      {
+        "word": 370,
+        "address": "0x800066A2",
+        "value": "0xA72F"
+      },
+      {
+        "word": 372,
+        "address": "0x800066A6",
+        "value": "0xA791"
+      },
+      {
+        "word": 374,
+        "address": "0x800066AA",
+        "value": "0xA7F3"
+      },
+      {
+        "word": 376,
+        "address": "0x800066AE",
+        "value": "0xA855"
+      },
+      {
+        "word": 378,
+        "address": "0x800066B2",
+        "value": "0xA8B7"
+      },
+      {
+        "word": 380,
+        "address": "0x800066B6",
+        "value": "0xA919"
+      },
+      {
+        "word": 382,
+        "address": "0x800066BA",
+        "value": "0xA97B"
+      },
+      {
+        "word": 384,
+        "address": "0x800066BE",
+        "value": "0xA9DD"
+      },
+      {
+        "word": 386,
+        "address": "0x800066C2",
+        "value": "0xAA3F"
+      },
+      {
+        "word": 388,
+        "address": "0x800066C6",
+        "value": "0xAAA1"
+      },
+      {
+        "word": 390,
+        "address": "0x800066CA",
+        "value": "0xAB03"
+      },
+      {
+        "word": 428,
+        "address": "0x80006716",
+        "value": "0xA249"
+      },
+      {
+        "word": 430,
+        "address": "0x8000671A",
+        "value": "0xA2AB"
+      },
+      {
+        "word": 431,
+        "address": "0x8000671C",
+        "value": "0xA2DC"
+      },
+      {
+        "word": 432,
+        "address": "0x8000671E",
+        "value": "0xA30D"
+      },
+      {
+        "word": 433,
+        "address": "0x80006720",
+        "value": "0xA33E"
+      },
+      {
+        "word": 434,
+        "address": "0x80006722",
+        "value": "0xA36F"
+      },
+      {
+        "word": 436,
+        "address": "0x80006726",
+        "value": "0xA3D1"
+      },
+      {
+        "word": 438,
+        "address": "0x8000672A",
+        "value": "0xA433"
+      },
+      {
+        "word": 439,
+        "address": "0x8000672C",
+        "value": "0xA464"
+      },
+      {
+        "word": 440,
+        "address": "0x8000672E",
+        "value": "0xA495"
+      },
+      {
+        "word": 441,
+        "address": "0x80006730",
+        "value": "0xA4C6"
+      },
+      {
+        "word": 442,
+        "address": "0x80006732",
+        "value": "0xA4F7"
+      },
+      {
+        "word": 444,
+        "address": "0x80006736",
+        "value": "0xA559"
+      },
+      {
+        "word": 446,
+        "address": "0x8000673A",
+        "value": "0xA5BB"
+      },
+      {
+        "word": 447,
+        "address": "0x8000673C",
+        "value": "0xA5EC"
+      },
+      {
+        "word": 448,
+        "address": "0x8000673E",
+        "value": "0xA61D"
+      },
+      {
+        "word": 449,
+        "address": "0x80006740",
+        "value": "0xA64E"
+      },
+      {
+        "word": 450,
+        "address": "0x80006742",
+        "value": "0xA67F"
+      },
+      {
+        "word": 452,
+        "address": "0x80006746",
+        "value": "0xA6E1"
+      },
+      {
+        "word": 454,
+        "address": "0x8000674A",
+        "value": "0xA743"
+      },
+      {
+        "word": 456,
+        "address": "0x8000674E",
+        "value": "0xA7A5"
+      },
+      {
+        "word": 458,
+        "address": "0x80006752",
+        "value": "0xA807"
+      },
+      {
+        "word": 460,
+        "address": "0x80006756",
+        "value": "0xA869"
+      },
+      {
+        "word": 462,
+        "address": "0x8000675A",
+        "value": "0xA8CB"
+      },
+      {
+        "word": 463,
+        "address": "0x8000675C",
+        "value": "0xA8FC"
+      },
+      {
+        "word": 464,
+        "address": "0x8000675E",
+        "value": "0xA92D"
+      },
+      {
+        "word": 465,
+        "address": "0x80006760",
+        "value": "0xA95E"
+      },
+      {
+        "word": 466,
+        "address": "0x80006762",
+        "value": "0xA98F"
+      },
+      {
+        "word": 467,
+        "address": "0x80006764",
+        "value": "0xA9C0"
+      },
+      {
+        "word": 468,
+        "address": "0x80006766",
+        "value": "0xA9F1"
+      },
+      {
+        "word": 469,
+        "address": "0x80006768",
+        "value": "0xAA22"
+      },
+      {
+        "word": 470,
+        "address": "0x8000676A",
+        "value": "0xAA53"
+      },
+      {
+        "word": 471,
+        "address": "0x8000676C",
+        "value": "0xAA84"
+      },
+      {
+        "word": 472,
+        "address": "0x8000676E",
+        "value": "0xAAB5"
+      },
+      {
+        "word": 474,
+        "address": "0x80006772",
+        "value": "0xAB17"
+      },
+      {
+        "word": 475,
+        "address": "0x80006774",
+        "value": "0xAB48"
+      },
+      {
+        "word": 476,
+        "address": "0x80006776",
+        "value": "0xAB79"
+      },
+      {
+        "word": 477,
+        "address": "0x80006778",
+        "value": "0xABAA"
+      },
+      {
+        "word": 478,
+        "address": "0x8000677A",
+        "value": "0xABDB"
+      },
+      {
+        "word": 479,
+        "address": "0x8000677C",
+        "value": "0xAC0C"
+      },
+      {
+        "word": 480,
+        "address": "0x8000677E",
+        "value": "0xAC3D"
+      },
+      {
+        "word": 481,
+        "address": "0x80006780",
+        "value": "0xAC6E"
+      },
+      {
+        "word": 482,
+        "address": "0x80006782",
+        "value": "0xAC9F"
+      },
+      {
+        "word": 483,
+        "address": "0x80006784",
+        "value": "0xACD0"
+      },
+      {
+        "word": 484,
+        "address": "0x80006786",
+        "value": "0xAD01"
+      },
+      {
+        "word": 485,
+        "address": "0x80006788",
+        "value": "0xAD32"
+      },
+      {
+        "word": 486,
+        "address": "0x8000678A",
+        "value": "0xAD63"
+      },
+      {
+        "word": 487,
+        "address": "0x8000678C",
+        "value": "0xAD94"
+      },
+      {
+        "word": 488,
+        "address": "0x8000678E",
+        "value": "0xADC5"
+      },
+      {
+        "word": 489,
+        "address": "0x80006790",
+        "value": "0xADF6"
+      },
+      {
+        "word": 490,
+        "address": "0x80006792",
+        "value": "0xAE27"
+      },
+      {
+        "word": 492,
+        "address": "0x80006796",
+        "value": "0xAE89"
+      }
+    ],
+    "all_survived_to_packetizer_read": true,
+    "all_survived_to_final_dspi1_packet": true
+  },
+  "negative_control": {
+    "universally_owned_word": 1,
+    "seed": "0xC001",
+    "overwritten_in_all_contexts": true
+  },
+  "contexts": [
+    {
+      "machine_id": 0,
+      "machine_name": "bd hard",
+      "renderer": "0x4010CBA8",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 0,
+      "machine_name": "bd hard",
+      "renderer": "0x4010CBA8",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 0,
+      "machine_name": "bd hard",
+      "renderer": "0x4010CBA8",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 0,
+      "machine_name": "bd hard",
+      "renderer": "0x4010CBA8",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 0,
+      "machine_name": "bd hard",
+      "renderer": "0x4010CBA8",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 1,
+      "machine_name": "bd classic",
+      "renderer": "0x4010BE10",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 1,
+      "machine_name": "bd classic",
+      "renderer": "0x4010BE10",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 1,
+      "machine_name": "bd classic",
+      "renderer": "0x4010BE10",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 1,
+      "machine_name": "bd classic",
+      "renderer": "0x4010BE10",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 1,
+      "machine_name": "bd classic",
+      "renderer": "0x4010BE10",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 2,
+      "machine_name": "sd hard",
+      "renderer": "0x40113D78",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 2,
+      "machine_name": "sd hard",
+      "renderer": "0x40113D78",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 2,
+      "machine_name": "sd hard",
+      "renderer": "0x40113D78",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 2,
+      "machine_name": "sd hard",
+      "renderer": "0x40113D78",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 2,
+      "machine_name": "sd hard",
+      "renderer": "0x40113D78",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 3,
+      "machine_name": "sd classic",
+      "renderer": "0x40113204",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 3,
+      "machine_name": "sd classic",
+      "renderer": "0x40113204",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 3,
+      "machine_name": "sd classic",
+      "renderer": "0x40113204",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 3,
+      "machine_name": "sd classic",
+      "renderer": "0x40113204",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 3,
+      "machine_name": "sd classic",
+      "renderer": "0x40113204",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 4,
+      "machine_name": "rs hard",
+      "renderer": "0x401118E4",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 4,
+      "machine_name": "rs hard",
+      "renderer": "0x401118E4",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 4,
+      "machine_name": "rs hard",
+      "renderer": "0x401118E4",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 4,
+      "machine_name": "rs hard",
+      "renderer": "0x401118E4",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 4,
+      "machine_name": "rs hard",
+      "renderer": "0x401118E4",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 5,
+      "machine_name": "rs classic",
+      "renderer": "0x40111454",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 5,
+      "machine_name": "rs classic",
+      "renderer": "0x40111454",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 5,
+      "machine_name": "rs classic",
+      "renderer": "0x40111454",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 5,
+      "machine_name": "rs classic",
+      "renderer": "0x40111454",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 5,
+      "machine_name": "rs classic",
+      "renderer": "0x40111454",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 6,
+      "machine_name": "cp classic",
+      "renderer": "0x4010E52C",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 6,
+      "machine_name": "cp classic",
+      "renderer": "0x4010E52C",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 6,
+      "machine_name": "cp classic",
+      "renderer": "0x4010E52C",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 6,
+      "machine_name": "cp classic",
+      "renderer": "0x4010E52C",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 6,
+      "machine_name": "cp classic",
+      "renderer": "0x4010E52C",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 7,
+      "machine_name": "bt classic",
+      "renderer": "0x40116DE8",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 7,
+      "machine_name": "bt classic",
+      "renderer": "0x40116DE8",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 7,
+      "machine_name": "bt classic",
+      "renderer": "0x40116DE8",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 7,
+      "machine_name": "bt classic",
+      "renderer": "0x40116DE8",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 7,
+      "machine_name": "bt classic",
+      "renderer": "0x40116DE8",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 8,
+      "machine_name": "xt classic",
+      "renderer": "0x40117098",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 8,
+      "machine_name": "xt classic",
+      "renderer": "0x40117098",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 8,
+      "machine_name": "xt classic",
+      "renderer": "0x40117098",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 8,
+      "machine_name": "xt classic",
+      "renderer": "0x40117098",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 8,
+      "machine_name": "xt classic",
+      "renderer": "0x40117098",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 9,
+      "machine_name": "ch classic",
+      "renderer": "0x40110210",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 9,
+      "machine_name": "ch classic",
+      "renderer": "0x40110210",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 9,
+      "machine_name": "ch classic",
+      "renderer": "0x40110210",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 9,
+      "machine_name": "ch classic",
+      "renderer": "0x40110210",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 9,
+      "machine_name": "ch classic",
+      "renderer": "0x40110210",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 10,
+      "machine_name": "oh classic",
+      "renderer": "0x40110B18",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 10,
+      "machine_name": "oh classic",
+      "renderer": "0x40110B18",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 10,
+      "machine_name": "oh classic",
+      "renderer": "0x40110B18",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 10,
+      "machine_name": "oh classic",
+      "renderer": "0x40110B18",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 10,
+      "machine_name": "oh classic",
+      "renderer": "0x40110B18",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 11,
+      "machine_name": "cy classic",
+      "renderer": "0x4010F094",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 11,
+      "machine_name": "cy classic",
+      "renderer": "0x4010F094",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 11,
+      "machine_name": "cy classic",
+      "renderer": "0x4010F094",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 11,
+      "machine_name": "cy classic",
+      "renderer": "0x4010F094",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 11,
+      "machine_name": "cy classic",
+      "renderer": "0x4010F094",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 12,
+      "machine_name": "cb classic",
+      "renderer": "0x4010EB24",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 12,
+      "machine_name": "cb classic",
+      "renderer": "0x4010EB24",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 12,
+      "machine_name": "cb classic",
+      "renderer": "0x4010EB24",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 12,
+      "machine_name": "cb classic",
+      "renderer": "0x4010EB24",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 12,
+      "machine_name": "cb classic",
+      "renderer": "0x4010EB24",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 13,
+      "machine_name": "bd fm",
+      "renderer": "0x4010C4A8",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 13,
+      "machine_name": "bd fm",
+      "renderer": "0x4010C4A8",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 13,
+      "machine_name": "bd fm",
+      "renderer": "0x4010C4A8",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 13,
+      "machine_name": "bd fm",
+      "renderer": "0x4010C4A8",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 13,
+      "machine_name": "bd fm",
+      "renderer": "0x4010C4A8",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 14,
+      "machine_name": "sd fm",
+      "renderer": "0x401137CC",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 14,
+      "machine_name": "sd fm",
+      "renderer": "0x401137CC",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 14,
+      "machine_name": "sd fm",
+      "renderer": "0x401137CC",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 14,
+      "machine_name": "sd fm",
+      "renderer": "0x401137CC",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 14,
+      "machine_name": "sd fm",
+      "renderer": "0x401137CC",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 15,
+      "machine_name": "ut noise",
+      "renderer": "0x4010F910",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 15,
+      "machine_name": "ut noise",
+      "renderer": "0x4010F910",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 15,
+      "machine_name": "ut noise",
+      "renderer": "0x4010F910",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 15,
+      "machine_name": "ut noise",
+      "renderer": "0x4010F910",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 15,
+      "machine_name": "ut noise",
+      "renderer": "0x4010F910",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 16,
+      "machine_name": "ut impulse",
+      "renderer": "0x4010F810",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 16,
+      "machine_name": "ut impulse",
+      "renderer": "0x4010F810",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 16,
+      "machine_name": "ut impulse",
+      "renderer": "0x4010F810",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 16,
+      "machine_name": "ut impulse",
+      "renderer": "0x4010F810",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 16,
+      "machine_name": "ut impulse",
+      "renderer": "0x4010F810",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 17,
+      "machine_name": "ch metallic",
+      "renderer": "0x40110028",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 17,
+      "machine_name": "ch metallic",
+      "renderer": "0x40110028",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 17,
+      "machine_name": "ch metallic",
+      "renderer": "0x40110028",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 17,
+      "machine_name": "ch metallic",
+      "renderer": "0x40110028",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 17,
+      "machine_name": "ch metallic",
+      "renderer": "0x40110028",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 18,
+      "machine_name": "oh metallic",
+      "renderer": "0x4011094C",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 18,
+      "machine_name": "oh metallic",
+      "renderer": "0x4011094C",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 18,
+      "machine_name": "oh metallic",
+      "renderer": "0x4011094C",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 18,
+      "machine_name": "oh metallic",
+      "renderer": "0x4011094C",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 18,
+      "machine_name": "oh metallic",
+      "renderer": "0x4011094C",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 19,
+      "machine_name": "cy metallic",
+      "renderer": "0x4010EDF8",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 19,
+      "machine_name": "cy metallic",
+      "renderer": "0x4010EDF8",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 19,
+      "machine_name": "cy metallic",
+      "renderer": "0x4010EDF8",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 19,
+      "machine_name": "cy metallic",
+      "renderer": "0x4010EDF8",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 19,
+      "machine_name": "cy metallic",
+      "renderer": "0x4010EDF8",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 20,
+      "machine_name": "cb metallic",
+      "renderer": "0x4010E84C",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 20,
+      "machine_name": "cb metallic",
+      "renderer": "0x4010E84C",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 20,
+      "machine_name": "cb metallic",
+      "renderer": "0x4010E84C",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 20,
+      "machine_name": "cb metallic",
+      "renderer": "0x4010E84C",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 20,
+      "machine_name": "cb metallic",
+      "renderer": "0x4010E84C",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 21,
+      "machine_name": "bd plastic",
+      "renderer": "0x4010D7A2",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 21,
+      "machine_name": "bd plastic",
+      "renderer": "0x4010D7A2",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 21,
+      "machine_name": "bd plastic",
+      "renderer": "0x4010D7A2",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 21,
+      "machine_name": "bd plastic",
+      "renderer": "0x4010D7A2",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 21,
+      "machine_name": "bd plastic",
+      "renderer": "0x4010D7A2",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 22,
+      "machine_name": "bd silky",
+      "renderer": "0x4010D274",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 22,
+      "machine_name": "bd silky",
+      "renderer": "0x4010D274",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 22,
+      "machine_name": "bd silky",
+      "renderer": "0x4010D274",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 22,
+      "machine_name": "bd silky",
+      "renderer": "0x4010D274",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 22,
+      "machine_name": "bd silky",
+      "renderer": "0x4010D274",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 23,
+      "machine_name": "sd natural",
+      "renderer": "0x401142FC",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 23,
+      "machine_name": "sd natural",
+      "renderer": "0x401142FC",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 23,
+      "machine_name": "sd natural",
+      "renderer": "0x401142FC",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 23,
+      "machine_name": "sd natural",
+      "renderer": "0x401142FC",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 23,
+      "machine_name": "sd natural",
+      "renderer": "0x401142FC",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 24,
+      "machine_name": "hh basic",
+      "renderer": "0x40110474",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 24,
+      "machine_name": "hh basic",
+      "renderer": "0x40110474",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 24,
+      "machine_name": "hh basic",
+      "renderer": "0x40110474",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 24,
+      "machine_name": "hh basic",
+      "renderer": "0x40110474",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 24,
+      "machine_name": "hh basic",
+      "renderer": "0x40110474",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 25,
+      "machine_name": "cy ride",
+      "renderer": "0x4010F3C6",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 25,
+      "machine_name": "cy ride",
+      "renderer": "0x4010F3C6",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 25,
+      "machine_name": "cy ride",
+      "renderer": "0x4010F3C6",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 25,
+      "machine_name": "cy ride",
+      "renderer": "0x4010F3C6",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 25,
+      "machine_name": "cy ride",
+      "renderer": "0x4010F3C6",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 26,
+      "machine_name": "bd sharp",
+      "renderer": "0x4010DEA0",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 26,
+      "machine_name": "bd sharp",
+      "renderer": "0x4010DEA0",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 26,
+      "machine_name": "bd sharp",
+      "renderer": "0x4010DEA0",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 26,
+      "machine_name": "bd sharp",
+      "renderer": "0x4010DEA0",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 26,
+      "machine_name": "bd sharp",
+      "renderer": "0x4010DEA0",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 27,
+      "machine_name": "DISABLE",
+      "renderer": "0x4010F7B0",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 27,
+      "machine_name": "DISABLE",
+      "renderer": "0x4010F7B0",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 27,
+      "machine_name": "DISABLE",
+      "renderer": "0x4010F7B0",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 27,
+      "machine_name": "DISABLE",
+      "renderer": "0x4010F7B0",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 27,
+      "machine_name": "DISABLE",
+      "renderer": "0x4010F7B0",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 28,
+      "machine_name": "sy dual vco",
+      "renderer": "0x40115188",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 28,
+      "machine_name": "sy dual vco",
+      "renderer": "0x40115188",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 28,
+      "machine_name": "sy dual vco",
+      "renderer": "0x40115188",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 28,
+      "machine_name": "sy dual vco",
+      "renderer": "0x40115188",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 28,
+      "machine_name": "sy dual vco",
+      "renderer": "0x40115188",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 29,
+      "machine_name": "sy chip",
+      "renderer": "0x40115844",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 29,
+      "machine_name": "sy chip",
+      "renderer": "0x40115844",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 29,
+      "machine_name": "sy chip",
+      "renderer": "0x40115844",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 29,
+      "machine_name": "sy chip",
+      "renderer": "0x40115844",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 29,
+      "machine_name": "sy chip",
+      "renderer": "0x40115844",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 30,
+      "machine_name": "bd acoustic",
+      "renderer": "0x4010B754",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 30,
+      "machine_name": "bd acoustic",
+      "renderer": "0x4010B754",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 30,
+      "machine_name": "bd acoustic",
+      "renderer": "0x4010B754",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 30,
+      "machine_name": "bd acoustic",
+      "renderer": "0x4010B754",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 30,
+      "machine_name": "bd acoustic",
+      "renderer": "0x4010B754",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 31,
+      "machine_name": "sd acoustic",
+      "renderer": "0x40112B9C",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 31,
+      "machine_name": "sd acoustic",
+      "renderer": "0x40112B9C",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 31,
+      "machine_name": "sd acoustic",
+      "renderer": "0x40112B9C",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 31,
+      "machine_name": "sd acoustic",
+      "renderer": "0x40112B9C",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 31,
+      "machine_name": "sd acoustic",
+      "renderer": "0x40112B9C",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 32,
+      "machine_name": "sy raw",
+      "renderer": "0x40116294",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 32,
+      "machine_name": "sy raw",
+      "renderer": "0x40116294",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 32,
+      "machine_name": "sy raw",
+      "renderer": "0x40116294",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 32,
+      "machine_name": "sy raw",
+      "renderer": "0x40116294",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 32,
+      "machine_name": "sy raw",
+      "renderer": "0x40116294",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 33,
+      "machine_name": "hh lab",
+      "renderer": "0x40110698",
+      "state": 0,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 33,
+      "machine_name": "hh lab",
+      "renderer": "0x40110698",
+      "state": 1,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 33,
+      "machine_name": "hh lab",
+      "renderer": "0x40110698",
+      "state": 2,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 33,
+      "machine_name": "hh lab",
+      "renderer": "0x40110698",
+      "state": 3,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    },
+    {
+      "machine_id": 33,
+      "machine_name": "hh lab",
+      "renderer": "0x40110698",
+      "state": 4,
+      "source_checks": 165,
+      "packet_checks": 165,
+      "payload_sha256": "6c3254d6d7b95655266aedd223b95ecf0a250e6d778831eb5c27236bdac19efa",
+      "negative_control": {
+        "word": 1,
+        "seed": "0xC001",
+        "packet_value": "0x0000",
+        "overwritten": true
+      }
+    }
+  ],
+  "conclusion": "For logical track 0, all 165 callback-writer-free source halfwords preserve callback-entry canaries through the packetizer read and final DSPI1 packet in all 170 public machine/state contexts. The universally owned control is overwritten in every context, validating the experiment's overwrite sensitivity.",
+  "next_target": "Rank adjacent writer-free candidate pairs by non-packet read isolation and structural proximity, then repeat a two-field-only canary test on the winner.",
+  "safety": "Stock emulation and synthetic SRAM markers only; no firmware was modified. Other logical tracks, FPGA field semantics, and live-hardware safety remain unknown."
+}
