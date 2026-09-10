@@ -1,0 +1,311 @@
+{
+  "result": "PASS",
+  "stock": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "disabled_candidate": {
+    "path": "temporary execution image",
+    "sha256": "c0a2f13c0e8a082a3cf453079d2e383ca56aeb0b68c698bb22910e961905ec17",
+    "state": {
+      "bypass": {
+        "call_site": "0x4011CACC",
+        "original_call": "4eb940117f00",
+        "replacement_call": "4eb9402b4340",
+        "cave": "0x402B4340",
+        "cave_body": "4eb940117f004e75",
+        "changed_bytes": 10,
+        "changed_ranges": [
+          {
+            "address": "0x4011CACC",
+            "bytes": 6
+          },
+          {
+            "address": "0x402B4340",
+            "bytes": 8
+          }
+        ],
+        "stock_cave_references": {
+          "aligned_literals": [],
+          "absolute_jmp_jsr": [],
+          "relative_branches": []
+        }
+      },
+      "state_base": "0x402B4400",
+      "state_end_exclusive": "0x402B45F0",
+      "state_bytes_reserved": 496,
+      "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+      "stock_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "kernel_address": "0x402B4340",
+    "kernel_end_exclusive": "0x402B43B2",
+    "multiply_helper": "0x402B43A2",
+    "kernel_bytes": 114,
+    "kernel_body": "4eb940117f0040e74ab9402b4408674e08390000402b440d674448e7ffc041f9800067f843f9402b44207020282900082210241192824c816128d4814c82228226290004220292834c816116d6814c832343000420c3538066d64cdf03ff46df4e752c014c041c057e1feea9da8582854e75",
+    "flags": 0,
+    "filter2_lane_mask": 0,
+    "coefficient": "0x00000000",
+    "changed_byte_positions": 120
+  },
+  "armed_emulation_probe": {
+    "sha256": "6c3efcc7991e3a9bb00fe1ac169bf8d52f9256e0946ea8b88347b819b33ff873",
+    "state": {
+      "bypass": {
+        "call_site": "0x4011CACC",
+        "original_call": "4eb940117f00",
+        "replacement_call": "4eb9402b4340",
+        "cave": "0x402B4340",
+        "cave_body": "4eb940117f004e75",
+        "changed_bytes": 10,
+        "changed_ranges": [
+          {
+            "address": "0x4011CACC",
+            "bytes": 6
+          },
+          {
+            "address": "0x402B4340",
+            "bytes": 8
+          }
+        ],
+        "stock_cave_references": {
+          "aligned_literals": [],
+          "absolute_jmp_jsr": [],
+          "relative_branches": []
+        }
+      },
+      "state_base": "0x402B4400",
+      "state_end_exclusive": "0x402B45F0",
+      "state_bytes_reserved": 496,
+      "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+      "stock_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "kernel_address": "0x402B4340",
+    "kernel_end_exclusive": "0x402B43B2",
+    "multiply_helper": "0x402B43A2",
+    "kernel_bytes": 114,
+    "kernel_body": "4eb940117f0040e74ab9402b4408674e08390000402b440d674448e7ffc041f9800067f843f9402b44207020282900082210241192824c816128d4814c82228226290004220292834c816116d6814c832343000420c3538066d64cdf03ff46df4e752c014c041c057e1feea9da8582854e75",
+    "flags": 1,
+    "filter2_lane_mask": 1,
+    "coefficient": "0x40000000",
+    "changed_byte_positions": 123,
+    "artifact_retained": false
+  },
+  "kernel_contract": {
+    "lane": 0,
+    "samples_per_callback": 32,
+    "coefficient_storage": "0x402B4428",
+    "coefficient_domain": "0x00000000..0x7FFFFFFF nonnegative Q1.31",
+    "multiply": "signed 32x32 -> signed 64, arithmetic >>31",
+    "cascade_stages": 2,
+    "stage_equation": "state=sat32(state + q31(sat32(input-state)*coefficient))"
+  },
+  "coefficient_vectors": [
+    {
+      "coefficient": "0x00000000",
+      "instructions": 1064,
+      "multiply_calls": 64,
+      "input_sha256": "914f7e6257731dfee91fa828dd2cb905fe1a06c104c5bec6453bb850943fcedf",
+      "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+      "first_four_output": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "final_state": [
+        "0x00000000",
+        "0x00000000"
+      ],
+      "oracle_match": true
+    },
+    {
+      "coefficient": "0x10000000",
+      "instructions": 1064,
+      "multiply_calls": 64,
+      "input_sha256": "914f7e6257731dfee91fa828dd2cb905fe1a06c104c5bec6453bb850943fcedf",
+      "output_sha256": "e4b6362dec213e25f5921b7084578419f4eb1281240d05dcbb98e2f017a10325",
+      "first_four_output": [
+        "0x01000000",
+        "0x01C00000",
+        "0x024C0000",
+        "0x02AE0000"
+      ],
+      "final_state": [
+        "0x0020A08C",
+        "0x00828236"
+      ],
+      "oracle_match": true
+    },
+    {
+      "coefficient": "0x20000000",
+      "instructions": 1064,
+      "multiply_calls": 64,
+      "input_sha256": "914f7e6257731dfee91fa828dd2cb905fe1a06c104c5bec6453bb850943fcedf",
+      "output_sha256": "119e74d4fd21decd2311ada9f147ca035248d0a1219ce77a6991b88167d2ab15",
+      "first_four_output": [
+        "0x04000000",
+        "0x06000000",
+        "0x06C00000",
+        "0x06C00000"
+      ],
+      "final_state": [
+        "0x00008C70",
+        "0x00046388"
+      ],
+      "oracle_match": true
+    },
+    {
+      "coefficient": "0x40000000",
+      "instructions": 1064,
+      "multiply_calls": 64,
+      "input_sha256": "914f7e6257731dfee91fa828dd2cb905fe1a06c104c5bec6453bb850943fcedf",
+      "output_sha256": "8108f8dfc6a331081dd46cca6fad95ebcec82e66c5fb39994d81f8bb823d45e5",
+      "first_four_output": [
+        "0x10000000",
+        "0x10000000",
+        "0x0C000000",
+        "0x08000000"
+      ],
+      "final_state": [
+        "0x00000000",
+        "0x00000003"
+      ],
+      "oracle_match": true
+    },
+    {
+      "coefficient": "0x7FFFFFFF",
+      "instructions": 1064,
+      "multiply_calls": 64,
+      "input_sha256": "914f7e6257731dfee91fa828dd2cb905fe1a06c104c5bec6453bb850943fcedf",
+      "output_sha256": "907b07603cec9deeee4f40091c79c5507762a387a55b06de4776ec2f5c3fc364",
+      "first_four_output": [
+        "0x3FFFFFFE",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "final_state": [
+        "0x00000000",
+        "0x00000000"
+      ],
+      "oracle_match": true
+    },
+    {
+      "coefficient": "0x7FFFFFFF",
+      "instructions": 1064,
+      "multiply_calls": 64,
+      "input_sha256": "716701fed3640dc0a869e8f1ea099a3cbebd331ee4b64702fc2515b1f8b3bb73",
+      "output_sha256": "0c6bd1e3e29d58c259be777254f0eef7c6cd2a74f25d309f9548895e075eae1b",
+      "first_four_output": [
+        "0x7FFFFFFD",
+        "0xFFFFFFFF",
+        "0x7FFFFFFC",
+        "0xFFFFFFFE"
+      ],
+      "final_state": [
+        "0xFFFFFFF0",
+        "0xFFFFFFF0"
+      ],
+      "oracle_match": true
+    }
+  ],
+  "consecutive_callback_entries_through_mixer": [
+    {
+      "input": "active",
+      "instructions": 36432,
+      "input_sha256": "2e8b8655d85f64698439d06b33d320256172173ea47208c6dc5e93bf4bce9924",
+      "output_sha256": "b5591a80529d97c0a6487ef3f4ece3280fdd4b49e41c69ded68068c9124d3cb9",
+      "starting_state": [
+        "0x00000000",
+        "0x00000000"
+      ],
+      "ending_state": [
+        "0xFD2C7332",
+        "0xFDAF5093"
+      ],
+      "oracle_match": true
+    },
+    {
+      "input": "zero",
+      "instructions": 36302,
+      "input_sha256": "00cace3e6260fc47245d4191cde6db1c8cba9c91f651d5cc5c5b12e3cc1154cd",
+      "output_sha256": "d4a6a6aead5bef10ae8761175412aaebb1f352de1829aba1536b78109831e262",
+      "starting_state": [
+        "0xFD2C7332",
+        "0xFDAF5093"
+      ],
+      "ending_state": [
+        "0x0000000D",
+        "0x00000004"
+      ],
+      "oracle_match": true
+    },
+    {
+      "input": "active",
+      "instructions": 36302,
+      "input_sha256": "a94101c43d546e05bea969040673b340373b8e125ed7293a6ef5a6ca4beb1c00",
+      "output_sha256": "cba376b93d8480f9c79702e92dcae716bd1b6dddc3f5299a4d73024c1eb8ab1e",
+      "starting_state": [
+        "0x0000000D",
+        "0x00000004"
+      ],
+      "ending_state": [
+        "0xFD2C7332",
+        "0xFDAF5093"
+      ],
+      "oracle_match": true
+    }
+  ],
+  "stock_comparisons": [
+    {
+      "input": "zero",
+      "disabled_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      },
+      "armed_half_coefficient_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    },
+    {
+      "input": "active",
+      "disabled_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      },
+      "armed_half_coefficient_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": false,
+        "ingress_output_sha256": false,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    }
+  ],
+  "conclusion": "The Filter 2 target kernel now loads its coefficient from the versioned state slot and performs a real signed 32x32-to-Q1.31 multiply twice per sample. Endpoint/intermediate impulse vectors, an alternating signed-limit vector, and active-zero-active consecutive callback entries through the mixer boundary all match the independent oracle.",
+  "scope_limit": "The coefficient is writable state but is not yet connected to a Rytm parameter or cutoff mapping. Only lane 0 is implemented, and hardware cycle margin remains unmeasured.",
+  "next_target": "Map a stable control value into the coefficient field with smoothing, prove zipper-free coefficient changes across callbacks, then replicate the kernel across all eight lanes and measure worst-case modeled instruction cost.",
+  "safety": "Only the default-disabled decompressed MAIN candidate is retained. Armed kernels were temporary; no ELE3 container or SysEx was built."
+}

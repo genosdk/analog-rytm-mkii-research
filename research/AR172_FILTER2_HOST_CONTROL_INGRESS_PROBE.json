@@ -1,0 +1,301 @@
+{
+  "result": "PASS",
+  "stock": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "candidate_reused": {
+    "sha256": "25dd3dbfc0276f4da630e2804851d1e542f48aacc9a29cc91242a23ecaf69549",
+    "expected_publication_shim_sha256": "25dd3dbfc0276f4da630e2804851d1e542f48aacc9a29cc91242a23ecaf69549",
+    "new_firmware_bytes_created": false,
+    "build": {
+      "eight_lane_kernel": {
+        "state": {
+          "bypass": {
+            "call_site": "0x4011CACC",
+            "original_call": "4eb940117f00",
+            "replacement_call": "4eb9402b4340",
+            "cave": "0x402B4340",
+            "cave_body": "4eb940117f004e75",
+            "changed_bytes": 10,
+            "changed_ranges": [
+              {
+                "address": "0x4011CACC",
+                "bytes": 6
+              },
+              {
+                "address": "0x402B4340",
+                "bytes": 8
+              }
+            ],
+            "stock_cave_references": {
+              "aligned_literals": [],
+              "absolute_jmp_jsr": [],
+              "relative_branches": []
+            }
+          },
+          "state_base": "0x402B4400",
+          "state_end_exclusive": "0x402B45F0",
+          "state_bytes_reserved": 496,
+          "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+          "stock_references": {
+            "aligned_literals": [],
+            "absolute_jmp_jsr": [],
+            "relative_branches": []
+          }
+        },
+        "cave_stub_address": "0x402B4340",
+        "cave_stub_body": "4ef9402b4600",
+        "extension_address": "0x402B4600",
+        "extension_end_exclusive": "0x402B476A",
+        "extension_bytes": 362,
+        "extension_body": "4eb940117f0040e74ab9402b4408670000ea48e7ffc008390000402b440d6700001241f9800067f843f9402b4420610000ce08390001402b440d6700001241f98000687843f9402b4440610000b208390002402b440d6700001241f9800068f843f9402b44606100009608390003402b440d6700001241f98000697843f9402b44806100007a08390004402b440d6700001241f9800069f843f9402b44a06100005e08390005402b440d6700001241f980006a7843f9402b44c06100004208390006402b440d6700001241f980006af843f9402b44e06100002608390007402b440d6700001241f980006b7843f9402b45006100000a4cdf03ff46df4e757020282900082a29000c2c059c844c864a866a00000806860000001f7e05eea6d8864c842210241192824c8161000030d4814c82228226290004220292834c816100001cd6814c832343000420c353806600ffce2a29000c234500084e754c041c057e1feea9da8582854e75",
+        "symbols": {
+          "entry": "0x402B4600",
+          "post_ingress": "0x402B4606",
+          "lane_0_skip": "0x402B4632",
+          "lane_1_skip": "0x402B464E",
+          "lane_2_skip": "0x402B466A",
+          "lane_3_skip": "0x402B4686",
+          "lane_4_skip": "0x402B46A2",
+          "lane_5_skip": "0x402B46BE",
+          "lane_6_skip": "0x402B46DA",
+          "lane_7_skip": "0x402B46F6",
+          "restore_registers": "0x402B46F6",
+          "restore_sr": "0x402B46FA",
+          "process_lane": "0x402B46FE",
+          "positive_division": "0x402B471A",
+          "sample_loop": "0x402B471E",
+          "multiply": "0x402B475C"
+        },
+        "flags": 0,
+        "filter2_lane_mask": 0,
+        "changed_byte_positions": 313
+      },
+      "callsite": "0x400B5936",
+      "callsite_patch": "4eb9402b4780",
+      "shim_address": "0x402B4780",
+      "shim_end_exclusive": "0x402B47D8",
+      "shim_bytes": 88,
+      "shim_body": "4ab9402b44086700004a202f00040c8000007ff86500003c0c8000007fff62000032222f00080c810000007f63000004727fe58943f9402b4800d3c12211048000007ff8eb8841f9402b442cd1c020814e754ef94011af4c",
+      "shim_symbols": {
+        "entry": "0x402B4780",
+        "control_valid": "0x402B47B2",
+        "shadow_store": "0x402B47CE",
+        "stock": "0x402B47D2"
+      },
+      "table_address": "0x402B4800",
+      "table_end_exclusive": "0x402B4A00",
+      "table_bytes": 512,
+      "virtual_index_range": [
+        "0x7FF8",
+        "0x7FFF"
+      ],
+      "armed": false,
+      "changed_byte_positions": 892
+    }
+  },
+  "storage_free_uart_audit": {
+    "boot_pc": "0x400FCECC",
+    "semantic_boot_steps": 12000000,
+    "uart8_dma_channels": [
+      {
+        "channel": 34,
+        "tcd_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+        "tcd_all_zero": true,
+        "request_enabled": false
+      },
+      {
+        "channel": 35,
+        "tcd_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+        "tcd_all_zero": true,
+        "request_enabled": false
+      }
+    ],
+    "uart8_vectors": {
+      "154": "0x40000D6E",
+      "155": "0x40000D6E"
+    },
+    "result": "NOT_ACTIVE_IN_STORAGE_FREE_BOOT",
+    "interpretation": "This rejects UART8 as the first emulator ingress; it does not prove that physical MIDI/USB is absent on initialized hardware."
+  },
+  "selected_initial_ingress": {
+    "name": "host/emulator command bridge",
+    "transport": "direct call to internal virtual setter ABI",
+    "virtual_indices": [
+      "0x7FF8",
+      "0x7FFF"
+    ],
+    "control_domain": "0..127",
+    "why_selected": "It adds no firmware instructions, reuses the proven shim, and is independent of USB/MIDI peripherals not yet active in the storage-free board model."
+  },
+  "desktop_event_contract": {
+    "mouse": "absolute lane value, clamped to 0..127",
+    "lane_selection_keys": "Digit1..Digit8",
+    "fine_keys": {
+      "ArrowUp/ArrowRight": "+1",
+      "ArrowDown/ArrowLeft": "-1"
+    },
+    "coarse_keys": {
+      "PageUp": "+8",
+      "PageDown": "-8"
+    },
+    "endpoints": {
+      "Home": 0,
+      "End": 127
+    }
+  },
+  "host_bridge_execution": {
+    "runtime_arming_only": true,
+    "commands_executed": 11,
+    "events": [
+      {
+        "sequence": 0,
+        "source": "mouse_absolute",
+        "lane": 0,
+        "value": 0,
+        "virtual_index": "0x7FF8",
+        "q31": "0x00000000",
+        "target_address": "0x402B442C",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 1,
+        "source": "mouse_absolute",
+        "lane": 1,
+        "value": 16,
+        "virtual_index": "0x7FF9",
+        "q31": "0x10204081",
+        "target_address": "0x402B444C",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 2,
+        "source": "mouse_absolute",
+        "lane": 2,
+        "value": 32,
+        "virtual_index": "0x7FFA",
+        "q31": "0x20408102",
+        "target_address": "0x402B446C",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 3,
+        "source": "mouse_absolute",
+        "lane": 3,
+        "value": 48,
+        "virtual_index": "0x7FFB",
+        "q31": "0x3060C183",
+        "target_address": "0x402B448C",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 4,
+        "source": "mouse_absolute",
+        "lane": 4,
+        "value": 64,
+        "virtual_index": "0x7FFC",
+        "q31": "0x40810204",
+        "target_address": "0x402B44AC",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 5,
+        "source": "mouse_absolute",
+        "lane": 5,
+        "value": 80,
+        "virtual_index": "0x7FFD",
+        "q31": "0x50A14284",
+        "target_address": "0x402B44CC",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 6,
+        "source": "mouse_absolute",
+        "lane": 6,
+        "value": 96,
+        "virtual_index": "0x7FFE",
+        "q31": "0x60C18305",
+        "target_address": "0x402B44EC",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 7,
+        "source": "mouse_absolute",
+        "lane": 7,
+        "value": 112,
+        "virtual_index": "0x7FFF",
+        "q31": "0x70E1C386",
+        "target_address": "0x402B450C",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 8,
+        "source": "keyboard_end",
+        "lane": 7,
+        "value": 127,
+        "virtual_index": "0x7FFF",
+        "q31": "0x7FFFFFFF",
+        "target_address": "0x402B450C",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 9,
+        "source": "keyboard_delta",
+        "lane": 0,
+        "value": 1,
+        "virtual_index": "0x7FF8",
+        "q31": "0x01020408",
+        "target_address": "0x402B442C",
+        "instructions": 20,
+        "single_aligned_store": true
+      },
+      {
+        "sequence": 10,
+        "source": "keyboard_delta",
+        "lane": 3,
+        "value": 40,
+        "virtual_index": "0x7FFB",
+        "q31": "0x2850A142",
+        "target_address": "0x402B448C",
+        "instructions": 20,
+        "single_aligned_store": true
+      }
+    ],
+    "final_controls": [
+      1,
+      16,
+      32,
+      40,
+      64,
+      80,
+      96,
+      127
+    ],
+    "final_q31": [
+      "0x01020408",
+      "0x10204081",
+      "0x20408102",
+      "0x2850A142",
+      "0x40810204",
+      "0x50A14284",
+      "0x60C18305",
+      "0x7FFFFFFF"
+    ],
+    "all_commands_single_aligned_store": true,
+    "result": "PASS"
+  },
+  "conclusion": "The first external laboratory ingress is now selected and executed: mouse and QWERTY events share one deterministic 0..127 desktop contract and publish through the existing virtual setter ABI. UART8 is not active in the storage-free boot and is therefore not used as an assumed MIDI path.",
+  "scope_limit": "This is the controller/backend contract, not yet a rendered knob interface or a physical MIDI/USB proof. QWERTY note triggering remains separate from Filter 2 control.",
+  "next_target": "Wrap the host bridge in a local controller service and render eight mouse-draggable knobs with keyboard focus/state feedback. Then separately trace physical MIDI/USB for eventual hardware transport.",
+  "safety": "The already-retained default-disabled publication candidate was reused temporarily. Only emulator RAM was armed; no new MAIN image, ELE3 container or SysEx was built."
+}

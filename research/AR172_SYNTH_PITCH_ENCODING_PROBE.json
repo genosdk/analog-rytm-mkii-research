@@ -1,0 +1,2066 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "stock_math": {
+    "log_helper": "0x4011A0F8",
+    "exp2_helper": "0x40095A14",
+    "exp2_table": "0x401C4318",
+    "fractional_emac": "signed Q1.31 product, implicit left shift, extension bit 8 selects MAC/MSAC",
+    "octave_law": "exp2_output[note+12] is exactly 2*output or 2*output+1",
+    "low_note_floor": "notes 0..29 clamp to exp2 input 0xF0000000",
+    "monotonic_notes_0_127": true
+  },
+  "serialization": {
+    "renderer_halfwords": [
+      "0x8000641A",
+      "0x8000641C"
+    ],
+    "packetizer": "0x40077D14",
+    "dspi1_word_indices": [
+      46,
+      47
+    ],
+    "word_tag": "0x80010000"
+  },
+  "calibration": {
+    "channel_scales": [
+      "0x00062000",
+      "0x0004168F"
+    ],
+    "equation": "clamp_0_7fff(((exp2_output + 1) * scale) >> 31)",
+    "renderer_sequences": [
+      "0x4010CE18..0x4010CE46",
+      "0x4010CEC6..0x4010CEF4"
+    ],
+    "all_128_vectors_match": true
+  },
+  "board_route_boundary": {
+    "established": [
+      "DSPI1 SCK / processor A10 reaches FPGA CCLK / P53",
+      "DSPI1 SOUT / processor B12 reaches FPGA DIN / P51"
+    ],
+    "unresolved": [
+      "DSPI1 PCS0 / processor B13 consumer or glue-enable role",
+      "DSPI1 SIN / processor C11 board connection",
+      "FPGA application-fabric interpretation of words 46/47"
+    ],
+    "caution": "The parked high-impedance FPGA configuration image is not the live application fabric."
+  },
+  "chromatic_mode_matrix_note_48": [
+    {
+      "value": 0,
+      "mode": "off",
+      "synth_uses_live_note": false,
+      "renderer_pitch": "0x003C0000",
+      "control_halfwords": [
+        "0x0026",
+        "0x0019"
+      ]
+    },
+    {
+      "value": 1,
+      "mode": "synth",
+      "synth_uses_live_note": true,
+      "renderer_pitch": "0x00300000",
+      "control_halfwords": [
+        "0x0013",
+        "0x000C"
+      ]
+    },
+    {
+      "value": 2,
+      "mode": "sample",
+      "synth_uses_live_note": false,
+      "renderer_pitch": "0x003C0000",
+      "control_halfwords": [
+        "0x0026",
+        "0x0019"
+      ]
+    },
+    {
+      "value": 3,
+      "mode": "synth_and_sample",
+      "synth_uses_live_note": true,
+      "renderer_pitch": "0x00300000",
+      "control_halfwords": [
+        "0x0013",
+        "0x000C"
+      ]
+    }
+  ],
+  "anchors": [
+    {
+      "note": 48,
+      "note_q16": "0x00300000",
+      "exp2_input": "0xF1AAAAAA",
+      "exp2_output": "0x0001965F",
+      "control_halfwords": [
+        "0x0013",
+        "0x000C"
+      ],
+      "dspi1_words": [
+        "0x80010013",
+        "0x8001000C"
+      ],
+      "dspi1_sha256": "ff54458a9606f75f26e0e7555ac6dd727b2dd09ab65c93e310e5a0b076f4013e"
+    },
+    {
+      "note": 60,
+      "note_q16": "0x003C0000",
+      "exp2_input": "0xF2AAAAAA",
+      "exp2_output": "0x00032CBF",
+      "control_halfwords": [
+        "0x0026",
+        "0x0019"
+      ],
+      "dspi1_words": [
+        "0x80010026",
+        "0x80010019"
+      ],
+      "dspi1_sha256": "c70563d01099e2b3a76c3111e3784ccd54d12453662cd468360a4c80fdec2c38"
+    },
+    {
+      "note": 72,
+      "note_q16": "0x00480000",
+      "exp2_input": "0xF3AAAAAA",
+      "exp2_output": "0x0006597F",
+      "control_halfwords": [
+        "0x004D",
+        "0x0033"
+      ],
+      "dspi1_words": [
+        "0x8001004D",
+        "0x80010033"
+      ],
+      "dspi1_sha256": "b99b684cd6ba34cb394ba10da17a60f7b532dd57db0b0c004dac95a14469459c"
+    }
+  ],
+  "note_vectors": [
+    {
+      "note": 0,
+      "note_q16": "0x00000000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 1,
+      "note_q16": "0x00010000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 2,
+      "note_q16": "0x00020000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 3,
+      "note_q16": "0x00030000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 4,
+      "note_q16": "0x00040000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 5,
+      "note_q16": "0x00050000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 6,
+      "note_q16": "0x00060000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 7,
+      "note_q16": "0x00070000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 8,
+      "note_q16": "0x00080000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 9,
+      "note_q16": "0x00090000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 10,
+      "note_q16": "0x000A0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 11,
+      "note_q16": "0x000B0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 12,
+      "note_q16": "0x000C0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 13,
+      "note_q16": "0x000D0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 14,
+      "note_q16": "0x000E0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 15,
+      "note_q16": "0x000F0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 16,
+      "note_q16": "0x00100000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 17,
+      "note_q16": "0x00110000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 18,
+      "note_q16": "0x00120000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 19,
+      "note_q16": "0x00130000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 20,
+      "note_q16": "0x00140000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 21,
+      "note_q16": "0x00150000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 22,
+      "note_q16": "0x00160000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 23,
+      "note_q16": "0x00170000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 24,
+      "note_q16": "0x00180000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 25,
+      "note_q16": "0x00190000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 26,
+      "note_q16": "0x001A0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 27,
+      "note_q16": "0x001B0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 28,
+      "note_q16": "0x001C0000",
+      "exp2_input": "0xF0000000",
+      "exp2_output": "0x00008000",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 29,
+      "note_q16": "0x001D0000",
+      "exp2_input": "0xF0155555",
+      "exp2_output": "0x0000879C",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 30,
+      "note_q16": "0x001E0000",
+      "exp2_input": "0xF02AAAAA",
+      "exp2_output": "0x00008FAC",
+      "control_halfwords": [
+        "0x0006",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010006",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "73f2cdfdeb56a28def1518a092e3a98f253164c76dbd6c1943d0cd3e68d71278"
+    },
+    {
+      "note": 31,
+      "note_q16": "0x001F0000",
+      "exp2_input": "0xF0400000",
+      "exp2_output": "0x00009837",
+      "control_halfwords": [
+        "0x0007",
+        "0x0004"
+      ],
+      "dspi1_words": [
+        "0x80010007",
+        "0x80010004"
+      ],
+      "dspi1_sha256": "23bdc62a2e848507cd90d07250154c350c1f4aaeb2ca40cd71d5ddbf52d1d349"
+    },
+    {
+      "note": 32,
+      "note_q16": "0x00200000",
+      "exp2_input": "0xF0555555",
+      "exp2_output": "0x0000A145",
+      "control_halfwords": [
+        "0x0007",
+        "0x0005"
+      ],
+      "dspi1_words": [
+        "0x80010007",
+        "0x80010005"
+      ],
+      "dspi1_sha256": "be1b9bacbfb5743ab3f3360d9502ad2b9901bf76ff9c24a94de60456e142b7e8"
+    },
+    {
+      "note": 33,
+      "note_q16": "0x00210000",
+      "exp2_input": "0xF06AAAAA",
+      "exp2_output": "0x0000AADC",
+      "control_halfwords": [
+        "0x0008",
+        "0x0005"
+      ],
+      "dspi1_words": [
+        "0x80010008",
+        "0x80010005"
+      ],
+      "dspi1_sha256": "68be5d3197f386e27821229fb3a9211f66f0b3a1ead26fe94a345423aafa9ea3"
+    },
+    {
+      "note": 34,
+      "note_q16": "0x00220000",
+      "exp2_input": "0xF0800000",
+      "exp2_output": "0x0000B504",
+      "control_halfwords": [
+        "0x0008",
+        "0x0005"
+      ],
+      "dspi1_words": [
+        "0x80010008",
+        "0x80010005"
+      ],
+      "dspi1_sha256": "68be5d3197f386e27821229fb3a9211f66f0b3a1ead26fe94a345423aafa9ea3"
+    },
+    {
+      "note": 35,
+      "note_q16": "0x00230000",
+      "exp2_input": "0xF0955555",
+      "exp2_output": "0x0000BFC8",
+      "control_halfwords": [
+        "0x0009",
+        "0x0006"
+      ],
+      "dspi1_words": [
+        "0x80010009",
+        "0x80010006"
+      ],
+      "dspi1_sha256": "3bf798e694a4e01ecebbbd176190793fea255b34019c992aae533cd565d396e8"
+    },
+    {
+      "note": 36,
+      "note_q16": "0x00240000",
+      "exp2_input": "0xF0AAAAAA",
+      "exp2_output": "0x0000CB2F",
+      "control_halfwords": [
+        "0x0009",
+        "0x0006"
+      ],
+      "dspi1_words": [
+        "0x80010009",
+        "0x80010006"
+      ],
+      "dspi1_sha256": "3bf798e694a4e01ecebbbd176190793fea255b34019c992aae533cd565d396e8"
+    },
+    {
+      "note": 37,
+      "note_q16": "0x00250000",
+      "exp2_input": "0xF0C00000",
+      "exp2_output": "0x0000D744",
+      "control_halfwords": [
+        "0x000A",
+        "0x0006"
+      ],
+      "dspi1_words": [
+        "0x8001000A",
+        "0x80010006"
+      ],
+      "dspi1_sha256": "020d98ce21d29c07860cf362b58ae583350523dc786a4dad276e5c129a5c9f72"
+    },
+    {
+      "note": 38,
+      "note_q16": "0x00260000",
+      "exp2_input": "0xF0D55555",
+      "exp2_output": "0x0000E411",
+      "control_halfwords": [
+        "0x000A",
+        "0x0007"
+      ],
+      "dspi1_words": [
+        "0x8001000A",
+        "0x80010007"
+      ],
+      "dspi1_sha256": "9eab1cdfa2a1c1026ffee35d996f0bb918cc0f0d78b3dc2e1445da5912b74f55"
+    },
+    {
+      "note": 39,
+      "note_q16": "0x00270000",
+      "exp2_input": "0xF0EAAAAA",
+      "exp2_output": "0x0000F1A1",
+      "control_halfwords": [
+        "0x000B",
+        "0x0007"
+      ],
+      "dspi1_words": [
+        "0x8001000B",
+        "0x80010007"
+      ],
+      "dspi1_sha256": "ba01e4a5ef36e65dd7f817469d8b5bad8fc26ec2c29af75bcea9f57246e419e5"
+    },
+    {
+      "note": 40,
+      "note_q16": "0x00280000",
+      "exp2_input": "0xF1000000",
+      "exp2_output": "0x00010000",
+      "control_halfwords": [
+        "0x000C",
+        "0x0008"
+      ],
+      "dspi1_words": [
+        "0x8001000C",
+        "0x80010008"
+      ],
+      "dspi1_sha256": "f53d54c219ce144bd955ab7b6581b050bfefdc5017820176a9201cdb29f1c73a"
+    },
+    {
+      "note": 41,
+      "note_q16": "0x00290000",
+      "exp2_input": "0xF1155555",
+      "exp2_output": "0x00010F38",
+      "control_halfwords": [
+        "0x000C",
+        "0x0008"
+      ],
+      "dspi1_words": [
+        "0x8001000C",
+        "0x80010008"
+      ],
+      "dspi1_sha256": "f53d54c219ce144bd955ab7b6581b050bfefdc5017820176a9201cdb29f1c73a"
+    },
+    {
+      "note": 42,
+      "note_q16": "0x002A0000",
+      "exp2_input": "0xF12AAAAA",
+      "exp2_output": "0x00011F59",
+      "control_halfwords": [
+        "0x000D",
+        "0x0009"
+      ],
+      "dspi1_words": [
+        "0x8001000D",
+        "0x80010009"
+      ],
+      "dspi1_sha256": "c45ce85ed924f448286a1aef4ef06f4013195808003b1464bbf8c791a60152a7"
+    },
+    {
+      "note": 43,
+      "note_q16": "0x002B0000",
+      "exp2_input": "0xF1400000",
+      "exp2_output": "0x0001306F",
+      "control_halfwords": [
+        "0x000E",
+        "0x0009"
+      ],
+      "dspi1_words": [
+        "0x8001000E",
+        "0x80010009"
+      ],
+      "dspi1_sha256": "00ea4706526cdbaff067266347cc6b129dfbe400419c3db53dbcb17c43f5a7a3"
+    },
+    {
+      "note": 44,
+      "note_q16": "0x002C0000",
+      "exp2_input": "0xF1555555",
+      "exp2_output": "0x0001428A",
+      "control_halfwords": [
+        "0x000F",
+        "0x000A"
+      ],
+      "dspi1_words": [
+        "0x8001000F",
+        "0x8001000A"
+      ],
+      "dspi1_sha256": "0576b2b252e9ba6b06af9dcd4fb343c23090a5b1219ccb35ce263414d61b138c"
+    },
+    {
+      "note": 45,
+      "note_q16": "0x002D0000",
+      "exp2_input": "0xF16AAAAA",
+      "exp2_output": "0x000155B8",
+      "control_halfwords": [
+        "0x0010",
+        "0x000A"
+      ],
+      "dspi1_words": [
+        "0x80010010",
+        "0x8001000A"
+      ],
+      "dspi1_sha256": "05f64dcd71d584ee10ebdb81957e2c9d8ba255253fde85342012b8a88be84ec6"
+    },
+    {
+      "note": 46,
+      "note_q16": "0x002E0000",
+      "exp2_input": "0xF1800000",
+      "exp2_output": "0x00016A09",
+      "control_halfwords": [
+        "0x0011",
+        "0x000B"
+      ],
+      "dspi1_words": [
+        "0x80010011",
+        "0x8001000B"
+      ],
+      "dspi1_sha256": "82f1fa898e8eeacfb3ffb70d2b8ead0341c06618d6149e384112aa0915c4591c"
+    },
+    {
+      "note": 47,
+      "note_q16": "0x002F0000",
+      "exp2_input": "0xF1955555",
+      "exp2_output": "0x00017F91",
+      "control_halfwords": [
+        "0x0012",
+        "0x000C"
+      ],
+      "dspi1_words": [
+        "0x80010012",
+        "0x8001000C"
+      ],
+      "dspi1_sha256": "b7785cf48b53c45dde8c4f76c052038eb393625b001a05f8624ce62531f0ea12"
+    },
+    {
+      "note": 48,
+      "note_q16": "0x00300000",
+      "exp2_input": "0xF1AAAAAA",
+      "exp2_output": "0x0001965F",
+      "control_halfwords": [
+        "0x0013",
+        "0x000C"
+      ],
+      "dspi1_words": [
+        "0x80010013",
+        "0x8001000C"
+      ],
+      "dspi1_sha256": "ff54458a9606f75f26e0e7555ac6dd727b2dd09ab65c93e310e5a0b076f4013e"
+    },
+    {
+      "note": 49,
+      "note_q16": "0x00310000",
+      "exp2_input": "0xF1C00000",
+      "exp2_output": "0x0001AE89",
+      "control_halfwords": [
+        "0x0014",
+        "0x000D"
+      ],
+      "dspi1_words": [
+        "0x80010014",
+        "0x8001000D"
+      ],
+      "dspi1_sha256": "a6d6dcddb45f04c3937270e701e9119a42c562a1bf2bcffb0171f11844088d84"
+    },
+    {
+      "note": 50,
+      "note_q16": "0x00320000",
+      "exp2_input": "0xF1D55555",
+      "exp2_output": "0x0001C823",
+      "control_halfwords": [
+        "0x0015",
+        "0x000E"
+      ],
+      "dspi1_words": [
+        "0x80010015",
+        "0x8001000E"
+      ],
+      "dspi1_sha256": "79e0bd4fe3e76a2f3adb474d28ba850340b0db2be79b1a5c792afce213b762ce"
+    },
+    {
+      "note": 51,
+      "note_q16": "0x00330000",
+      "exp2_input": "0xF1EAAAAA",
+      "exp2_output": "0x0001E343",
+      "control_halfwords": [
+        "0x0017",
+        "0x000F"
+      ],
+      "dspi1_words": [
+        "0x80010017",
+        "0x8001000F"
+      ],
+      "dspi1_sha256": "aeb9e25bc84d98e76bf5a1793fdb6b7efca2551bbfabb8251b56b68b18ebd678"
+    },
+    {
+      "note": 52,
+      "note_q16": "0x00340000",
+      "exp2_input": "0xF2000000",
+      "exp2_output": "0x00020000",
+      "control_halfwords": [
+        "0x0018",
+        "0x0010"
+      ],
+      "dspi1_words": [
+        "0x80010018",
+        "0x80010010"
+      ],
+      "dspi1_sha256": "0dd7354e0423f14280c54bbe457386f1282f180d7132225756c3e3eb80bc9881"
+    },
+    {
+      "note": 53,
+      "note_q16": "0x00350000",
+      "exp2_input": "0xF2155555",
+      "exp2_output": "0x00021E71",
+      "control_halfwords": [
+        "0x0019",
+        "0x0011"
+      ],
+      "dspi1_words": [
+        "0x80010019",
+        "0x80010011"
+      ],
+      "dspi1_sha256": "0e9c3353a4a55d281b2a6376b6f58a40083a6d87783561e2b85990670e051f02"
+    },
+    {
+      "note": 54,
+      "note_q16": "0x00360000",
+      "exp2_input": "0xF22AAAAA",
+      "exp2_output": "0x00023EB3",
+      "control_halfwords": [
+        "0x001B",
+        "0x0012"
+      ],
+      "dspi1_words": [
+        "0x8001001B",
+        "0x80010012"
+      ],
+      "dspi1_sha256": "aa106e4117f8184acceb7f2c094915a29985b081c57dbc613788d46dc538fece"
+    },
+    {
+      "note": 55,
+      "note_q16": "0x00370000",
+      "exp2_input": "0xF2400000",
+      "exp2_output": "0x000260DF",
+      "control_halfwords": [
+        "0x001D",
+        "0x0013"
+      ],
+      "dspi1_words": [
+        "0x8001001D",
+        "0x80010013"
+      ],
+      "dspi1_sha256": "1dda92b3eeb3dfd8ee3eb7f94880fed49eae6ec0af01ffb38518a0f76a606c64"
+    },
+    {
+      "note": 56,
+      "note_q16": "0x00380000",
+      "exp2_input": "0xF2555555",
+      "exp2_output": "0x00028514",
+      "control_halfwords": [
+        "0x001E",
+        "0x0014"
+      ],
+      "dspi1_words": [
+        "0x8001001E",
+        "0x80010014"
+      ],
+      "dspi1_sha256": "9101a193b1ea6675918d27eb5a49bebef6a53afb052f158dad6bb002654b0c34"
+    },
+    {
+      "note": 57,
+      "note_q16": "0x00390000",
+      "exp2_input": "0xF26AAAAA",
+      "exp2_output": "0x0002AB70",
+      "control_halfwords": [
+        "0x0020",
+        "0x0015"
+      ],
+      "dspi1_words": [
+        "0x80010020",
+        "0x80010015"
+      ],
+      "dspi1_sha256": "879c36508ab8de1524e07b030175130a9f7ced91430e5488068a26a9e57f8e53"
+    },
+    {
+      "note": 58,
+      "note_q16": "0x003A0000",
+      "exp2_input": "0xF2800000",
+      "exp2_output": "0x0002D413",
+      "control_halfwords": [
+        "0x0022",
+        "0x0017"
+      ],
+      "dspi1_words": [
+        "0x80010022",
+        "0x80010017"
+      ],
+      "dspi1_sha256": "012f4502ad1671761bf8a8d1effa1d73cbf66bc957074aa996d8903280565b80"
+    },
+    {
+      "note": 59,
+      "note_q16": "0x003B0000",
+      "exp2_input": "0xF2955555",
+      "exp2_output": "0x0002FF22",
+      "control_halfwords": [
+        "0x0024",
+        "0x0018"
+      ],
+      "dspi1_words": [
+        "0x80010024",
+        "0x80010018"
+      ],
+      "dspi1_sha256": "0643a8205ac4de5cba93ac5289fb8f748d9afa31b7541fb4bae8d58fa7553782"
+    },
+    {
+      "note": 60,
+      "note_q16": "0x003C0000",
+      "exp2_input": "0xF2AAAAAA",
+      "exp2_output": "0x00032CBF",
+      "control_halfwords": [
+        "0x0026",
+        "0x0019"
+      ],
+      "dspi1_words": [
+        "0x80010026",
+        "0x80010019"
+      ],
+      "dspi1_sha256": "c70563d01099e2b3a76c3111e3784ccd54d12453662cd468360a4c80fdec2c38"
+    },
+    {
+      "note": 61,
+      "note_q16": "0x003D0000",
+      "exp2_input": "0xF2C00000",
+      "exp2_output": "0x00035D13",
+      "control_halfwords": [
+        "0x0029",
+        "0x001B"
+      ],
+      "dspi1_words": [
+        "0x80010029",
+        "0x8001001B"
+      ],
+      "dspi1_sha256": "f39de92ce8a8cd80e761d1aaac1bb102b19c699c63075cc431b9ecf9a9f20961"
+    },
+    {
+      "note": 62,
+      "note_q16": "0x003E0000",
+      "exp2_input": "0xF2D55555",
+      "exp2_output": "0x00039047",
+      "control_halfwords": [
+        "0x002B",
+        "0x001D"
+      ],
+      "dspi1_words": [
+        "0x8001002B",
+        "0x8001001D"
+      ],
+      "dspi1_sha256": "7f3e72a52bbd934f07fd42ddfdadd7e9d94571bd769c9312e505bd2286dd744c"
+    },
+    {
+      "note": 63,
+      "note_q16": "0x003F0000",
+      "exp2_input": "0xF2EAAAAA",
+      "exp2_output": "0x0003C686",
+      "control_halfwords": [
+        "0x002E",
+        "0x001E"
+      ],
+      "dspi1_words": [
+        "0x8001002E",
+        "0x8001001E"
+      ],
+      "dspi1_sha256": "9980a35a86795bcecdae99952947cc7dd1675f44ab798d302e6d79870cae5a75"
+    },
+    {
+      "note": 64,
+      "note_q16": "0x00400000",
+      "exp2_input": "0xF3000000",
+      "exp2_output": "0x00040000",
+      "control_halfwords": [
+        "0x0031",
+        "0x0020"
+      ],
+      "dspi1_words": [
+        "0x80010031",
+        "0x80010020"
+      ],
+      "dspi1_sha256": "2212c3db424cbcdd124fcfd55fbf74035d12ea3180b3131ebe1a21bd1bbd8ebb"
+    },
+    {
+      "note": 65,
+      "note_q16": "0x00410000",
+      "exp2_input": "0xF3155555",
+      "exp2_output": "0x00043CE3",
+      "control_halfwords": [
+        "0x0033",
+        "0x0022"
+      ],
+      "dspi1_words": [
+        "0x80010033",
+        "0x80010022"
+      ],
+      "dspi1_sha256": "207c21f54aa9d570fa28765667ed73c70ed88400e24f1b52921b06bb5ae8a620"
+    },
+    {
+      "note": 66,
+      "note_q16": "0x00420000",
+      "exp2_input": "0xF32AAAAA",
+      "exp2_output": "0x00047D66",
+      "control_halfwords": [
+        "0x0037",
+        "0x0024"
+      ],
+      "dspi1_words": [
+        "0x80010037",
+        "0x80010024"
+      ],
+      "dspi1_sha256": "aa4c44f4d748954a8576dd23234397a07a65a0dcad4740dcec566a6a93aaa8ed"
+    },
+    {
+      "note": 67,
+      "note_q16": "0x00430000",
+      "exp2_input": "0xF3400000",
+      "exp2_output": "0x0004C1BF",
+      "control_halfwords": [
+        "0x003A",
+        "0x0026"
+      ],
+      "dspi1_words": [
+        "0x8001003A",
+        "0x80010026"
+      ],
+      "dspi1_sha256": "877c5a4b41122ab9e42ffedb195948e5f8904597591f191e647ed705cb678f32"
+    },
+    {
+      "note": 68,
+      "note_q16": "0x00440000",
+      "exp2_input": "0xF3555555",
+      "exp2_output": "0x00050A28",
+      "control_halfwords": [
+        "0x003D",
+        "0x0029"
+      ],
+      "dspi1_words": [
+        "0x8001003D",
+        "0x80010029"
+      ],
+      "dspi1_sha256": "4a6d3cd765af128fdf7718f7fd47b60e0f1d608b587c458164d2f63cffc43443"
+    },
+    {
+      "note": 69,
+      "note_q16": "0x00450000",
+      "exp2_input": "0xF36AAAAA",
+      "exp2_output": "0x000556E0",
+      "control_halfwords": [
+        "0x0041",
+        "0x002B"
+      ],
+      "dspi1_words": [
+        "0x80010041",
+        "0x8001002B"
+      ],
+      "dspi1_sha256": "afd692f4907eb0fef24838b77c0b5abccdf200a72f40c5a9f24af5645a2e7250"
+    },
+    {
+      "note": 70,
+      "note_q16": "0x00460000",
+      "exp2_input": "0xF3800000",
+      "exp2_output": "0x0005A827",
+      "control_halfwords": [
+        "0x0045",
+        "0x002E"
+      ],
+      "dspi1_words": [
+        "0x80010045",
+        "0x8001002E"
+      ],
+      "dspi1_sha256": "8f78c555bbba01224223c1fb936c3bdfaa50ef4fad03570830f90cfdace94bc1"
+    },
+    {
+      "note": 71,
+      "note_q16": "0x00470000",
+      "exp2_input": "0xF3955555",
+      "exp2_output": "0x0005FE44",
+      "control_halfwords": [
+        "0x0049",
+        "0x0031"
+      ],
+      "dspi1_words": [
+        "0x80010049",
+        "0x80010031"
+      ],
+      "dspi1_sha256": "6bec26f12ac5428cbaca1584eefb8f2cf8caa6b36a9ad19311f541aff41a3dee"
+    },
+    {
+      "note": 72,
+      "note_q16": "0x00480000",
+      "exp2_input": "0xF3AAAAAA",
+      "exp2_output": "0x0006597F",
+      "control_halfwords": [
+        "0x004D",
+        "0x0033"
+      ],
+      "dspi1_words": [
+        "0x8001004D",
+        "0x80010033"
+      ],
+      "dspi1_sha256": "b99b684cd6ba34cb394ba10da17a60f7b532dd57db0b0c004dac95a14469459c"
+    },
+    {
+      "note": 73,
+      "note_q16": "0x00490000",
+      "exp2_input": "0xF3C00000",
+      "exp2_output": "0x0006BA27",
+      "control_halfwords": [
+        "0x0052",
+        "0x0037"
+      ],
+      "dspi1_words": [
+        "0x80010052",
+        "0x80010037"
+      ],
+      "dspi1_sha256": "15e517c3f83d84dc92658a2afbea469620e51b170cb60ecb0bc5f73415ee4102"
+    },
+    {
+      "note": 74,
+      "note_q16": "0x004A0000",
+      "exp2_input": "0xF3D55555",
+      "exp2_output": "0x0007208F",
+      "control_halfwords": [
+        "0x0057",
+        "0x003A"
+      ],
+      "dspi1_words": [
+        "0x80010057",
+        "0x8001003A"
+      ],
+      "dspi1_sha256": "c132500492dbb41c2ba77808529ce976d49e276acf431100820a78a4d3a49ebb"
+    },
+    {
+      "note": 75,
+      "note_q16": "0x004B0000",
+      "exp2_input": "0xF3EAAAAA",
+      "exp2_output": "0x00078D0D",
+      "control_halfwords": [
+        "0x005C",
+        "0x003D"
+      ],
+      "dspi1_words": [
+        "0x8001005C",
+        "0x8001003D"
+      ],
+      "dspi1_sha256": "a5a5a6b8f06694527e806256050080fc53714201eb80d1a149201114bf4709a1"
+    },
+    {
+      "note": 76,
+      "note_q16": "0x004C0000",
+      "exp2_input": "0xF4000000",
+      "exp2_output": "0x00080000",
+      "control_halfwords": [
+        "0x0062",
+        "0x0041"
+      ],
+      "dspi1_words": [
+        "0x80010062",
+        "0x80010041"
+      ],
+      "dspi1_sha256": "971da19702755e5bd7a802ecbcc83bbb361667a91f95831b9e160ede17ec9de5"
+    },
+    {
+      "note": 77,
+      "note_q16": "0x004D0000",
+      "exp2_input": "0xF4155555",
+      "exp2_output": "0x000879C7",
+      "control_halfwords": [
+        "0x0067",
+        "0x0045"
+      ],
+      "dspi1_words": [
+        "0x80010067",
+        "0x80010045"
+      ],
+      "dspi1_sha256": "47e29446e90e5481c9134f97b7db82391480d7df78a5f69acff4a01c11b42c78"
+    },
+    {
+      "note": 78,
+      "note_q16": "0x004E0000",
+      "exp2_input": "0xF42AAAAA",
+      "exp2_output": "0x0008FACD",
+      "control_halfwords": [
+        "0x006E",
+        "0x0049"
+      ],
+      "dspi1_words": [
+        "0x8001006E",
+        "0x80010049"
+      ],
+      "dspi1_sha256": "4f4f91982ab2a6dabc143ec2287daaedd79cdb7aebe245702232a8bf7cf128f3"
+    },
+    {
+      "note": 79,
+      "note_q16": "0x004F0000",
+      "exp2_input": "0xF4400000",
+      "exp2_output": "0x0009837F",
+      "control_halfwords": [
+        "0x0074",
+        "0x004D"
+      ],
+      "dspi1_words": [
+        "0x80010074",
+        "0x8001004D"
+      ],
+      "dspi1_sha256": "f965630d74e736ecdbe96b2630efbc359e2e6c12ff144bda77d46ed7b718d24e"
+    },
+    {
+      "note": 80,
+      "note_q16": "0x00500000",
+      "exp2_input": "0xF4555555",
+      "exp2_output": "0x000A1451",
+      "control_halfwords": [
+        "0x007B",
+        "0x0052"
+      ],
+      "dspi1_words": [
+        "0x8001007B",
+        "0x80010052"
+      ],
+      "dspi1_sha256": "e3bec3d865fdf4f7482d1b9fa041b8bd46ed002b68a5e2991871a53286b9922b"
+    },
+    {
+      "note": 81,
+      "note_q16": "0x00510000",
+      "exp2_input": "0xF46AAAAA",
+      "exp2_output": "0x000AADC0",
+      "control_halfwords": [
+        "0x0082",
+        "0x0057"
+      ],
+      "dspi1_words": [
+        "0x80010082",
+        "0x80010057"
+      ],
+      "dspi1_sha256": "778f0b218549aad5bd7913244349fe7f53cb0471af8ca9bc0857a67e9a96abcb"
+    },
+    {
+      "note": 82,
+      "note_q16": "0x00520000",
+      "exp2_input": "0xF4800000",
+      "exp2_output": "0x000B504F",
+      "control_halfwords": [
+        "0x008A",
+        "0x005C"
+      ],
+      "dspi1_words": [
+        "0x8001008A",
+        "0x8001005C"
+      ],
+      "dspi1_sha256": "e53e3bcb48fd5106f74f443836da3f6865c231ee06e03a8652ed228a5a8baaaa"
+    },
+    {
+      "note": 83,
+      "note_q16": "0x00530000",
+      "exp2_input": "0xF4955555",
+      "exp2_output": "0x000BFC88",
+      "control_halfwords": [
+        "0x0092",
+        "0x0062"
+      ],
+      "dspi1_words": [
+        "0x80010092",
+        "0x80010062"
+      ],
+      "dspi1_sha256": "664bec81a524d4880dcb50fd50e14816060041a3a4e6af2d690bcff4350abd39"
+    },
+    {
+      "note": 84,
+      "note_q16": "0x00540000",
+      "exp2_input": "0xF4AAAAAA",
+      "exp2_output": "0x000CB2FF",
+      "control_halfwords": [
+        "0x009B",
+        "0x0067"
+      ],
+      "dspi1_words": [
+        "0x8001009B",
+        "0x80010067"
+      ],
+      "dspi1_sha256": "7c59c73d36b7181c63b9775c560f772b10817284c9f03afe4f8e10845bb28533"
+    },
+    {
+      "note": 85,
+      "note_q16": "0x00550000",
+      "exp2_input": "0xF4C00000",
+      "exp2_output": "0x000D744F",
+      "control_halfwords": [
+        "0x00A4",
+        "0x006E"
+      ],
+      "dspi1_words": [
+        "0x800100A4",
+        "0x8001006E"
+      ],
+      "dspi1_sha256": "d5a0d5fcb0bfaf9b0b72548b07a6e495a32fa99eed961b49b10fccbf0b4355f1"
+    },
+    {
+      "note": 86,
+      "note_q16": "0x00560000",
+      "exp2_input": "0xF4D55555",
+      "exp2_output": "0x000E411F",
+      "control_halfwords": [
+        "0x00AE",
+        "0x0074"
+      ],
+      "dspi1_words": [
+        "0x800100AE",
+        "0x80010074"
+      ],
+      "dspi1_sha256": "5a549fac77fa322cdf53828c7e125ebb86aaa5b10e3b78889cdc22346adbde7e"
+    },
+    {
+      "note": 87,
+      "note_q16": "0x00570000",
+      "exp2_input": "0xF4EAAAAA",
+      "exp2_output": "0x000F1A1B",
+      "control_halfwords": [
+        "0x00B8",
+        "0x007B"
+      ],
+      "dspi1_words": [
+        "0x800100B8",
+        "0x8001007B"
+      ],
+      "dspi1_sha256": "88cdc1aca8fa9601f78cbeafacdeb7895e5fe1cd5d0a93bd53715ba89558276e"
+    },
+    {
+      "note": 88,
+      "note_q16": "0x00580000",
+      "exp2_input": "0xF5000000",
+      "exp2_output": "0x00100000",
+      "control_halfwords": [
+        "0x00C4",
+        "0x0082"
+      ],
+      "dspi1_words": [
+        "0x800100C4",
+        "0x80010082"
+      ],
+      "dspi1_sha256": "91074baabace722d51a0deb13a513474737f86079633d4b37b7d9c4b218285ab"
+    },
+    {
+      "note": 89,
+      "note_q16": "0x00590000",
+      "exp2_input": "0xF5155555",
+      "exp2_output": "0x0010F38F",
+      "control_halfwords": [
+        "0x00CF",
+        "0x008A"
+      ],
+      "dspi1_words": [
+        "0x800100CF",
+        "0x8001008A"
+      ],
+      "dspi1_sha256": "1f151b53ab818c0241fefd7fa34a77a19d1606c80bd57aaf107138ad76a4a32a"
+    },
+    {
+      "note": 90,
+      "note_q16": "0x005A0000",
+      "exp2_input": "0xF52AAAAA",
+      "exp2_output": "0x0011F59A",
+      "control_halfwords": [
+        "0x00DC",
+        "0x0092"
+      ],
+      "dspi1_words": [
+        "0x800100DC",
+        "0x80010092"
+      ],
+      "dspi1_sha256": "70a197c956fb76a803bada012f7717887ca862c1da6ede94cea854382a6bce78"
+    },
+    {
+      "note": 91,
+      "note_q16": "0x005B0000",
+      "exp2_input": "0xF5400000",
+      "exp2_output": "0x001306FE",
+      "control_halfwords": [
+        "0x00E9",
+        "0x009B"
+      ],
+      "dspi1_words": [
+        "0x800100E9",
+        "0x8001009B"
+      ],
+      "dspi1_sha256": "3dcdf109b77450eefa910cff62715f2e966fb9b92ff1650f83b3a8298e120f72"
+    },
+    {
+      "note": 92,
+      "note_q16": "0x005C0000",
+      "exp2_input": "0xF5555555",
+      "exp2_output": "0x001428A2",
+      "control_halfwords": [
+        "0x00F6",
+        "0x00A4"
+      ],
+      "dspi1_words": [
+        "0x800100F6",
+        "0x800100A4"
+      ],
+      "dspi1_sha256": "d94b3dfde95a7b17d06b40dde0ad160215f2825c91faeb28008a829b2bcdc446"
+    },
+    {
+      "note": 93,
+      "note_q16": "0x005D0000",
+      "exp2_input": "0xF56AAAAA",
+      "exp2_output": "0x00155B81",
+      "control_halfwords": [
+        "0x0105",
+        "0x00AE"
+      ],
+      "dspi1_words": [
+        "0x80010105",
+        "0x800100AE"
+      ],
+      "dspi1_sha256": "8b1c22abcdfd6951940312f9ba7c673c5dfca4bea789798cbffb76776def8de1"
+    },
+    {
+      "note": 94,
+      "note_q16": "0x005E0000",
+      "exp2_input": "0xF5800000",
+      "exp2_output": "0x0016A09E",
+      "control_halfwords": [
+        "0x0115",
+        "0x00B9"
+      ],
+      "dspi1_words": [
+        "0x80010115",
+        "0x800100B9"
+      ],
+      "dspi1_sha256": "21f7f17535046ccc5b134c9f4941825fdc18cf63cdc690a87166f45c3e65b123"
+    },
+    {
+      "note": 95,
+      "note_q16": "0x005F0000",
+      "exp2_input": "0xF5955555",
+      "exp2_output": "0x0017F910",
+      "control_halfwords": [
+        "0x0125",
+        "0x00C4"
+      ],
+      "dspi1_words": [
+        "0x80010125",
+        "0x800100C4"
+      ],
+      "dspi1_sha256": "f7747836300fab861dd1783db3f24c34504e16ac8570fa6229e83f6ce30adecd"
+    },
+    {
+      "note": 96,
+      "note_q16": "0x00600000",
+      "exp2_input": "0xF5AAAAAA",
+      "exp2_output": "0x001965FE",
+      "control_halfwords": [
+        "0x0137",
+        "0x00CF"
+      ],
+      "dspi1_words": [
+        "0x80010137",
+        "0x800100CF"
+      ],
+      "dspi1_sha256": "5ccbf7847cd88256be24a237a5e74e4a1b5584e9c6a758d31c146ffb09d09f3b"
+    },
+    {
+      "note": 97,
+      "note_q16": "0x00610000",
+      "exp2_input": "0xF5C00000",
+      "exp2_output": "0x001AE89F",
+      "control_halfwords": [
+        "0x0149",
+        "0x00DC"
+      ],
+      "dspi1_words": [
+        "0x80010149",
+        "0x800100DC"
+      ],
+      "dspi1_sha256": "32d651eb6a1aedffdd7b867cee27874602002e207016efa3bbd35a0e675bb2c0"
+    },
+    {
+      "note": 98,
+      "note_q16": "0x00620000",
+      "exp2_input": "0xF5D55555",
+      "exp2_output": "0x001C823E",
+      "control_halfwords": [
+        "0x015D",
+        "0x00E9"
+      ],
+      "dspi1_words": [
+        "0x8001015D",
+        "0x800100E9"
+      ],
+      "dspi1_sha256": "bc87b8d4ad34a369b37b66a0a276e233022de6422cab3bc30fe1a6f704bc39ab"
+    },
+    {
+      "note": 99,
+      "note_q16": "0x00630000",
+      "exp2_input": "0xF5EAAAAA",
+      "exp2_output": "0x001E3437",
+      "control_halfwords": [
+        "0x0171",
+        "0x00F6"
+      ],
+      "dspi1_words": [
+        "0x80010171",
+        "0x800100F6"
+      ],
+      "dspi1_sha256": "88fcf5e7e0f5a04d6f9aeb3d07184cc8623916ca13d4d5b8095e6047f84cf02a"
+    },
+    {
+      "note": 100,
+      "note_q16": "0x00640000",
+      "exp2_input": "0xF6000000",
+      "exp2_output": "0x00200000",
+      "control_halfwords": [
+        "0x0188",
+        "0x0105"
+      ],
+      "dspi1_words": [
+        "0x80010188",
+        "0x80010105"
+      ],
+      "dspi1_sha256": "5556d82a285c9db276e1c71263ea4cb13976800aba7d7af63324cd0018720ff1"
+    },
+    {
+      "note": 101,
+      "note_q16": "0x00650000",
+      "exp2_input": "0xF6155555",
+      "exp2_output": "0x0021E71F",
+      "control_halfwords": [
+        "0x019F",
+        "0x0115"
+      ],
+      "dspi1_words": [
+        "0x8001019F",
+        "0x80010115"
+      ],
+      "dspi1_sha256": "f9df5f22e1b1fb88eca9483995b81baa3594ad1309cd50bc7fee45a342935470"
+    },
+    {
+      "note": 102,
+      "note_q16": "0x00660000",
+      "exp2_input": "0xF62AAAAA",
+      "exp2_output": "0x0023EB35",
+      "control_halfwords": [
+        "0x01B8",
+        "0x0125"
+      ],
+      "dspi1_words": [
+        "0x800101B8",
+        "0x80010125"
+      ],
+      "dspi1_sha256": "ce01a77707257a447cdf8d72db5f7cf6c192d12496a460de90fbccdff2d25f05"
+    },
+    {
+      "note": 103,
+      "note_q16": "0x00670000",
+      "exp2_input": "0xF6400000",
+      "exp2_output": "0x00260DFC",
+      "control_halfwords": [
+        "0x01D2",
+        "0x0137"
+      ],
+      "dspi1_words": [
+        "0x800101D2",
+        "0x80010137"
+      ],
+      "dspi1_sha256": "f7c6deba8ab30e81ad6dfd815cd9b05195c2cf5614701095e3ab9b89bd0f64c8"
+    },
+    {
+      "note": 104,
+      "note_q16": "0x00680000",
+      "exp2_input": "0xF6555555",
+      "exp2_output": "0x00285145",
+      "control_halfwords": [
+        "0x01ED",
+        "0x0149"
+      ],
+      "dspi1_words": [
+        "0x800101ED",
+        "0x80010149"
+      ],
+      "dspi1_sha256": "6e2938f07275127cd7dbc2936b15eecfdd557d059c38115a27c70522db41c6d6"
+    },
+    {
+      "note": 105,
+      "note_q16": "0x00690000",
+      "exp2_input": "0xF66AAAAA",
+      "exp2_output": "0x002AB702",
+      "control_halfwords": [
+        "0x020B",
+        "0x015D"
+      ],
+      "dspi1_words": [
+        "0x8001020B",
+        "0x8001015D"
+      ],
+      "dspi1_sha256": "20bcdb46c9aa87cf0ede4ec4013732cd43fb340d194d853896b9e96e13dc8c3b"
+    },
+    {
+      "note": 106,
+      "note_q16": "0x006A0000",
+      "exp2_input": "0xF6800000",
+      "exp2_output": "0x002D413C",
+      "control_halfwords": [
+        "0x022A",
+        "0x0172"
+      ],
+      "dspi1_words": [
+        "0x8001022A",
+        "0x80010172"
+      ],
+      "dspi1_sha256": "c480e6a96510986985bfd01120697c77addbacf2558c5d2c9406eb9e1fcf61d4"
+    },
+    {
+      "note": 107,
+      "note_q16": "0x006B0000",
+      "exp2_input": "0xF6955555",
+      "exp2_output": "0x002FF221",
+      "control_halfwords": [
+        "0x024B",
+        "0x0188"
+      ],
+      "dspi1_words": [
+        "0x8001024B",
+        "0x80010188"
+      ],
+      "dspi1_sha256": "90b93f0e9c6dcd93a7e8085092e34bea300cf6ca42093fb65554b124fb9010f9"
+    },
+    {
+      "note": 108,
+      "note_q16": "0x006C0000",
+      "exp2_input": "0xF6AAAAAA",
+      "exp2_output": "0x0032CBFD",
+      "control_halfwords": [
+        "0x026E",
+        "0x019F"
+      ],
+      "dspi1_words": [
+        "0x8001026E",
+        "0x8001019F"
+      ],
+      "dspi1_sha256": "8e76608ec2b9bc50d31d9504ec55050532cd9aced75ad0915ef6f0dc9ae8e718"
+    },
+    {
+      "note": 109,
+      "note_q16": "0x006D0000",
+      "exp2_input": "0xF6C00000",
+      "exp2_output": "0x0035D13F",
+      "control_halfwords": [
+        "0x0293",
+        "0x01B8"
+      ],
+      "dspi1_words": [
+        "0x80010293",
+        "0x800101B8"
+      ],
+      "dspi1_sha256": "3190d54a7d9743bf08ae55f75f034e5ff0f9edcdd58208f0d4cf2306552c157a"
+    },
+    {
+      "note": 110,
+      "note_q16": "0x006E0000",
+      "exp2_input": "0xF6D55555",
+      "exp2_output": "0x0039047C",
+      "control_halfwords": [
+        "0x02BA",
+        "0x01D2"
+      ],
+      "dspi1_words": [
+        "0x800102BA",
+        "0x800101D2"
+      ],
+      "dspi1_sha256": "cc64520d87e15e1cae734b9daa4911dbf946fe49e531d3db1d657eb68f1e6062"
+    },
+    {
+      "note": 111,
+      "note_q16": "0x006F0000",
+      "exp2_input": "0xF6EAAAAA",
+      "exp2_output": "0x003C686F",
+      "control_halfwords": [
+        "0x02E3",
+        "0x01ED"
+      ],
+      "dspi1_words": [
+        "0x800102E3",
+        "0x800101ED"
+      ],
+      "dspi1_sha256": "4f1095e48e0c150db56946908d3a9662728abbdfde7b0883bf8f0646d13263a1"
+    },
+    {
+      "note": 112,
+      "note_q16": "0x00700000",
+      "exp2_input": "0xF7000000",
+      "exp2_output": "0x00400000",
+      "control_halfwords": [
+        "0x0310",
+        "0x020B"
+      ],
+      "dspi1_words": [
+        "0x80010310",
+        "0x8001020B"
+      ],
+      "dspi1_sha256": "3a6f2fae04905288ee6d8066b9e78338809bcc5bfcfd4ec92de7cb244ea5b403"
+    },
+    {
+      "note": 113,
+      "note_q16": "0x00710000",
+      "exp2_input": "0xF7155555",
+      "exp2_output": "0x0043CE3E",
+      "control_halfwords": [
+        "0x033E",
+        "0x022A"
+      ],
+      "dspi1_words": [
+        "0x8001033E",
+        "0x8001022A"
+      ],
+      "dspi1_sha256": "132b318e19e1dcf88298200c35fd40d897d60537abbb8d21690d66744ac0bb9b"
+    },
+    {
+      "note": 114,
+      "note_q16": "0x00720000",
+      "exp2_input": "0xF72AAAAA",
+      "exp2_output": "0x0047D66A",
+      "control_halfwords": [
+        "0x0370",
+        "0x024B"
+      ],
+      "dspi1_words": [
+        "0x80010370",
+        "0x8001024B"
+      ],
+      "dspi1_sha256": "dccb7ac5759c7100747ec437579049040c6c284e31c67dee4c966e4a98d8bb46"
+    },
+    {
+      "note": 115,
+      "note_q16": "0x00730000",
+      "exp2_input": "0xF7400000",
+      "exp2_output": "0x004C1BF8",
+      "control_halfwords": [
+        "0x03A4",
+        "0x026E"
+      ],
+      "dspi1_words": [
+        "0x800103A4",
+        "0x8001026E"
+      ],
+      "dspi1_sha256": "6b62c0074e09cbe6a1128d99adf7d97aa477263a8acaa00e6dd57a36fdd9a310"
+    },
+    {
+      "note": 116,
+      "note_q16": "0x00740000",
+      "exp2_input": "0xF7555555",
+      "exp2_output": "0x0050A28B",
+      "control_halfwords": [
+        "0x03DB",
+        "0x0293"
+      ],
+      "dspi1_words": [
+        "0x800103DB",
+        "0x80010293"
+      ],
+      "dspi1_sha256": "3316cdc6ea608355774d9a93aaa03a4cbdf381df3305fddc6a40bf7f0f718daf"
+    },
+    {
+      "note": 117,
+      "note_q16": "0x00750000",
+      "exp2_input": "0xF76AAAAA",
+      "exp2_output": "0x00556E04",
+      "control_halfwords": [
+        "0x0416",
+        "0x02BA"
+      ],
+      "dspi1_words": [
+        "0x80010416",
+        "0x800102BA"
+      ],
+      "dspi1_sha256": "bbf1ea403be103a66a53625226ad128f44c94adfea75603f836cbb82836588a5"
+    },
+    {
+      "note": 118,
+      "note_q16": "0x00760000",
+      "exp2_input": "0xF7800000",
+      "exp2_output": "0x005A8279",
+      "control_halfwords": [
+        "0x0454",
+        "0x02E4"
+      ],
+      "dspi1_words": [
+        "0x80010454",
+        "0x800102E4"
+      ],
+      "dspi1_sha256": "b3025cba90b814b023b63ca70201e83fa83c72e91b22069e10cfaa48ef64252d"
+    },
+    {
+      "note": 119,
+      "note_q16": "0x00770000",
+      "exp2_input": "0xF7955555",
+      "exp2_output": "0x005FE443",
+      "control_halfwords": [
+        "0x0496",
+        "0x0310"
+      ],
+      "dspi1_words": [
+        "0x80010496",
+        "0x80010310"
+      ],
+      "dspi1_sha256": "afa952bd5ad2edf4211b117907cfd9c263677f4f620d3debd2a4ab7f461bd64a"
+    },
+    {
+      "note": 120,
+      "note_q16": "0x00780000",
+      "exp2_input": "0xF7AAAAAA",
+      "exp2_output": "0x006597FA",
+      "control_halfwords": [
+        "0x04DC",
+        "0x033E"
+      ],
+      "dspi1_words": [
+        "0x800104DC",
+        "0x8001033E"
+      ],
+      "dspi1_sha256": "8cc8cba32e35b9f24f5b0bbeff592b1c98e606e42b928c4a0c86cf3d91b6524b"
+    },
+    {
+      "note": 121,
+      "note_q16": "0x00790000",
+      "exp2_input": "0xF7C00000",
+      "exp2_output": "0x006BA27E",
+      "control_halfwords": [
+        "0x0526",
+        "0x0370"
+      ],
+      "dspi1_words": [
+        "0x80010526",
+        "0x80010370"
+      ],
+      "dspi1_sha256": "d496b1543c0c0121e1b74fe27c6b1a5e3eb7592b1cdc0c68fbaa57f44206beef"
+    },
+    {
+      "note": 122,
+      "note_q16": "0x007A0000",
+      "exp2_input": "0xF7D55555",
+      "exp2_output": "0x007208F8",
+      "control_halfwords": [
+        "0x0574",
+        "0x03A4"
+      ],
+      "dspi1_words": [
+        "0x80010574",
+        "0x800103A4"
+      ],
+      "dspi1_sha256": "ca023018f41c9ab93e80df23bd9843b944ac2dee4df79ceb625a6651582a7b05"
+    },
+    {
+      "note": 123,
+      "note_q16": "0x007B0000",
+      "exp2_input": "0xF7EAAAAA",
+      "exp2_output": "0x0078D0DF",
+      "control_halfwords": [
+        "0x05C7",
+        "0x03DB"
+      ],
+      "dspi1_words": [
+        "0x800105C7",
+        "0x800103DB"
+      ],
+      "dspi1_sha256": "85639dc9e906910ff7294573f8b47df9090f024f957c9aa62983e325cccfe95c"
+    },
+    {
+      "note": 124,
+      "note_q16": "0x007C0000",
+      "exp2_input": "0xF8000000",
+      "exp2_output": "0x00800000",
+      "control_halfwords": [
+        "0x0620",
+        "0x0416"
+      ],
+      "dspi1_words": [
+        "0x80010620",
+        "0x80010416"
+      ],
+      "dspi1_sha256": "942e49400115c43fee5fb5691059c2900a770509a2926015ce5bf4f4f1b99323"
+    },
+    {
+      "note": 125,
+      "note_q16": "0x007D0000",
+      "exp2_input": "0xF8155555",
+      "exp2_output": "0x00879C7C",
+      "control_halfwords": [
+        "0x067D",
+        "0x0454"
+      ],
+      "dspi1_words": [
+        "0x8001067D",
+        "0x80010454"
+      ],
+      "dspi1_sha256": "fab64d4f316288c08617a14d4c516465564b4dc86083cf5e77aad658c91733f0"
+    },
+    {
+      "note": 126,
+      "note_q16": "0x007E0000",
+      "exp2_input": "0xF82AAAAA",
+      "exp2_output": "0x008FACD5",
+      "control_halfwords": [
+        "0x06E0",
+        "0x0496"
+      ],
+      "dspi1_words": [
+        "0x800106E0",
+        "0x80010496"
+      ],
+      "dspi1_sha256": "51fb9433e9253ba4975644e8941cdd25558ace53313ff26df5cd22c52de81262"
+    },
+    {
+      "note": 127,
+      "note_q16": "0x007F0000",
+      "exp2_input": "0xF8400000",
+      "exp2_output": "0x009837F0",
+      "control_halfwords": [
+        "0x0748",
+        "0x04DC"
+      ],
+      "dspi1_words": [
+        "0x80010748",
+        "0x800104DC"
+      ],
+      "dspi1_sha256": "e29b8ee738173c573aaa7082b72540cbeb414cf2755e251c62ba595253b9324f"
+    }
+  ],
+  "conclusion": "The stock renderer converts note Q16 through a monotonic exp2 helper, then emits two calibrated integer control channels in DSPI1 words 46/47. Both channels approximately double per octave; their exact board-level units remain an FPGA/application-hardware question.",
+  "next_target": "Correlate the calibrated channel pair with other stock machine renderers and packet fields to infer its logical hardware role without physical pin hunting.",
+  "safety": "Stock firmware execution and synthetic note events under emulation only; no flashable image was produced."
+}

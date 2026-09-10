@@ -1,0 +1,33 @@
+{
+  "result": "PASS",
+  "section_id_2": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_1_id_2.decompressed.bin",
+    "size": 42302,
+    "sha256": "9b7ed34c1ce6ff5c2842b581f00140a864b30b185a128c61ef784a23db301dbc",
+    "inner_declared_body_bytes": 42294,
+    "header_word_1": "0x80010000",
+    "diagnostic_strings": {
+      "BOOTSTRAP UPGRADE": "0x9208",
+      "DO NOT TURN OFF!": "0x921A",
+      "UPGRADE FAILED": "0x922B",
+      "CRC CHECK": "0x923A",
+      "VERSION CHECK": "0x9244",
+      "LENGTH ERROR": "0x9252",
+      "FPGA:(%c) %s": "0xA0B7",
+      "AUDIO:(+)": "0xA104"
+    },
+    "classification": "temporary ColdFire bootstrap/updater and service UI",
+    "rejected_role": "runtime sample DSP/audio engine"
+  },
+  "section_id_1": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_2_id_1.decompressed.bin",
+    "size": 149516,
+    "sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f",
+    "preamble_ff_bytes": 32,
+    "configuration_sync_and_first_packet": "AA9930A1",
+    "coldfire_rts_word_count": 0,
+    "classification": "16-bit FPGA configuration stream"
+  },
+  "architecture_correction": "The live BR quantizer and sample renderer must not be assigned to section ID 2. Continue from MAIN's active render state and treat section ID 1 as programmable-logic configuration, not CPU code.",
+  "safety": "Static inspection only; no firmware bytes were modified."
+}

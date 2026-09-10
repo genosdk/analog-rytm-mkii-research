@@ -1,0 +1,208 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "constructor_contract": {
+    "routine": "0x401188C6",
+    "input_record": "0x41960000",
+    "track_offset": "+0x00",
+    "note_offset": "+0x04",
+    "event_type_offset": "+0x0C",
+    "flags_offset": "+0x10",
+    "source_mask_offset": "+0x20",
+    "note_on_type": 1,
+    "note_off_type": 2,
+    "held_source_mask_base": "0x42AAF558",
+    "held_source_mask_track_stride": "0x1A0C",
+    "trigger_record_track_stride": "0x0038"
+  },
+  "note_on": {
+    "note": 60,
+    "instructions": 108,
+    "constructed": {
+      "record_state": 1,
+      "pitch": "0x003C0000",
+      "flags": "0x00000080",
+      "held_source_mask": "0x00000001"
+    },
+    "consumed": {
+      "callback_cases": [
+        0
+      ],
+      "live_pitch": "0x003C0000",
+      "record_cleared": true,
+      "event_cleared": true,
+      "voice_state": 1,
+      "queued_command": {
+        "code": 31,
+        "track_mask": "0x00000001",
+        "queue_count": 1
+      }
+    }
+  },
+  "note_off": {
+    "instructions": 38,
+    "constructed": {
+      "record_state": 2,
+      "held_source_mask": "0x00000000"
+    },
+    "release_callbacks": [
+      {
+        "callback": 1,
+        "cases": [
+          1
+        ],
+        "voice_state": 2,
+        "voice_timer": 112,
+        "record_cleared": true
+      },
+      {
+        "callback": 2,
+        "cases": [
+          2
+        ],
+        "voice_state": 2,
+        "voice_timer": 96,
+        "record_cleared": true
+      },
+      {
+        "callback": 3,
+        "cases": [
+          2
+        ],
+        "voice_state": 2,
+        "voice_timer": 80,
+        "record_cleared": true
+      },
+      {
+        "callback": 4,
+        "cases": [
+          2
+        ],
+        "voice_state": 2,
+        "voice_timer": 64,
+        "record_cleared": true
+      },
+      {
+        "callback": 5,
+        "cases": [
+          2
+        ],
+        "voice_state": 2,
+        "voice_timer": 48,
+        "record_cleared": true
+      },
+      {
+        "callback": 6,
+        "cases": [
+          2
+        ],
+        "voice_state": 2,
+        "voice_timer": 32,
+        "record_cleared": true
+      },
+      {
+        "callback": 7,
+        "cases": [
+          2
+        ],
+        "voice_state": 2,
+        "voice_timer": 16,
+        "record_cleared": true
+      },
+      {
+        "callback": 8,
+        "cases": [
+          2
+        ],
+        "voice_state": 2,
+        "voice_timer": 0,
+        "record_cleared": true
+      },
+      {
+        "callback": 9,
+        "cases": [
+          2
+        ],
+        "voice_state": 3,
+        "voice_timer": 4294967280,
+        "record_cleared": true
+      },
+      {
+        "callback": 10,
+        "cases": [
+          3
+        ],
+        "voice_state": 4,
+        "voice_timer": 2932,
+        "record_cleared": true
+      },
+      {
+        "callback": 11,
+        "cases": [
+          4
+        ],
+        "voice_state": 4,
+        "voice_timer": 2916,
+        "record_cleared": true
+      },
+      {
+        "callback": 12,
+        "cases": [
+          4
+        ],
+        "voice_state": 4,
+        "voice_timer": 2900,
+        "record_cleared": true
+      }
+    ],
+    "expected_cases": [
+      [
+        1
+      ],
+      [
+        2
+      ],
+      [
+        2
+      ],
+      [
+        2
+      ],
+      [
+        2
+      ],
+      [
+        2
+      ],
+      [
+        2
+      ],
+      [
+        2
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4
+      ],
+      [
+        4
+      ]
+    ]
+  },
+  "repeated_release": {
+    "instructions": 24,
+    "record_state": 0,
+    "held_source_mask": "0x00000000"
+  },
+  "conclusion": "Stock routine 0x401188C6 constructs both note-on and note-off records. Type 1 publishes note<<16, claims a per-track source bit, enters renderer case 0 and queues command 0x1F. Type 2 requires that ownership bit, clears it, emits trigger state 2 and advances the native release through cases 1, 2, 3 and into the observed case-4 release tail.",
+  "next_target": "Initialize the note-dependent machine/DSPI consumer to prove pitch-dependent output.",
+  "safety": "Emulation and synthetic RAM input only; firmware bytes were not modified."
+}

@@ -1,0 +1,402 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "recovered_runtime_contract": {
+    "sentinel_queue": "0x42F4D850",
+    "runtime_queue": "0x4192A9D0",
+    "queue_ring": "0x419531F8",
+    "queue_capacity": 1024,
+    "full_interrupt_stop": "0x4011CF12",
+    "one_shot_clear_instruction": "0x4011CC64",
+    "track_parameter_record": "0x412FAC4B",
+    "br_source_longword": "0x412FAC5F"
+  },
+  "vectors": [
+    {
+      "source_br": "0x00000000",
+      "queue_initialization": {
+        "initializer": "0x40001350",
+        "installer": "0x4011CF58",
+        "queue": "0x4192A9D0",
+        "ring": "0x419531F8",
+        "capacity": 1024,
+        "mask": "0x000003FF",
+        "initializer_instructions": 11,
+        "installer_instructions": 4
+      },
+      "queued_command": {
+        "pointer": "0x419B0C1C",
+        "code": 31,
+        "track_mask": "0x00000001",
+        "queue_count": 1
+      },
+      "callbacks": [
+        {
+          "instructions": 67728,
+          "cases": [
+            0
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 1,
+          "event_value_after": 0,
+          "voice_state_after": 1,
+          "voice_timer_after": 0,
+          "packed_control_after": "0x00000000"
+        },
+        {
+          "instructions": 67021,
+          "cases": [
+            1
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 2,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 112,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66637,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 3,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 96,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 4,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 80,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 5,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 64,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 6,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 48,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 7,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 32,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 8,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 16,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 9,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 0,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66551,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 10,
+          "event_value_after": 0,
+          "voice_state_after": 3,
+          "voice_timer_after": 4294967280,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66647,
+          "cases": [
+            3
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 11,
+          "event_value_after": 0,
+          "voice_state_after": 4,
+          "voice_timer_after": 2932,
+          "packed_control_after": "0x00180FFF"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            4
+          ],
+          "br_frame_at_renderer": [
+            0
+          ],
+          "callback": 12,
+          "event_value_after": 0,
+          "voice_state_after": 4,
+          "voice_timer_after": 2916,
+          "packed_control_after": "0x00180FFF"
+        }
+      ],
+      "final_packed_control": "0x00180FFF"
+    },
+    {
+      "source_br": "0x7F000000",
+      "queue_initialization": {
+        "initializer": "0x40001350",
+        "installer": "0x4011CF58",
+        "queue": "0x4192A9D0",
+        "ring": "0x419531F8",
+        "capacity": 1024,
+        "mask": "0x000003FF",
+        "initializer_instructions": 11,
+        "installer_instructions": 4
+      },
+      "queued_command": {
+        "pointer": "0x419B0C1C",
+        "code": 31,
+        "track_mask": "0x00000001",
+        "queue_count": 1
+      },
+      "callbacks": [
+        {
+          "instructions": 67730,
+          "cases": [
+            0
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 1,
+          "event_value_after": 0,
+          "voice_state_after": 1,
+          "voice_timer_after": 0,
+          "packed_control_after": "0x00000000"
+        },
+        {
+          "instructions": 67021,
+          "cases": [
+            1
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 2,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 112,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66637,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 3,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 96,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 4,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 80,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 5,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 64,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 6,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 48,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 7,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 32,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 8,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 16,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 9,
+          "event_value_after": 0,
+          "voice_state_after": 2,
+          "voice_timer_after": 0,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66551,
+          "cases": [
+            2
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 10,
+          "event_value_after": 0,
+          "voice_state_after": 3,
+          "voice_timer_after": 4294967280,
+          "packed_control_after": "0x00100000"
+        },
+        {
+          "instructions": 66647,
+          "cases": [
+            3
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 11,
+          "event_value_after": 0,
+          "voice_state_after": 4,
+          "voice_timer_after": 4112354,
+          "packed_control_after": "0x001FD285"
+        },
+        {
+          "instructions": 66525,
+          "cases": [
+            4
+          ],
+          "br_frame_at_renderer": [
+            31537
+          ],
+          "callback": 12,
+          "event_value_after": 0,
+          "voice_state_after": 4,
+          "voice_timer_after": 4112338,
+          "packed_control_after": "0x001FD285"
+        }
+      ],
+      "final_packed_control": "0x001FD285"
+    }
+  ],
+  "conclusion": "A stock 56-byte trigger record now reaches the real command queue, is cleared by the complete interrupt, and advances renderer 0 naturally through cases 0, 1, 2, 3, and 4. The corrected EMAC addressing model preserves the BR ramp across all twelve callbacks. High BR reaches natural case 3 and leaves a distinct packed control word; this proves sustained control encoding, not PCM quantization.",
+  "next_target": "Identify the consumer behind peripheral FIFO 0xFC03C034; separately trace post-hardware-return CPU audio ingress for a Filter 2 insertion boundary.",
+  "safety": "Emulation and RAM initialization only; firmware bytes were not modified."
+}

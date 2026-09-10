@@ -1,0 +1,2634 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "pitch_select_path": {
+    "track_source_byte": "0x412FACA1",
+    "track_source_offset": "0x6A",
+    "live_gate": "0x8000EA18",
+    "copy_pc": "0x4011AEC4",
+    "live_pitch": "0x80006388",
+    "read_pc": "0x4011CA7E",
+    "renderer": "0x4010CBA8",
+    "renderer_argument": 3
+  },
+  "semantic_identity": {
+    "field": "sound chromatic mode",
+    "encoding": {
+      "0": "off",
+      "1": "synth",
+      "2": "sample",
+      "3": "synth_and_sample"
+    },
+    "synth_select_bit": 0,
+    "evidence": "Modes 1 and 3 select live synth pitch; modes 0 and 2 select fixed note 60, matching independent OS 1.70+ sound-format definitions."
+  },
+  "chromatic_mode_matrix": [
+    {
+      "value": 0,
+      "mode": "off",
+      "synth_uses_live_note": false,
+      "renderer_pitch": "0x003C0000",
+      "dspi1_sha256": "dfe093a8ffd41447cf3bd7693e91f198f62126ffe5e1e0fee8e54e7e9e07966e"
+    },
+    {
+      "value": 1,
+      "mode": "synth",
+      "synth_uses_live_note": true,
+      "renderer_pitch": "0x00300000",
+      "dspi1_sha256": "d263890dd501a6d224f3d4896634d6b79a61237c8c8943f33afa7a09966d4900"
+    },
+    {
+      "value": 2,
+      "mode": "sample",
+      "synth_uses_live_note": false,
+      "renderer_pitch": "0x003C0000",
+      "dspi1_sha256": "dfe093a8ffd41447cf3bd7693e91f198f62126ffe5e1e0fee8e54e7e9e07966e"
+    },
+    {
+      "value": 3,
+      "mode": "synth_and_sample",
+      "synth_uses_live_note": true,
+      "renderer_pitch": "0x00300000",
+      "dspi1_sha256": "d263890dd501a6d224f3d4896634d6b79a61237c8c8943f33afa7a09966d4900"
+    }
+  ],
+  "dspi1_serialization": {
+    "renderer_control_halfwords": [
+      "0x8000641A",
+      "0x8000641C"
+    ],
+    "renderer_write_pcs": [
+      "0x4010CF2C",
+      "0x4010CF36"
+    ],
+    "packetizer_read_pcs": [
+      "0x40077D64",
+      "0x40077D66"
+    ],
+    "dspi1_word_indices": [
+      46,
+      47
+    ],
+    "packetizer": "0x40077D14"
+  },
+  "fixed_note_vectors": [
+    {
+      "note": 48,
+      "source_gate": 0,
+      "encoded_pitch": "0x00300000",
+      "live_gate_after_callback": 0,
+      "accesses": [
+        {
+          "kind": "gate_copy",
+          "pc": "0x4011AEC4",
+          "address": "0x8000EA18",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        }
+      ],
+      "renderer_pitch_arguments": [
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000"
+      ],
+      "queue_count_after_callbacks": 1,
+      "callback_count": 12,
+      "dspi1_packet": {
+        "selector": 0,
+        "words": 510,
+        "sha256": "dfe093a8ffd41447cf3bd7693e91f198f62126ffe5e1e0fee8e54e7e9e07966e",
+        "pitch_payload_words": {
+          "46": "0x80010026",
+          "47": "0x80010019"
+        }
+      }
+    },
+    {
+      "note": 60,
+      "source_gate": 0,
+      "encoded_pitch": "0x003C0000",
+      "live_gate_after_callback": 0,
+      "accesses": [
+        {
+          "kind": "gate_copy",
+          "pc": "0x4011AEC4",
+          "address": "0x8000EA18",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        }
+      ],
+      "renderer_pitch_arguments": [
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000"
+      ],
+      "queue_count_after_callbacks": 1,
+      "callback_count": 12,
+      "dspi1_packet": {
+        "selector": 0,
+        "words": 510,
+        "sha256": "dfe093a8ffd41447cf3bd7693e91f198f62126ffe5e1e0fee8e54e7e9e07966e",
+        "pitch_payload_words": {
+          "46": "0x80010026",
+          "47": "0x80010019"
+        }
+      }
+    },
+    {
+      "note": 72,
+      "source_gate": 0,
+      "encoded_pitch": "0x00480000",
+      "live_gate_after_callback": 0,
+      "accesses": [
+        {
+          "kind": "gate_copy",
+          "pc": "0x4011AEC4",
+          "address": "0x8000EA18",
+          "size": 1,
+          "value": "0x00"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        }
+      ],
+      "renderer_pitch_arguments": [
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000"
+      ],
+      "queue_count_after_callbacks": 1,
+      "callback_count": 12,
+      "dspi1_packet": {
+        "selector": 0,
+        "words": 510,
+        "sha256": "dfe093a8ffd41447cf3bd7693e91f198f62126ffe5e1e0fee8e54e7e9e07966e",
+        "pitch_payload_words": {
+          "46": "0x80010026",
+          "47": "0x80010019"
+        }
+      }
+    }
+  ],
+  "live_note_vectors": [
+    {
+      "note": 48,
+      "source_gate": 1,
+      "encoded_pitch": "0x00300000",
+      "live_gate_after_callback": 1,
+      "accesses": [
+        {
+          "kind": "gate_copy",
+          "pc": "0x4011AEC4",
+          "address": "0x8000EA18",
+          "size": 1,
+          "value": "0x01"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00300000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0013"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x000C"
+        }
+      ],
+      "renderer_pitch_arguments": [
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000",
+        "0x00300000"
+      ],
+      "queue_count_after_callbacks": 1,
+      "callback_count": 12,
+      "dspi1_packet": {
+        "selector": 0,
+        "words": 510,
+        "sha256": "d263890dd501a6d224f3d4896634d6b79a61237c8c8943f33afa7a09966d4900",
+        "pitch_payload_words": {
+          "46": "0x80010013",
+          "47": "0x8001000C"
+        }
+      }
+    },
+    {
+      "note": 60,
+      "source_gate": 1,
+      "encoded_pitch": "0x003C0000",
+      "live_gate_after_callback": 1,
+      "accesses": [
+        {
+          "kind": "gate_copy",
+          "pc": "0x4011AEC4",
+          "address": "0x8000EA18",
+          "size": 1,
+          "value": "0x01"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x0026"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0019"
+        }
+      ],
+      "renderer_pitch_arguments": [
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000",
+        "0x003C0000"
+      ],
+      "queue_count_after_callbacks": 1,
+      "callback_count": 12,
+      "dspi1_packet": {
+        "selector": 0,
+        "words": 510,
+        "sha256": "dfe093a8ffd41447cf3bd7693e91f198f62126ffe5e1e0fee8e54e7e9e07966e",
+        "pitch_payload_words": {
+          "46": "0x80010026",
+          "47": "0x80010019"
+        }
+      }
+    },
+    {
+      "note": 72,
+      "source_gate": 1,
+      "encoded_pitch": "0x00480000",
+      "live_gate_after_callback": 1,
+      "accesses": [
+        {
+          "kind": "gate_copy",
+          "pc": "0x4011AEC4",
+          "address": "0x8000EA18",
+          "size": 1,
+          "value": "0x01"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011CA7E",
+          "address": "0x80006388",
+          "size": 4,
+          "value": "0x00480000"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF2C",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "renderer_control_write",
+          "pc": "0x4010CF36",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D64",
+          "address": "0x8000641A",
+          "size": 2,
+          "value": "0x004D"
+        },
+        {
+          "kind": "packet_source_read",
+          "pc": "0x40077D66",
+          "address": "0x8000641C",
+          "size": 2,
+          "value": "0x0033"
+        }
+      ],
+      "renderer_pitch_arguments": [
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000",
+        "0x00480000"
+      ],
+      "queue_count_after_callbacks": 1,
+      "callback_count": 12,
+      "dspi1_packet": {
+        "selector": 0,
+        "words": 510,
+        "sha256": "d987591faa30ca6f36f56d4942e2ad25c87677fea95b7f392ec5d342d45e2e7c",
+        "pitch_payload_words": {
+          "46": "0x8001004D",
+          "47": "0x80010033"
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "notes": [
+        48,
+        60
+      ],
+      "differing_dspi1_word_indices": [
+        46,
+        47
+      ],
+      "differing_sram_bytes": [
+        "0x800048C7",
+        "0x800048CB",
+        "0x800050D7",
+        "0x800050DB",
+        "0x80006389",
+        "0x8000641B",
+        "0x8000641D",
+        "0x8000FE5B"
+      ]
+    },
+    {
+      "notes": [
+        60,
+        72
+      ],
+      "differing_dspi1_word_indices": [
+        46,
+        47
+      ],
+      "differing_sram_bytes": [
+        "0x800048C7",
+        "0x800048CB",
+        "0x800050D7",
+        "0x800050DB",
+        "0x80006389",
+        "0x8000641B",
+        "0x8000641D",
+        "0x8000FE5B"
+      ]
+    }
+  ],
+  "conclusion": "Stock MAIN copies sound chromatic mode at track source byte +0x6A into 0x8000EA18. Modes Off/Sample clear synth-select bit 0 and use fixed note 60; Synth/Synth+Sample set it, read 0x80006388, and pass note<<16 as renderer argument 3. Renderer writes 0x8000641A/1C are read by the packetizer into DSPI1 words 46/47, completing the pitch path to the outbound packet.",
+  "next_target": "Determine the board-level encoding represented by synth pitch halfwords 0x8000641A/1C and identify the PCS0 consumer; keep physical MIDI/USB ingress as a separate hardware trace.",
+  "safety": "Emulation and synthetic RAM input only; firmware bytes were not modified."
+}

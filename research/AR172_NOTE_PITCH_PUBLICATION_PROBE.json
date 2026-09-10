@@ -1,0 +1,133 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "contract": {
+    "track": 0,
+    "trigger_record": "0x42AC4038",
+    "pitch_field": "0x42AC4040 (+0x08)",
+    "encoding": "MIDI-style note number << 16",
+    "live_pitch": "0x80006388",
+    "publisher_trace_pcs": [
+      "0x4011BDA8",
+      "0x4011BDB6",
+      "0x4011BDCC"
+    ],
+    "voice_reset_flag": "0x80",
+    "queued_command_code": "0x1F",
+    "queued_track_mask": "0x00000001"
+  },
+  "vectors": [
+    {
+      "note": 48,
+      "encoded_pitch": "0x00300000",
+      "events": [
+        {
+          "kind": "read",
+          "pc": "0x4011BDA8",
+          "address": "0x42AC4040",
+          "value": "0x00300000"
+        },
+        {
+          "kind": "write",
+          "pc": "0x4011BDB6",
+          "address": "0x80006388",
+          "value": "0x00300000"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011BDCC",
+          "address": "0x42AC4040",
+          "value": "0x00300000"
+        }
+      ],
+      "live_pitch_after": "0x00300000",
+      "callback_cases": [
+        0
+      ],
+      "one_shot_cleared": true,
+      "queued_command": {
+        "pointer": "0x419B0C1C",
+        "code": 31,
+        "track_mask": "0x00000001",
+        "queue_count": 1
+      }
+    },
+    {
+      "note": 60,
+      "encoded_pitch": "0x003C0000",
+      "events": [
+        {
+          "kind": "read",
+          "pc": "0x4011BDA8",
+          "address": "0x42AC4040",
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "write",
+          "pc": "0x4011BDB6",
+          "address": "0x80006388",
+          "value": "0x003C0000"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011BDCC",
+          "address": "0x42AC4040",
+          "value": "0x003C0000"
+        }
+      ],
+      "live_pitch_after": "0x003C0000",
+      "callback_cases": [
+        0
+      ],
+      "one_shot_cleared": true,
+      "queued_command": {
+        "pointer": "0x419B0C1C",
+        "code": 31,
+        "track_mask": "0x00000001",
+        "queue_count": 1
+      }
+    },
+    {
+      "note": 72,
+      "encoded_pitch": "0x00480000",
+      "events": [
+        {
+          "kind": "read",
+          "pc": "0x4011BDA8",
+          "address": "0x42AC4040",
+          "value": "0x00480000"
+        },
+        {
+          "kind": "write",
+          "pc": "0x4011BDB6",
+          "address": "0x80006388",
+          "value": "0x00480000"
+        },
+        {
+          "kind": "read",
+          "pc": "0x4011BDCC",
+          "address": "0x42AC4040",
+          "value": "0x00480000"
+        }
+      ],
+      "live_pitch_after": "0x00480000",
+      "callback_cases": [
+        0
+      ],
+      "one_shot_cleared": true,
+      "queued_command": {
+        "pointer": "0x419B0C1C",
+        "code": 31,
+        "track_mask": "0x00000001",
+        "queue_count": 1
+      }
+    }
+  ],
+  "conclusion": "Stock MAIN accepts a 0..127 note encoded in trigger field +0x08 as note<<16, publishes it unchanged to track-0 live state, clears the one-shot trigger, enters renderer state 0 and enqueues command 0x1F for track mask 1. This is sufficient to bind QWERTY key-down to the authentic emulated stock trigger path.",
+  "scope_limit": "The storage-free fixture does not yet prove pitch-dependent audio or DSPI payload output, and the stock note-off/release encoding remains unidentified.",
+  "next_target": "Bind QWERTY key-down to this contract, keep key-up release-pending, then trace the note-dependent machine/DSPI consumer with initialized sound and board state.",
+  "safety": "Emulation and synthetic RAM state only; firmware bytes were not modified."
+}

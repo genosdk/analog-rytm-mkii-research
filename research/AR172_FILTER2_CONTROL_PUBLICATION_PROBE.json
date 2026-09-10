@@ -1,0 +1,115 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "stock_control_target_array": {
+    "base": "0x8000E57C",
+    "word_count": 572,
+    "end_exclusive": "0x8000E9F4",
+    "indexed_word_address_equation": "0x8000E57C + 2 * word_index"
+  },
+  "publication_boundary": {
+    "selected_interception_callsite": "0x400B5936",
+    "stock_word_setter": "0x4011AF4C",
+    "stock_word_getter": "0x4011AF60",
+    "absolute_setter_callsites": [
+      "0x400B5936"
+    ],
+    "selection_reason": "The callsite is the sole absolute caller of the five-instruction indexed word setter and is never reached by the audio callback. A future shim can tail-call the untouched setter for ordinary indices and intercept only a separately proved Filter 2 command range."
+  },
+  "synthetic_setter_transactions": [
+    {
+      "word_index": 0,
+      "value": "0x0000",
+      "write_address": "0x8000E57C",
+      "write_size_bytes": 2,
+      "setter_instructions": 5,
+      "getter_instructions": 4,
+      "round_trip_match": true
+    },
+    {
+      "word_index": 1,
+      "value": "0x007F",
+      "write_address": "0x8000E57E",
+      "write_size_bytes": 2,
+      "setter_instructions": 5,
+      "getter_instructions": 4,
+      "round_trip_match": true
+    },
+    {
+      "word_index": 7,
+      "value": "0x1234",
+      "write_address": "0x8000E58A",
+      "write_size_bytes": 2,
+      "setter_instructions": 5,
+      "getter_instructions": 4,
+      "round_trip_match": true
+    },
+    {
+      "word_index": 31,
+      "value": "0x8000",
+      "write_address": "0x8000E5BA",
+      "write_size_bytes": 2,
+      "setter_instructions": 5,
+      "getter_instructions": 4,
+      "round_trip_match": true
+    },
+    {
+      "word_index": 127,
+      "value": "0xFFFF",
+      "write_address": "0x8000E67A",
+      "write_size_bytes": 2,
+      "setter_instructions": 5,
+      "getter_instructions": 4,
+      "round_trip_match": true
+    },
+    {
+      "word_index": 255,
+      "value": "0x55AA",
+      "write_address": "0x8000E77A",
+      "write_size_bytes": 2,
+      "setter_instructions": 5,
+      "getter_instructions": 4,
+      "round_trip_match": true
+    },
+    {
+      "word_index": 510,
+      "value": "0xAA55",
+      "write_address": "0x8000E978",
+      "write_size_bytes": 2,
+      "setter_instructions": 5,
+      "getter_instructions": 4,
+      "round_trip_match": true
+    },
+    {
+      "word_index": 571,
+      "value": "0x7FFF",
+      "write_address": "0x8000E9F2",
+      "write_size_bytes": 2,
+      "setter_instructions": 5,
+      "getter_instructions": 4,
+      "round_trip_match": true
+    }
+  ],
+  "audio_callback_ownership": {
+    "instructions_callback_to_mixer": 35362,
+    "target_array_reads": 299,
+    "target_array_writes": 0,
+    "read_instruction_counts": {
+      "0x4011C56E": 1,
+      "0x4011C582": 285,
+      "0x4011C5AA": 13
+    },
+    "frame_builder_visits": 1,
+    "word_setter_visits": 0,
+    "word_getter_visits": 0,
+    "foreground_callsite_visits": 0,
+    "ownership_proved": "callback reader only; indexed setter path absent"
+  },
+  "conclusion": "The stock control handoff is split cleanly: the unique foreground callsite 0x400B5936 publishes indexed 16-bit target words through 0x4011AF4C, while the audio callback only reads the target array during frame construction. This is the safest identified interception point for publishing Filter 2 shadow controls without adding mapping work to the audio-critical callback.",
+  "scope_limit": "This identifies and executes the stock publication primitive but does not yet assign collision-free virtual parameter indices or patch the callsite. Atomic aligned 32-bit Q1.31 shadow stores must be proved in the next gate.",
+  "next_target": "Build a default-pass-through publication shim at 0x400B5936. Prove ordinary stock word writes remain identical, then use an isolated synthetic command range to map eight 7-bit controls into eight aligned Q1.31 Filter 2 target words.",
+  "safety": "Read-only firmware analysis and emulated RAM transactions; no candidate image or SysEx was built."
+}

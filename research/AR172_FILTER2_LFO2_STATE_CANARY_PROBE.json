@@ -1,0 +1,120 @@
+{
+  "result": "PASS",
+  "stock": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "candidate": {
+    "path": "ar172_workspace/AR172_FILTER2_LFO2_STATE_CANARY_MAIN_DO_NOT_FLASH.bin",
+    "sha256": "ba9b042447a3eaa8b108b417b2bc370eacf3730db0a3d30b3b699e3d2139fdec",
+    "bypass": {
+      "call_site": "0x4011CACC",
+      "original_call": "4eb940117f00",
+      "replacement_call": "4eb9402b4340",
+      "cave": "0x402B4340",
+      "cave_body": "4eb940117f004e75",
+      "changed_bytes": 10,
+      "changed_ranges": [
+        {
+          "address": "0x4011CACC",
+          "bytes": 6
+        },
+        {
+          "address": "0x402B4340",
+          "bytes": 8
+        }
+      ],
+      "stock_cave_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "state_base": "0x402B4400",
+    "state_end_exclusive": "0x402B45F0",
+    "state_bytes_reserved": 496,
+    "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+    "stock_references": {
+      "aligned_literals": [],
+      "absolute_jmp_jsr": [],
+      "relative_branches": []
+    }
+  },
+  "containing_zero_run": {
+    "first": "0x402B41E0",
+    "last_exclusive": "0x402BA820",
+    "bytes": 26176
+  },
+  "layout": {
+    "magic": "F2L2",
+    "version": 1,
+    "header_bytes": 32,
+    "flags": 0,
+    "filter2_enabled_lane_mask": 0,
+    "lfo2_enabled_track_mask": 0,
+    "filter2": {
+      "count": 8,
+      "stride": 32
+    },
+    "lfo2": {
+      "count": 13,
+      "stride": 16
+    }
+  },
+  "stock_boot_liveness": {
+    "instructions": 12000000,
+    "idle_pc": "0x400FCECC",
+    "reads": 0,
+    "writes": 0,
+    "read_pcs": [],
+    "write_pcs": []
+  },
+  "candidate_callback_liveness": [
+    {
+      "input": "zero",
+      "instructions_to_mixer": 35364,
+      "header_preserved": true,
+      "reads": 0,
+      "writes": 0,
+      "read_pcs": [],
+      "write_pcs": []
+    },
+    {
+      "input": "active",
+      "instructions_to_mixer": 35364,
+      "header_preserved": true,
+      "reads": 0,
+      "writes": 0,
+      "read_pcs": [],
+      "write_pcs": []
+    }
+  ],
+  "stock_equivalence": [
+    {
+      "input": "zero",
+      "bit_identical": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    },
+    {
+      "input": "active",
+      "bit_identical": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    }
+  ],
+  "conclusion": "A 496-byte versioned Filter 2/LFO2 state area fits inside a 26,176-byte zero run in the writable SDRAM-loaded MAIN image. Stock has no detected literal, absolute-transfer, or relative-branch reference into the reserved span and makes no access during modeled boot. With all enable fields zero, the candidate callback never accesses the payload and remains bit-identical to stock through the next combiner for zero and active vectors.",
+  "scope_limit": "Dynamic liveness covers modeled stock boot and representative audio callbacks, not every UI, storage, or fault path. The header is a research ABI checkpoint.",
+  "next_target": "Extend the cave stub with a flags==0 fast path that returns immediately, then execute a disabled single-lane Filter 2 dispatcher before adding DSP arithmetic.",
+  "safety": "Decompressed MAIN lab image only. No ELE3 container or SysEx was built; the candidate is not flashable."
+}

@@ -116,9 +116,22 @@ and reproducible tooling.
 - The opt-in desktop audio tap follows selector `0x42F78044`, waits for a stable
   completed renderer block, mixes its eight signed lanes, and supplies 48 kHz
   stereo PCM through QEMU's paced host-audio backend.
-- Desktop pad/QWERTY rising edges now schedule one bounded vector-191 renderer
-  service. The one-block budget preserves subsequent UI input; four or more
-  consecutive blocks still expose a ColdFire TCG throughput bottleneck.
+- Desktop pad/QWERTY rising edges now schedule eight bounded vector-191 renderer
+  services. Re-arming DSPI1's channel-15 transmit request at each external
+  audio event prevents the firmware's EOQ wait from stalling repeated blocks.
+- The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
+  per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
+  Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
+  the eight lane targets outside the audio callback.
+- The local controller exposes eight mouse/wheel/keyboard knobs and QWERTY
+  notes `A W S E D F T G Y H U J K` (notes 48..60). Note-on and note-off both
+  execute through the recovered stock note-event constructor in the emulator.
+- Renderer-scoped execution across all 34 public machines identifies 96 of the
+  510 DSPI1 payload positions as machine-specific ownership. Those positions
+  are now excluded from any shared Filter 2 transport candidate.
+- The opt-in continuous research clock now applies interrupt backpressure and
+  has sustained 2,303 completed native services while accepting later UI input.
+  Its provisional 10 ms period is not yet a claim of physical-device cadence.
 - A BR-low/high test with deterministic nonzero CPU render planes produces identical
   CPU PCM/combined output while the hardware control word diverges.
 
@@ -164,8 +177,26 @@ because the old selector was attached to the misidentified `0x4011870E` path.
 
 ### LFO2 / Filter 2
 
-LFO2 remains a MAIN control/UI/state problem. Filter 2 remains a digital sample-path
-problem; insertion must be proven against active sample playback and hardware timing.
+The emulator-side Filter 2 path is implemented and mechanically proved from its
+foreground control-publication shim through all eight renderer lanes. Disabled
+operation remains stock-equivalent. Physical-device cycle margin and a safe hardware
+activation sequence remain unproved, so no flashable image is produced.
+
+The detailed evidence and memory map are in
+`docs/AR172_LFO2_FILTER2_RESEARCH.md`.
+
+## Local Filter 2 controller
+
+Place the stock decompressed MAIN at the ignored path
+`research/extracted_stock_nrv/section_3_id_3.decompressed.bin`, then run:
+
+```bash
+python controller/validate_controller.py
+python controller/filter2_controller_service.py
+```
+
+Open `http://127.0.0.1:8765`. The service creates only a temporary runtime
+candidate and never writes an ELE3 container, SysEx package, or flashable image.
 
 ## Railway dashboard
 

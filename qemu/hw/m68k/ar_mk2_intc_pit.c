@@ -34,11 +34,12 @@
 #define AR_EDMA_TCD_BASE 0x1000u
 #define AR_EDMA_TCD_SIZE 0x20u
 #define AR_EDMA_CHANNELS 64u
+#define AR_EDMA_DSPI1_TX_CHANNEL 15u
 #define AR_TYPE8_RECORD 0xF8u
 #define AR_TYPE8_START_NS 5000000000LL
 #define AR_TYPE8_PERIOD_NS 10000000LL
 #define AR_AUDIO_TIMELINE_ADDR 0x8000FE54u
-#define AR_AUDIO_TRIGGER_BLOCKS 1u
+#define AR_AUDIO_TRIGGER_BLOCKS 8u
 #define AR_AUDIO_TRIGGER_DELAY_TICKS 10u
 #define AR_ACTIVE_PROFILE_ADDR 0x412FF99Fu
 #define AR_PROFILE_STATE_BASE 0x413001DBu
@@ -147,6 +148,7 @@ struct ARCoreState {
     unsigned audio_service_delay;
     bool audio_service_pending;
     bool audio_service_entered;
+    unsigned audio_service_completed;
     uint8_t panel_pending_command;
     uint8_t panel_button_groups[16];
     bool audio_service_seen;
@@ -636,12 +638,21 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     return true;
 }
 
-static void ar_edma_pump_audio_channel(AREdmaState *s, unsigned channel)
+static void ar_edma_pump_channel(AREdmaState *s, unsigned channel)
 {
     unsigned guard = 0;
+    uint8_t *tcd = s->tcd[channel];
+    uint16_t csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
+
+    /* A fresh peripheral request activates a reloaded major loop and clears
+     * the prior DONE status.  In particular, OS 1.72 reuses DSPI1 channel 15
+     * by writing CERQ, the new SADDR, then SERQ; it does not issue CDNE. */
+    if ((s->erq & (1ULL << channel)) && (csr & AR_EDMA_CSR_DONE)) {
+        stw_be_p(tcd + AR_EDMA_TCD_CSR, csr & ~AR_EDMA_CSR_DONE);
+    }
 
     while (guard++ < 4096 && (s->erq & (1ULL << channel))) {
-        uint16_t csr = lduw_be_p(s->tcd[channel] + AR_EDMA_TCD_CSR);
+        csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
 
         if (csr & AR_EDMA_CSR_DONE) {
             break;
@@ -650,6 +661,22 @@ static void ar_edma_pump_audio_channel(AREdmaState *s, unsigned channel)
             break;
         }
     }
+}
+
+static void ar_edma_pump_dspi1_tx(AREdmaState *s)
+{
+    uint8_t *tcd = s->tcd[AR_EDMA_DSPI1_TX_CHANNEL];
+    uint16_t csr;
+
+    if (!(s->erq & (1ULL << AR_EDMA_DSPI1_TX_CHANNEL))) {
+        return;
+    }
+
+    /* DSPI1 immediately consumes its transmit FIFO.  With D_REQ clear the
+     * empty FIFO can request another major loop after DONE is asserted. */
+    csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
+    stw_be_p(tcd + AR_EDMA_TCD_CSR, csr & ~AR_EDMA_CSR_DONE);
+    ar_edma_pump_channel(s, AR_EDMA_DSPI1_TX_CHANNEL);
 }
 
 static void ar_edma_software_start(AREdmaState *s, unsigned channel)
@@ -792,6 +819,9 @@ static void ar_edma_write(void *opaque, hwaddr addr,
                 s->erq = ~0ULL;
             } else {
                 s->erq |= 1ULL << (value & 0x3f);
+            }
+            if ((value & 0x3f) == AR_EDMA_DSPI1_TX_CHANNEL) {
+                ar_edma_pump_dspi1_tx(s);
             }
             ar_edma_pump_uarts(s->core);
         }
@@ -1092,20 +1122,29 @@ static void ar_type8_feed(void *opaque)
      * audio clock as a periodic forced event rather than a persistent level.
      * Reusing the observed Type-8 10 ms cadence keeps this research shim
      * narrow until physical hardware timing is measured. */
-    if (c->trigger_audio_service && c->audio_service_pending &&
+    if ((c->mock_audio_service || c->trigger_audio_service) &&
+        c->audio_service_pending &&
         !(c->intc[1].ifr & (1ULL << 63))) {
         c->audio_service_pending = false;
         c->audio_service_entered = true;
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 AUDIO: entered vector 191 service\n");
     }
-    if (c->trigger_audio_service && c->audio_service_entered &&
+    if ((c->mock_audio_service || c->trigger_audio_service) &&
+        c->audio_service_entered &&
         ((c->cpu->env.sr & SR_I) >> SR_I_SHIFT) < 5) {
         c->audio_service_entered = false;
         c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS;
+        c->audio_service_completed++;
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 AUDIO: completed vector 191 service count=%u\n",
+                      c->audio_service_completed);
     }
     if (!c->mock_audio_service && c->audio_service_delay) {
         c->audio_service_delay--;
     }
-    if ((c->mock_audio_service ||
+    if (((c->mock_audio_service && !c->audio_service_pending &&
+          !c->audio_service_entered) ||
          (c->audio_service_budget && !c->audio_service_delay &&
           !c->audio_service_pending && !c->audio_service_entered)) &&
         c->intc[1].icr[63]) {
@@ -1113,13 +1152,14 @@ static void ar_type8_feed(void *opaque)
          * before raising the block-service interrupt.  Finish the prior
          * outbound chain first, then populate the input chain consumed by
          * the ISR. */
-        ar_edma_pump_audio_channel(&c->edma, 42);
-        ar_edma_pump_audio_channel(&c->edma, 30);
+        ar_edma_pump_dspi1_tx(&c->edma);
+        ar_edma_pump_channel(&c->edma, 42);
+        ar_edma_pump_channel(&c->edma, 30);
         c->intc[1].ifr |= 1ULL << 63;
         ar_intc_update(c);
+        c->audio_service_pending = true;
         if (!c->mock_audio_service && c->audio_service_budget) {
             c->audio_service_budget--;
-            c->audio_service_pending = true;
         }
         if (!c->audio_service_seen) {
             c->audio_service_seen = true;

@@ -1,0 +1,125 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "corrected_classification": {
+    "entry": "0x40117F00",
+    "return": "0x4011CAD2",
+    "external_source": "0x4F9372E0",
+    "ingress_dma_channels": [
+      31,
+      32
+    ],
+    "output_plane": "0x800067F8",
+    "output_geometry": "8 lanes x 32 longwords",
+    "initialized_tables_not_signal_planes": [
+      "0x8000BC00",
+      "0x8000C000",
+      "0x8000C400"
+    ]
+  },
+  "stock_startup_provenance": {
+    "boot_steps": 12000000,
+    "idle_pc": "0x400FCECC",
+    "tables": [
+      {
+        "rom_source": "0x402C0C00",
+        "ram_destination": "0x8000BC00",
+        "bytes": 1024,
+        "copy_pc": "0x4000081C",
+        "longword_writes": 256,
+        "sha256": "1f68f58a14790066dabacdbb7005f6a7d97cda4b5a85d9cc693cee8f2355cb32",
+        "first_16_bytes": "fa38061efa3f05f0fa4505c2fa4b0594"
+      },
+      {
+        "rom_source": "0x402C1000",
+        "ram_destination": "0x8000C000",
+        "bytes": 1024,
+        "copy_pc": "0x4000081C",
+        "longword_writes": 256,
+        "sha256": "fe187b1a79b1a8782edbc20acab6975bce34ce93aa0fc739eab1fa3f8127411b",
+        "first_16_bytes": "31f1080e31f2083a31f3086631f40893"
+      },
+      {
+        "rom_source": "0x402C1400",
+        "ram_destination": "0x8000C400",
+        "bytes": 1024,
+        "copy_pc": "0x4000081C",
+        "longword_writes": 256,
+        "sha256": "054f408a0e333308488a3948a525caa3079024a8b5e77930c0c68314030960c1",
+        "first_16_bytes": "f90c006bf916005af921004af92b0039"
+      }
+    ]
+  },
+  "vectors": [
+    {
+      "input": "zero",
+      "instructions": 17132,
+      "table_reads": [
+        520,
+        512,
+        512
+      ],
+      "table_writes": [
+        0,
+        0,
+        0
+      ],
+      "dma_major_loops": {
+        "31": 8,
+        "32": 8
+      },
+      "dma_bytes_per_loop": [
+        144
+      ],
+      "dma_source_addresses": [
+        "0x4F9372E0"
+      ],
+      "output_nonzero_words": 0,
+      "output_zero_indices": "all",
+      "output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+    },
+    {
+      "input": "repeated 0x10000000 words",
+      "instructions": 17132,
+      "table_reads": [
+        520,
+        512,
+        512
+      ],
+      "table_writes": [
+        0,
+        0,
+        0
+      ],
+      "dma_major_loops": {
+        "31": 8,
+        "32": 8
+      },
+      "dma_bytes_per_loop": [
+        144
+      ],
+      "dma_source_addresses": [
+        "0x4F9372E0"
+      ],
+      "output_nonzero_words": 248,
+      "output_zero_indices": [
+        0,
+        32,
+        64,
+        96,
+        128,
+        160,
+        192,
+        224
+      ],
+      "output_sha256": "a68c35c729fd164ee082c314beb70eecd951adf54ebbc1d4b405bb5898e96430"
+    }
+  ],
+  "conclusion": "The three 0x400-byte regions previously called source planes are immutable DSP tables copied byte-exactly from MAIN during startup. The actual signal dependency enters from external window 0x4F9372E0 through alternating eDMA channels 31/32. With the stock tables installed, zero external input yields zero output, while a repeated nonzero input produces 248 nonzero words in an 8-by-32 layout at 0x800067F8. This corrects the earlier interpretation and establishes 0x800067F8 as a strong post-conversion Filter 2 candidate.",
+  "scope_limit": "The repeated-window emulator stimulus proves routing and geometry, not the physical sample rate, exact fixed-point format, or which off-chip converter drives the hardware window.",
+  "next_target": "Determine the numeric format and saturation at 0x800067F8, then insert an exact disabled bypass after 0x40117F00 and prove bit-identical combiner input.",
+  "safety": "Emulation and RAM observation only; firmware bytes were not modified."
+}

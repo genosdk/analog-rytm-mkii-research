@@ -230,13 +230,19 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("ar_edma_set_iterations(citer_word, citer)", source)
         self.assertIn("physical_memory_read(scatter_gather, tcd, AR_EDMA_TCD_SIZE)", source)
         self.assertIn("ar_edma_software_start", source)
-        self.assertIn("ar_edma_pump_audio_channel(&c->edma, 30)", source)
+        self.assertIn("ar_edma_pump_channel(&c->edma, 30)", source)
+        self.assertIn("AR_EDMA_DSPI1_TX_CHANNEL 15u", source)
+        self.assertIn("ar_edma_pump_dspi1_tx", source)
+        self.assertIn(
+            "ar_edma_pump_channel(s, AR_EDMA_DSPI1_TX_CHANNEL)", source
+        )
+        self.assertIn("ar_edma_pump_dspi1_tx(&c->edma)", source)
 
     def test_desktop_audio_service_is_bounded_by_pad_edges(self):
         source = (
             ROOT / "qemu" / "hw" / "m68k" / "ar_mk2_intc_pit.c"
         ).read_text(encoding="utf-8")
-        self.assertIn("AR_AUDIO_TRIGGER_BLOCKS 1u", source)
+        self.assertIn("AR_AUDIO_TRIGGER_BLOCKS 8u", source)
         self.assertIn("AR_AUDIO_TRIGGER_DELAY_TICKS 10u", source)
         self.assertIn("ar_panel_audio_observe", source)
         self.assertIn("group == 2 || group == 3", source)
@@ -244,8 +250,14 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("c->audio_service_delay--", source)
         self.assertIn("c->audio_service_pending", source)
         self.assertIn("c->audio_service_entered", source)
+        self.assertIn("c->audio_service_completed", source)
+        self.assertIn("c->mock_audio_service && !c->audio_service_pending", source)
+        self.assertIn("c->audio_service_pending = true", source)
+        self.assertIn("completed vector 191 service count=%u", source)
         self.assertIn("c->intc[1].ifr & (1ULL << 63)", source)
         self.assertIn("c->cpu->env.sr & SR_I", source)
+        self.assertIn("fresh peripheral request activates a reloaded major loop", source)
+        self.assertIn("csr & ~AR_EDMA_CSR_DONE", source)
         self.assertIn(
             "c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS", source
         )

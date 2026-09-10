@@ -1,0 +1,1993 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "dispatch": {
+    "renderer_table": "0x40277FE8",
+    "entries": 53,
+    "index_substitution_pc": "0x4011C9C8",
+    "index_register": "D1",
+    "stock_index_source": "MVZ.B live machine byte at 0x8000EA00 + logical track",
+    "stock_index_load": "0x4011C9AE..0x4011C9B2"
+  },
+  "machine_metadata": {
+    "public_machine_count": 34,
+    "renderer_count": 53,
+    "public_id_range": [
+      0,
+      33
+    ],
+    "internal_or_reserved_id_range": [
+      34,
+      52
+    ],
+    "names": [
+      {
+        "machine_id": 0,
+        "machine_name": "bd hard"
+      },
+      {
+        "machine_id": 1,
+        "machine_name": "bd classic"
+      },
+      {
+        "machine_id": 2,
+        "machine_name": "sd hard"
+      },
+      {
+        "machine_id": 3,
+        "machine_name": "sd classic"
+      },
+      {
+        "machine_id": 4,
+        "machine_name": "rs hard"
+      },
+      {
+        "machine_id": 5,
+        "machine_name": "rs classic"
+      },
+      {
+        "machine_id": 6,
+        "machine_name": "cp classic"
+      },
+      {
+        "machine_id": 7,
+        "machine_name": "bt classic"
+      },
+      {
+        "machine_id": 8,
+        "machine_name": "xt classic"
+      },
+      {
+        "machine_id": 9,
+        "machine_name": "ch classic"
+      },
+      {
+        "machine_id": 10,
+        "machine_name": "oh classic"
+      },
+      {
+        "machine_id": 11,
+        "machine_name": "cy classic"
+      },
+      {
+        "machine_id": 12,
+        "machine_name": "cb classic"
+      },
+      {
+        "machine_id": 13,
+        "machine_name": "bd fm"
+      },
+      {
+        "machine_id": 14,
+        "machine_name": "sd fm"
+      },
+      {
+        "machine_id": 15,
+        "machine_name": "ut noise"
+      },
+      {
+        "machine_id": 16,
+        "machine_name": "ut impulse"
+      },
+      {
+        "machine_id": 17,
+        "machine_name": "ch metallic"
+      },
+      {
+        "machine_id": 18,
+        "machine_name": "oh metallic"
+      },
+      {
+        "machine_id": 19,
+        "machine_name": "cy metallic"
+      },
+      {
+        "machine_id": 20,
+        "machine_name": "cb metallic"
+      },
+      {
+        "machine_id": 21,
+        "machine_name": "bd plastic"
+      },
+      {
+        "machine_id": 22,
+        "machine_name": "bd silky"
+      },
+      {
+        "machine_id": 23,
+        "machine_name": "sd natural"
+      },
+      {
+        "machine_id": 24,
+        "machine_name": "hh basic"
+      },
+      {
+        "machine_id": 25,
+        "machine_name": "cy ride"
+      },
+      {
+        "machine_id": 26,
+        "machine_name": "bd sharp"
+      },
+      {
+        "machine_id": 27,
+        "machine_name": "DISABLE"
+      },
+      {
+        "machine_id": 28,
+        "machine_name": "sy dual vco"
+      },
+      {
+        "machine_id": 29,
+        "machine_name": "sy chip"
+      },
+      {
+        "machine_id": 30,
+        "machine_name": "bd acoustic"
+      },
+      {
+        "machine_id": 31,
+        "machine_name": "sd acoustic"
+      },
+      {
+        "machine_id": 32,
+        "machine_name": "sy raw"
+      },
+      {
+        "machine_id": 33,
+        "machine_name": "hh lab"
+      }
+    ],
+    "source": "pinned external/libanalogrytm sound-format definitions; independently mirrored by pinned rytm-rs"
+  },
+  "static_classification": {
+    "scale_machine_ids": {
+      "0x00062000": [
+        0,
+        1
+      ],
+      "0x0004168F": [
+        0,
+        1,
+        13,
+        21,
+        22,
+        26,
+        30,
+        35,
+        36,
+        41
+      ]
+    },
+    "exp2_machine_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      13,
+      14,
+      21,
+      22,
+      23,
+      26,
+      28,
+      29,
+      30,
+      31,
+      32,
+      34,
+      35,
+      36,
+      37,
+      38,
+      41,
+      42
+    ],
+    "exact_two_scale_machine_ids": [
+      0,
+      1
+    ],
+    "renderer_rows": [
+      {
+        "machine_id": 0,
+        "machine_name": "bd hard",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010CBA8",
+        "bounded_end": "0x4010D274",
+        "scale_hits": {
+          "0x00062000": [
+            "0x4010CDD2",
+            "0x4010CE1A",
+            "0x4010CE52"
+          ],
+          "0x0004168F": [
+            "0x4010CE92",
+            "0x4010CEC8",
+            "0x4010CEFC"
+          ]
+        },
+        "log_helper_calls": [
+          "0x4010CE06",
+          "0x4010CEB4"
+        ],
+        "exp2_calls": [
+          "0x4010CE0E",
+          "0x4010CEBC"
+        ]
+      },
+      {
+        "machine_id": 1,
+        "machine_name": "bd classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010BE10",
+        "bounded_end": "0x4010C4A8",
+        "scale_hits": {
+          "0x00062000": [
+            "0x4010C048",
+            "0x4010C090",
+            "0x4010C0C8"
+          ],
+          "0x0004168F": [
+            "0x4010C108",
+            "0x4010C13E",
+            "0x4010C172"
+          ]
+        },
+        "log_helper_calls": [
+          "0x4010C07C",
+          "0x4010C12A"
+        ],
+        "exp2_calls": [
+          "0x4010C084",
+          "0x4010C132"
+        ]
+      },
+      {
+        "machine_id": 2,
+        "machine_name": "sd hard",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40113D78",
+        "bounded_end": "0x401142FC",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x40113E86",
+          "0x40113F34"
+        ],
+        "exp2_calls": [
+          "0x40113E8E",
+          "0x40113F3C"
+        ]
+      },
+      {
+        "machine_id": 3,
+        "machine_name": "sd classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40113204",
+        "bounded_end": "0x401137CC",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x40113330",
+          "0x401133E8"
+        ],
+        "exp2_calls": [
+          "0x40113338",
+          "0x401133F0"
+        ]
+      },
+      {
+        "machine_id": 4,
+        "machine_name": "rs hard",
+        "namespace": "public_sound_machine",
+        "renderer": "0x401118E4",
+        "bounded_end": "0x40111E30",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x401119EA",
+          "0x40111A88"
+        ],
+        "exp2_calls": [
+          "0x401119F2",
+          "0x40111A90"
+        ]
+      },
+      {
+        "machine_id": 5,
+        "machine_name": "rs classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40111454",
+        "bounded_end": "0x401118E4",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x4011150A",
+          "0x401115A8"
+        ],
+        "exp2_calls": [
+          "0x40111512",
+          "0x401115B0"
+        ]
+      },
+      {
+        "machine_id": 6,
+        "machine_name": "cp classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010E52C",
+        "bounded_end": "0x4010E84C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 7,
+        "machine_name": "bt classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40116DE8",
+        "bounded_end": "0x40117098",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x40116E4C"
+        ]
+      },
+      {
+        "machine_id": 8,
+        "machine_name": "xt classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40117098",
+        "bounded_end": "0x40118B3C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x40117170"
+        ]
+      },
+      {
+        "machine_id": 9,
+        "machine_name": "ch classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40110210",
+        "bounded_end": "0x40110474",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 10,
+        "machine_name": "oh classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40110B18",
+        "bounded_end": "0x40110CD0",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 11,
+        "machine_name": "cy classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010F094",
+        "bounded_end": "0x4010F3C6",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 12,
+        "machine_name": "cb classic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010EB24",
+        "bounded_end": "0x4010EDF8",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 13,
+        "machine_name": "bd fm",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010C4A8",
+        "bounded_end": "0x4010CBA8",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": [
+            "0x4010C68C",
+            "0x4010C6C8",
+            "0x4010C6FC"
+          ]
+        },
+        "log_helper_calls": [
+          "0x4010C6B4",
+          "0x4010C752"
+        ],
+        "exp2_calls": [
+          "0x4010C6BC",
+          "0x4010C75A"
+        ]
+      },
+      {
+        "machine_id": 14,
+        "machine_name": "sd fm",
+        "namespace": "public_sound_machine",
+        "renderer": "0x401137CC",
+        "bounded_end": "0x40113D78",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x40113906",
+          "0x401139B4"
+        ],
+        "exp2_calls": [
+          "0x4011390E",
+          "0x401139BC"
+        ]
+      },
+      {
+        "machine_id": 15,
+        "machine_name": "ut noise",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010F910",
+        "bounded_end": "0x4010FB10",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 16,
+        "machine_name": "ut impulse",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010F810",
+        "bounded_end": "0x4010F910",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 17,
+        "machine_name": "ch metallic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40110028",
+        "bounded_end": "0x40110210",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 18,
+        "machine_name": "oh metallic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4011094C",
+        "bounded_end": "0x40110B18",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 19,
+        "machine_name": "cy metallic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010EDF8",
+        "bounded_end": "0x4010F094",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 20,
+        "machine_name": "cb metallic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010E84C",
+        "bounded_end": "0x4010EB24",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 21,
+        "machine_name": "bd plastic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010D7A2",
+        "bounded_end": "0x4010DEA0",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": [
+            "0x4010DA1A",
+            "0x4010DA6A",
+            "0x4010DAA2",
+            "0x4010DACA",
+            "0x4010DB08",
+            "0x4010DB36"
+          ]
+        },
+        "log_helper_calls": [
+          "0x4010DA52",
+          "0x4010DAF0"
+        ],
+        "exp2_calls": [
+          "0x4010DA5A",
+          "0x4010DAF8"
+        ]
+      },
+      {
+        "machine_id": 22,
+        "machine_name": "bd silky",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010D274",
+        "bounded_end": "0x4010D7A2",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": [
+            "0x4010D3D8",
+            "0x4010D41C",
+            "0x4010D450"
+          ]
+        },
+        "log_helper_calls": [
+          "0x4010D404"
+        ],
+        "exp2_calls": [
+          "0x4010D40C"
+        ]
+      },
+      {
+        "machine_id": 23,
+        "machine_name": "sd natural",
+        "namespace": "public_sound_machine",
+        "renderer": "0x401142FC",
+        "bounded_end": "0x40115188",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x401144AA"
+        ],
+        "exp2_calls": [
+          "0x401144B2"
+        ]
+      },
+      {
+        "machine_id": 24,
+        "machine_name": "hh basic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40110474",
+        "bounded_end": "0x40110698",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 25,
+        "machine_name": "cy ride",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010F3C6",
+        "bounded_end": "0x4010F7B0",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 26,
+        "machine_name": "bd sharp",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010DEA0",
+        "bounded_end": "0x4010E52C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": [
+            "0x4010E11A",
+            "0x4010E15A",
+            "0x4010E18C"
+          ]
+        },
+        "log_helper_calls": [
+          "0x4010E142"
+        ],
+        "exp2_calls": [
+          "0x4010E14A"
+        ]
+      },
+      {
+        "machine_id": 27,
+        "machine_name": "DISABLE",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010F7B0",
+        "bounded_end": "0x4010F810",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 28,
+        "machine_name": "sy dual vco",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40115188",
+        "bounded_end": "0x40115844",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x40115484",
+          "0x4011552A"
+        ],
+        "exp2_calls": [
+          "0x4011548C",
+          "0x40115532"
+        ]
+      },
+      {
+        "machine_id": 29,
+        "machine_name": "sy chip",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40115844",
+        "bounded_end": "0x40116294",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x40115DE2"
+        ],
+        "exp2_calls": [
+          "0x40115DEA"
+        ]
+      },
+      {
+        "machine_id": 30,
+        "machine_name": "bd acoustic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x4010B754",
+        "bounded_end": "0x4010BE10",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": [
+            "0x4010B9E8",
+            "0x4010BA2A",
+            "0x4010BA5C"
+          ]
+        },
+        "log_helper_calls": [
+          "0x4010BA16"
+        ],
+        "exp2_calls": [
+          "0x4010BA1E"
+        ]
+      },
+      {
+        "machine_id": 31,
+        "machine_name": "sd acoustic",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40112B9C",
+        "bounded_end": "0x40113204",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x40112D42",
+          "0x40112DF0"
+        ],
+        "exp2_calls": [
+          "0x40112D4A",
+          "0x40112DF8"
+        ]
+      },
+      {
+        "machine_id": 32,
+        "machine_name": "sy raw",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40116294",
+        "bounded_end": "0x40116B2C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [
+          "0x40116556",
+          "0x401165F4"
+        ],
+        "exp2_calls": [
+          "0x4011655E",
+          "0x401165FC"
+        ]
+      },
+      {
+        "machine_id": 33,
+        "machine_name": "hh lab",
+        "namespace": "public_sound_machine",
+        "renderer": "0x40110698",
+        "bounded_end": "0x4011094C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 34,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x40116B2C",
+        "bounded_end": "0x40116DE8",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x40116B88"
+        ]
+      },
+      {
+        "machine_id": 35,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x4010B244",
+        "bounded_end": "0x4010B754",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": [
+            "0x4010B47C"
+          ]
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x4010B470"
+        ]
+      },
+      {
+        "machine_id": 36,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x4010A6BC",
+        "bounded_end": "0x4010AC00",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": [
+            "0x4010A8E0"
+          ]
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x4010A8EC"
+        ]
+      },
+      {
+        "machine_id": 37,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x4011270C",
+        "bounded_end": "0x40112B9C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x401127DE",
+          "0x4011282C"
+        ]
+      },
+      {
+        "machine_id": 38,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x40111E30",
+        "bounded_end": "0x401122AC",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x40111F18",
+          "0x40111F6C"
+        ]
+      },
+      {
+        "machine_id": 39,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x4011108C",
+        "bounded_end": "0x40111454",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 40,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x40110CD0",
+        "bounded_end": "0x4011108C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 41,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x4010AC00",
+        "bounded_end": "0x4010B244",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": [
+            "0x4010ADF4"
+          ]
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x4010ADE8",
+          "0x4010AE28"
+        ]
+      },
+      {
+        "machine_id": 42,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x401122AC",
+        "bounded_end": "0x4011270C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": [
+          "0x401123BA",
+          "0x40112400"
+        ]
+      },
+      {
+        "machine_id": 43,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x4010FB10",
+        "bounded_end": "0x4010FD14",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 44,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x401193A6",
+        "bounded_end": "0x401196C4",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 45,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x40118B3C",
+        "bounded_end": "0x40118CC0",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 46,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x40118CC0",
+        "bounded_end": "0x40118E68",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 47,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x401197B4",
+        "bounded_end": "0x4011A14C",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 48,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x4011A14C",
+        "bounded_end": "0x4011AE52",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 49,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x401196C4",
+        "bounded_end": "0x401197B4",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 50,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x4010FD14",
+        "bounded_end": "0x40110028",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 51,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x40118E68",
+        "bounded_end": "0x40119164",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      },
+      {
+        "machine_id": 52,
+        "machine_name": null,
+        "namespace": "internal_or_reserved_renderer",
+        "renderer": "0x40119164",
+        "bounded_end": "0x401193A6",
+        "scale_hits": {
+          "0x00062000": [],
+          "0x0004168F": []
+        },
+        "log_helper_calls": [],
+        "exp2_calls": []
+      }
+    ]
+  },
+  "runtime_anchors": [
+    {
+      "machine_id": 0,
+      "machine_name": "bd hard",
+      "renderer": "0x4010CBA8",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0013",
+          "word_47": "0x000C"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0026",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 72,
+          "word_46": "0x004D",
+          "word_47": "0x0033"
+        }
+      ]
+    },
+    {
+      "machine_id": 1,
+      "machine_name": "bd classic",
+      "renderer": "0x4010BE10",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0013",
+          "word_47": "0x000C"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0026",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 72,
+          "word_46": "0x004D",
+          "word_47": "0x0033"
+        }
+      ]
+    },
+    {
+      "machine_id": 2,
+      "machine_name": "sd hard",
+      "renderer": "0x40113D78",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0032",
+          "word_47": "0x0021"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0065",
+          "word_47": "0x0043"
+        },
+        {
+          "note": 72,
+          "word_46": "0x00CA",
+          "word_47": "0x0086"
+        }
+      ]
+    },
+    {
+      "machine_id": 3,
+      "machine_name": "sd classic",
+      "renderer": "0x40113204",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x002F",
+          "word_47": "0x002F"
+        },
+        {
+          "note": 60,
+          "word_46": "0x005E",
+          "word_47": "0x005E"
+        },
+        {
+          "note": 72,
+          "word_46": "0x00BC",
+          "word_47": "0x00BC"
+        }
+      ]
+    },
+    {
+      "machine_id": 4,
+      "machine_name": "rs hard",
+      "renderer": "0x401118E4",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x014A",
+          "word_47": "0x005A"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0295",
+          "word_47": "0x00B4"
+        },
+        {
+          "note": 72,
+          "word_46": "0x052B",
+          "word_47": "0x0169"
+        }
+      ]
+    },
+    {
+      "machine_id": 5,
+      "machine_name": "rs classic",
+      "renderer": "0x40111454",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x014A",
+          "word_47": "0x005A"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0295",
+          "word_47": "0x00B4"
+        },
+        {
+          "note": 72,
+          "word_46": "0x052B",
+          "word_47": "0x0169"
+        }
+      ]
+    },
+    {
+      "machine_id": 6,
+      "machine_name": "cp classic",
+      "renderer": "0x4010E52C",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 7,
+      "machine_name": "bt classic",
+      "renderer": "0x40116DE8",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 8,
+      "machine_name": "xt classic",
+      "renderer": "0x40117098",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 9,
+      "machine_name": "ch classic",
+      "renderer": "0x40110210",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 10,
+      "machine_name": "oh classic",
+      "renderer": "0x40110B18",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 11,
+      "machine_name": "cy classic",
+      "renderer": "0x4010F094",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 12,
+      "machine_name": "cb classic",
+      "renderer": "0x4010EB24",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 13,
+      "machine_name": "bd fm",
+      "renderer": "0x4010C4A8",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x000C",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0019",
+          "word_47": "0x0033"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0033",
+          "word_47": "0x0067"
+        }
+      ]
+    },
+    {
+      "machine_id": 14,
+      "machine_name": "sd fm",
+      "renderer": "0x401137CC",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x002F",
+          "word_47": "0x002F"
+        },
+        {
+          "note": 60,
+          "word_46": "0x005E",
+          "word_47": "0x005E"
+        },
+        {
+          "note": 72,
+          "word_46": "0x00BC",
+          "word_47": "0x00BC"
+        }
+      ]
+    },
+    {
+      "machine_id": 15,
+      "machine_name": "ut noise",
+      "renderer": "0x4010F910",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 16,
+      "machine_name": "ut impulse",
+      "renderer": "0x4010F810",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 17,
+      "machine_name": "ch metallic",
+      "renderer": "0x40110028",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 18,
+      "machine_name": "oh metallic",
+      "renderer": "0x4011094C",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 19,
+      "machine_name": "cy metallic",
+      "renderer": "0x4010EDF8",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 20,
+      "machine_name": "cb metallic",
+      "renderer": "0x4010E84C",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 21,
+      "machine_name": "bd plastic",
+      "renderer": "0x4010D7A2",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x000C",
+          "word_47": "0x000C"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0019",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0033",
+          "word_47": "0x0033"
+        }
+      ]
+    },
+    {
+      "machine_id": 22,
+      "machine_name": "bd silky",
+      "renderer": "0x4010D274",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x000C",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0019",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0033",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 23,
+      "machine_name": "sd natural",
+      "renderer": "0x401142FC",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0033"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0067"
+        }
+      ]
+    },
+    {
+      "machine_id": 24,
+      "machine_name": "hh basic",
+      "renderer": "0x40110474",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 25,
+      "machine_name": "cy ride",
+      "renderer": "0x4010F3C6",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 26,
+      "machine_name": "bd sharp",
+      "renderer": "0x4010DEA0",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x000C"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0033"
+        }
+      ]
+    },
+    {
+      "machine_id": 27,
+      "machine_name": "DISABLE",
+      "renderer": "0x4010F7B0",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    },
+    {
+      "machine_id": 28,
+      "machine_name": "sy dual vco",
+      "renderer": "0x40115188",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0008",
+          "word_47": "0x0008"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0008",
+          "word_47": "0x0008"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0010",
+          "word_47": "0x0008"
+        }
+      ]
+    },
+    {
+      "machine_id": 29,
+      "machine_name": "sy chip",
+      "renderer": "0x40115844",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0019",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0033",
+          "word_47": "0x0033"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0067",
+          "word_47": "0x0067"
+        }
+      ]
+    },
+    {
+      "machine_id": 30,
+      "machine_name": "bd acoustic",
+      "renderer": "0x4010B754",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x000C"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0033"
+        }
+      ]
+    },
+    {
+      "machine_id": 31,
+      "machine_name": "sd acoustic",
+      "renderer": "0x40112B9C",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0019",
+          "word_47": "0x0026"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0033",
+          "word_47": "0x004D"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0067",
+          "word_47": "0x009B"
+        }
+      ]
+    },
+    {
+      "machine_id": 32,
+      "machine_name": "sy raw",
+      "renderer": "0x40116294",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0008",
+          "word_47": "0x0019"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0008",
+          "word_47": "0x0033"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0008",
+          "word_47": "0x0067"
+        }
+      ]
+    },
+    {
+      "machine_id": 33,
+      "machine_name": "hh lab",
+      "renderer": "0x40110698",
+      "vectors": [
+        {
+          "note": 48,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 60,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        },
+        {
+          "note": 72,
+          "word_46": "0x0000",
+          "word_47": "0x0000"
+        }
+      ]
+    }
+  ],
+  "runtime_signature_groups": [
+    [
+      {
+        "machine_id": 0,
+        "machine_name": "bd hard"
+      },
+      {
+        "machine_id": 1,
+        "machine_name": "bd classic"
+      }
+    ],
+    [
+      {
+        "machine_id": 2,
+        "machine_name": "sd hard"
+      }
+    ],
+    [
+      {
+        "machine_id": 3,
+        "machine_name": "sd classic"
+      },
+      {
+        "machine_id": 14,
+        "machine_name": "sd fm"
+      }
+    ],
+    [
+      {
+        "machine_id": 4,
+        "machine_name": "rs hard"
+      },
+      {
+        "machine_id": 5,
+        "machine_name": "rs classic"
+      }
+    ],
+    [
+      {
+        "machine_id": 6,
+        "machine_name": "cp classic"
+      },
+      {
+        "machine_id": 7,
+        "machine_name": "bt classic"
+      },
+      {
+        "machine_id": 8,
+        "machine_name": "xt classic"
+      },
+      {
+        "machine_id": 9,
+        "machine_name": "ch classic"
+      },
+      {
+        "machine_id": 10,
+        "machine_name": "oh classic"
+      },
+      {
+        "machine_id": 11,
+        "machine_name": "cy classic"
+      },
+      {
+        "machine_id": 12,
+        "machine_name": "cb classic"
+      },
+      {
+        "machine_id": 15,
+        "machine_name": "ut noise"
+      },
+      {
+        "machine_id": 16,
+        "machine_name": "ut impulse"
+      },
+      {
+        "machine_id": 17,
+        "machine_name": "ch metallic"
+      },
+      {
+        "machine_id": 18,
+        "machine_name": "oh metallic"
+      },
+      {
+        "machine_id": 19,
+        "machine_name": "cy metallic"
+      },
+      {
+        "machine_id": 20,
+        "machine_name": "cb metallic"
+      },
+      {
+        "machine_id": 24,
+        "machine_name": "hh basic"
+      },
+      {
+        "machine_id": 25,
+        "machine_name": "cy ride"
+      },
+      {
+        "machine_id": 27,
+        "machine_name": "DISABLE"
+      },
+      {
+        "machine_id": 33,
+        "machine_name": "hh lab"
+      }
+    ],
+    [
+      {
+        "machine_id": 13,
+        "machine_name": "bd fm"
+      }
+    ],
+    [
+      {
+        "machine_id": 21,
+        "machine_name": "bd plastic"
+      }
+    ],
+    [
+      {
+        "machine_id": 22,
+        "machine_name": "bd silky"
+      }
+    ],
+    [
+      {
+        "machine_id": 23,
+        "machine_name": "sd natural"
+      }
+    ],
+    [
+      {
+        "machine_id": 26,
+        "machine_name": "bd sharp"
+      },
+      {
+        "machine_id": 30,
+        "machine_name": "bd acoustic"
+      }
+    ],
+    [
+      {
+        "machine_id": 28,
+        "machine_name": "sy dual vco"
+      }
+    ],
+    [
+      {
+        "machine_id": 29,
+        "machine_name": "sy chip"
+      }
+    ],
+    [
+      {
+        "machine_id": 31,
+        "machine_name": "sd acoustic"
+      }
+    ],
+    [
+      {
+        "machine_id": 32,
+        "machine_name": "sy raw"
+      }
+    ]
+  ],
+  "identity": {
+    "universal_pair": false,
+    "exact_pair_scope": "bd hard (0) and bd classic (1) only",
+    "shared_channel_evidence": "0x0004168F recurs in ten renderers and appears alone, duplicated, or on either packet channel; 0x00062000 occurs only in IDs 0 and 1.",
+    "interpretation": "DSPI1 words 46/47 are shared physical-voice control slots whose pitch calibration and active-channel topology are machine-dependent."
+  },
+  "conclusion": "The 0x62000/0x4168F pair is not a universal analog-voice convention. It is the exact dual-channel calibration of machine IDs 0 and 1. Other stock renderers reuse the same packet slots with symmetric, single-sided, duplicated, or differently scaled pitch controls.",
+  "next_target": "Inventory renderer-owned per-voice control fields across all public machines and renderer states, then reject any Filter 2 transport candidate with machine-specific ownership.",
+  "safety": "Static analysis and stock execution with synthetic table-index selection only; no firmware was modified."
+}

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_AUDIO_CADENCE_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PASS_BOUNDED_TRIGGER_SERVICE_UI_RESPONSIVE",
+  "status": "PASS_EIGHT_BLOCK_TRIGGER_SERVICE_UI_RESPONSIVE",
   "repository": "genosdk/analog-rytm-mkii-research",
   "trigger_source": {
     "transport": "UART8 eDMA channel 34",
@@ -10,11 +10,11 @@
     "edge": "rising pad bitmap bit",
     "qwerty_mapping": "QWERTYUI / ASDFGHJK -> Trig 1..16",
     "scheduled_vector": 191,
-    "renderer_blocks_per_edge": 1
+    "renderer_blocks_per_edge": 8
   },
   "runtime_proof": {
     "continuous_10ms_service": "FAIL: later UI event did not produce a stable framebuffer before timeout.",
-    "four_block_trigger_budget": "FAIL: later UI event did not produce a stable framebuffer before timeout.",
+    "four_block_trigger_budget": "SUPERSEDED: the stall was caused by the missing recurring DSPI1 eDMA request, not ColdFire throughput.",
     "one_block_trigger_budget": "PASS: NO, Trig 1 and later SMP events produced the expected stable UI transition.",
     "profiled_first_block": {
       "trigger_to_audio_entry_ms": 100.39,
@@ -24,7 +24,8 @@
       "rte_saved_pc": "0x401A4244"
     },
     "controller_lifecycle_probe": "PASS: the shim can distinguish source-63 pending, native IFR63 clear on ISR entry, and CPU IPL below 5 after ISR completion.",
-    "eight_block_lifecycle_budget": "FAIL: block 2 clears IFR63 and enters the priority-5 service but does not complete before the 75-second UI-smoke deadline; a GDB-assisted run emits 'fatal library error, lookup self' before a second renderer-entry marker.",
+    "eight_block_lifecycle_budget": "PASS: eight channel-30 and eight channel-42 linked transfers completed after one Trig-1 edge, followed by a stable SMP-page framebuffer.",
+    "stall_resolution": "Firmware clears DSPI1 SR.EOQF and waits at 0x40077D90. QEMU had serviced eDMA channel 15 only once, although ERQ remained enabled and the empty transmit FIFO should request another major loop. Re-arming DONE and pumping channel 15 at each modeled external-audio event regenerates EOQF through the native 16-word PUSHR transfer.",
     "native_sample_result": "With continuous service disabled and no manual vector-191 injection, the Trig-1 edge reached stock renderer 0x4010A2E0 at block selector 3.",
     "host_pcm": {
       "nonzero_s16_samples": 40,
@@ -36,11 +37,11 @@
     "environment": "AR_MK2_AUDIO_TRIGGER_SERVICE=1; desktop --audio enables it automatically.",
     "continuous_trace_compatibility": "AR_MK2_MOCK_AUDIO_SERVICE=1 retains the prior continuous research behavior.",
     "encoder_safety": "The UART observer consumes the value following both 0x2n button and 0x3n encoder commands, preventing encoder deltas from being mistaken for pad commands.",
-    "interrupt_safety": "A trigger request waits 10 Type-8 ticks for native trigger state, then remains pending until firmware clears IFR63; completion requires CPU IPL below 5 before another request could be issued. The verified desktop budget remains one block."
+    "interrupt_safety": "A trigger request waits 10 Type-8 ticks for native trigger state, then remains pending until firmware clears IFR63; completion requires CPU IPL below 5 before another request is issued. The verified desktop budget is eight blocks."
   },
   "next_gate": {
-    "name": "AR172_QEMU_SECOND_BLOCK_LIBRARY_GATE",
-    "objective": "Resolve the library/self state reached after the first native ISR returns, then prove a second 32-frame renderer entry and completion before increasing the desktop trigger budget."
+    "name": "AR172_QEMU_PHYSICAL_AUDIO_CADENCE_GATE",
+    "objective": "The backpressured sustained 10 ms model now passes. Establish the physical source-63 period, then validate sustained host playback at that cadence."
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

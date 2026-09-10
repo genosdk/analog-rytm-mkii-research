@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101315">
+  <title>Rytm II Lab Controller</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="instrument" aria-labelledby="page-title">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">OS 1.72 · EMULATION LAB</p>
+        <h1 id="page-title">RYTM II CONTROLLER</h1>
+      </div>
+      <div class="connection" id="connection" aria-live="polite">
+        <span class="status-lamp"></span>
+        <span>Connecting</span>
+      </div>
+    </header>
+
+    <section class="display" aria-label="Controller status">
+      <div>
+        <span class="display-label">ACTIVE CONTROL</span>
+        <strong id="active-readout">F2 1 · 064</strong>
+      </div>
+      <div class="display-right">
+        <span class="display-label">PUBLICATION</span>
+        <strong id="publication-readout">0x7FF8</strong>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="filter-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-index">01</p>
+          <h2 id="filter-title">FILTER 2</h2>
+        </div>
+        <p>Drag vertically · wheel for fine control · double-click resets to 64</p>
+      </div>
+      <div class="knob-grid" id="knob-grid"></div>
+    </section>
+
+    <section class="panel keyboard-panel" aria-labelledby="keyboard-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-index">02</p>
+          <h2 id="keyboard-title">QWERTY NOTES</h2>
+        </div>
+        <p>Key-down and key-up use the stock note-event constructor</p>
+      </div>
+      <div class="piano" id="piano" aria-label="Computer keyboard note input"></div>
+      <div class="note-status">
+        <span>Keys: A W S E D F T G Y H U J K</span>
+        <span id="note-readout" aria-live="polite">No notes held</span>
+      </div>
+    </section>
+
+    <footer>
+      <span>Runtime-only emulator control</span>
+      <span>No flashable firmware generated</span>
+    </footer>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

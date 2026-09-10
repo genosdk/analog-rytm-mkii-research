@@ -1,0 +1,37 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "combiner": {
+    "address": "0x4010A2E0",
+    "instructions_in_inactive_callback": 3227,
+    "frames": 32,
+    "lanes_written_per_frame": 8,
+    "frame_stride_bytes": 64,
+    "lane_width_bytes": 4,
+    "output_first": "0x80000800",
+    "output_last": "0x80000FDC",
+    "source_planes": {
+      "source_a": {
+        "first": "0x80006BF8",
+        "last": "0x80006FF4",
+        "reads": 256
+      },
+      "source_b": {
+        "first": "0x80007040",
+        "last": "0x8000743C",
+        "reads": 256
+      },
+      "source_c": {
+        "first": "0x800067FC",
+        "last": "0x80006BF8",
+        "reads": 256
+      }
+    }
+  },
+  "interpretation": "0x4010A2E0 combines three 256-longword source planes into eight 32-frame output lanes. The 0x800067F8 plane is populated by the preceding 0x40117F00 ingress path; the other two planes are not written during this inactive callback and lead upstream toward the sample/render producers.",
+  "next_target": "Resolve the producer family that writes 0x80006BF8 and 0x80007040, then activate one stock sample voice there and repeat the BR differential.",
+  "safety": "Emulation and RAM observation only; firmware bytes were not modified."
+}
