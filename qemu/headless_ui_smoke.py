@@ -149,6 +149,11 @@ def main() -> None:
         default=0,
         help="completed vector-191 services required before the SMP check",
     )
+    parser.add_argument(
+        "--require-nonzero-audio",
+        action="store_true",
+        help="require a nonzero stock renderer block to reach the host tap",
+    )
     args = parser.parse_args()
 
     if args.trigger_count < 1:
@@ -183,6 +188,8 @@ def main() -> None:
         env["AR_MK2_MOCK_AUDIO_SERVICE"] = "1"
     else:
         env.pop("AR_MK2_MOCK_AUDIO_SERVICE", None)
+    if args.require_nonzero_audio:
+        env["AR_MK2_AUDIO_TAP"] = "1"
     command = [
         str(qemu), "-M", "elektron-ar-mk2", "-m", "256M",
         "-bios", str(main_image), "-display", "none",
@@ -239,6 +246,13 @@ def main() -> None:
                 args.minimum_audio_services,
                 deadline,
             )
+        if args.require_nonzero_audio:
+            wait_log_count(
+                log,
+                "AR-MK2 AUDIO: streaming stock renderer ring",
+                1,
+                deadline,
+            )
         time.sleep(1.0)
         panel_writer.write(bytes.fromhex("25 10"))
         time.sleep(0.08)
@@ -256,6 +270,7 @@ def main() -> None:
                 args.trigger_count * args.services_per_trigger
                 if args.exercise_trigger_audio else 0,
             ),
+            "nonzero_host_audio": args.require_nonzero_audio,
             "startup_modal": metrics(before),
             "normal_ui": metrics(normal_ui),
             "smp_page": metrics(smp_page),

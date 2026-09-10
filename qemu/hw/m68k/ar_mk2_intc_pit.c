@@ -38,6 +38,7 @@
 #define AR_TYPE8_RECORD 0xF8u
 #define AR_TYPE8_START_NS 5000000000LL
 #define AR_TYPE8_PERIOD_NS 10000000LL
+#define AR_AUDIO_BLOCK_PERIOD_NS 666667LL
 #define AR_AUDIO_TIMELINE_ADDR 0x8000FE54u
 #define AR_AUDIO_TRIGGER_BLOCKS 8u
 #define AR_AUDIO_TRIGGER_DELAY_TICKS 10u
@@ -137,6 +138,7 @@ struct ARCoreState {
     Chardev *uart9_chr;
     qemu_irq uart9_irq;
     QEMUTimer *type8_timer;
+    QEMUTimer *audio_service_timer;
     uint64_t type8_feed_count;
     uint32_t type8_last_timeline;
     bool type8_timeline_seen;
@@ -1086,6 +1088,65 @@ static bool ar_type8_bootstrap(ARCoreState *c)
     return true;
 }
 
+static void ar_audio_service_tick(ARCoreState *c, bool continuous)
+{
+    bool enabled = continuous ? c->mock_audio_service :
+                                c->trigger_audio_service;
+
+    if (!enabled || !c->type8_bootstrap_done) {
+        return;
+    }
+    if (c->audio_service_pending &&
+        !(c->intc[1].ifr & (1ULL << 63))) {
+        c->audio_service_pending = false;
+        c->audio_service_entered = true;
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 AUDIO: entered vector 191 service\n");
+    }
+    if (c->audio_service_entered &&
+        ((c->cpu->env.sr & SR_I) >> SR_I_SHIFT) < 5) {
+        c->audio_service_entered = false;
+        c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS;
+        c->audio_service_completed++;
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 AUDIO: completed vector 191 service count=%u\n",
+                      c->audio_service_completed);
+    }
+    if (!continuous && c->audio_service_delay) {
+        c->audio_service_delay--;
+    }
+    if (!c->audio_service_pending && !c->audio_service_entered &&
+        (continuous ||
+         (c->audio_service_budget && !c->audio_service_delay)) &&
+        c->intc[1].icr[63]) {
+        ar_edma_pump_dspi1_tx(&c->edma);
+        ar_edma_pump_channel(&c->edma, 42);
+        ar_edma_pump_channel(&c->edma, 30);
+        c->intc[1].ifr |= 1ULL << 63;
+        ar_intc_update(c);
+        c->audio_service_pending = true;
+        if (!continuous && c->audio_service_budget) {
+            c->audio_service_budget--;
+        }
+        if (!c->audio_service_seen) {
+            c->audio_service_seen = true;
+            qemu_log_mask(LOG_UNIMP,
+                          "AR-MK2 AUDIO: forced INTC1 source 63 "
+                          "(vector 191)\n");
+        }
+    }
+}
+
+static void ar_audio_service_feed(void *opaque)
+{
+    ARCoreState *c = opaque;
+
+    ar_audio_service_tick(c, true);
+    timer_mod_ns(c->audio_service_timer,
+                 qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
+                 AR_AUDIO_BLOCK_PERIOD_NS);
+}
+
 /*
  * UART9 is the firmware's stream/control input: eDMA channel 36 passes each
  * received byte to callback 0x4007E648 and its byte-stream parser.  F8 is a
@@ -1117,57 +1178,7 @@ static void ar_type8_feed(void *opaque)
         }
     }
 
-    /* Vector 191 is installed at 0x400002fc with INTC1 source 63 priority 5.
-     * Its stock ISR clears IFRH bit 31 on entry, so model the absent external
-     * audio clock as a periodic forced event rather than a persistent level.
-     * Reusing the observed Type-8 10 ms cadence keeps this research shim
-     * narrow until physical hardware timing is measured. */
-    if ((c->mock_audio_service || c->trigger_audio_service) &&
-        c->audio_service_pending &&
-        !(c->intc[1].ifr & (1ULL << 63))) {
-        c->audio_service_pending = false;
-        c->audio_service_entered = true;
-        qemu_log_mask(LOG_UNIMP,
-                      "AR-MK2 AUDIO: entered vector 191 service\n");
-    }
-    if ((c->mock_audio_service || c->trigger_audio_service) &&
-        c->audio_service_entered &&
-        ((c->cpu->env.sr & SR_I) >> SR_I_SHIFT) < 5) {
-        c->audio_service_entered = false;
-        c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS;
-        c->audio_service_completed++;
-        qemu_log_mask(LOG_UNIMP,
-                      "AR-MK2 AUDIO: completed vector 191 service count=%u\n",
-                      c->audio_service_completed);
-    }
-    if (!c->mock_audio_service && c->audio_service_delay) {
-        c->audio_service_delay--;
-    }
-    if (((c->mock_audio_service && !c->audio_service_pending &&
-          !c->audio_service_entered) ||
-         (c->audio_service_budget && !c->audio_service_delay &&
-          !c->audio_service_pending && !c->audio_service_entered)) &&
-        c->intc[1].icr[63]) {
-        /* The external audio interface requests both linked eDMA streams
-         * before raising the block-service interrupt.  Finish the prior
-         * outbound chain first, then populate the input chain consumed by
-         * the ISR. */
-        ar_edma_pump_dspi1_tx(&c->edma);
-        ar_edma_pump_channel(&c->edma, 42);
-        ar_edma_pump_channel(&c->edma, 30);
-        c->intc[1].ifr |= 1ULL << 63;
-        ar_intc_update(c);
-        c->audio_service_pending = true;
-        if (!c->mock_audio_service && c->audio_service_budget) {
-            c->audio_service_budget--;
-        }
-        if (!c->audio_service_seen) {
-            c->audio_service_seen = true;
-            qemu_log_mask(LOG_UNIMP,
-                          "AR-MK2 AUDIO: forced INTC1 source 63 "
-                          "(vector 191)\n");
-        }
-    }
+    ar_audio_service_tick(c, false);
 
     physical_memory_read(AR_AUDIO_TIMELINE_ADDR, raw, sizeof(raw));
     timeline = ldl_be_p(raw);
@@ -1228,7 +1239,11 @@ static void ar_uart9_init(MemoryRegion *sysmem, ARCoreState *c)
     memory_region_add_subregion_overlap(sysmem, AR_UART9_BASE, mr, 20);
 
     c->type8_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL, ar_type8_feed, c);
+    c->audio_service_timer = timer_new_ns(QEMU_CLOCK_VIRTUAL,
+                                          ar_audio_service_feed, c);
     timer_mod_ns(c->type8_timer,
+                 qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + AR_TYPE8_START_NS);
+    timer_mod_ns(c->audio_service_timer,
                  qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) + AR_TYPE8_START_NS);
 }
 

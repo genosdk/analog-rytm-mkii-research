@@ -72,8 +72,8 @@ still blocked on ColdFire TCG throughput.
 
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at
-vector 191, the shim unmasks it and raises its self-clearing force bit on the
-existing 10 ms Type-8 cadence. The untouched ISR clears that bit on entry and
+vector 191, the shim unmasks it and raises its self-clearing force bit every
+666.667 microseconds, derived from 32 renderer frames at 48 kHz. The untouched ISR clears that bit on entry and
 reaches the stock audio routine at `0x40117A28`. The shim waits for that clear
 and for CPU IPL to return below 5 before issuing another request, preventing
 interrupt coalescing from masquerading as sustained renderer progress.
@@ -86,7 +86,8 @@ QEMU now re-arms eDMA channel 15 when the modeled external audio interface
 consumes the DSPI1 transmit FIFO; without that request, firmware waited
 indefinitely for DSPI1 SR.EOQF at `0x40077D90` after the first transfer.
 
-This option remains a research clock rather than a physical realtime claim.
-The backpressured 10 ms model has sustained 2,303 completed services while the
-UI remained responsive, but the physical device cadence has not yet been
-measured. Without the option, emulator behavior is unchanged.
+This option remains a geometry-derived research clock rather than a confirmed
+physical-clock claim. It has sustained 8,909 completed services, delivered a
+nonzero triggered renderer block to the host tap, and retained responsive UI.
+The exact hardware source and phase have not yet been measured. Without the
+option, emulator behavior is unchanged.

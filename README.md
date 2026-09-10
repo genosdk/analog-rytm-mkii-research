@@ -93,9 +93,9 @@ and reproducible tooling.
 - Desktop pad/QWERTY rising edges now schedule eight bounded vector-191 renderer
   services. Re-arming DSPI1's channel-15 transmit request at each external
   audio event prevents the firmware's EOQ wait from stalling repeated blocks.
-- The opt-in continuous research clock now applies interrupt backpressure and
-  has sustained 2,303 completed native services while accepting later UI input.
-  Its provisional 10 ms period is not yet a claim of physical-device cadence.
+- The opt-in continuous research clock now applies interrupt backpressure at
+  the geometry-derived 32-frame / 48 kHz period. It sustained 8,909 completed
+  native services, streamed nonzero host PCM, and accepted later UI input.
 - A BR-low/high test with deterministic nonzero CPU render planes produces identical
   CPU PCM/combined output while the hardware control word diverges.
 

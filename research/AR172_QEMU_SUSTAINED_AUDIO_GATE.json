@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_SUSTAINED_AUDIO_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PASS_BACKPRESSURED_MODELED_CADENCE_UI_RESPONSIVE",
+  "status": "PASS_SUPERSEDED_BY_GEOMETRY_DERIVED_CADENCE",
   "repository": "genosdk/analog-rytm-mkii-research",
   "service_model": {
     "source": "INTC1 source 63 / vector 191",
@@ -21,8 +21,8 @@
   "interpretation": "The earlier continuous-mode UI failure was caused by missing recurring DSPI1 eDMA service and interrupt coalescing, not a demonstrated ColdFire TCG throughput ceiling. The corrected model sustains native ISR completions and remains interactive at the provisional 10 ms cadence.",
   "limit": "The physical external-audio interrupt period has not been measured. This pass does not claim that the emulator sustains the hardware's presumed 32-frame / 48 kHz cadence or glitch-free host playback.",
   "next_gate": {
-    "name": "AR172_QEMU_PHYSICAL_AUDIO_CADENCE_GATE",
-    "objective": "Establish the real source-63 cadence from hardware evidence or a definitive firmware clock path, then stress the same backpressured lifecycle at that period with host PCM enabled."
+    "name": "AR172_QEMU_AUDIO_CLOCK_PROVENANCE_GATE",
+    "objective": "The 32-frame / 48 kHz candidate now passes with host PCM. Prove the exact source-63 clock register and phase relationship."
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

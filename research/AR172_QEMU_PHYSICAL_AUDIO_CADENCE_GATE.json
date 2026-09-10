@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_PHYSICAL_AUDIO_CADENCE_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_GEOMETRY_DERIVED_CADENCE_HOST_PCM_UI_RESPONSIVE",
+  "cadence_basis": {
+    "sample_rate_hz": 48000,
+    "frames_per_renderer_block": 32,
+    "derived_period_ns": 666667,
+    "derivation": "32 / 48000 seconds",
+    "confidence": "Strong renderer-geometry inference; the exact physical source-63 clock path remains to be confirmed from hardware or a definitive clock register."
+  },
+  "implementation": "A dedicated virtual audio timer requests one backpressured source-63 service every 666667 ns. Type-8 control traffic remains on its independent 10 ms timer.",
+  "runtime_proof": {
+    "completed_vector_191_services": 8909,
+    "pad_trigger": "PASS",
+    "nonzero_stock_renderer_to_host_tap": "PASS",
+    "later_smp_page_transition": "PASS",
+    "fatal_library_error": false
+  },
+  "decision": "The emulator can sustain the candidate 32-frame / 48 kHz cadence in virtual time while producing nonzero host PCM and accepting later UI input. Keep the clock opt-in until its physical provenance is confirmed.",
+  "next_gate": {
+    "name": "AR172_QEMU_AUDIO_CLOCK_PROVENANCE_GATE",
+    "objective": "Locate the definitive FPGA/clock register or obtain hardware timing evidence that proves the source-63 period and phase relationship."
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "All execution and capture remained local. No firmware, extracted MAIN, project data, factory sample names, or proprietary PCM are included."
+}
