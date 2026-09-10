@@ -19,6 +19,11 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
         for lane, value in enumerate((0, 16, 32, 48, 64, 80, 96, 127)):
             publications.append(state.set_filter(lane, value, "mouse"))
         before_notes = list(state.values)
+        waveform_publications = [state.set_lfo2(lane, "waveform", lane % 7, "mouse") for lane in range(8)]
+        mode_publications = [state.set_lfo2(lane, "mode", lane % 4, "mouse") for lane in range(8)]
+        state.set_lfo2(0, "enable", True, "mouse")
+        state.set_lfo2(0, "trigger", True, "mouse")
+        state.set_lfo2(0, "reset", 1, "mouse")
         note_on = state.note("a", "on", 100)
         note_off = state.note("a", "off", 100)
         snapshot = state.snapshot()
@@ -33,6 +38,12 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
             == [f"0x{0x7FF8 + lane:04X}" for lane in range(8)],
             "final_controls_exact": snapshot["filter2"]["values"] == [0, 16, 32, 48, 64, 80, 96, 127],
             "note_path_did_not_mutate_filter2": snapshot["filter2"]["values"] == before_notes,
+            "seven_waveforms_publish": snapshot["lfo2"]["waveform"] == [0, 1, 2, 3, 4, 5, 6, 0],
+            "four_modes_publish": snapshot["lfo2"]["mode"] == [0, 1, 2, 3, 0, 1, 2, 3],
+            "waveform_index_range_exact": [item["virtual_index"] for item in waveform_publications]
+            == [f"0x{0x7FC0 + lane:04X}" for lane in range(8)],
+            "mode_index_range_exact": [item["virtual_index"] for item in mode_publications]
+            == [f"0x{0x7FC8 + lane:04X}" for lane in range(8)],
             "note_on_off_exact": note_on["note"] == 48 and note_off["note"] == 48 and not snapshot["notes"]["held"],
             "firmware_keydown_transport_exact": (
                 note_on["firmware_transport"] == "emulated_stock_trigger"
@@ -50,7 +61,7 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
             "firmware_keyup_transport_exact": (
                 note_off["firmware_transport"] == "emulated_stock_release"
                 and note_off["stock_release"]["accepted"]
-                and note_off["stock_release"]["constructor_instructions"] == 38
+                and note_off["stock_release"]["constructor_instructions"] == 45
                 and note_off["stock_release"]["held_source_mask_after"] == "0x00000000"
                 and note_off["stock_release"]["callback_cases"] == [1]
             ),
@@ -68,8 +79,11 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
                 "mouse_wheel": True,
                 "keyboard_adjustment": True,
                 "qwerty_note_keys": NOTE_KEYS,
+                "lfo2_waveforms": list(snapshot["lfo2"]["waveforms"]),
+                "lfo2_modes": list(snapshot["lfo2"]["modes"]),
             },
             "publications": publications,
+            "lfo2_publications": waveform_publications + mode_publications,
             "note_events": [note_on, note_off],
             "assets": assets,
             "checks": checks,

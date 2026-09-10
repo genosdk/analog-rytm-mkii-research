@@ -39,6 +39,13 @@ class RealBridgeTests(unittest.TestCase):
             self.assertEqual(result["virtual_index"], f"0x{0x7FF8 + lane:04X}")
             self.assertTrue(result["single_aligned_store"])
 
+    def test_lfo2_waveform_and_mode_publish_for_all_lanes(self):
+        for lane in range(8):
+            wave = self.bridge.publish_lfo2(lane, "waveform", lane % 7)
+            mode = self.bridge.publish_lfo2(lane, "mode", lane % 4)
+            self.assertEqual(wave["virtual_index"], f"0x{0x7FC0 + lane:04X}")
+            self.assertEqual(mode["virtual_index"], f"0x{0x7FC8 + lane:04X}")
+
 
 @unittest.skipUnless(STOCK.is_file(), "proprietary stock MAIN test fixture not present")
 class ServiceApiTests(unittest.TestCase):
@@ -77,6 +84,10 @@ class ServiceApiTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(snapshot["filter2"]["values"], self.state.values)
         self.assertEqual(len(snapshot["filter2"]["values"]), 8)
+        self.assertEqual(len(snapshot["lfo2"]["waveform"]), 8)
+        self.assertEqual(len(snapshot["lfo2"]["mode"]), 8)
+        self.assertTrue(all(0 <= value <= 6 for value in snapshot["lfo2"]["waveform"]))
+        self.assertTrue(all(0 <= value <= 3 for value in snapshot["lfo2"]["mode"]))
         self.assertTrue(snapshot["emulator"]["runtime_armed_only"])
         self.assertFalse(snapshot["emulator"]["flashable_image_created"])
 
@@ -87,6 +98,25 @@ class ServiceApiTests(unittest.TestCase):
         self.assertEqual(result["event"]["type"], "filter2")
         self.assertEqual(result["event"]["q31"], "0x5BB76EDD")
         self.assertEqual(result["state"]["filter2"]["values"][3], 91)
+
+        status, _, body = self.request(
+            "POST", "/api/lfo2",
+            {"lane": 3, "parameter": "waveform", "value": "sine", "source": "mouse"},
+        )
+        result = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertEqual(result["event"]["type"], "lfo2")
+        self.assertEqual(result["event"]["value"], 4)
+        self.assertEqual(result["event"]["virtual_index"], "0x7FC3")
+        self.assertEqual(result["state"]["lfo2"]["waveform"][3], 4)
+
+        status, _, body = self.request(
+            "POST", "/api/lfo2", {"lane": 3, "parameter": "mode", "value": "half-shot"},
+        )
+        result = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertEqual(result["event"]["value"], 2)
+        self.assertEqual(result["event"]["virtual_index"], "0x7FCB")
 
         status, _, body = self.request("POST", "/api/note", {"key": "a", "action": "on", "velocity": 100})
         result = json.loads(body)
@@ -113,7 +143,7 @@ class ServiceApiTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertEqual(result["event"]["firmware_transport"], "emulated_stock_release")
         self.assertTrue(result["event"]["stock_release"]["accepted"])
-        self.assertEqual(result["event"]["stock_release"]["constructor_instructions"], 38)
+        self.assertEqual(result["event"]["stock_release"]["constructor_instructions"], 45)
         self.assertEqual(result["event"]["stock_release"]["held_source_mask_after"], "0x00000000")
         self.assertEqual(result["event"]["stock_release"]["callback_cases"], [1])
         self.assertNotIn(48, result["state"]["notes"]["held"])
@@ -122,6 +152,11 @@ class ServiceApiTests(unittest.TestCase):
         status, _, body = self.request("POST", "/api/filter2", {"lane": 8, "value": 64})
         self.assertEqual(status, 400)
         self.assertIn("lane", json.loads(body)["error"])
+        status, _, body = self.request(
+            "POST", "/api/lfo2", {"lane": 0, "parameter": "waveform", "value": "noise"},
+        )
+        self.assertEqual(status, 400)
+        self.assertIn("waveform", json.loads(body)["error"])
 
 
 if __name__ == "__main__":

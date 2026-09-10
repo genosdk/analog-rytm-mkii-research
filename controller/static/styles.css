@@ -17,7 +17,7 @@ body {
     linear-gradient(180deg, #111517, #080a0b 75%);
 }
 
-button { font: inherit; }
+button, select, input { font: inherit; }
 
 .instrument {
   width: min(1180px, calc(100% - 32px));
@@ -97,6 +97,17 @@ h2 { font-size: 1rem; }
 .channel-meta output { color: #ff9b48; }
 .address { display: block; margin: 5px 0 0; font-size: .66rem; letter-spacing: .06em; }
 
+.lfo-controls { display: grid; grid-template-columns: repeat(4, minmax(130px, 1fr)); gap: 18px; align-items: end; }
+.lfo-controls label { display: grid; gap: 8px; color: #9aa5a9; font: .76rem "SFMono-Regular", Consolas, monospace; letter-spacing: .06em; }
+.lfo-controls select { width: 100%; padding: 10px 12px; border: 1px solid #465156; border-radius: 5px; color: #dfe8ea; background: #13191b; }
+.range-control output { color: #ff9b48; }
+.range-control input { width: 100%; accent-color: #ed8733; }
+.toggle-control { grid-template-columns: auto 1fr !important; align-items: center; padding: 10px 0; }
+.toggle-control input { width: 18px; height: 18px; accent-color: #48c9c5; }
+.reset-button { min-height: 40px; border: 1px solid #5a4a3e; border-radius: 5px; color: #ffc18c; background: #261b14; cursor: pointer; }
+.lfo-publication { margin: 18px 0 0; color: #6f7d82; font: .7rem "SFMono-Regular", Consolas, monospace; }
+.lfo-controls :focus-visible { outline: 2px solid #87e7e3; outline-offset: 2px; }
+
 .keyboard-panel { margin-bottom: 26px; }
 .piano { display: grid; grid-template-columns: repeat(13, minmax(42px, 1fr)); gap: 7px; align-items: start; }
 .piano-key { min-height: 116px; padding: 0 0 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 3px; border: 1px solid #4b5356; border-radius: 5px 5px 8px 8px; background: linear-gradient(#dfe3e4, #aeb5b8); color: #16191a; box-shadow: inset 0 -7px 12px rgba(0,0,0,.13), 0 5px 9px rgba(0,0,0,.45); cursor: pointer; }
@@ -112,6 +123,7 @@ footer { padding: 0 32px 25px; color: #657075; font-size: .75rem; }
 
 @media (max-width: 900px) {
   .knob-grid { grid-template-columns: repeat(4, 1fr); }
+  .lfo-controls { grid-template-columns: repeat(2, 1fr); }
   .piano { grid-template-columns: repeat(7, 1fr); }
 }
 
@@ -122,6 +134,7 @@ footer { padding: 0 32px 25px; color: #657075; font-size: .75rem; }
   .display, .panel { margin-left: 12px; margin-right: 12px; }
   .panel { padding: 18px 12px; }
   .knob-grid { grid-template-columns: repeat(2, 1fr); }
+  .lfo-controls { grid-template-columns: 1fr; }
   .piano { grid-template-columns: repeat(5, 1fr); }
   .display { padding: 14px; }
   .display strong { font-size: .95rem; }

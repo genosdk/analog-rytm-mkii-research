@@ -16,11 +16,13 @@ from filter2_bypass_canary_probe import execute_vector
 from filter2_coefficient_slew_probe import control_to_q31, oracle
 from filter2_eight_lane_probe import Builder, FILTER2_STATE0, FILTER2_STATE_STRIDE, LANES
 from filter2_lfo2_cutoff_binding_probe import (
+    COMBINED_FLAGS,
     FILTER_SYMBOLS,
     LFO2_MASK_ADDRESS,
     LFO2_STATE0,
     LFO2_STATE_STRIDE,
     effective_target,
+    cpu_from_baseline,
     modulation_q31,
     plane_lanes,
     triangle_q31,
@@ -35,6 +37,8 @@ from lfo2_control_publication_probe import (
     FILTER_INDEX_BASE,
     RATE_INDEX_BASE,
     RANDOM_INDEX_OFFSET,
+    RESET_INDEX_BASE,
+    TRIGGER_INDEX_BASE,
 )
 from lfo2_waveform_mode_probe import (
     CONFIG_OFFSET,
@@ -55,7 +59,15 @@ from lfo2_waveform_mode_probe import (
     advance_phase,
     build_candidate as build_wave_candidate,
 )
-from trigger_queue_probe import load_emulator, stock_call
+from trigger_queue_probe import EVENT_VALUE, TRIGGER_RECORD, load_emulator, stock_call
+from note_event_constructor_probe import (
+    EVENT_INPUT,
+    EVENT_TRACK,
+    NOTE_EVENT_CONSTRUCTOR,
+    NOTE_ON,
+    QWERTY_SOURCE_MASK,
+    write_event,
+)
 
 
 WAVE_SINE = 4
@@ -409,6 +421,130 @@ def run_matrix(module, armed_path: Path, stock: bytes) -> dict:
     }
 
 
+def run_nonlinear_reset_matrix(module, armed_path: Path, stock: bytes) -> dict:
+    """Prove deterministic nonlinear state across callbacks and both reset paths."""
+    lanes = (0, 1, 2)
+    waveforms = (WAVE_SINE, WAVE_EXPONENTIAL, WAVE_RANDOM)
+    increments = (0x28000000, 0x38000000, 0x60000000)
+    depth = 0x7FFFFFFF
+    bus, prepared, _ = prepared_machine(module, armed_path)
+    baseline = {
+        "d": prepared.d.copy(), "a": prepared.a.copy(), "sr": prepared.sr,
+        "ctrl": prepared.ctrl.copy(), "macsr": prepared.macsr,
+        "mac_mask": prepared.mac_mask, "macc": prepared.macc.copy(),
+    }
+    install_tables(bus, stock)
+    bus.write(FLAGS_ADDRESS, 4, COMBINED_FLAGS)
+    bus.write(FILTER2_MASK_ADDRESS, 2, 0x0007)
+    for lane, waveform in zip(lanes, waveforms):
+        for index, value in (
+            (FILTER_INDEX_BASE + lane, 64),
+            (DEPTH_INDEX_BASE + lane, 127),
+            (ENABLE_INDEX_BASE + lane, 1),
+            (WAVE_INDEX_BASE + lane, waveform),
+            (MODE_INDEX_BASE + lane, MODE_LOOP),
+        ):
+            stock_call(prepared, WAVE_SHIM_BASE, [index, value])
+        lbase = LFO2_STATE0 + lane * LFO2_STATE_STRIDE
+        bus.write(lbase + 4, 4, increments[lane])
+        fbase = FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE
+        for offset in (0, 4, 8):
+            bus.write(fbase + offset, 4, 0)
+
+    def callback_snapshot(expected_phases: list[int], expected_random: list[int],
+                          updater_only: bool = False) -> list[dict]:
+        cpu = cpu_from_baseline(module, bus, baseline)
+        if updater_only:
+            stock_call(cpu, WAVE_UPDATE_BASE, [])
+        else:
+            install_input(bus, True)
+            cpu.pushl(RETURN_PC)
+            cpu.pc = AUDIO_CALLBACK
+            for _ in range(220_000):
+                if cpu.pc == MIXER:
+                    break
+                cpu.step()
+            else:
+                raise ValueError("nonlinear reset callback did not reach mixer")
+        rows = []
+        for lane, waveform in zip(lanes, waveforms):
+            old_phase = expected_phases[lane]
+            phase = advance_phase(old_phase, increments[lane], MODE_LOOP)
+            expected_phases[lane] = phase
+            if waveform == WAVE_RANDOM and phase < old_phase:
+                expected_random[lane] = (expected_random[lane] + 1) & 0xFF
+            wave = waveform_q31(waveform, phase, expected_random[lane])
+            modulation = modulation_q31(wave, depth) & 0xFFFFFFFF
+            lbase = LFO2_STATE0 + lane * LFO2_STATE_STRIDE
+            fbase = FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE
+            observed = {
+                "lane": lane,
+                "waveform": waveform,
+                "phase": bus.read(lbase, 4),
+                "last_modulation": bus.read(lbase + 12, 4),
+                "random_index": bus.read(fbase + RANDOM_INDEX_OFFSET, 4),
+            }
+            wanted = (phase, modulation, expected_random[lane])
+            if (observed["phase"], observed["last_modulation"], observed["random_index"]) != wanted:
+                raise ValueError(f"nonlinear repeated callback lane {lane} diverged")
+            rows.append({**observed, "phase": f"0x{phase:08X}",
+                         "last_modulation": f"0x{modulation:08X}", "match": True})
+        return rows
+
+    def reset_state(kind: str) -> None:
+        for lane in lanes:
+            cpu = cpu_from_baseline(module, bus, baseline)
+            if kind == "explicit":
+                stock_call(cpu, WAVE_SHIM_BASE, [RESET_INDEX_BASE + lane, 1])
+            else:
+                stock_call(cpu, WAVE_SHIM_BASE, [TRIGGER_INDEX_BASE + lane, 1])
+                write_event(bus, event_type=NOTE_ON, note=60 + lane, source_mask=QWERTY_SOURCE_MASK)
+                bus.write(EVENT_INPUT + EVENT_TRACK, 4, lane)
+                stock_call(cpu, NOTE_EVENT_CONSTRUCTOR, [EVENT_INPUT])
+            lbase = LFO2_STATE0 + lane * LFO2_STATE_STRIDE
+            fbase = FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE
+            observed = (bus.read(lbase, 4), bus.read(lbase + 12, 4),
+                        bus.read(fbase + RANDOM_INDEX_OFFSET, 4))
+            if observed != (0, 0, 0):
+                raise ValueError(f"{kind} nonlinear reset lane {lane} diverged: {observed}")
+        if kind == "trigger":
+            # The reset itself is attached to the authentic constructor. The
+            # storage-free callback fixture has no board-initialized command
+            # queue, so consume its pending note record before the LFO-only run.
+            bus.write(TRIGGER_RECORD, 4, 0)
+            bus.write(EVENT_VALUE, 4, 0)
+
+    phases = [0] * LANES
+    random_indices = [0] * LANES
+    uninterrupted = [callback_snapshot(phases, random_indices) for _ in range(6)]
+    reset_state("explicit")
+    phases = [0] * LANES
+    random_indices = [0] * LANES
+    explicit_prefix = [callback_snapshot(phases, random_indices, True) for _ in range(4)]
+    # Move away from the deterministic prefix before exercising note retrigger.
+    callback_snapshot(phases, random_indices, True)
+    callback_snapshot(phases, random_indices, True)
+    reset_state("trigger")
+    phases = [0] * LANES
+    random_indices = [0] * LANES
+    trigger_prefix = [callback_snapshot(phases, random_indices, True) for _ in range(4)]
+    if explicit_prefix != trigger_prefix:
+        raise ValueError("explicit reset and authentic note retrigger prefixes differ")
+    return {
+        "waveforms": ["sine", "exponential", "deterministic random"],
+        "uninterrupted_callbacks": uninterrupted,
+        "explicit_reset_prefix": explicit_prefix,
+        "note_retrigger_prefix": trigger_prefix,
+        "callbacks_before_each_prefix": 6,
+        "prefix_callbacks": 4,
+        "prefix_execution": "direct updater calls after reset isolation",
+        "explicit_and_note_prefixes_identical": True,
+        "random_wraps_exercised": sum(
+            row[2]["random_index"] for row in uninterrupted
+        ) > 0,
+    }
+
+
 def probe(stock_path: Path, emulator_path: Path, candidate_output: Path | None = None) -> dict:
     stock = stock_path.read_bytes()
     digest = hashlib.sha256(stock).hexdigest()
@@ -445,6 +581,7 @@ def probe(stock_path: Path, emulator_path: Path, candidate_output: Path | None =
             armed_path = Path(armed_temp.name)
             armed_path.write_bytes(armed)
             matrix = run_matrix(module, armed_path, stock)
+            nonlinear_reset = run_nonlinear_reset_matrix(module, armed_path, stock)
         equivalence = []
         for active in (False, True):
             left = execute_vector(module, stock_path, stock, active, False)
@@ -484,16 +621,19 @@ def probe(stock_path: Path, emulator_path: Path, candidate_output: Path | None =
             "random_sha256": table_hashes[1],
         },
         "waveform_matrix": matrix,
+        "nonlinear_reset_matrix": nonlinear_reset,
         "disabled_callback_stock_equivalence": equivalence,
         "conclusion": (
             "The CPU-side LFO2 engine now implements all seven target waveforms: "
             "triangle, square, saw, ramp, sine, exponential and deterministic random. "
-            "Sine and random use locked 256-entry tables; explicit reset and trigger-mode "
-            "note-on reset the random index without expanding the 16-byte LFO2 slot."
+            "Sine and random use locked 256-entry tables. Six consecutive nonlinear callbacks "
+            "and matching four-step prefixes prove that explicit reset and authentic trigger-mode "
+            "note-on restart phase, modulation and the random sequence deterministically without "
+            "expanding the 16-byte LFO2 slot."
         ),
         "next_target": (
-            "Exercise reset/retrigger behavior for sine, exponential and random over "
-            "multiple callbacks, then bind waveform/mode controls into the desktop controller."
+            "Exercise controller-driven parameter sequences through consecutive callbacks and "
+            "characterize one-shot and half-shot terminal-state audio behavior."
         ),
         "safety": (
             "Default-disabled decompressed MAIN only; no ELE3 container or flashable SysEx was built."

@@ -23,12 +23,27 @@
       "u": 58,
       "j": 59,
       "k": 60
-    }
+    },
+    "lfo2_waveforms": [
+      "triangle",
+      "square",
+      "saw",
+      "ramp",
+      "sine",
+      "exponential",
+      "random"
+    ],
+    "lfo2_modes": [
+      "loop",
+      "one-shot",
+      "half-shot",
+      "hold"
+    ]
   },
   "publications": [
     {
       "sequence": 9,
-      "time": 1789022485.623358,
+      "time": 1789068082.320718,
       "type": "filter2",
       "source": "mouse",
       "lane": 0,
@@ -36,12 +51,12 @@
       "virtual_index": "0x7FF8",
       "q31": "0x00000000",
       "target_address": "0x402B442C",
-      "instructions": 20,
+      "instructions": 46,
       "single_aligned_store": true
     },
     {
       "sequence": 10,
-      "time": 1789022485.6234546,
+      "time": 1789068082.32094,
       "type": "filter2",
       "source": "mouse",
       "lane": 1,
@@ -49,12 +64,12 @@
       "virtual_index": "0x7FF9",
       "q31": "0x10204081",
       "target_address": "0x402B444C",
-      "instructions": 20,
+      "instructions": 46,
       "single_aligned_store": true
     },
     {
       "sequence": 11,
-      "time": 1789022485.623547,
+      "time": 1789068082.321144,
       "type": "filter2",
       "source": "mouse",
       "lane": 2,
@@ -62,12 +77,12 @@
       "virtual_index": "0x7FFA",
       "q31": "0x20408102",
       "target_address": "0x402B446C",
-      "instructions": 20,
+      "instructions": 46,
       "single_aligned_store": true
     },
     {
       "sequence": 12,
-      "time": 1789022485.6236398,
+      "time": 1789068082.3213785,
       "type": "filter2",
       "source": "mouse",
       "lane": 3,
@@ -75,12 +90,12 @@
       "virtual_index": "0x7FFB",
       "q31": "0x3060C183",
       "target_address": "0x402B448C",
-      "instructions": 20,
+      "instructions": 46,
       "single_aligned_store": true
     },
     {
       "sequence": 13,
-      "time": 1789022485.6237314,
+      "time": 1789068082.3215716,
       "type": "filter2",
       "source": "mouse",
       "lane": 4,
@@ -88,12 +103,12 @@
       "virtual_index": "0x7FFC",
       "q31": "0x40810204",
       "target_address": "0x402B44AC",
-      "instructions": 20,
+      "instructions": 46,
       "single_aligned_store": true
     },
     {
       "sequence": 14,
-      "time": 1789022485.623825,
+      "time": 1789068082.3217664,
       "type": "filter2",
       "source": "mouse",
       "lane": 5,
@@ -101,12 +116,12 @@
       "virtual_index": "0x7FFD",
       "q31": "0x50A14284",
       "target_address": "0x402B44CC",
-      "instructions": 20,
+      "instructions": 46,
       "single_aligned_store": true
     },
     {
       "sequence": 15,
-      "time": 1789022485.623928,
+      "time": 1789068082.3219602,
       "type": "filter2",
       "source": "mouse",
       "lane": 6,
@@ -114,12 +129,12 @@
       "virtual_index": "0x7FFE",
       "q31": "0x60C18305",
       "target_address": "0x402B44EC",
-      "instructions": 20,
+      "instructions": 46,
       "single_aligned_store": true
     },
     {
       "sequence": 16,
-      "time": 1789022485.6240206,
+      "time": 1789068082.3221722,
       "type": "filter2",
       "source": "mouse",
       "lane": 7,
@@ -127,14 +142,192 @@
       "virtual_index": "0x7FFF",
       "q31": "0x7FFFFFFF",
       "target_address": "0x402B450C",
-      "instructions": 20,
+      "instructions": 46,
       "single_aligned_store": true
+    }
+  ],
+  "lfo2_publications": [
+    {
+      "sequence": 17,
+      "time": 1789068082.3222995,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 0,
+      "parameter": "waveform",
+      "value": 0,
+      "virtual_index": "0x7FC0",
+      "instructions": 21
+    },
+    {
+      "sequence": 18,
+      "time": 1789068082.3223982,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 1,
+      "parameter": "waveform",
+      "value": 1,
+      "virtual_index": "0x7FC1",
+      "instructions": 21
+    },
+    {
+      "sequence": 19,
+      "time": 1789068082.3224912,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 2,
+      "parameter": "waveform",
+      "value": 2,
+      "virtual_index": "0x7FC2",
+      "instructions": 21
+    },
+    {
+      "sequence": 20,
+      "time": 1789068082.3225832,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 3,
+      "parameter": "waveform",
+      "value": 3,
+      "virtual_index": "0x7FC3",
+      "instructions": 21
+    },
+    {
+      "sequence": 21,
+      "time": 1789068082.322674,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 4,
+      "parameter": "waveform",
+      "value": 4,
+      "virtual_index": "0x7FC4",
+      "instructions": 21
+    },
+    {
+      "sequence": 22,
+      "time": 1789068082.3227654,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 5,
+      "parameter": "waveform",
+      "value": 5,
+      "virtual_index": "0x7FC5",
+      "instructions": 21
+    },
+    {
+      "sequence": 23,
+      "time": 1789068082.322859,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 6,
+      "parameter": "waveform",
+      "value": 6,
+      "virtual_index": "0x7FC6",
+      "instructions": 21
+    },
+    {
+      "sequence": 24,
+      "time": 1789068082.3229513,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 7,
+      "parameter": "waveform",
+      "value": 0,
+      "virtual_index": "0x7FC7",
+      "instructions": 21
+    },
+    {
+      "sequence": 25,
+      "time": 1789068082.3230538,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 0,
+      "parameter": "mode",
+      "value": 0,
+      "virtual_index": "0x7FC8",
+      "instructions": 22
+    },
+    {
+      "sequence": 26,
+      "time": 1789068082.32315,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 1,
+      "parameter": "mode",
+      "value": 1,
+      "virtual_index": "0x7FC9",
+      "instructions": 22
+    },
+    {
+      "sequence": 27,
+      "time": 1789068082.3232439,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 2,
+      "parameter": "mode",
+      "value": 2,
+      "virtual_index": "0x7FCA",
+      "instructions": 22
+    },
+    {
+      "sequence": 28,
+      "time": 1789068082.3233702,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 3,
+      "parameter": "mode",
+      "value": 3,
+      "virtual_index": "0x7FCB",
+      "instructions": 22
+    },
+    {
+      "sequence": 29,
+      "time": 1789068082.3234634,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 4,
+      "parameter": "mode",
+      "value": 0,
+      "virtual_index": "0x7FCC",
+      "instructions": 22
+    },
+    {
+      "sequence": 30,
+      "time": 1789068082.323556,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 5,
+      "parameter": "mode",
+      "value": 1,
+      "virtual_index": "0x7FCD",
+      "instructions": 22
+    },
+    {
+      "sequence": 31,
+      "time": 1789068082.3236482,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 6,
+      "parameter": "mode",
+      "value": 2,
+      "virtual_index": "0x7FCE",
+      "instructions": 22
+    },
+    {
+      "sequence": 32,
+      "time": 1789068082.323741,
+      "type": "lfo2",
+      "source": "mouse",
+      "lane": 7,
+      "parameter": "mode",
+      "value": 3,
+      "virtual_index": "0x7FCF",
+      "instructions": 22
     }
   ],
   "note_events": [
     {
-      "sequence": 17,
-      "time": 1789022486.0613089,
+      "sequence": 36,
+      "time": 1789068082.7124138,
       "type": "note",
       "source": "qwerty",
       "key": "a",
@@ -146,7 +339,7 @@
         "note": 48,
         "encoded_pitch": "0x00300000",
         "live_pitch": "0x00300000",
-        "constructor_instructions": 108,
+        "constructor_instructions": 130,
         "callback_cases": [
           0
         ],
@@ -172,8 +365,8 @@
       }
     },
     {
-      "sequence": 18,
-      "time": 1789022486.4153273,
+      "sequence": 37,
+      "time": 1789068083.0771337,
       "type": "note",
       "source": "qwerty",
       "key": "a",
@@ -183,7 +376,7 @@
       "firmware_transport": "emulated_stock_release",
       "stock_release": {
         "note": 48,
-        "constructor_instructions": 38,
+        "constructor_instructions": 45,
         "accepted": true,
         "held_source_mask_before": "0x00000001",
         "held_source_mask_after": "0x00000000",
@@ -198,15 +391,15 @@
   "assets": {
     "index.html": {
       "exists": true,
-      "bytes": 2206
+      "bytes": 4129
     },
     "styles.css": {
       "exists": true,
-      "bytes": 5763
+      "bytes": 6890
     },
     "app.js": {
       "exists": true,
-      "bytes": 8356
+      "bytes": 11988
     }
   },
   "checks": {
@@ -215,6 +408,10 @@
     "virtual_index_range_exact": true,
     "final_controls_exact": true,
     "note_path_did_not_mutate_filter2": true,
+    "seven_waveforms_publish": true,
+    "four_modes_publish": true,
+    "waveform_index_range_exact": true,
+    "mode_index_range_exact": true,
     "note_on_off_exact": true,
     "firmware_keydown_transport_exact": true,
     "firmware_keyup_transport_exact": true,

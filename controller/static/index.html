@@ -42,10 +42,51 @@
       <div class="knob-grid" id="knob-grid"></div>
     </section>
 
-    <section class="panel keyboard-panel" aria-labelledby="keyboard-title">
+    <section class="panel" aria-labelledby="lfo2-title">
       <div class="section-heading">
         <div>
           <p class="section-index">02</p>
+          <h2 id="lfo2-title">LFO 2 · <span id="lfo2-lane">LANE 1</span></h2>
+        </div>
+        <p>Follows the selected Filter 2 lane · all changes use the extended publication shim</p>
+      </div>
+      <div class="lfo-controls">
+        <label>Waveform
+          <select id="lfo2-waveform">
+            <option value="triangle">Triangle</option>
+            <option value="square">Square</option>
+            <option value="saw">Saw</option>
+            <option value="ramp">Ramp</option>
+            <option value="sine">Sine</option>
+            <option value="exponential">Exponential</option>
+            <option value="random">Random</option>
+          </select>
+        </label>
+        <label>Run mode
+          <select id="lfo2-mode">
+            <option value="loop">Loop</option>
+            <option value="one-shot">One shot</option>
+            <option value="half-shot">Half shot</option>
+            <option value="hold">Hold</option>
+          </select>
+        </label>
+        <label class="range-control">Rate <output id="lfo2-rate-value">064</output>
+          <input id="lfo2-rate" type="range" min="0" max="127" value="64">
+        </label>
+        <label class="range-control">Depth <output id="lfo2-depth-value">064</output>
+          <input id="lfo2-depth" type="range" min="0" max="127" value="64">
+        </label>
+        <label class="toggle-control"><input id="lfo2-enable" type="checkbox"> Enabled</label>
+        <label class="toggle-control"><input id="lfo2-trigger" type="checkbox"> Retrigger on note</label>
+        <button id="lfo2-reset" class="reset-button" type="button">Reset phase</button>
+      </div>
+      <p class="lfo-publication" id="lfo2-publication" aria-live="polite">Wave 0x7FC0 · Mode 0x7FC8</p>
+    </section>
+
+    <section class="panel keyboard-panel" aria-labelledby="keyboard-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-index">03</p>
           <h2 id="keyboard-title">QWERTY NOTES</h2>
         </div>
         <p>Key-down and key-up use the stock note-event constructor</p>

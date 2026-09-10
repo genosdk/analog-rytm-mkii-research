@@ -24,13 +24,18 @@ sys.path.insert(0, str(RESEARCH))
 
 from audio_callback_probe import EXPECTED_MAIN_SHA256, prepared_machine  # noqa: E402
 from filter2_coefficient_slew_probe import control_to_q31  # noqa: E402
-from filter2_publication_shim_probe import (  # noqa: E402
-    SHIM_BASE,
-    VIRTUAL_INDEX_BASE,
-    build_candidate,
-    target_address,
-)
+from filter2_publication_shim_probe import VIRTUAL_INDEX_BASE, target_address  # noqa: E402
+from filter2_lfo2_cutoff_binding_probe import COMBINED_FLAGS  # noqa: E402
 from filter2_unity_kernel_probe import FILTER2_MASK_ADDRESS, FLAGS_ADDRESS  # noqa: E402
+from lfo2_control_publication_probe import (  # noqa: E402
+    DEPTH_INDEX_BASE,
+    ENABLE_INDEX_BASE,
+    RATE_INDEX_BASE,
+    RESET_INDEX_BASE,
+    TRIGGER_INDEX_BASE,
+)
+from lfo2_extended_waveform_probe import build_candidate  # noqa: E402
+from lfo2_waveform_mode_probe import MODE_INDEX_BASE, WAVE_INDEX_BASE, WAVE_SHIM_BASE  # noqa: E402
 from note_event_constructor_probe import (  # noqa: E402
     EVENT_FLAGS as NOTE_EVENT_FLAGS,
     EVENT_INPUT,
@@ -60,9 +65,27 @@ from trigger_queue_probe import (  # noqa: E402
 )
 
 LANES = 8
-FILTER2_FLAG = 1
 ALL_LANES_MASK = 0x00FF
 DEFAULT_CONTROL = 64
+WAVEFORMS = {
+    "triangle": 0,
+    "square": 1,
+    "saw": 2,
+    "ramp": 3,
+    "sine": 4,
+    "exponential": 5,
+    "random": 6,
+}
+MODES = {"loop": 0, "one-shot": 1, "half-shot": 2, "hold": 3}
+LFO2_PARAMETERS = {
+    "waveform": WAVE_INDEX_BASE,
+    "mode": MODE_INDEX_BASE,
+    "trigger": TRIGGER_INDEX_BASE,
+    "enable": ENABLE_INDEX_BASE,
+    "reset": RESET_INDEX_BASE,
+    "rate": RATE_INDEX_BASE,
+    "depth": DEPTH_INDEX_BASE,
+}
 LIVE_PITCH = 0x80006388
 TRACK_CHROMATIC_MODE_SOURCE = 0x412FACA1
 LIVE_CHROMATIC_MODE = 0x8000EA18
@@ -114,7 +137,7 @@ class EmulatorBridge:
         # Stock callback code copies this per-track source byte into its live
         # gate, then selects LIVE_PITCH instead of the fixed note-60 fallback.
         self.bus.write(TRACK_CHROMATIC_MODE_SOURCE, 1, 1)  # 1 = synth
-        self.bus.write(FLAGS_ADDRESS, 4, FILTER2_FLAG)
+        self.bus.write(FLAGS_ADDRESS, 4, COMBINED_FLAGS)
         self.bus.write(FILTER2_MASK_ADDRESS, 2, ALL_LANES_MASK)
         self.lock = threading.RLock()
         self.stock_sha256 = digest
@@ -138,7 +161,7 @@ class EmulatorBridge:
 
             self.bus.write = traced_write
             try:
-                steps = stock_call(self.cpu, SHIM_BASE, [virtual_index, value])
+                steps = stock_call(self.cpu, WAVE_SHIM_BASE, [virtual_index, value])
             finally:
                 self.bus.write = original_write
         if writes != [(expected_address, 4, expected_q31)]:
@@ -151,6 +174,28 @@ class EmulatorBridge:
             "target_address": f"0x{expected_address:08X}",
             "instructions": steps,
             "single_aligned_store": expected_address % 4 == 0,
+        }
+
+    def publish_lfo2(self, lane: int, parameter: str, value: int) -> dict[str, Any]:
+        if not 0 <= lane < LANES:
+            raise ValueError("lane must be 0..7")
+        if parameter not in LFO2_PARAMETERS:
+            raise ValueError("unsupported LFO2 parameter")
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise ValueError("LFO2 value must be an integer")
+        limits = {"waveform": 6, "mode": 3, "trigger": 1, "enable": 1,
+                  "reset": 1, "rate": 127, "depth": 127}
+        if not 0 <= value <= limits[parameter]:
+            raise ValueError(f"{parameter} value must be 0..{limits[parameter]}")
+        virtual_index = LFO2_PARAMETERS[parameter] + lane
+        with self.lock:
+            steps = stock_call(self.cpu, WAVE_SHIM_BASE, [virtual_index, value])
+        return {
+            "lane": lane,
+            "parameter": parameter,
+            "value": value,
+            "virtual_index": f"0x{virtual_index:04X}",
+            "instructions": steps,
         }
 
     def trigger_note(self, note: int) -> dict[str, Any]:
@@ -263,6 +308,14 @@ class ControllerState:
         self.bridge = bridge
         self.values = [clamp_control(initial_value)] * LANES
         self.selected_lane = 0
+        self.lfo2 = {
+            "waveform": [WAVEFORMS["triangle"]] * LANES,
+            "mode": [MODES["loop"]] * LANES,
+            "trigger": [0] * LANES,
+            "enable": [0] * LANES,
+            "rate": [DEFAULT_CONTROL] * LANES,
+            "depth": [DEFAULT_CONTROL] * LANES,
+        }
         self.held_notes: set[int] = set()
         self.events: deque[dict[str, Any]] = deque(maxlen=32)
         self.lock = threading.RLock()
@@ -270,6 +323,9 @@ class ControllerState:
         self.event_sequence = 0
         for lane, value in enumerate(self.values):
             self._publish_filter(lane, value, "initialization")
+            for parameter in ("waveform", "mode", "trigger", "enable", "rate", "depth"):
+                self.bridge.publish_lfo2(lane, parameter, self.lfo2[parameter][lane])
+        self.selected_lane = 0
 
     def _record(self, event: dict[str, Any]) -> dict[str, Any]:
         self.event_sequence += 1
@@ -292,6 +348,30 @@ class ControllerState:
             source = "api"
         with self.lock:
             return self._publish_filter(lane, clamp_control(value), source)
+
+    def set_lfo2(self, lane: int, parameter: str, value: Any, source: str = "api") -> dict[str, Any]:
+        if not isinstance(lane, int) or isinstance(lane, bool) or not 0 <= lane < LANES:
+            raise ValueError("lane must be an integer from 0 through 7")
+        if parameter == "waveform" and isinstance(value, str):
+            if value not in WAVEFORMS:
+                raise ValueError("unsupported LFO2 waveform")
+            value = WAVEFORMS[value]
+        elif parameter == "mode" and isinstance(value, str):
+            if value not in MODES:
+                raise ValueError("unsupported LFO2 mode")
+            value = MODES[value]
+        elif parameter in {"trigger", "enable"} and isinstance(value, bool):
+            value = int(value)
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise ValueError("LFO2 value must be an integer or supported name")
+        if source not in {"mouse", "keyboard", "api"}:
+            source = "api"
+        with self.lock:
+            publication = self.bridge.publish_lfo2(lane, parameter, value)
+            self.selected_lane = lane
+            if parameter != "reset":
+                self.lfo2[parameter][lane] = value
+            return self._record({"type": "lfo2", "source": source, **publication})
 
     def note(self, key: str, action: str, velocity: int = 100) -> dict[str, Any]:
         key = key.lower()
@@ -333,6 +413,17 @@ class ControllerState:
                     "selected_lane": self.selected_lane,
                     "virtual_indices": [f"0x{VIRTUAL_INDEX_BASE + lane:04X}" for lane in range(LANES)],
                     "transport": "emulator publication shim",
+                },
+                "lfo2": {
+                    **{name: list(values) for name, values in self.lfo2.items()},
+                    "selected_lane": self.selected_lane,
+                    "waveforms": WAVEFORMS,
+                    "modes": MODES,
+                    "virtual_indices": {
+                        name: [f"0x{base + lane:04X}" for lane in range(LANES)]
+                        for name, base in LFO2_PARAMETERS.items()
+                    },
+                    "transport": "emulator extended-wave publication shim",
                 },
                 "notes": {
                     "keys": NOTE_KEYS,
@@ -395,6 +486,11 @@ def make_handler(state: ControllerState):
                 path = urlparse(self.path).path
                 if path == "/api/filter2":
                     event = state.set_filter(payload.get("lane"), payload.get("value"), payload.get("source", "api"))
+                elif path == "/api/lfo2":
+                    event = state.set_lfo2(
+                        payload.get("lane"), payload.get("parameter", ""),
+                        payload.get("value"), payload.get("source", "api"),
+                    )
                 elif path == "/api/note":
                     event = state.note(payload.get("key", ""), payload.get("action", ""), payload.get("velocity", 100))
                 else:
@@ -428,7 +524,7 @@ def main() -> None:
     state = ControllerState(bridge)
     server = ThreadingHTTPServer((args.host, args.port), make_handler(state))
     print(f"Rytm II lab controller: http://{args.host}:{server.server_port}")
-    print("Filter2 and QWERTY note-on/note-off are emulator-backed.")
+    print("Filter2, LFO2 and QWERTY note-on/note-off are emulator-backed.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

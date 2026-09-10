@@ -746,6 +746,11 @@ class Lfo2CpuIntegrationProbeTests(StockProbeTest):
         matrix = result["waveform_matrix"]
         self.assertEqual(len(matrix["lanes"]), 7)
         self.assertTrue(matrix["all_seven_waveforms_match"])
+        reset = result["nonlinear_reset_matrix"]
+        self.assertEqual(len(reset["uninterrupted_callbacks"]), 6)
+        self.assertEqual(len(reset["explicit_reset_prefix"]), 4)
+        self.assertTrue(reset["random_wraps_exercised"])
+        self.assertTrue(reset["explicit_and_note_prefixes_identical"])
         self.assertTrue(all(
             all(row["bit_identical"].values())
             for row in result["disabled_callback_stock_equivalence"]

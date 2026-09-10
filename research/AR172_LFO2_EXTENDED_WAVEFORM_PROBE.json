@@ -555,6 +555,388 @@
     "multiply_calls": 456,
     "all_seven_waveforms_match": true
   },
+  "nonlinear_reset_matrix": {
+    "waveforms": [
+      "sine",
+      "exponential",
+      "deterministic random"
+    ],
+    "uninterrupted_callbacks": [
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x28000000",
+          "last_modulation": "0x6A6D98A2",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0x38000000",
+          "last_modulation": "0x8C400000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x60000000",
+          "last_modulation": "0x1FCFA0DD",
+          "random_index": 0,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x50000000",
+          "last_modulation": "0x7641AF3B",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0x70000000",
+          "last_modulation": "0xB1000000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0xC0000000",
+          "last_modulation": "0x1FCFA0DD",
+          "random_index": 0,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x78000000",
+          "last_modulation": "0x18F8B83B",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0xA8000000",
+          "last_modulation": "0xEE400000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x20000000",
+          "last_modulation": "0xA05F0EDF",
+          "random_index": 1,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0xA0000000",
+          "last_modulation": "0xA57D8667",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0xE0000000",
+          "last_modulation": "0x43FFFFFF",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x80000000",
+          "last_modulation": "0xA05F0EDF",
+          "random_index": 1,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0xC8000000",
+          "last_modulation": "0x8275A0C1",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0x18000000",
+          "last_modulation": "0x82400000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0xE0000000",
+          "last_modulation": "0xA05F0EDF",
+          "random_index": 1,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0xF0000000",
+          "last_modulation": "0xCF043AB3",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0x50000000",
+          "last_modulation": "0x99000000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x40000000",
+          "last_modulation": "0xD496F16D",
+          "random_index": 2,
+          "match": true
+        }
+      ]
+    ],
+    "explicit_reset_prefix": [
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x28000000",
+          "last_modulation": "0x6A6D98A2",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0x38000000",
+          "last_modulation": "0x8C400000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x60000000",
+          "last_modulation": "0x1FCFA0DD",
+          "random_index": 0,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x50000000",
+          "last_modulation": "0x7641AF3B",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0x70000000",
+          "last_modulation": "0xB1000000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0xC0000000",
+          "last_modulation": "0x1FCFA0DD",
+          "random_index": 0,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x78000000",
+          "last_modulation": "0x18F8B83B",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0xA8000000",
+          "last_modulation": "0xEE400000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x20000000",
+          "last_modulation": "0xA05F0EDF",
+          "random_index": 1,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0xA0000000",
+          "last_modulation": "0xA57D8667",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0xE0000000",
+          "last_modulation": "0x43FFFFFF",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x80000000",
+          "last_modulation": "0xA05F0EDF",
+          "random_index": 1,
+          "match": true
+        }
+      ]
+    ],
+    "note_retrigger_prefix": [
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x28000000",
+          "last_modulation": "0x6A6D98A2",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0x38000000",
+          "last_modulation": "0x8C400000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x60000000",
+          "last_modulation": "0x1FCFA0DD",
+          "random_index": 0,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x50000000",
+          "last_modulation": "0x7641AF3B",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0x70000000",
+          "last_modulation": "0xB1000000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0xC0000000",
+          "last_modulation": "0x1FCFA0DD",
+          "random_index": 0,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0x78000000",
+          "last_modulation": "0x18F8B83B",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0xA8000000",
+          "last_modulation": "0xEE400000",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x20000000",
+          "last_modulation": "0xA05F0EDF",
+          "random_index": 1,
+          "match": true
+        }
+      ],
+      [
+        {
+          "lane": 0,
+          "waveform": 4,
+          "phase": "0xA0000000",
+          "last_modulation": "0xA57D8667",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 1,
+          "waveform": 5,
+          "phase": "0xE0000000",
+          "last_modulation": "0x43FFFFFF",
+          "random_index": 0,
+          "match": true
+        },
+        {
+          "lane": 2,
+          "waveform": 6,
+          "phase": "0x80000000",
+          "last_modulation": "0xA05F0EDF",
+          "random_index": 1,
+          "match": true
+        }
+      ]
+    ],
+    "callbacks_before_each_prefix": 6,
+    "prefix_callbacks": 4,
+    "prefix_execution": "direct updater calls after reset isolation",
+    "explicit_and_note_prefixes_identical": true,
+    "random_wraps_exercised": true
+  },
   "disabled_callback_stock_equivalence": [
     {
       "input": "zero",
@@ -579,7 +961,7 @@
       }
     }
   ],
-  "conclusion": "The CPU-side LFO2 engine now implements all seven target waveforms: triangle, square, saw, ramp, sine, exponential and deterministic random. Sine and random use locked 256-entry tables; explicit reset and trigger-mode note-on reset the random index without expanding the 16-byte LFO2 slot.",
-  "next_target": "Exercise reset/retrigger behavior for sine, exponential and random over multiple callbacks, then bind waveform/mode controls into the desktop controller.",
+  "conclusion": "The CPU-side LFO2 engine now implements all seven target waveforms: triangle, square, saw, ramp, sine, exponential and deterministic random. Sine and random use locked 256-entry tables. Six consecutive nonlinear callbacks and matching four-step prefixes prove that explicit reset and authentic trigger-mode note-on restart phase, modulation and the random sequence deterministically without expanding the 16-byte LFO2 slot.",
+  "next_target": "Exercise controller-driven parameter sequences through consecutive callbacks and characterize one-shot and half-shot terminal-state audio behavior.",
   "safety": "Default-disabled decompressed MAIN only; no ELE3 container or flashable SysEx was built."
 }

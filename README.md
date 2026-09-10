@@ -97,9 +97,10 @@ and reproducible tooling.
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
   the eight lane targets outside the audio callback.
-- The local controller exposes eight mouse/wheel/keyboard knobs and QWERTY
-  notes `A W S E D F T G Y H U J K` (notes 48..60). Note-on and note-off both
-  execute through the recovered stock note-event constructor in the emulator.
+- The local controller exposes eight mouse/wheel/keyboard Filter 2 knobs plus
+  per-lane LFO2 waveform, mode, rate, depth, enable, retrigger and phase-reset
+  controls. QWERTY notes `A W S E D F T G Y H U J K` (notes 48..60) retain
+  their distinct recovered stock note-event constructor path.
 - Renderer-scoped execution across all 34 public machines and five forced
   states covers 170 stock contexts. It identifies 117 of the packetizer's 492
   payload halfwords as renderer-owned, with no universal field; the other 375
@@ -189,7 +190,7 @@ the random sequence. The disabled callback remains bit-identical to stock.
 The detailed evidence and memory map are in
 `docs/AR172_LFO2_FILTER2_RESEARCH.md`.
 
-## Local Filter 2 controller
+## Local Filter 2 + LFO2 controller
 
 Place the stock decompressed MAIN at the ignored path
 `research/extracted_stock_nrv/section_3_id_3.decompressed.bin`, then run:
@@ -200,7 +201,10 @@ python controller/filter2_controller_service.py
 ```
 
 Open `http://127.0.0.1:8765`. The service creates only a temporary runtime
-candidate and never writes an ELE3 container, SysEx package, or flashable image.
+candidate. Selecting a Filter 2 lane also selects its LFO2 editor; the seven
+waveforms and four run modes publish through their recovered virtual-index
+banks. The service never writes an ELE3 container, SysEx package, or flashable
+image.
 
 ## Railway dashboard
 

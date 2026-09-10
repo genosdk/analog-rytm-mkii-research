@@ -4,8 +4,18 @@ const LANES = 8;
 const DEFAULT_VALUE = 64;
 const NOTE_KEYS = { a:48, w:49, s:50, e:51, d:52, f:53, t:54, g:55, y:56, h:57, u:58, j:59, k:60 };
 const BLACK_KEYS = new Set(["w", "e", "t", "y", "u"]);
-const state = { values: Array(LANES).fill(DEFAULT_VALUE), selectedLane: 0, held: new Set(), online: false };
+const WAVEFORMS = ["triangle", "square", "saw", "ramp", "sine", "exponential", "random"];
+const MODES = ["loop", "one-shot", "half-shot", "hold"];
+const state = {
+  values: Array(LANES).fill(DEFAULT_VALUE), selectedLane: 0, held: new Set(), online: false,
+  lfo2: {
+    waveform: Array(LANES).fill(0), mode: Array(LANES).fill(0),
+    trigger: Array(LANES).fill(0), enable: Array(LANES).fill(0),
+    rate: Array(LANES).fill(DEFAULT_VALUE), depth: Array(LANES).fill(DEFAULT_VALUE),
+  },
+};
 let filterQueue = Promise.resolve();
+let lfoQueue = Promise.resolve();
 let noteQueue = Promise.resolve();
 let filterRevision = 0;
 let noteRevision = 0;
@@ -52,6 +62,28 @@ function renderKnob(lane) {
     document.querySelector("#active-readout").textContent = `F2 ${lane + 1} · ${String(value).padStart(3, "0")}`;
     document.querySelector("#publication-readout").textContent = `0x${(0x7ff8 + lane).toString(16).toUpperCase()}`;
   }
+}
+
+function renderLfo2() {
+  const lane = state.selectedLane;
+  document.querySelector("#lfo2-lane").textContent = `LANE ${lane + 1}`;
+  document.querySelector("#lfo2-waveform").value = WAVEFORMS[state.lfo2.waveform[lane]];
+  document.querySelector("#lfo2-mode").value = MODES[state.lfo2.mode[lane]];
+  for (const parameter of ["rate", "depth"]) {
+    const value = state.lfo2[parameter][lane];
+    document.querySelector(`#lfo2-${parameter}`).value = value;
+    document.querySelector(`#lfo2-${parameter}-value`).textContent = String(value).padStart(3, "0");
+  }
+  document.querySelector("#lfo2-enable").checked = Boolean(state.lfo2.enable[lane]);
+  document.querySelector("#lfo2-trigger").checked = Boolean(state.lfo2.trigger[lane]);
+  document.querySelector("#lfo2-publication").textContent =
+    `Wave 0x${(0x7fc0 + lane).toString(16).toUpperCase()} · Mode 0x${(0x7fc8 + lane).toString(16).toUpperCase()}`;
+}
+
+function selectLane(lane) {
+  state.selectedLane = lane;
+  for (let item = 0; item < LANES; item += 1) renderKnob(item);
+  renderLfo2();
 }
 
 function renderNotes() {
@@ -103,6 +135,30 @@ function publishFilter(lane, value, source) {
   return filterQueue;
 }
 
+function publishLfo2(parameter, value, source = "mouse") {
+  const lane = state.selectedLane;
+  const encoded = parameter === "waveform" ? WAVEFORMS.indexOf(value)
+    : parameter === "mode" ? MODES.indexOf(value) : Number(value);
+  if (parameter !== "reset") state.lfo2[parameter][lane] = encoded;
+  renderLfo2();
+  lfoQueue = lfoQueue.then(async () => {
+    try {
+      const body = await request("/api/lfo2", { lane, parameter, value, source });
+      state.lfo2 = {
+        waveform: body.state.lfo2.waveform, mode: body.state.lfo2.mode,
+        trigger: body.state.lfo2.trigger, enable: body.state.lfo2.enable,
+        rate: body.state.lfo2.rate, depth: body.state.lfo2.depth,
+      };
+      renderLfo2();
+      setConnection(true, "Emulator connected");
+    } catch (error) {
+      setConnection(false, "LFO2 publication failed");
+      console.error(error);
+    }
+  });
+  return lfoQueue;
+}
+
 function publishNote(key, action) {
   const note = NOTE_KEYS[key];
   const revision = ++noteRevision;
@@ -129,9 +185,8 @@ function bindKnobs() {
     let drag = null;
     knob.addEventListener("pointerdown", event => {
       drag = { y: event.clientY, value: state.values[lane] };
-      state.selectedLane = lane;
+      selectLane(lane);
       knob.setPointerCapture(event.pointerId);
-      renderKnob(lane);
     });
     knob.addEventListener("pointermove", event => {
       if (!drag) return;
@@ -159,12 +214,33 @@ function bindKnobs() {
   });
 }
 
+function bindLfo2() {
+  document.querySelector("#lfo2-waveform").addEventListener("change", event =>
+    publishLfo2("waveform", event.target.value));
+  document.querySelector("#lfo2-mode").addEventListener("change", event =>
+    publishLfo2("mode", event.target.value));
+  for (const parameter of ["rate", "depth"]) {
+    document.querySelector(`#lfo2-${parameter}`).addEventListener("input", event => {
+      const value = Number(event.target.value);
+      state.lfo2[parameter][state.selectedLane] = value;
+      document.querySelector(`#lfo2-${parameter}-value`).textContent = String(value).padStart(3, "0");
+    });
+    document.querySelector(`#lfo2-${parameter}`).addEventListener("change", event =>
+      publishLfo2(parameter, Number(event.target.value)));
+  }
+  for (const parameter of ["enable", "trigger"]) {
+    document.querySelector(`#lfo2-${parameter}`).addEventListener("change", event =>
+      publishLfo2(parameter, event.target.checked));
+  }
+  document.querySelector("#lfo2-reset").addEventListener("click", () => publishLfo2("reset", 1));
+}
+
 function bindNotes() {
   const down = new Set();
   window.addEventListener("keydown", event => {
     const key = event.key.toLowerCase();
     if (NOTE_KEYS[key] === undefined || down.has(key) || event.metaKey || event.ctrlKey || event.altKey) return;
-    if (["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) return;
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
     event.preventDefault();
     down.add(key);
     publishNote(key, "on");
@@ -195,6 +271,7 @@ async function initialize() {
   document.querySelector("#knob-grid").innerHTML = Array.from({ length: LANES }, (_, lane) => knobMarkup(lane)).join("");
   document.querySelector("#piano").innerHTML = pianoMarkup();
   bindKnobs();
+  bindLfo2();
   bindNotes();
   try {
     const response = await fetch("/api/state", { cache: "no-store" });
@@ -202,8 +279,14 @@ async function initialize() {
     const body = await response.json();
     state.values = body.filter2.values;
     state.selectedLane = body.filter2.selected_lane;
+    state.lfo2 = {
+      waveform: body.lfo2.waveform, mode: body.lfo2.mode,
+      trigger: body.lfo2.trigger, enable: body.lfo2.enable,
+      rate: body.lfo2.rate, depth: body.lfo2.depth,
+    };
     state.held = new Set(body.notes.held);
     for (let lane = 0; lane < LANES; lane += 1) renderKnob(lane);
+    renderLfo2();
     renderNotes();
     setConnection(true, "Emulator connected");
   } catch (error) {
