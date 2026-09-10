@@ -34,6 +34,7 @@
 #define AR_EDMA_TCD_BASE 0x1000u
 #define AR_EDMA_TCD_SIZE 0x20u
 #define AR_EDMA_CHANNELS 64u
+#define AR_EDMA_DSPI1_TX_CHANNEL 15u
 #define AR_TYPE8_RECORD 0xF8u
 #define AR_TYPE8_START_NS 5000000000LL
 #define AR_TYPE8_PERIOD_NS 10000000LL
@@ -636,12 +637,21 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
     return true;
 }
 
-static void ar_edma_pump_audio_channel(AREdmaState *s, unsigned channel)
+static void ar_edma_pump_channel(AREdmaState *s, unsigned channel)
 {
     unsigned guard = 0;
+    uint8_t *tcd = s->tcd[channel];
+    uint16_t csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
+
+    /* A fresh peripheral request activates a reloaded major loop and clears
+     * the prior DONE status.  In particular, OS 1.72 reuses DSPI1 channel 15
+     * by writing CERQ, the new SADDR, then SERQ; it does not issue CDNE. */
+    if ((s->erq & (1ULL << channel)) && (csr & AR_EDMA_CSR_DONE)) {
+        stw_be_p(tcd + AR_EDMA_TCD_CSR, csr & ~AR_EDMA_CSR_DONE);
+    }
 
     while (guard++ < 4096 && (s->erq & (1ULL << channel))) {
-        uint16_t csr = lduw_be_p(s->tcd[channel] + AR_EDMA_TCD_CSR);
+        csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
 
         if (csr & AR_EDMA_CSR_DONE) {
             break;
@@ -792,6 +802,9 @@ static void ar_edma_write(void *opaque, hwaddr addr,
                 s->erq = ~0ULL;
             } else {
                 s->erq |= 1ULL << (value & 0x3f);
+            }
+            if ((value & 0x3f) == AR_EDMA_DSPI1_TX_CHANNEL) {
+                ar_edma_pump_channel(s, AR_EDMA_DSPI1_TX_CHANNEL);
             }
             ar_edma_pump_uarts(s->core);
         }
@@ -1113,8 +1126,8 @@ static void ar_type8_feed(void *opaque)
          * before raising the block-service interrupt.  Finish the prior
          * outbound chain first, then populate the input chain consumed by
          * the ISR. */
-        ar_edma_pump_audio_channel(&c->edma, 42);
-        ar_edma_pump_audio_channel(&c->edma, 30);
+        ar_edma_pump_channel(&c->edma, 42);
+        ar_edma_pump_channel(&c->edma, 30);
         c->intc[1].ifr |= 1ULL << 63;
         ar_intc_update(c);
         if (!c->mock_audio_service && c->audio_service_budget) {
