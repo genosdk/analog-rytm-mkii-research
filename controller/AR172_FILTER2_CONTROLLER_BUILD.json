@@ -47,7 +47,6 @@
   "publications": [
     {
       "sequence": 9,
-      "time": 1789075398.0916808,
       "type": "filter2",
       "source": "mouse",
       "lane": 0,
@@ -60,7 +59,6 @@
     },
     {
       "sequence": 10,
-      "time": 1789075398.0918906,
       "type": "filter2",
       "source": "mouse",
       "lane": 1,
@@ -73,7 +71,6 @@
     },
     {
       "sequence": 11,
-      "time": 1789075398.0920906,
       "type": "filter2",
       "source": "mouse",
       "lane": 2,
@@ -86,7 +83,6 @@
     },
     {
       "sequence": 12,
-      "time": 1789075398.0923002,
       "type": "filter2",
       "source": "mouse",
       "lane": 3,
@@ -99,7 +95,6 @@
     },
     {
       "sequence": 13,
-      "time": 1789075398.0924993,
       "type": "filter2",
       "source": "mouse",
       "lane": 4,
@@ -112,7 +107,6 @@
     },
     {
       "sequence": 14,
-      "time": 1789075398.0926948,
       "type": "filter2",
       "source": "mouse",
       "lane": 5,
@@ -125,7 +119,6 @@
     },
     {
       "sequence": 15,
-      "time": 1789075398.0928884,
       "type": "filter2",
       "source": "mouse",
       "lane": 6,
@@ -138,7 +131,6 @@
     },
     {
       "sequence": 16,
-      "time": 1789075398.0931656,
       "type": "filter2",
       "source": "mouse",
       "lane": 7,
@@ -153,7 +145,6 @@
   "lfo2_publications": [
     {
       "sequence": 17,
-      "time": 1789075398.0933075,
       "type": "lfo2",
       "source": "mouse",
       "lane": 0,
@@ -164,7 +155,6 @@
     },
     {
       "sequence": 18,
-      "time": 1789075398.0934083,
       "type": "lfo2",
       "source": "mouse",
       "lane": 1,
@@ -175,7 +165,6 @@
     },
     {
       "sequence": 19,
-      "time": 1789075398.0935037,
       "type": "lfo2",
       "source": "mouse",
       "lane": 2,
@@ -186,7 +175,6 @@
     },
     {
       "sequence": 20,
-      "time": 1789075398.0935965,
       "type": "lfo2",
       "source": "mouse",
       "lane": 3,
@@ -197,7 +185,6 @@
     },
     {
       "sequence": 21,
-      "time": 1789075398.093691,
       "type": "lfo2",
       "source": "mouse",
       "lane": 4,
@@ -208,7 +195,6 @@
     },
     {
       "sequence": 22,
-      "time": 1789075398.0937846,
       "type": "lfo2",
       "source": "mouse",
       "lane": 5,
@@ -219,7 +205,6 @@
     },
     {
       "sequence": 23,
-      "time": 1789075398.0938756,
       "type": "lfo2",
       "source": "mouse",
       "lane": 6,
@@ -230,7 +215,6 @@
     },
     {
       "sequence": 24,
-      "time": 1789075398.0939682,
       "type": "lfo2",
       "source": "mouse",
       "lane": 7,
@@ -241,7 +225,6 @@
     },
     {
       "sequence": 25,
-      "time": 1789075398.0940962,
       "type": "lfo2",
       "source": "mouse",
       "lane": 0,
@@ -252,7 +235,6 @@
     },
     {
       "sequence": 26,
-      "time": 1789075398.094194,
       "type": "lfo2",
       "source": "mouse",
       "lane": 1,
@@ -263,7 +245,6 @@
     },
     {
       "sequence": 27,
-      "time": 1789075398.0943038,
       "type": "lfo2",
       "source": "mouse",
       "lane": 2,
@@ -274,7 +255,6 @@
     },
     {
       "sequence": 28,
-      "time": 1789075398.0943983,
       "type": "lfo2",
       "source": "mouse",
       "lane": 3,
@@ -285,7 +265,6 @@
     },
     {
       "sequence": 29,
-      "time": 1789075398.0944927,
       "type": "lfo2",
       "source": "mouse",
       "lane": 4,
@@ -296,7 +275,6 @@
     },
     {
       "sequence": 30,
-      "time": 1789075398.0945868,
       "type": "lfo2",
       "source": "mouse",
       "lane": 5,
@@ -307,7 +285,6 @@
     },
     {
       "sequence": 31,
-      "time": 1789075398.0946798,
       "type": "lfo2",
       "source": "mouse",
       "lane": 6,
@@ -318,7 +295,6 @@
     },
     {
       "sequence": 32,
-      "time": 1789075398.094776,
       "type": "lfo2",
       "source": "mouse",
       "lane": 7,
@@ -331,7 +307,6 @@
   "note_events": [
     {
       "sequence": 36,
-      "time": 1789075398.4645448,
       "type": "note",
       "source": "qwerty",
       "key": "a",
@@ -370,7 +345,6 @@
     },
     {
       "sequence": 37,
-      "time": 1789075398.8165903,
       "type": "note",
       "source": "qwerty",
       "key": "a",
@@ -394,7 +368,6 @@
   ],
   "callback_step": {
     "sequence": 39,
-    "time": 1789075399.2479575,
     "type": "callback_step",
     "source": "api",
     "count": 2,

@@ -11,6 +11,19 @@ from pathlib import Path
 from filter2_controller_service import ControllerState, EmulatorBridge, NOTE_KEYS, STATIC, default_paths
 
 
+def canonicalize(value):
+    """Remove volatile wall-clock fields from the checked-in validation artifact."""
+    if isinstance(value, dict):
+        return {
+            key: canonicalize(item)
+            for key, item in value.items()
+            if key not in {"time", "uptime_seconds"}
+        }
+    if isinstance(value, list):
+        return [canonicalize(item) for item in value]
+    return value
+
+
 def validate(stock_main: Path | None = None, emulator: Path | None = None) -> dict:
     default_stock, default_emulator = default_paths()
     bridge = EmulatorBridge((stock_main or default_stock).resolve(), (emulator or default_emulator).resolve())
@@ -116,7 +129,7 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
         }
         if not all(checks.values()):
             raise ValueError(f"controller validation failed: {checks}")
-        return {
+        return canonicalize({
             "result": "PASS",
             "controller": {
                 "filter2_lanes": 8,
@@ -141,7 +154,7 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
             "checks": checks,
             "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. Physical MIDI/USB ingress remains untraced.",
             "safety": "Runtime emulator arming only; no ELE3, SysEx, or flashable image was created.",
-        }
+        })
     finally:
         bridge.close()
 
