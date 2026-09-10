@@ -1,0 +1,67 @@
+{
+  "result": "PASS_REQUIRED_SSI1_CLOCK_RECOVERED_BOOT_HANDOFF_OPEN",
+  "main": {
+    "path": "section_3_id_3.decompressed.bin",
+    "size": 2903032,
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "stock_configuration": {
+    "ssi1_ccr": "0x00056F00",
+    "mode": "I2S master / network",
+    "valid_sample_bits": 24,
+    "slots_per_frame": 16,
+    "i2s_master_clocks_per_slot": 32,
+    "div2": 1,
+    "psr": 0,
+    "pm": 0,
+    "sample_rate_hz": 48000
+  },
+  "derived_clocks": {
+    "frame_bits": 512,
+    "ssi_bit_divisor": 4,
+    "bit_clock_hz": 24576000,
+    "required_ssi_clock_hz": 98304000,
+    "renderer_block_frames": 32,
+    "renderer_period_ns": 666667
+  },
+  "ccm_constraint": {
+    "equation": "SSI_CLOCK = 2 * fSYS / SSI1DIV",
+    "pll_source_solution_if_fsys_is_245760000_hz": {
+      "ssi1div": 5,
+      "ssi_clock_hz": 98304000
+    },
+    "status": "conditional until bootloader CDRH and PLL handoff are captured"
+  },
+  "update_section_inventory": [
+    {
+      "path": "section_1_id_2.decompressed.bin",
+      "size": 42302,
+      "sha256": "9b7ed34c1ce6ff5c2842b581f00140a864b30b185a128c61ef784a23db301dbc",
+      "direct_cdrh_offsets": []
+    },
+    {
+      "path": "section_2_id_1.decompressed.bin",
+      "size": 149516,
+      "sha256": "7c8bff3cb411ed93434b3a4eab846738be6241d64aeb23b4061eb11a8aa29b2f",
+      "direct_cdrh_offsets": []
+    },
+    {
+      "path": "section_3_id_3.decompressed.bin",
+      "size": 2903032,
+      "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+      "direct_cdrh_offsets": []
+    }
+  ],
+  "direct_cdrh_reference_count": 0,
+  "decision": "The native 666667 ns renderer cadence is register-derived downstream of SSI_CLOCK. The update package contains no direct CDRH access, so its upstream PLL/divider provenance remains a bootloader or board-state capture gate.",
+  "reference": {
+    "title": "NXP MCF54418 Reference Manual",
+    "sections": [
+      "10.3.5",
+      "35.4.1.4.1",
+      "35.4.2.2"
+    ],
+    "url": "https://www.nxp.com/docs/en/reference-manual/MCF54418RM.pdf"
+  },
+  "safety": "Static analysis only; no firmware was modified or repacked."
+}

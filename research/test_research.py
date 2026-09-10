@@ -25,6 +25,7 @@ from lfo2_filter2_reference import run_tests
 from runtime_descriptor_probe import probe as probe_runtime_descriptors
 from sample_storage_trace import trace as trace_sample_storage
 from sample_slot_trace import trace as trace_sample_slot
+from ssi1_clock_input_trace import trace as trace_ssi1_clock_input
 
 
 class FpgaIobGeometryTests(unittest.TestCase):
@@ -101,6 +102,28 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class QemuAudioEdmaTests(unittest.TestCase):
+    def test_ssi1_clock_gate_report(self):
+        report_path = HERE / "AR172_SSI1_CLOCK_INPUT_TRACE.json"
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+        self.assertEqual(
+            report["result"],
+            "PASS_REQUIRED_SSI1_CLOCK_RECOVERED_BOOT_HANDOFF_OPEN",
+        )
+        self.assertEqual(report["derived_clocks"]["required_ssi_clock_hz"], 98_304_000)
+        self.assertEqual(report["derived_clocks"]["renderer_period_ns"], 666_667)
+        self.assertEqual(report["direct_cdrh_reference_count"], 0)
+        self.assertEqual(
+            report["ccm_constraint"]["pll_source_solution_if_fsys_is_245760000_hz"]["ssi1div"],
+            5,
+        )
+        fixture_dir = HERE / "extracted_stock_nrv"
+        main = fixture_dir / "section_3_id_3.decompressed.bin"
+        if main.exists():
+            sections = sorted(fixture_dir.glob("section_*_id_*.decompressed.bin"))
+            live = trace_ssi1_clock_input(main, sections)
+            self.assertEqual(live["derived_clocks"], report["derived_clocks"])
+            self.assertEqual(live["direct_cdrh_reference_count"], 0)
+
     def test_linked_audio_descriptor_semantics_are_modeled(self):
         source = (
             ROOT / "qemu" / "hw" / "m68k" / "ar_mk2_intc_pit.c"
@@ -131,7 +154,9 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("c->audio_service_pending", source)
         self.assertIn("c->audio_service_entered", source)
         self.assertIn("c->audio_service_completed", source)
-        self.assertIn("AR_AUDIO_BLOCK_PERIOD_NS 666667LL", source)
+        self.assertIn("AR_SSI1_CLOCK_HZ 98304000LL", source)
+        self.assertIn("AR_SSI1_FRAME_BITS (16LL * 32LL)", source)
+        self.assertIn("AR_AUDIO_BLOCK_PERIOD_NS", source)
         self.assertIn("ar_audio_service_tick(c, true)", source)
         self.assertIn("AR_EDMA_SSI1_TX_CHANNEL 54u", source)
         self.assertIn("ar_edma_pump_channel(&c->edma, AR_EDMA_SSI1_TX_CHANNEL)", source)

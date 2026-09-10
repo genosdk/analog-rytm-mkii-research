@@ -94,9 +94,15 @@ and reproducible tooling.
   services. Re-arming DSPI1's channel-15 transmit request at each external
   audio event prevents the firmware's EOQ wait from stalling repeated blocks.
 - The opt-in continuous research clock now applies interrupt backpressure at
-  the geometry-derived 32-frame / 48 kHz period. SSI1 FIFO demand now completes
+  the register-derived 32-frame / 48 kHz period. Stock CCR `0x00056F00` and
+  I2S-master framing require a 24.576 MHz bit clock and 98.304 MHz SSI clock.
+  SSI1 FIFO demand now completes
   eDMA54 and lets the stock ISR force source 63; 8,732 native services streamed
   nonzero host PCM while later UI input remained responsive.
+- No decompressed updater section directly accesses CCM CDRH. The upstream
+  boot handoff remains conditional: a 245.76 MHz system clock with
+  `SSI1DIV=5` produces the required 98.304 MHz SSI clock, but the actual CDRH
+  and PLL state still require a bootloader/board-state capture.
 - A BR-low/high test with deterministic nonzero CPU render planes produces identical
   CPU PCM/combined output while the hardware control word diverges.
 
