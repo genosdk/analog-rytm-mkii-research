@@ -384,9 +384,17 @@ New state must use a versioned extension or verified-unused storage; existing
    `0x4010CF2C/36`; packetizer `0x40077D14` reads them at `0x40077D64/66`
    into DSPI1 words 46/47. The local QWERTY bridge now selects stock Synth
    chromatic mode and validates the renderer read on every key-down.
-29. Separately trace physical MIDI/USB ingress on hardware before binding the
+29. **Public renderer field ownership inventoried:** authentic note vectors
+   48/60/72 were executed through all 34 public machine renderers while tracing
+   every write from renderer entry through nested helpers. Ninety-six of the
+   510 DSPI1 payload positions are renderer-owned, grouped into 11 ranges;
+   none is written by all 34 machines, so every observed renderer-owned field
+   is machine-specific. Pitch words 46/47 are owned by 21 machines and are
+   note-variable in 13/15 respectively. No shared Filter 2 transport may reuse
+   any of those 96 positions.
+30. Separately trace physical MIDI/USB ingress on hardware before binding the
    virtual command ABI to a device transport.
-30. Add modes, LFO2 modulation, drive and optional 4-pole cascade.
+31. Add modes, LFO2 modulation, drive and optional 4-pole cascade.
 
 ## Current offline assets
 
@@ -549,6 +557,11 @@ New state must use a versioned extension or verified-unused storage; existing
   `clamp_0_7fff(((exp2_output + 1) * scale) >> 31)` with scales `0x62000` and
   `0x4168F`. All 128 observed pairs match. The full result is
   `research/AR172_SYNTH_PITCH_ENCODING_PROBE.json`.
+- `research/renderer_field_inventory_probe.py` traces renderer-scoped writes
+  into the 510-halfword DSPI1 payload source across all 34 public machines and
+  three note anchors. It reports 96 machine-specific owned indices in 11
+  ranges, with no universally renderer-owned field. The complete ownership
+  matrix is `research/AR172_RENDERER_FIELD_INVENTORY_PROBE.json`.
 - `recovered_library/minicoldfire_audio.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply, correct fractional-product scaling, and the
@@ -599,10 +612,13 @@ reproduce that exact dual-channel calibration. `0x4168F` recurs in machine IDs
 only one channel, while other renderer families emit symmetric or differently
 scaled note-dependent values into the same DSPI1 words 46/47. These words are
 therefore shared physical-voice control slots with machine-dependent pitch and
-channel topology, not two fixed-function globally calibrated rails. The next
-offline target is inventorying renderer-owned per-voice fields across every
-public machine and renderer state, then ruling control fields in or out for
-Filter 2. The public Sound-format machine byte maps directly to renderer-table
+channel topology, not two fixed-function globally calibrated rails. The public
+renderer inventory now excludes 96 of 510 DSPI1 payload positions from any
+shared Filter 2 transport: all 96 are machine-specific, and none is written by
+every public renderer. The next offline target is subtracting common callback
+and packetizer writes from the remaining 414 positions, then exercising
+non-note renderer states to distinguish stable fields from fixture zeros. The
+public Sound-format machine byte maps directly to renderer-table
 indices 0..33: the exact calibration pair belongs to BD Hard and BD Classic.
 Entries 34..52 have no public Sound-format names and remain explicitly labeled
 internal/reserved rather than being assigned speculative identities. All 34

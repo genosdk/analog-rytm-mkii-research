@@ -31,6 +31,7 @@ from note_pitch_consumer_boundary_probe import probe as probe_note_pitch_consume
 from note_pitch_publication_probe import probe as probe_note_pitch_publication
 from post_voice_ingress_probe import probe as probe_post_voice_ingress
 from render_mixer_probe import probe as probe_render_mixer
+from renderer_field_inventory_probe import probe as probe_renderer_field_inventory
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -533,6 +534,24 @@ class MachinePitchCalibrationProbeTests(StockProbeTest):
         self.assertEqual(anchors[0], anchors[1])
         self.assertNotEqual(anchors[0], anchors[2])
         self.assertEqual(anchors[33][0]["word_46"], "0x0000")
+
+
+class RendererFieldInventoryProbeTests(StockProbeTest):
+    def test_all_public_machine_renderer_owned_dspi1_fields(self):
+        result = probe_renderer_field_inventory(STOCK, EMULATOR)
+        self.assertEqual(result["result"], "PASS")
+        summary = result["summary"]
+        self.assertEqual(len(summary["renderer_owned_indices"]), 96)
+        self.assertEqual(len(summary["renderer_owned_ranges"]), 11)
+        self.assertEqual(summary["universal_renderer_owned_indices"], [])
+        self.assertEqual(
+            summary["renderer_owned_indices"],
+            summary["machine_specific_renderer_owned_indices"],
+        )
+        ownership = {row["index"]: row for row in result["ownership"]}
+        self.assertEqual(ownership[46]["machine_count"], 21)
+        self.assertEqual(ownership[47]["machine_count"], 21)
+        self.assertEqual(ownership[58]["machine_ids"], [5])
 
 
 
