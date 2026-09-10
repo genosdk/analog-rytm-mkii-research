@@ -38,12 +38,14 @@
       "one-shot",
       "half-shot",
       "hold"
-    ]
+    ],
+    "offline_callback_step": true,
+    "callback_step_limit": 32
   },
   "publications": [
     {
       "sequence": 9,
-      "time": 1789071291.9293797,
+      "time": 1789075197.2788208,
       "type": "filter2",
       "source": "mouse",
       "lane": 0,
@@ -56,7 +58,7 @@
     },
     {
       "sequence": 10,
-      "time": 1789071291.9296033,
+      "time": 1789075197.2790315,
       "type": "filter2",
       "source": "mouse",
       "lane": 1,
@@ -69,7 +71,7 @@
     },
     {
       "sequence": 11,
-      "time": 1789071291.9298048,
+      "time": 1789075197.279231,
       "type": "filter2",
       "source": "mouse",
       "lane": 2,
@@ -82,7 +84,7 @@
     },
     {
       "sequence": 12,
-      "time": 1789071291.9300005,
+      "time": 1789075197.2794654,
       "type": "filter2",
       "source": "mouse",
       "lane": 3,
@@ -95,7 +97,7 @@
     },
     {
       "sequence": 13,
-      "time": 1789071291.9302182,
+      "time": 1789075197.2796621,
       "type": "filter2",
       "source": "mouse",
       "lane": 4,
@@ -108,7 +110,7 @@
     },
     {
       "sequence": 14,
-      "time": 1789071291.930431,
+      "time": 1789075197.2798574,
       "type": "filter2",
       "source": "mouse",
       "lane": 5,
@@ -121,7 +123,7 @@
     },
     {
       "sequence": 15,
-      "time": 1789071291.930631,
+      "time": 1789075197.2800496,
       "type": "filter2",
       "source": "mouse",
       "lane": 6,
@@ -134,7 +136,7 @@
     },
     {
       "sequence": 16,
-      "time": 1789071291.9308295,
+      "time": 1789075197.2802439,
       "type": "filter2",
       "source": "mouse",
       "lane": 7,
@@ -149,7 +151,7 @@
   "lfo2_publications": [
     {
       "sequence": 17,
-      "time": 1789071291.9309323,
+      "time": 1789075197.2803597,
       "type": "lfo2",
       "source": "mouse",
       "lane": 0,
@@ -160,7 +162,7 @@
     },
     {
       "sequence": 18,
-      "time": 1789071291.9310284,
+      "time": 1789075197.2804554,
       "type": "lfo2",
       "source": "mouse",
       "lane": 1,
@@ -171,7 +173,7 @@
     },
     {
       "sequence": 19,
-      "time": 1789071291.9311213,
+      "time": 1789075197.2806027,
       "type": "lfo2",
       "source": "mouse",
       "lane": 2,
@@ -182,7 +184,7 @@
     },
     {
       "sequence": 20,
-      "time": 1789071291.9312124,
+      "time": 1789075197.2806995,
       "type": "lfo2",
       "source": "mouse",
       "lane": 3,
@@ -193,7 +195,7 @@
     },
     {
       "sequence": 21,
-      "time": 1789071291.9313233,
+      "time": 1789075197.2807925,
       "type": "lfo2",
       "source": "mouse",
       "lane": 4,
@@ -204,7 +206,7 @@
     },
     {
       "sequence": 22,
-      "time": 1789071291.9314144,
+      "time": 1789075197.2808833,
       "type": "lfo2",
       "source": "mouse",
       "lane": 5,
@@ -215,7 +217,7 @@
     },
     {
       "sequence": 23,
-      "time": 1789071291.9315052,
+      "time": 1789075197.2809737,
       "type": "lfo2",
       "source": "mouse",
       "lane": 6,
@@ -226,7 +228,7 @@
     },
     {
       "sequence": 24,
-      "time": 1789071291.9315968,
+      "time": 1789075197.2810645,
       "type": "lfo2",
       "source": "mouse",
       "lane": 7,
@@ -237,7 +239,7 @@
     },
     {
       "sequence": 25,
-      "time": 1789071291.9316936,
+      "time": 1789075197.2811623,
       "type": "lfo2",
       "source": "mouse",
       "lane": 0,
@@ -248,7 +250,7 @@
     },
     {
       "sequence": 26,
-      "time": 1789071291.9317875,
+      "time": 1789075197.2812827,
       "type": "lfo2",
       "source": "mouse",
       "lane": 1,
@@ -259,7 +261,7 @@
     },
     {
       "sequence": 27,
-      "time": 1789071291.93188,
+      "time": 1789075197.2813902,
       "type": "lfo2",
       "source": "mouse",
       "lane": 2,
@@ -270,7 +272,7 @@
     },
     {
       "sequence": 28,
-      "time": 1789071291.9319732,
+      "time": 1789075197.2814841,
       "type": "lfo2",
       "source": "mouse",
       "lane": 3,
@@ -281,7 +283,7 @@
     },
     {
       "sequence": 29,
-      "time": 1789071291.9320672,
+      "time": 1789075197.2815769,
       "type": "lfo2",
       "source": "mouse",
       "lane": 4,
@@ -292,7 +294,7 @@
     },
     {
       "sequence": 30,
-      "time": 1789071291.932159,
+      "time": 1789075197.28167,
       "type": "lfo2",
       "source": "mouse",
       "lane": 5,
@@ -303,7 +305,7 @@
     },
     {
       "sequence": 31,
-      "time": 1789071291.9322538,
+      "time": 1789075197.281769,
       "type": "lfo2",
       "source": "mouse",
       "lane": 6,
@@ -314,7 +316,7 @@
     },
     {
       "sequence": 32,
-      "time": 1789071291.9323611,
+      "time": 1789075197.2818625,
       "type": "lfo2",
       "source": "mouse",
       "lane": 7,
@@ -327,7 +329,7 @@
   "note_events": [
     {
       "sequence": 36,
-      "time": 1789071292.341331,
+      "time": 1789075197.6641304,
       "type": "note",
       "source": "qwerty",
       "key": "a",
@@ -366,7 +368,7 @@
     },
     {
       "sequence": 37,
-      "time": 1789071292.7235692,
+      "time": 1789075198.032165,
       "type": "note",
       "source": "qwerty",
       "key": "a",
@@ -388,18 +390,86 @@
       }
     }
   ],
+  "callback_step": {
+    "sequence": 39,
+    "time": 1789075198.4930046,
+    "type": "callback_step",
+    "source": "api",
+    "count": 2,
+    "callback_count": 2,
+    "callbacks": [
+      {
+        "index": 1,
+        "instructions": 45202,
+        "multiply_calls": 513,
+        "ingress_sha256": "a68c35c729fd164ee082c314beb70eecd951adf54ebbc1d4b405bb5898e96430",
+        "output_sha256": "5f85d22301c805c59e2f272ab26bd25fbac8b8161d3ebd9dc367da965b43604d",
+        "phase_before": [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ],
+        "phase_after": [
+          "0x002D4DD4",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ],
+        "boundary": "0x4010A2E0"
+      },
+      {
+        "index": 2,
+        "instructions": 45202,
+        "multiply_calls": 513,
+        "ingress_sha256": "5a43499b17b5cb3a67282fbfab0aa69f3edc8103da1063659b807783b8f97081",
+        "output_sha256": "1b87689a1febb764f120fae2176d9f31344e99ecb2258fff8d6048932ccbef84",
+        "phase_before": [
+          "0x002D4DD4",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ],
+        "phase_after": [
+          "0x005A9BA8",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ],
+        "boundary": "0x4010A2E0"
+      }
+    ],
+    "boundary": "pre-mixer",
+    "synthetic_input": true
+  },
   "assets": {
     "index.html": {
       "exists": true,
-      "bytes": 4205
+      "bytes": 4465
     },
     "styles.css": {
       "exists": true,
-      "bytes": 6992
+      "bytes": 7525
     },
     "app.js": {
       "exists": true,
-      "bytes": 12218
+      "bytes": 13069
     }
   },
   "checks": {
@@ -413,6 +483,9 @@
     "runtime_telemetry_all_lanes": true,
     "runtime_masks_exact": true,
     "runtime_config_matches_controller": true,
+    "offline_callback_step_exact": true,
+    "stepped_phase_visible": true,
+    "callback_filter_kernel_executed": true,
     "waveform_index_range_exact": true,
     "mode_index_range_exact": true,
     "note_on_off_exact": true,

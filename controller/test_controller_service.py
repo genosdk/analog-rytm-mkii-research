@@ -192,6 +192,32 @@ class ServiceApiTests(unittest.TestCase):
         self.assertEqual(runtime["last_modulation"], "0x00000000")
         self.assertEqual(runtime["random_index"], 0)
 
+    def test_callback_step_advances_runtime_and_refreshes_state(self):
+        lane = 0
+        self.request("POST", "/api/lfo2", {"lane": lane, "parameter": "rate", "value": 127})
+        self.request("POST", "/api/lfo2", {"lane": lane, "parameter": "depth", "value": 48})
+        self.request("POST", "/api/lfo2", {"lane": lane, "parameter": "enable", "value": True})
+        self.request("POST", "/api/lfo2", {"lane": lane, "parameter": "reset", "value": 1})
+        before = self.state.snapshot()["lfo2"]["runtime"]
+        status, _, body = self.request("POST", "/api/step", {"count": 2})
+        result = json.loads(body)
+        after = result["state"]["lfo2"]["runtime"]
+        self.assertEqual(status, 200)
+        self.assertEqual(result["event"]["type"], "callback_step")
+        self.assertEqual(result["event"]["count"], 2)
+        self.assertEqual(len(result["event"]["callbacks"]), 2)
+        self.assertEqual(after["callback_count"], before["callback_count"] + 2)
+        self.assertNotEqual(after["lanes"][lane]["phase"], before["lanes"][lane]["phase"])
+        self.assertTrue(all(item["multiply_calls"] >= 512 for item in result["event"]["callbacks"]))
+        self.assertTrue(all(item["boundary"] == "0x4010A2E0" for item in result["event"]["callbacks"]))
+        self.request("POST", "/api/lfo2", {"lane": lane, "parameter": "enable", "value": False})
+
+    def test_callback_step_validates_count(self):
+        for count in (0, 33, True):
+            status, _, body = self.request("POST", "/api/step", {"count": count})
+            self.assertEqual(status, 400)
+            self.assertIn("count", json.loads(body)["error"])
+
 
 if __name__ == "__main__":
     unittest.main()

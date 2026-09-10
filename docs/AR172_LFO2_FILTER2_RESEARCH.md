@@ -657,8 +657,14 @@ also proves three disabled callbacks freeze phase, re-enable resumes it, and
 reset clears phase, last modulation, and random index before the next callback.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
-masks. The next gate is an offline callback-step diagnostic endpoint and
-browser-visible telemetry refresh across stepped callbacks.
+masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic
+callbacks to the proven pre-mixer boundary and returns callback number,
+instruction/multiply counts, phase-before/after arrays and input/output hashes.
+The browser's deliberate **Step callback** control executes one callback and
+immediately refreshes selected-lane telemetry and the persistent callback
+counter. Real-fixture service tests and the machine-readable controller build
+validation pass. The next gate is an opt-in bounded continuous-run control with
+explicit start/stop semantics; host audio playback remains a later gate.
 
 For Filter 2, state-loaded Q1.31 coefficients, per-sample control slew, all
 eight audio/state lanes, the foreground publication boundary, its

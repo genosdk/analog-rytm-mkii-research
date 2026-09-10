@@ -18,6 +18,7 @@ const state = {
 let filterQueue = Promise.resolve();
 let lfoQueue = Promise.resolve();
 let noteQueue = Promise.resolve();
+let stepQueue = Promise.resolve();
 let filterRevision = 0;
 let noteRevision = 0;
 
@@ -83,6 +84,9 @@ function renderLfo2() {
   document.querySelector("#lfo2-runtime").textContent = runtime
     ? `Phase ${runtime.phase} · ${runtime.enabled ? "running" : "disabled"} · Mod ${runtime.last_modulation} · Target ${runtime.effective_target}`
     : "Phase unavailable";
+  const callbackCount = state.lfo2.runtime?.callback_count ?? 0;
+  document.querySelector("#callback-runtime").textContent =
+    `${callbackCount} callback${callbackCount === 1 ? "" : "s"} stepped · pre-mixer boundary`;
 }
 
 function ingestLfo2(payload) {
@@ -190,6 +194,25 @@ function publishNote(key, action) {
   return noteQueue;
 }
 
+function stepCallback() {
+  const button = document.querySelector("#callback-step");
+  button.disabled = true;
+  stepQueue = stepQueue.then(async () => {
+    try {
+      const body = await request("/api/step", { count: 1 });
+      ingestLfo2(body.state.lfo2);
+      renderLfo2();
+      setConnection(true, "Callback stepped");
+    } catch (error) {
+      setConnection(false, "Callback step failed");
+      console.error(error);
+    } finally {
+      button.disabled = false;
+    }
+  });
+  return stepQueue;
+}
+
 function bindKnobs() {
   document.querySelectorAll(".knob").forEach(knob => {
     const lane = Number(knob.dataset.lane);
@@ -244,6 +267,7 @@ function bindLfo2() {
       publishLfo2(parameter, event.target.checked));
   }
   document.querySelector("#lfo2-reset").addEventListener("click", () => publishLfo2("reset", 1));
+  document.querySelector("#callback-step").addEventListener("click", stepCallback);
 }
 
 function bindNotes() {

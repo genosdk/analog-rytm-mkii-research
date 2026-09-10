@@ -107,6 +107,11 @@ h2 { font-size: 1rem; }
 .reset-button { min-height: 40px; border: 1px solid #5a4a3e; border-radius: 5px; color: #ffc18c; background: #261b14; cursor: pointer; }
 .lfo-publication { margin: 18px 0 0; color: #6f7d82; font: .7rem "SFMono-Regular", Consolas, monospace; }
 .lfo-runtime { margin: 7px 0 0; color: #78cbc8; font: .72rem "SFMono-Regular", Consolas, monospace; }
+.runtime-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 8px; }
+.runtime-row .lfo-runtime { margin: 0; }
+.step-button { min-height: 36px; padding: 0 16px; border: 1px solid #326568; border-radius: 5px; color: #9ef5f1; background: #0b2428; cursor: pointer; }
+.step-button:disabled { cursor: wait; opacity: .55; }
+.callback-runtime { margin: 7px 0 0; color: #6f7d82; font: .68rem "SFMono-Regular", Consolas, monospace; }
 .lfo-controls :focus-visible { outline: 2px solid #87e7e3; outline-offset: 2px; }
 
 .keyboard-panel { margin-bottom: 26px; }
@@ -139,6 +144,7 @@ footer { padding: 0 32px 25px; color: #657075; font-size: .75rem; }
   .piano { grid-template-columns: repeat(5, 1fr); }
   .display { padding: 14px; }
   .display strong { font-size: .95rem; }
+  .runtime-row { align-items: stretch; flex-direction: column; }
 }
 
 @media (prefers-reduced-motion: reduce) {

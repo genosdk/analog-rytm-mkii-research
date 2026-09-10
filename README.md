@@ -100,7 +100,9 @@ and reproducible tooling.
 - The local controller exposes eight mouse/wheel/keyboard Filter 2 knobs plus
   per-lane LFO2 waveform, mode, rate, depth, enable, retrigger and phase-reset
   controls. QWERTY notes `A W S E D F T G Y H U J K` (notes 48..60) retain
-  their distinct recovered stock note-event constructor path.
+  their distinct recovered stock note-event constructor path. A deliberate
+  callback-step control advances the authentic emulated callback to its proven
+  pre-mixer boundary and refreshes live phase/modulation telemetry.
 - Renderer-scoped execution across all 34 public machines and five forced
   states covers 170 stock contexts. It identifies 117 of the packetizer's 492
   payload halfwords as renderer-owned, with no universal field; the other 375
@@ -188,8 +190,10 @@ executable; explicit reset and authentic trigger-mode note-on restart phase and
 the random sequence. A 22-callback controller-driven sequence proves dynamic
 parameter changes, active enable/disable/reset transitions, and exact
 one-shot/half-shot terminal behavior. `/api/state` exposes the resulting
-read-only per-lane runtime telemetry. The disabled callback remains
-bit-identical to stock.
+read-only per-lane runtime telemetry. `POST /api/step` executes 1..32 offline
+callbacks and returns phase-before/after, instruction/multiply counts and
+input/output hashes; the browser's **Step callback** control uses one callback
+per click. The disabled callback remains bit-identical to stock.
 
 The detailed evidence and memory map are in
 `docs/AR172_LFO2_FILTER2_RESEARCH.md`.
@@ -207,8 +211,9 @@ python controller/filter2_controller_service.py
 Open `http://127.0.0.1:8765`. The service creates only a temporary runtime
 candidate. Selecting a Filter 2 lane also selects its LFO2 editor; the seven
 waveforms and four run modes publish through their recovered virtual-index
-banks. The service never writes an ELE3 container, SysEx package, or flashable
-image.
+banks. **Step callback** deliberately advances offline processing and refreshes
+the selected lane's telemetry; it does not start continuous playback. The
+service never writes an ELE3 container, SysEx package, or flashable image.
 
 ## Railway dashboard
 

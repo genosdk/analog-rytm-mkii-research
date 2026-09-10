@@ -22,17 +22,26 @@ RESEARCH = ROOT / "research"
 STATIC = Path(__file__).resolve().parent / "static"
 sys.path.insert(0, str(RESEARCH))
 
-from audio_callback_probe import EXPECTED_MAIN_SHA256, prepared_machine  # noqa: E402
+from audio_callback_probe import AUDIO_CALLBACK, EXPECTED_MAIN_SHA256, RETURN_PC, prepared_machine  # noqa: E402
 from filter2_coefficient_slew_probe import control_to_q31  # noqa: E402
 from filter2_publication_shim_probe import VIRTUAL_INDEX_BASE, target_address  # noqa: E402
 from filter2_eight_lane_probe import FILTER2_STATE0, FILTER2_STATE_STRIDE  # noqa: E402
 from filter2_lfo2_cutoff_binding_probe import (  # noqa: E402
     COMBINED_FLAGS,
+    FILTER_SYMBOLS,
     LFO2_MASK_ADDRESS,
     LFO2_STATE0,
     LFO2_STATE_STRIDE,
+    cpu_from_baseline,
+    plane_lanes,
 )
-from filter2_unity_kernel_probe import FILTER2_MASK_ADDRESS, FLAGS_ADDRESS  # noqa: E402
+from filter2_unity_kernel_probe import (  # noqa: E402
+    FILTER2_MASK_ADDRESS,
+    FLAGS_ADDRESS,
+    MIXER,
+    install_input,
+    install_tables,
+)
 from lfo2_control_publication_probe import (  # noqa: E402
     DEPTH_INDEX_BASE,
     ENABLE_INDEX_BASE,
@@ -139,6 +148,7 @@ class EmulatorBridge:
         if digest != EXPECTED_MAIN_SHA256:
             raise ValueError(f"unexpected MAIN SHA-256: {digest}")
         candidate, _ = build_candidate(stock, False)
+        self._stock = stock
         self._temporary = tempfile.NamedTemporaryFile(suffix=".bin")
         Path(self._temporary.name).write_bytes(candidate)
         self._module = load_emulator(emulator_path)
@@ -153,8 +163,79 @@ class EmulatorBridge:
         self.bus.write(FLAGS_ADDRESS, 4, COMBINED_FLAGS)
         self.bus.write(FILTER2_MASK_ADDRESS, 2, ALL_LANES_MASK)
         self.lock = threading.RLock()
+        self._callback_baseline: dict[str, Any] | None = None
+        self.callback_count = 0
         self.stock_sha256 = digest
         self.candidate_sha256 = hashlib.sha256(candidate).hexdigest()
+
+    def capture_callback_baseline(self) -> None:
+        """Freeze clean CPU registers while retaining the bridge's shared RAM."""
+        with self.lock:
+            self._callback_baseline = {
+                "d": self.cpu.d.copy(), "a": self.cpu.a.copy(), "sr": self.cpu.sr,
+                "ctrl": self.cpu.ctrl.copy(), "macsr": self.cpu.macsr,
+                "mac_mask": self.cpu.mac_mask, "macc": self.cpu.macc.copy(),
+            }
+
+    @staticmethod
+    def _plane_hash(lanes: list[list[int]]) -> str:
+        payload = b"".join(
+            (word & 0xFFFFFFFF).to_bytes(4, "big")
+            for lane in lanes for word in lane
+        )
+        return hashlib.sha256(payload).hexdigest()
+
+    def step_callbacks(self, count: int = 1) -> dict[str, Any]:
+        """Advance the authentic callback to the proven pre-mixer boundary."""
+        if not isinstance(count, int) or isinstance(count, bool) or not 1 <= count <= 32:
+            raise ValueError("count must be an integer from 1 through 32")
+        with self.lock:
+            if self._callback_baseline is None:
+                raise RuntimeError("callback baseline has not been captured")
+            install_tables(self.bus, self._stock)
+            callbacks = []
+            for _ in range(count):
+                install_input(self.bus, True)
+                before_runtime = self.lfo2_runtime_snapshot()
+                cpu = cpu_from_baseline(self._module, self.bus, self._callback_baseline)
+                cpu.pushl(RETURN_PC)
+                cpu.pc = AUDIO_CALLBACK
+                start_steps = cpu.steps
+                ingress = None
+                multiply_calls = 0
+                for _instruction in range(230_000):
+                    if cpu.pc == MIXER:
+                        break
+                    if cpu.pc == FILTER_SYMBOLS["post_ingress"]:
+                        ingress = plane_lanes(self.bus)
+                    if cpu.pc == FILTER_SYMBOLS["multiply"]:
+                        multiply_calls += 1
+                    cpu.step()
+                else:
+                    raise RuntimeError("callback step did not reach the pre-mixer boundary")
+                if ingress is None:
+                    raise RuntimeError("callback step missed the post-ingress checkpoint")
+                output = plane_lanes(self.bus)
+                self.callback_count += 1
+                callbacks.append({
+                    "index": self.callback_count,
+                    "instructions": cpu.steps - start_steps,
+                    "multiply_calls": multiply_calls,
+                    "ingress_sha256": self._plane_hash(ingress),
+                    "output_sha256": self._plane_hash(output),
+                    "phase_before": [lane["phase"] for lane in before_runtime["lanes"]],
+                    "phase_after": [
+                        lane["phase"] for lane in self.lfo2_runtime_snapshot()["lanes"]
+                    ],
+                    "boundary": f"0x{MIXER:08X}",
+                })
+            return {
+                "count": count,
+                "callback_count": self.callback_count,
+                "callbacks": callbacks,
+                "boundary": "pre-mixer",
+                "synthetic_input": True,
+            }
 
     def publish(self, lane: int, value: int) -> dict[str, Any]:
         if not 0 <= lane < LANES:
@@ -236,6 +317,7 @@ class EmulatorBridge:
             return {
                 "enable_mask": f"0x{enable_mask:04X}",
                 "trigger_mask": f"0x{trigger_mask:04X}",
+                "callback_count": self.callback_count,
                 "lanes": lanes,
             }
 
@@ -367,6 +449,7 @@ class ControllerState:
             for parameter in ("waveform", "mode", "trigger", "enable", "rate", "depth"):
                 self.bridge.publish_lfo2(lane, parameter, self.lfo2[parameter][lane])
         self.selected_lane = 0
+        self.bridge.capture_callback_baseline()
 
     def _record(self, event: dict[str, Any]) -> dict[str, Any]:
         self.event_sequence += 1
@@ -444,6 +527,11 @@ class ControllerState:
             }
             event["stock_trigger" if action == "on" else "stock_release"] = stock_trigger
             return self._record(event)
+
+    def step_callbacks(self, count: int = 1) -> dict[str, Any]:
+        with self.lock:
+            result = self.bridge.step_callbacks(count)
+            return self._record({"type": "callback_step", "source": "api", **result})
 
     def snapshot(self) -> dict[str, Any]:
         with self.lock:
@@ -535,6 +623,8 @@ def make_handler(state: ControllerState):
                     )
                 elif path == "/api/note":
                     event = state.note(payload.get("key", ""), payload.get("action", ""), payload.get("velocity", 100))
+                elif path == "/api/step":
+                    event = state.step_callbacks(payload.get("count", 1))
                 else:
                     self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                     return
