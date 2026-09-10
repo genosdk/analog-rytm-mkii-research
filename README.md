@@ -123,11 +123,16 @@ and reproducible tooling.
   presents the firmware OLED at a fixed size, uses persistent page and trigger
   LEDs, and renders custom A-I encoders with mouse, wheel and keyboard control
   across the full `0..127` host range.
+- The shell's **FILTER 2** drawer adds eight independent runtime knobs. Each
+  absolute `0..127` value is atomically published to the custom QEMU machine,
+  converted to the proved Q1.31 mapping, and consumed by the live eight-lane
+  kernel. The OS 1.72 live gate completes all eight audio services after a
+  control change while the firmware OLED remains responsive.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
   the eight lane targets outside the audio callback.
-- The local controller exposes eight mouse/wheel/keyboard knobs and QWERTY
+- The local browser controller also exposes eight mouse/wheel/keyboard knobs and QWERTY
   notes `A W S E D F T G Y H U J K` (notes 48..60). Note-on and note-off both
   execute through the recovered stock note-event constructor in the emulator.
 - Renderer-scoped execution across all 34 public machines identifies 96 of the

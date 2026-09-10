@@ -36,6 +36,13 @@ The nine encoders are displayed as mouse-draggable 0–127 knobs; the wheel also
 changes their values. QWERTYUI/ASDFGHJK provide press/release control for Trigs
 1–16.
 
+The **FILTER 2** button opens a separate eight-knob runtime drawer. Its knobs
+control the eight audio lanes independently and use the same drag, wheel,
+arrow, Page Up/Down, Home/End and double-click interactions. They are clearly
+labeled as an emulator extension rather than a recovered physical-panel page.
+The app accepts only the verified OS 1.72 MAIN for this mode; `--no-filter2`
+boots the selected MAIN untouched and disables the drawer.
+
 The page keys have been validated by causal changes in the firmware's presented OLED framebuffer.
 
 ## Display
@@ -49,6 +56,11 @@ The standalone application contains:
 - frozen Python/Tk desktop frontend
 - custom `qemu-system-m68k` containing the `elektron-ar-mk2` machine
 - QEMU runtime libraries bundled inside the macOS application
+
+At launch, the app derives a temporary, non-flashable Filter 2 MAIN candidate
+from the caller-supplied OS 1.72 image. The candidate and its eight-byte control
+snapshot remain inside the temporary runtime directory and are removed when
+the app exits. No `.syx` or ELE3 update container is produced.
 
 The application starts QEMU paused, connects the emulated front-panel UART first, and only then releases the guest CPU. This prevents the initial panel identity query from being lost during host startup.
 

@@ -28,7 +28,7 @@
   "publications": [
     {
       "sequence": 9,
-      "time": 1789022485.623358,
+      "time": 1789068745.9840865,
       "type": "filter2",
       "source": "mouse",
       "lane": 0,
@@ -41,7 +41,7 @@
     },
     {
       "sequence": 10,
-      "time": 1789022485.6234546,
+      "time": 1789068745.984181,
       "type": "filter2",
       "source": "mouse",
       "lane": 1,
@@ -54,7 +54,7 @@
     },
     {
       "sequence": 11,
-      "time": 1789022485.623547,
+      "time": 1789068745.984287,
       "type": "filter2",
       "source": "mouse",
       "lane": 2,
@@ -67,7 +67,7 @@
     },
     {
       "sequence": 12,
-      "time": 1789022485.6236398,
+      "time": 1789068745.9843783,
       "type": "filter2",
       "source": "mouse",
       "lane": 3,
@@ -80,7 +80,7 @@
     },
     {
       "sequence": 13,
-      "time": 1789022485.6237314,
+      "time": 1789068745.9844687,
       "type": "filter2",
       "source": "mouse",
       "lane": 4,
@@ -93,7 +93,7 @@
     },
     {
       "sequence": 14,
-      "time": 1789022485.623825,
+      "time": 1789068745.9845598,
       "type": "filter2",
       "source": "mouse",
       "lane": 5,
@@ -106,7 +106,7 @@
     },
     {
       "sequence": 15,
-      "time": 1789022485.623928,
+      "time": 1789068745.984649,
       "type": "filter2",
       "source": "mouse",
       "lane": 6,
@@ -119,7 +119,7 @@
     },
     {
       "sequence": 16,
-      "time": 1789022485.6240206,
+      "time": 1789068745.984738,
       "type": "filter2",
       "source": "mouse",
       "lane": 7,
@@ -134,7 +134,7 @@
   "note_events": [
     {
       "sequence": 17,
-      "time": 1789022486.0613089,
+      "time": 1789068747.2694476,
       "type": "note",
       "source": "qwerty",
       "key": "a",
@@ -173,7 +173,7 @@
     },
     {
       "sequence": 18,
-      "time": 1789022486.4153273,
+      "time": 1789068748.5234194,
       "type": "note",
       "source": "qwerty",
       "key": "a",

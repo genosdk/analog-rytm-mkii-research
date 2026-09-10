@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -331,6 +332,25 @@ class DesktopPanelInputTests(unittest.TestCase):
         link.encoder("A", 127)
         link.encoder("I", -127)
         self.assertEqual(sock.frames, [bytes((0x30, 0x7F)), bytes((0x38, 0x81))])
+
+    def test_filter2_controls_publish_as_one_eight_byte_snapshot(self):
+        from qemu.panel_event_bridge import publish_filter2_controls
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "filter2-controls.bin"
+            controls = bytearray((0, 16, 32, 48, 64, 80, 96, 127))
+            publish_filter2_controls(path, controls)
+            self.assertEqual(path.read_bytes(), bytes(controls))
+            self.assertFalse(path.with_suffix(".bin.tmp").exists())
+
+    def test_qemu_machine_imports_live_filter2_targets(self):
+        source = (
+            ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_MK2_FILTER2_CONTROL_IN", source)
+        self.assertIn("ar_import_filter2_controls", source)
+        self.assertIn("AR_FILTER2_STATE0", source)
+        self.assertIn("physical_memory_write(target, word, sizeof(word))", source)
 
 
 @unittest.skipUnless(

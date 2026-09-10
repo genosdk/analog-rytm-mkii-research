@@ -64,9 +64,16 @@ double-click reset (64). OLED activity and transient control feedback use
 separate status fields so the 30 Hz framebuffer poll cannot erase an input
 message immediately.
 
-## Current GUI target
+## Filter 2 runtime drawer
 
-The standalone bridge, native panel round trip and first cohesive desktop shell
-are complete. Continue by adding context labels from proven firmware state and
-folding the separate Filter 2 laboratory controls into the same shell without
-inventing unverified hardware controls.
+The standalone shell now includes a separate **FILTER 2** drawer with one
+absolute 0–127 knob for each of the eight audio lanes. These are explicitly
+emulator-extension controls, not claimed physical-panel mappings. Changes flow
+through the event follower into one atomically replaced eight-byte snapshot;
+the QEMU machine converts changed bytes with the proven Q1.31 mapping and
+writes the corresponding target coefficient cells. The runtime MAIN candidate
+is generated locally from the caller's verified OS 1.72 image and deleted when
+the app exits.
+
+The next GUI target is context labeling from proven firmware state. Physical
+MIDI/USB transport for Filter 2 remains untraced.

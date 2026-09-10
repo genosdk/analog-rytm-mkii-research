@@ -77,14 +77,14 @@ def stock_call(cpu, address: int, arguments: list[int], limit: int = 300_000) ->
     return steps
 
 
-def run_complete_callback(cpu, base_sp: int) -> dict:
+def run_complete_callback(cpu, base_sp: int, limit: int = 200_000) -> dict:
     """Run one interrupt body up to, but not including, its final RTE."""
     cpu.a[7] = base_sp
     cpu.pc = AUDIO_CALLBACK
     cases: list[int] = []
     br_at_renderer: list[int] = []
     start = cpu.steps
-    for _ in range(200_000):
+    for _ in range(limit):
         if cpu.pc in CASES:
             cases.append(CASES[cpu.pc])
         if cpu.pc == RENDERER:
@@ -96,7 +96,7 @@ def run_complete_callback(cpu, base_sp: int) -> dict:
                 "br_frame_at_renderer": br_at_renderer,
             }
         cpu.step()
-    raise ValueError("audio interrupt did not reach its final RTE")
+    raise ValueError(f"audio interrupt did not reach its final RTE in {limit} steps")
 
 
 def run_vector(module, main_path: Path, source_br: int) -> dict:

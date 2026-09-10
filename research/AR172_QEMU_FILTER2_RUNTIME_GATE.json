@@ -1,0 +1,50 @@
+{
+  "result": "PASS",
+  "date_utc": "2026-09-10",
+  "stock_main": {
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "version": "OS 1.72",
+    "caller_supplied": true
+  },
+  "runtime_candidate": {
+    "sha256": "a4e40b4c41f604b199ccf5db89cfec042ece8214cdd6798e7f5c851de11b1788",
+    "filter2_armed": true,
+    "retained": false,
+    "flashable_container_created": false
+  },
+  "software_q31_multiply": {
+    "coldfire_isa_a_only": true,
+    "quad_result_muls_l_removed": true,
+    "iterations_per_multiply": 32,
+    "eight_lane_oracle_match": true,
+    "multiply_calls_per_block": 512,
+    "semantic_instruction_delta_per_eight_lane_block": 234482
+  },
+  "live_control_import": {
+    "transport": "atomically replaced eight-byte host snapshot",
+    "initial_lane3_control": 64,
+    "changed_lane3_control": 91,
+    "initial_lane3_q31": "0x40810204",
+    "changed_lane3_q31": "0x5BB76EDD",
+    "change_observed_while_qemu_running": true
+  },
+  "firmware_gate": {
+    "requested_audio_services": 8,
+    "completed_audio_services": 8,
+    "startup_modal_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
+    "normal_ui_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+    "smp_page_sha256": "592a43e29c1f63cca43fa15d899abd671743761ad00f805f78b01a78575a6030",
+    "ui_responsive_after_control_change": true
+  },
+  "gui": {
+    "entry": "FILTER 2 drawer",
+    "lanes": 8,
+    "range": [0, 127],
+    "mouse_drag": true,
+    "mouse_wheel": true,
+    "keyboard_adjustment": true,
+    "hardware_mapping_claimed": false
+  },
+  "scope_limit": "This is emulator-only evidence. The semantic model and live QEMU gate do not establish physical ColdFire cycle margin or a physical MIDI/USB transport.",
+  "safety": "The armed decompressed MAIN existed only in temporary emulator storage. No ELE3 container, SysEx update, or flashable firmware artifact was created."
+}

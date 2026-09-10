@@ -77,10 +77,15 @@ def assemble_extension() -> tuple[bytes, dict[str, int]]:
     b.label("entry")
     b.emit("4eb940117f00")            # JSR stock ingress
     b.label("post_ingress")
-    b.emit("40e7")                    # MOVE.W SR,-(SP)
+    # The live ColdFire QEMU path repeatedly restarts both MOVE.W SR,-(SP) and
+    # this synthetic MOVEM predecrement form. Use the ordinary two-byte MOVE.L
+    # encodings that already execute throughout stock firmware instead.
+    b.emit("2f002f012f022f032f042f052f062f072f082f09")
+                                        # push D0-D7/A0-A1
+    b.emit("40c0")                    # MOVE.W SR,D0
+    b.emit("3f00")                    # MOVE.W D0,-(SP)
     b.emit("4ab9402b4408")            # TST.L flags
-    b.branch_word(0x6700, "restore_sr")
-    b.emit("48e7ffc0")                # MOVEM.L D0-D7/A0-A1,-(SP)
+    b.branch_word(0x6700, "restore_state")
 
     for lane in range(LANES):
         b.emit(f"0839{lane:04x}402b440d")  # BTST #lane, mask low byte
@@ -90,10 +95,11 @@ def assemble_extension() -> tuple[bytes, dict[str, int]]:
         b.branch_word(0x6100, "process_lane")
         b.label(f"lane_{lane}_skip")
 
-    b.label("restore_registers")
-    b.emit("4cdf03ff")                # MOVEM.L (SP)+,D0-D7/A0-A1
-    b.label("restore_sr")
-    b.emit("46df")                    # MOVE.W (SP)+,SR
+    b.label("restore_state")
+    b.emit("301f")                    # MOVE.W (SP)+,D0
+    b.emit("46c0")                    # MOVE.W D0,SR
+    b.emit("225f205f2e1f2c1f2a1f281f261f241f221f201f")
+                                        # pop A1/A0/D7-D0
     b.emit("4e75")                    # RTS
 
     b.label("process_lane")
@@ -136,11 +142,66 @@ def assemble_extension() -> tuple[bytes, dict[str, int]]:
     b.emit("4e75")                    # RTS
 
     b.label("multiply")
-    b.emit("4c041c05")                # MULS.L D4,D1:D5
-    b.emit("7e1f")                    # MOVEQ #31,D7
-    b.emit("eea9")                    # LSR.L D7,D1
-    b.emit("da85")                    # ADD.L D5,D5
-    b.emit("8285")                    # OR.L D5,D1
+    # ColdFire ISA A has 32-bit MULS.L but not the two-register 64-bit result
+    # selected by the old 0x1C05 extension word.  Form the exact signed 64-bit
+    # product with a fixed 32-iteration shift/add kernel instead.  D4 remains
+    # the coefficient; D0/D2/D3/D6 are preserved for the sample-loop caller.
+    b.emit("2f002f022f032f06")        # push D0/D2/D3/D6
+    b.emit("2401")                    # MOVE.L D1,D2 multiplicand
+    b.emit("2604")                    # MOVE.L D4,D3 multiplier
+    b.emit("2c02")                    # MOVE.L D2,D6
+    b.emit("b986")                    # EOR.L D4,D6 product sign
+    b.emit("2f06")                    # push sign
+    b.emit("4a82")                    # TST.L D2
+    b.branch_word(0x6A00, "multiply_abs_a_done")
+    b.emit("4482")                    # NEG.L D2
+    b.label("multiply_abs_a_done")
+    b.emit("4a83")                    # TST.L D3
+    b.branch_word(0x6A00, "multiply_abs_b_done")
+    b.emit("4483")                    # NEG.L D3
+    b.label("multiply_abs_b_done")
+    b.emit("7c00")                    # MOVEQ #0,D6 high multiplicand
+    b.emit("7a00")                    # MOVEQ #0,D5 low accumulator
+    b.emit("7e00")                    # MOVEQ #0,D7 high accumulator
+    b.emit("7020")                    # MOVEQ #32,D0
+    b.label("multiply_loop")
+    b.emit("08030000")                # BTST #0,D3
+    b.branch_word(0x6700, "multiply_no_add")
+    b.emit("7200")                    # MOVEQ #0,D1 carry
+    b.emit("da82")                    # ADD.L D2,D5
+    b.branch_word(0x6400, "multiply_accumulate_high")
+    b.emit("5281")                    # ADDQ.L #1,D1
+    b.label("multiply_accumulate_high")
+    b.emit("de86")                    # ADD.L D6,D7
+    b.emit("de81")                    # ADD.L D1,D7
+    b.label("multiply_no_add")
+    b.emit("7200")                    # MOVEQ #0,D1 carry
+    b.emit("d482")                    # ADD.L D2,D2
+    b.branch_word(0x6400, "multiply_shift_high")
+    b.emit("5281")                    # ADDQ.L #1,D1
+    b.label("multiply_shift_high")
+    b.emit("dc86")                    # ADD.L D6,D6
+    b.emit("dc81")                    # ADD.L D1,D6
+    b.emit("e28b")                    # LSR.L #1,D3
+    b.emit("5380")                    # SUBQ.L #1,D0
+    b.branch_word(0x6600, "multiply_loop")
+    b.emit("261f")                    # pop sign into D3
+    b.emit("4a83")                    # TST.L D3
+    b.branch_word(0x6A00, "multiply_positive")
+    b.emit("4485")                    # NEG.L D5
+    b.branch_word(0x6700, "multiply_negate_high")
+    b.emit("4487")                    # NEG.L D7
+    b.emit("5387")                    # SUBQ.L #1,D7 borrow from low word
+    b.branch_word(0x6000, "multiply_positive")
+    b.label("multiply_negate_high")
+    b.emit("4487")                    # NEG.L D7
+    b.label("multiply_positive")
+    b.emit("2205")                    # MOVE.L D5,D1 low product
+    b.emit("761f")                    # MOVEQ #31,D3
+    b.emit("e6a9")                    # LSR.L D3,D1
+    b.emit("de87")                    # ADD.L D7,D7
+    b.emit("8287")                    # OR.L D7,D1
+    b.emit("2c1f261f241f201f")        # restore D6/D3/D2/D0
     b.emit("4e75")                    # RTS
     return b.finish()
 
@@ -225,7 +286,7 @@ def run_mask(module, image_path: Path, stock: bytes, mask: int) -> dict:
     cpu.pc = AUDIO_CALLBACK
     start = cpu.steps
     try:
-        for _ in range(200_000):
+        for _ in range(400_000):
             if cpu.pc == MIXER:
                 break
             if cpu.pc == SYMBOLS["post_ingress"]:

@@ -65,6 +65,10 @@
 #define AR_RENDER_LANES        8u
 #define AR_AUDIO_CHANNELS      2u
 #define AR_AUDIO_PCM_BYTES     (AR_RENDER_FRAMES * AR_AUDIO_CHANNELS * 2u)
+#define AR_FILTER2_LANES       8u
+#define AR_FILTER2_STATE0      0x402B4420u
+#define AR_FILTER2_STATE_STRIDE 32u
+#define AR_FILTER2_TARGET_OFFSET 12u
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu);
 void ar_mk2_dspi_init(MemoryRegion *sysmem);
@@ -149,6 +153,7 @@ typedef struct ARBoardState {
     GHashTable *mmio_bytes; /* sparse byte-addressed register backing */
     QEMUTimer *frame_timer;
     QEMUTimer *sample_timer;
+    QEMUTimer *filter2_timer;
     AudioBackend *audio_be;
     SWVoiceOut *audio_voice;
     uint8_t audio_candidate[AR_RENDER_RING_COUNT][AR_RENDER_BLOCK_BYTES];
@@ -164,6 +169,9 @@ typedef struct ARBoardState {
     bool audio_tap;
     bool audio_nonzero_seen;
     char *frame_out;
+    char *filter2_control_in;
+    uint8_t filter2_values[AR_FILTER2_LANES];
+    bool filter2_values_valid;
     uint8_t frame_candidate[AR_FB_BYTES];
     uint8_t frame_published[AR_FB_BYTES];
     uint32_t frame_candidate_ptr;
@@ -526,6 +534,44 @@ static void ar_export_framebuffer(void *opaque)
     timer_mod(s->frame_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
 }
 
+static void ar_import_filter2_controls(void *opaque)
+{
+    ARBoardState *s = opaque;
+    gchar *contents = NULL;
+    gsize length = 0;
+    unsigned lane;
+
+    if (s->filter2_control_in &&
+        g_file_get_contents(s->filter2_control_in, &contents, &length, NULL) &&
+        length == AR_FILTER2_LANES) {
+        for (lane = 0; lane < AR_FILTER2_LANES; lane++) {
+            uint8_t control = MIN((uint8_t)contents[lane], 127);
+            uint8_t current_word[4];
+            uint32_t q31 = ((uint64_t)control * 0x7FFFFFFFu + 63u) / 127u;
+            hwaddr target = AR_FILTER2_STATE0 +
+                lane * AR_FILTER2_STATE_STRIDE + AR_FILTER2_TARGET_OFFSET;
+
+            physical_memory_read(target, current_word, sizeof(current_word));
+            if (!s->filter2_values_valid ||
+                s->filter2_values[lane] != control ||
+                ldl_be_p(current_word) != q31) {
+                uint8_t word[4];
+
+                stl_be_p(word, q31);
+                physical_memory_write(target, word, sizeof(word));
+                s->filter2_values[lane] = control;
+                qemu_log_mask(LOG_UNIMP,
+                              "AR-MK2 FILTER2: lane=%u control=%u q31=%08x\n",
+                              lane, control, q31);
+            }
+        }
+        s->filter2_values_valid = true;
+    }
+    g_free(contents);
+    timer_mod(s->filter2_timer,
+              qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
+}
+
 static void ar_inject_project_sample(void *opaque)
 {
     ARBoardState *s = opaque;
@@ -652,6 +698,12 @@ static void elektron_ar_mk2_init(MachineState *machine)
         }
     }
     {
+        const char *controls = g_getenv("AR_MK2_FILTER2_CONTROL_IN");
+        if (controls && *controls) {
+            s->filter2_control_in = g_strdup(controls);
+        }
+    }
+    {
         const char *tap = g_getenv("AR_MK2_AUDIO_TAP");
         s->audio_tap = tap && *tap && strcmp(tap, "0") != 0;
     }
@@ -712,6 +764,12 @@ static void elektron_ar_mk2_init(MachineState *machine)
     if (s->frame_out) {
         s->frame_timer = timer_new_ms(QEMU_CLOCK_VIRTUAL, ar_export_framebuffer, s);
         timer_mod(s->frame_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
+    }
+    if (s->filter2_control_in) {
+        s->filter2_timer = timer_new_ms(QEMU_CLOCK_VIRTUAL,
+                                        ar_import_filter2_controls, s);
+        timer_mod(s->filter2_timer,
+                  qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
     }
     if (s->mock_project_sample) {
         s->sample_timer = timer_new_ms(QEMU_CLOCK_VIRTUAL,

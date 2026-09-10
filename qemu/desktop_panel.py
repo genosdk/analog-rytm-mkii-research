@@ -151,7 +151,8 @@ class TrigPad(tk.Canvas):
 class VirtualKnob(tk.Canvas):
     """Mouse-draggable 0..127 control that emits relative encoder deltas."""
 
-    def __init__(self, parent, name: str, callback: Callable[[str, int, int], None]):
+    def __init__(self, parent, name: str, callback: Callable[[str, int, int], None],
+                 initial_value: int = 64):
         super().__init__(
             parent,
             width=72,
@@ -163,7 +164,7 @@ class VirtualKnob(tk.Canvas):
         )
         self.name = name
         self.callback = callback
-        self.value = 64
+        self.value = clamp_panel_value(initial_value)
         self.drag_y = 0
         self.drag_value = self.value
         self.bind("<ButtonPress-1>", self.begin_drag)
@@ -247,7 +248,7 @@ class VirtualKnob(tk.Canvas):
 
 class PanelApp:
     def __init__(self, root: tk.Tk, frame_file: Path, event_file: Path,
-                 scale: int = 6) -> None:
+                 scale: int = 6, filter2_enabled: bool = False) -> None:
         self.root = root
         self.frame_file = frame_file
         self.event_file = event_file
@@ -259,6 +260,9 @@ class PanelApp:
         self.page_widgets: dict[str, PanelButton] = {}
         self.trig_widgets: dict[int, TrigPad] = {}
         self.active_page: str | None = None
+        self.filter2_enabled = filter2_enabled
+        self.filter2_values = [64] * 8
+        self.filter2_window: tk.Toplevel | None = None
 
         root.title("Analog Rytm MKII — Firmware Emulator")
         root.configure(bg="#0b0c0c")
@@ -288,6 +292,22 @@ class PanelApp:
         self.frame_status = tk.StringVar(value="WAITING FOR FIRMWARE OLED")
         tk.Label(header, textvariable=self.frame_status, fg=MUTED, bg=PANEL_BG,
                  font=("TkFixedFont", 8)).pack(side="right", pady=(5, 0))
+        self.filter2_button = tk.Button(
+            header,
+            text="FILTER 2",
+            command=self.toggle_filter2,
+            state="normal" if filter2_enabled else "disabled",
+            fg=TEXT,
+            bg=CONTROL_FACE,
+            activeforeground=TEXT,
+            activebackground="#353936",
+            disabledforeground="#5d625e",
+            relief="flat",
+            font=("TkDefaultFont", 8, "bold"),
+            padx=10,
+            pady=2,
+        )
+        self.filter2_button.pack(side="right", padx=(0, 12), pady=(1, 0))
 
         work = tk.Frame(shell, bg=PANEL_BG)
         work.pack(fill="x", padx=18)
@@ -401,6 +421,54 @@ class PanelApp:
         self.emit("encoder", name, delta)
         suffix = f"  /  VALUE {value:03d}" if value is not None else ""
         self.status.set(f"ENCODER {name}  /  DELTA {delta:+d}{suffix}")
+
+    def toggle_filter2(self) -> None:
+        if not self.filter2_enabled:
+            return
+        if self.filter2_window is not None and self.filter2_window.winfo_exists():
+            self.filter2_window.destroy()
+            self.filter2_window = None
+            return
+
+        window = tk.Toplevel(self.root)
+        self.filter2_window = window
+        window.title("Filter 2 — Eight-Lane Emulator Extension")
+        window.configure(bg=PANEL_BG)
+        window.resizable(False, False)
+        window.protocol("WM_DELETE_WINDOW", self.toggle_filter2)
+        title = tk.Frame(window, bg=PANEL_BG)
+        title.pack(fill="x", padx=12, pady=(10, 4))
+        tk.Label(title, text="FILTER 2", fg=TEXT, bg=PANEL_BG,
+                 font=("TkDefaultFont", 13, "bold")).pack(side="left")
+        tk.Label(title, text="LIVE QEMU  /  LANES 1–8", fg=LED_ORANGE,
+                 bg=PANEL_BG, font=("TkFixedFont", 8, "bold")).pack(
+                     side="right", pady=(3, 0))
+        knobs = tk.Frame(window, bg=PANEL_INSET, padx=8, pady=8)
+        knobs.pack(padx=12, pady=(0, 6))
+        for lane in range(8):
+            VirtualKnob(
+                knobs,
+                str(lane + 1),
+                lambda _name, delta, value, lane=lane:
+                    self.filter2(lane, delta, value),
+                self.filter2_values[lane],
+            ).grid(row=0, column=lane, padx=1)
+        tk.Label(
+            window,
+            text="Per-lane Q1.31 coefficient  •  default 064  •  runtime only",
+            fg=MUTED,
+            bg=PANEL_BG,
+            font=("TkFixedFont", 8),
+        ).pack(anchor="w", padx=14, pady=(0, 10))
+
+    def filter2(self, lane: int, delta: int, value: int | None) -> None:
+        if value is None:
+            return
+        self.filter2_values[lane] = value
+        self.emit("filter2", str(lane), value)
+        self.status.set(
+            f"FILTER 2  /  LANE {lane + 1}  /  VALUE {value:03d}  /  {delta:+d}"
+        )
 
     def key_press(self, event) -> str | None:
         key = event.keysym.lower()
@@ -516,9 +584,10 @@ def main() -> None:
     ap.add_argument("--frame", type=Path, required=True)
     ap.add_argument("--events", type=Path, required=True)
     ap.add_argument("--scale", type=int, default=6)
+    ap.add_argument("--filter2", action="store_true")
     args = ap.parse_args()
     root = tk.Tk()
-    PanelApp(root, args.frame, args.events, args.scale)
+    PanelApp(root, args.frame, args.events, args.scale, args.filter2)
     root.mainloop()
 
 

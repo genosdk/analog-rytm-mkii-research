@@ -176,7 +176,7 @@ class EmulatorBridge:
 
             self.bus.read = traced_read
             try:
-                callback = run_complete_callback(self.cpu, self._callback_sp)
+                callback = run_complete_callback(self.cpu, self._callback_sp, 400_000)
             finally:
                 self.bus.read = original_read
             queue_count = self.bus.read(QUEUE + 4, 4)
@@ -239,7 +239,7 @@ class EmulatorBridge:
             if not accepted:
                 raise RuntimeError("stock note-off constructor rejected the held source")
             held_after_constructor = self.bus.read(HELD_SOURCE_MASK_BASE, 4)
-            callback = run_complete_callback(self.cpu, self._callback_sp)
+            callback = run_complete_callback(self.cpu, self._callback_sp, 400_000)
             result = {
                 "note": note,
                 "constructor_instructions": constructor_steps,
