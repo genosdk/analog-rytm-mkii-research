@@ -574,6 +574,10 @@ New state must use a versioned extension or verified-unused storage; existing
   extends ownership across the complete physical-voice mapping. Their reports
   are `AR172_CONTROL_FRAME_TRACK_LANE_PROBE.json` and
   `AR172_CONTROL_FRAME_EIGHT_LANE_OWNERSHIP_PROBE.json`.
+- `research/control_frame_eight_lane_two_word_locality_probe.py` compares 1,360
+  independent stock baselines with 1,360 words-67/68 seeded callbacks. Its
+  compact per-lane digest report is
+  `research/AR172_CONTROL_FRAME_EIGHT_LANE_TWO_WORD_LOCALITY_PROBE.json`.
 - `recovered_library/minicoldfire_audio.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply, correct fractional-product scaling, and the
@@ -701,7 +705,14 @@ have no observed non-packet read, and all 58 adjacent pairs are fully
 read-isolated. The deterministic winner is words 67/68 at
 `0x80006444/0x80006446`, 20 words from the nearest known control field. The next
 gate is bounded eight-lane persistence and exact packet-locality testing of only
-that pair.
+that pair. This gate now passes: across 1,360 stock baselines and 1,360 seeded
+callbacks, the complete 510-word DSPI1 packet differs at exactly words 67/68 in
+every comparison. Values `0xF243/0x0DBC` survive at
+`0x80006444/0x80006446` for all 34 public machines, forced states 0..4 and all
+eight voice mappings. This proves eight-lane software persistence and exact
+serialization locality, not spare FPGA semantics. The next gate is resolving
+the surrounding words 67..70 structure and all non-callback initialization or
+parameter-event writers before selecting the pair for an inert firmware canary.
 
 ## External format cross-checks
 

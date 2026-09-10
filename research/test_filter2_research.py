@@ -41,6 +41,9 @@ from control_frame_eight_lane_ownership_probe import (
     probe as probe_control_frame_eight_lane_ownership,
 )
 from control_frame_track_lane_probe import probe as probe_control_frame_track_lane
+from control_frame_eight_lane_two_word_locality_probe import (
+    probe as probe_control_frame_eight_lane_two_word_locality,
+)
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -645,6 +648,19 @@ class ControlFrameEightLaneOwnershipProbeTests(StockProbeTest):
         self.assertEqual(result["ranking"]["adjacent_writer_free_pairs"], 58)
         self.assertEqual(result["ranking"]["fully_read_isolated_pairs"], 58)
         self.assertEqual(result["ranking"]["winner"]["words"], [67, 68])
+
+
+class ControlFrameEightLaneTwoWordLocalityProbeTests(StockProbeTest):
+    def test_words_67_68_have_exact_packet_locality_across_all_lanes(self):
+        result = probe_control_frame_eight_lane_two_word_locality(
+            STOCK, EMULATOR, jobs=4,
+        )
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["coverage"]["contexts"], 1360)
+        self.assertEqual(result["coverage"]["baseline_callbacks"], 1360)
+        self.assertEqual(result["coverage"]["seeded_callbacks"], 1360)
+        self.assertEqual(result["candidate"]["words"], [67, 68])
+        self.assertTrue(result["candidate"]["exact_packet_locality_in_every_context"])
 
 
 

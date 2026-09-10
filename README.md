@@ -118,7 +118,9 @@ and reproducible tooling.
   pair is rejected by logical track 1. A full eight-lane sweep now covers 1,360
   machine/state/voice contexts, expands callback ownership to 368 fields, and
   leaves 124 eight-lane writer-unobserved candidates. Fifty-eight adjacent
-  pairs are also read-isolated; the new ranked winner is words 67/68.
+  pairs are also read-isolated; the new ranked winner is words 67/68. Across
+  1,360 stock and 1,360 seeded executions, those are the only packet words that
+  change in every eight-lane machine/state comparison.
 - The opt-in continuous research clock now applies interrupt backpressure and
   has sustained 2,303 completed native services while accepting later UI input.
   Its provisional 10 ms period is not yet a claim of physical-device cadence.

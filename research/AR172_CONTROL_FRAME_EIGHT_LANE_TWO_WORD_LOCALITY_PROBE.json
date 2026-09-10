@@ -1,0 +1,115 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "coverage": {
+    "public_machines": 34,
+    "states": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "physical_voice_to_logical_track": [
+      0,
+      4,
+      1,
+      5,
+      8,
+      6,
+      10,
+      2
+    ],
+    "contexts": 1360,
+    "baseline_callbacks": 1360,
+    "seeded_callbacks": 1360,
+    "matrix_sha256": "42b91992f68c9cab986234bf4ea1998c9c06d4c0b26dcf29e6665b51fccb8d80"
+  },
+  "candidate": {
+    "words": [
+      67,
+      68
+    ],
+    "addresses": [
+      "0x80006444",
+      "0x80006446"
+    ],
+    "seed_values": [
+      "0xF243",
+      "0x0DBC"
+    ],
+    "exact_packet_locality_in_every_context": true
+  },
+  "lanes": [
+    {
+      "physical_voice": 0,
+      "logical_track": 0,
+      "contexts": 170,
+      "baseline_callbacks": 170,
+      "seeded_callbacks": 170,
+      "context_sha256": "2cf333074d38f2b648331bb7ceb0d6fd3a1495ea7187cf9cfffc0599b6cf7bee"
+    },
+    {
+      "physical_voice": 1,
+      "logical_track": 4,
+      "contexts": 170,
+      "baseline_callbacks": 170,
+      "seeded_callbacks": 170,
+      "context_sha256": "f0e34d70590b03a52e7babc0fc90d239068c4b1851d19c8da96f2735cccf3de3"
+    },
+    {
+      "physical_voice": 2,
+      "logical_track": 1,
+      "contexts": 170,
+      "baseline_callbacks": 170,
+      "seeded_callbacks": 170,
+      "context_sha256": "00a0a4dea96a172ef906ba7a1452471191d4f6033b16b228c387962e068d117f"
+    },
+    {
+      "physical_voice": 3,
+      "logical_track": 5,
+      "contexts": 170,
+      "baseline_callbacks": 170,
+      "seeded_callbacks": 170,
+      "context_sha256": "c360c3b72b7d41fa360adaa8a99784cb9d6948667cfbf2dc38a318f92a4512e7"
+    },
+    {
+      "physical_voice": 4,
+      "logical_track": 8,
+      "contexts": 170,
+      "baseline_callbacks": 170,
+      "seeded_callbacks": 170,
+      "context_sha256": "ed605d802caf41ea4a24d34d1619ddb377b25cfcffa6b514aa713eb7e81e38ee"
+    },
+    {
+      "physical_voice": 5,
+      "logical_track": 6,
+      "contexts": 170,
+      "baseline_callbacks": 170,
+      "seeded_callbacks": 170,
+      "context_sha256": "89aabb1cfdfe58c97cc9a05254d67360328b3c07588f7b63a53b37123870665a"
+    },
+    {
+      "physical_voice": 6,
+      "logical_track": 10,
+      "contexts": 170,
+      "baseline_callbacks": 170,
+      "seeded_callbacks": 170,
+      "context_sha256": "7f955bfaaebe659e29e97f012711baf165034216e7260d56632ae2ac9c213492"
+    },
+    {
+      "physical_voice": 7,
+      "logical_track": 2,
+      "contexts": 170,
+      "baseline_callbacks": 170,
+      "seeded_callbacks": 170,
+      "context_sha256": "0c415bc32fff7420447a7e70aed4e775af6d1f8e94ff7fe704a59b4dd3a0e69c"
+    }
+  ],
+  "conclusion": "Across all eight physical-voice/logical-track mappings, seeding only words 67/68 changes exactly DSPI1 packet words 67/68 against independently executed stock baselines in every public machine/state context.",
+  "next_target": "Resolve the surrounding record geometry and all non-callback initialization before treating words 67/68 as a transport candidate.",
+  "safety": "Emulation-only differential; no firmware was modified and no FPGA semantic or live-hardware safety claim is made."
+}
