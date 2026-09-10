@@ -44,9 +44,9 @@
     "knob_range": "0..127",
     "audio_option": "--audio"
   },
-  "next_gate": {
+  "completed_next_gate": {
     "name": "AR172_QEMU_AUDIO_CADENCE_GATE",
-    "objective": "Replace the trace-only 10 ms forced interrupt with completion-aware audio scheduling that advances renderer blocks without starving the firmware UI."
+    "evidence": "research/AR172_QEMU_AUDIO_CADENCE_GATE.json"
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

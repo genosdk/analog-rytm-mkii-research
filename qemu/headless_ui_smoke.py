@@ -67,6 +67,11 @@ def main() -> None:
     parser.add_argument("--event-settle-seconds", type=float, default=3.0)
     parser.add_argument("--timeout", type=float, default=35.0)
     parser.add_argument("--keep-runtime", action="store_true")
+    parser.add_argument(
+        "--exercise-trigger-audio",
+        action="store_true",
+        help="press and release Trig 1 before the SMP-page responsiveness check",
+    )
     args = parser.parse_args()
 
     qemu = args.qemu.expanduser().resolve()
@@ -112,18 +117,29 @@ def main() -> None:
         panel_writer.write(bytes.fromhex("24 00"))
         time.sleep(args.event_settle_seconds)
         normal_ui = wait_frame(frame, deadline, different_from=before)
+        events = [
+            {"control": "NO", "press": "24 01", "release": "24 00"},
+        ]
+        if args.exercise_trigger_audio:
+            panel_writer.write(bytes.fromhex("23 01"))
+            time.sleep(0.08)
+            panel_writer.write(bytes.fromhex("23 00"))
+            time.sleep(args.event_settle_seconds)
+            events.append(
+                {"control": "TRIG 1", "press": "23 01", "release": "23 00"}
+            )
         time.sleep(1.0)
         panel_writer.write(bytes.fromhex("25 10"))
         time.sleep(0.08)
         panel_writer.write(bytes.fromhex("25 00"))
         time.sleep(args.event_settle_seconds)
         smp_page = wait_frame(frame, deadline, different_from=normal_ui)
+        events.append(
+            {"control": "SMP", "press": "25 10", "release": "25 00"}
+        )
         print(json.dumps({
             "result": "PASS",
-            "events": [
-                {"control": "NO", "press": "24 01", "release": "24 00"},
-                {"control": "SMP", "press": "25 10", "release": "25 00"},
-            ],
+            "events": events,
             "startup_modal": metrics(before),
             "normal_ui": metrics(normal_ui),
             "smp_page": metrics(smp_page),

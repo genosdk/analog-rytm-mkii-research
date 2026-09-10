@@ -162,6 +162,20 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("ar_edma_software_start", source)
         self.assertIn("ar_edma_pump_audio_channel(&c->edma, 30)", source)
 
+    def test_desktop_audio_service_is_bounded_by_pad_edges(self):
+        source = (
+            ROOT / "qemu" / "hw" / "m68k" / "ar_mk2_intc_pit.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_AUDIO_TRIGGER_BLOCKS 1u", source)
+        self.assertIn("ar_panel_audio_observe", source)
+        self.assertIn("group == 2 || group == 3", source)
+        self.assertIn("c->audio_service_budget--", source)
+        self.assertIn("AR_MK2_AUDIO_TRIGGER_SERVICE", source)
+        launcher = (ROOT / "qemu" / "run_desktop_emulator.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('env["AR_MK2_AUDIO_TRIGGER_SERVICE"] = "1"', launcher)
+
     def test_desktop_audio_tap_is_stable_passive_and_stereo(self):
         source = (
             ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"

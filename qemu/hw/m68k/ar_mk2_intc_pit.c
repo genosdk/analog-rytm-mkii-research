@@ -38,6 +38,7 @@
 #define AR_TYPE8_START_NS 5000000000LL
 #define AR_TYPE8_PERIOD_NS 10000000LL
 #define AR_AUDIO_TIMELINE_ADDR 0x8000FE54u
+#define AR_AUDIO_TRIGGER_BLOCKS 1u
 #define AR_ACTIVE_PROFILE_ADDR 0x412FF99Fu
 #define AR_PROFILE_STATE_BASE 0x413001DBu
 #define AR_PROFILE_STATE_STRIDE 228u
@@ -140,6 +141,10 @@ struct ARCoreState {
     bool type8_dma_seen;
     bool type8_bootstrap_done;
     bool mock_audio_service;
+    bool trigger_audio_service;
+    unsigned audio_service_budget;
+    uint8_t panel_pending_command;
+    uint8_t panel_button_groups[16];
     bool audio_service_seen;
     bool source44_seen;
     bool source57_seen;
@@ -500,6 +505,33 @@ static void ar_edma_complete(AREdmaState *s, unsigned channel)
                   ldl_be_p(tcd + AR_EDMA_TCD_DADDR));
 }
 
+static void ar_panel_audio_observe(ARCoreState *c, uint8_t value)
+{
+    uint8_t command = c->panel_pending_command;
+
+    if (command) {
+        c->panel_pending_command = 0;
+        if ((command & 0xf0) == 0x20) {
+            unsigned group = command & 0x0f;
+            uint8_t rising = value & ~c->panel_button_groups[group];
+
+            c->panel_button_groups[group] = value;
+            if (c->trigger_audio_service && (group == 2 || group == 3) &&
+                rising) {
+                c->audio_service_budget = AR_AUDIO_TRIGGER_BLOCKS;
+                qemu_log_mask(LOG_UNIMP,
+                              "AR-MK2 AUDIO: pad edge group=%u mask=%02x; "
+                              "scheduled %u renderer blocks\n",
+                              group, rising, AR_AUDIO_TRIGGER_BLOCKS);
+            }
+        }
+        return;
+    }
+    if ((value & 0xf0) == 0x20 || (value & 0xf0) == 0x30) {
+        c->panel_pending_command = value;
+    }
+}
+
 static bool ar_edma_service(AREdmaState *s, unsigned channel)
 {
     uint8_t *tcd;
@@ -539,6 +571,11 @@ static bool ar_edma_service(AREdmaState *s, unsigned channel)
         physical_memory_read(saddr, buffer + pos,
                              MIN(ssize, nbytes - pos));
         saddr = ar_edma_advance(saddr, soff, smod);
+    }
+    if (channel == 34) {
+        for (pos = 0; pos < nbytes; pos++) {
+            ar_panel_audio_observe(s->core, buffer[pos]);
+        }
     }
     if (channel == 36 && buffer[0] == AR_TYPE8_RECORD &&
         !s->core->type8_dma_seen) {
@@ -1000,7 +1037,8 @@ static bool ar_type8_bootstrap(ARCoreState *c)
     }
 
     c->intc[0].imr &= ~((1ULL << 44) | (1ULL << 57));
-    if (c->mock_audio_service && c->intc[1].icr[63]) {
+    if ((c->mock_audio_service || c->trigger_audio_service) &&
+        c->intc[1].icr[63]) {
         c->intc[1].imr &= ~(1ULL << 63);
     }
     ar_intc_update(c);
@@ -1008,7 +1046,8 @@ static bool ar_type8_bootstrap(ARCoreState *c)
     qemu_log_mask(LOG_UNIMP,
                   "AR-MK2 TYPE8: bootstrapped profile %u and unmasked "
                   "vectors 108/121%s\n", profile,
-                  c->mock_audio_service ? "/191" : "");
+                  (c->mock_audio_service || c->trigger_audio_service) ?
+                  "/191" : "");
     return true;
 }
 
@@ -1048,7 +1087,8 @@ static void ar_type8_feed(void *opaque)
      * audio clock as a periodic forced event rather than a persistent level.
      * Reusing the observed Type-8 10 ms cadence keeps this research shim
      * narrow until physical hardware timing is measured. */
-    if (c->mock_audio_service && c->intc[1].icr[63]) {
+    if ((c->mock_audio_service || c->audio_service_budget) &&
+        c->intc[1].icr[63]) {
         /* The external audio interface requests both linked eDMA streams
          * before raising the block-service interrupt.  Finish the prior
          * outbound chain first, then populate the input chain consumed by
@@ -1057,6 +1097,9 @@ static void ar_type8_feed(void *opaque)
         ar_edma_pump_audio_channel(&c->edma, 30);
         c->intc[1].ifr |= 1ULL << 63;
         ar_intc_update(c);
+        if (!c->mock_audio_service && c->audio_service_budget) {
+            c->audio_service_budget--;
+        }
         if (!c->audio_service_seen) {
             c->audio_service_seen = true;
             qemu_log_mask(LOG_UNIMP,
@@ -1110,9 +1153,12 @@ static void ar_uart9_init(MemoryRegion *sysmem, ARCoreState *c)
 {
     MemoryRegion *mr;
     const char *mock_audio = g_getenv("AR_MK2_MOCK_AUDIO_SERVICE");
+    const char *trigger_audio = g_getenv("AR_MK2_AUDIO_TRIGGER_SERVICE");
 
     c->mock_audio_service = mock_audio && *mock_audio &&
                             strcmp(mock_audio, "0") != 0;
+    c->trigger_audio_service = trigger_audio && *trigger_audio &&
+                               strcmp(trigger_audio, "0") != 0;
 
     c->uart9_irq = qemu_allocate_irq(ar_uart9_dma_request, c, 36);
     c->uart9_chr = qemu_chr_new("ar-mk2-uart9", "null", NULL);

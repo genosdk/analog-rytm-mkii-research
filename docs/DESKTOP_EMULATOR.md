@@ -64,8 +64,11 @@ converts the signed renderer words to little-endian 16-bit PCM, and hands the
 result to QEMU at 48 kHz. The same mono mix is currently sent to left and right;
 the hardware pan/return mapping is not yet proven.
 
-The audio tap and audio-service clock are deliberately separate. The tap does
-not raise interrupts, so enabling it cannot by itself starve the UI.
+The tap itself remains passive. In desktop mode, `--audio` also enables a
+bounded service gate: each rising Trig/pad edge schedules exactly one stock
+vector-191 renderer pass. This is enough to prove QWERTY-to-host-PCM operation
+without trapping the UI in continuous DSP work. Longer realtime playback is
+still blocked on ColdFire TCG throughput.
 
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at

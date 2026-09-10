@@ -104,6 +104,10 @@ python qemu/headless_ui_smoke.py \
   --main /path/to/decompressed-main.bin
 ```
 
+Add `--exercise-trigger-audio` with `AR_MK2_AUDIO_TRIGGER_SERVICE=1` to verify
+that a finite Trig-1 audio-service budget drains and the UI still accepts the
+following SMP-page event.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,
@@ -119,8 +123,9 @@ python qemu/run_desktop_emulator.py \
   --audio
 ```
 
-`--audio` is a passive tap: it does not manufacture renderer work or enable the
-experimental external audio interrupt. QEMU builds need a platform output
+`--audio` enables the passive tap and a bounded trigger service. Each rising
+Trig/pad edge received through UART8 schedules one stock audio interrupt; the
+continuous research clock remains disabled. QEMU builds need a platform output
 driver (for example CoreAudio, PipeWire, PulseAudio, SDL, or OSS). For a
 deterministic capture, QEMU can instead be launched with its WAV default audio
 driver while `AR_MK2_AUDIO_TAP=1` is set.
