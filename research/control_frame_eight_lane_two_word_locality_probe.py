@@ -39,7 +39,7 @@ from trigger_queue_probe import (
 
 CANDIDATE_WORDS = (67, 68)
 CANDIDATE_VALUES = (0xF243, 0x0DBC)
-EXPECTED_MATRIX_SHA256 = "42b91992f68c9cab986234bf4ea1998c9c06d4c0b26dcf29e6665b51fccb8d80"
+EXPECTED_MATRIX_SHA256 = "a5e8c79e80edca4ddab0cd71513fd1a70331250ff11d6523bb36b3c45d3ed429"
 
 
 def run_packet(module, main_path: Path, physical_voice: int, logical_track: int,

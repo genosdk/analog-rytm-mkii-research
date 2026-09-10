@@ -26,7 +26,7 @@
     "contexts": 1360,
     "baseline_callbacks": 1360,
     "seeded_callbacks": 1360,
-    "matrix_sha256": "42b91992f68c9cab986234bf4ea1998c9c06d4c0b26dcf29e6665b51fccb8d80"
+    "matrix_sha256": "a5e8c79e80edca4ddab0cd71513fd1a70331250ff11d6523bb36b3c45d3ed429"
   },
   "candidate": {
     "words": [
@@ -50,7 +50,7 @@
       "contexts": 170,
       "baseline_callbacks": 170,
       "seeded_callbacks": 170,
-      "context_sha256": "2cf333074d38f2b648331bb7ceb0d6fd3a1495ea7187cf9cfffc0599b6cf7bee"
+      "context_sha256": "6c5053b738273043042919a2934e21280b030a9f36d41ebbf443141b3c70ed67"
     },
     {
       "physical_voice": 1,
@@ -58,7 +58,7 @@
       "contexts": 170,
       "baseline_callbacks": 170,
       "seeded_callbacks": 170,
-      "context_sha256": "f0e34d70590b03a52e7babc0fc90d239068c4b1851d19c8da96f2735cccf3de3"
+      "context_sha256": "cb9bb16e1fc45e99201d7cc29cdf3137175666b31e025e17ead003c2ee2e4c02"
     },
     {
       "physical_voice": 2,
@@ -66,7 +66,7 @@
       "contexts": 170,
       "baseline_callbacks": 170,
       "seeded_callbacks": 170,
-      "context_sha256": "00a0a4dea96a172ef906ba7a1452471191d4f6033b16b228c387962e068d117f"
+      "context_sha256": "692491341932d939aa67258abeb22d9aa0443db2dbc1251f7a0fa37b1d775afe"
     },
     {
       "physical_voice": 3,
@@ -74,7 +74,7 @@
       "contexts": 170,
       "baseline_callbacks": 170,
       "seeded_callbacks": 170,
-      "context_sha256": "c360c3b72b7d41fa360adaa8a99784cb9d6948667cfbf2dc38a318f92a4512e7"
+      "context_sha256": "0580f7711e459487bc51891168a3fb245c6ac9898fa75d58fbd2e265f12e6d94"
     },
     {
       "physical_voice": 4,
@@ -82,7 +82,7 @@
       "contexts": 170,
       "baseline_callbacks": 170,
       "seeded_callbacks": 170,
-      "context_sha256": "ed605d802caf41ea4a24d34d1619ddb377b25cfcffa6b514aa713eb7e81e38ee"
+      "context_sha256": "3f3dd9f82bcab30ee37e6083660fb6c273fd78a8afa1e8d76873694bc202e32b"
     },
     {
       "physical_voice": 5,
@@ -90,7 +90,7 @@
       "contexts": 170,
       "baseline_callbacks": 170,
       "seeded_callbacks": 170,
-      "context_sha256": "89aabb1cfdfe58c97cc9a05254d67360328b3c07588f7b63a53b37123870665a"
+      "context_sha256": "e99473e4dc5574565143bc94614d32db4a39b287da4951d3c8c791a072ee1994"
     },
     {
       "physical_voice": 6,
@@ -98,7 +98,7 @@
       "contexts": 170,
       "baseline_callbacks": 170,
       "seeded_callbacks": 170,
-      "context_sha256": "7f955bfaaebe659e29e97f012711baf165034216e7260d56632ae2ac9c213492"
+      "context_sha256": "d7cad9342ac2f6f6b71eba22c3c24c7d0cd002b286e0e7f3942cf539fb4043c7"
     },
     {
       "physical_voice": 7,
@@ -106,7 +106,7 @@
       "contexts": 170,
       "baseline_callbacks": 170,
       "seeded_callbacks": 170,
-      "context_sha256": "0c415bc32fff7420447a7e70aed4e775af6d1f8e94ff7fe704a59b4dd3a0e69c"
+      "context_sha256": "6cad931bc538d1273f14ac8b1593d4d089f2a9f68ee3842775faf2660acf702c"
     }
   ],
   "conclusion": "Across all eight physical-voice/logical-track mappings, seeding only words 67/68 changes exactly DSPI1 packet words 67/68 against independently executed stock baselines in every public machine/state context.",
