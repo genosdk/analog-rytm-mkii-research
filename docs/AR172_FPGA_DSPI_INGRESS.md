@@ -70,7 +70,44 @@ concentrate on the north edge.
 The coordinates are pinned to Project Combine commit
 `234343d23e737e57f2727630e19008b509d7d522`.
 
-## Next gate
+## Renderer payload classification
+
+The recommended boundary sweep is complete. Stock MAIN's table at `0x40277FE8`
+contains 53 renderer entry points. For each entry, the probe installs that pointer
+for physical voice 0 immediately before the stock dispatch at `0x4011CA50`, then
+runs the same note-60, synth-live, one-callback fixture.
+
+Across the 492 asserted-PCS0 payload positions (queue word indices `1..492`):
+
+| Classification | Positions |
+|---|---:|
+| Renderer-sensitive in the common-state sweep | 119 |
+| Invariant in the common-state sweep | 373 |
+
+All 53 renderers execute successfully and produce 41 distinct packet hashes
+grouped into 32 distinct position-difference signatures. Completing the sweep
+also exposed and fixed an emulator decode-order bug: ColdFire `EXT.B` (`0x49C0`)
+was previously captured by the broader `LEA` mask.
+
+The strongest structured clusters are `229..244`, `255..276`, and `309..332`.
+They contain repeated tagged groups such as `0x80014000`, `0x80017F80`,
+`0x8001B018`, and `0x80018000`; `309..320` also alternates tagged control words
+and renderer-dependent values. This is consistent with a framed multi-register
+analog-control protocol, but it is not proof of the selected off-chip device or
+of the values' physical units. The already calibrated pitch pair at words 46/47
+is renderer-sensitive as expected.
+
+The classification is deliberately bounded: swapping a function pointer does not
+install each renderer's authentic machine descriptor or preset state. A word that
+is invariant here may still vary with a parameter or a later runtime phase.
+
+Artifacts:
+
+- `research/renderer_payload_sweep.py` — reproducible common-state sweep
+- `research/AR172_DSPI1_RENDERER_PAYLOAD_MAP.json` — all 492 classifications,
+  renderer results, hashes, values, and signature families
+
+## Configuration-bus boundary
 
 The configuration-pin reuse gate changes the search boundary. The established
 board routes are DSPI1 SCK -> FPGA P53/CCLK and DSPI1 SOUT -> FPGA P51/D0
@@ -86,12 +123,13 @@ obvious dedicated Xilinx configuration PROM is adjacent to U11. They do not prov
 continuity because relevant traces disappear into vias and inner layers, and the
 CPU-board solder side is not shown.
 
-Next, classify the 492 asserted-PCS0 payload positions across stock machine
-renderers and correlate changing fields with the non-FPGA serial/control devices
-visible on CPU8251D. Continue generic live-pad routing only where it answers a
-specific signal question; do not use direction/locality alone to relabel DSPI1 as
-a live FPGA application bus. Board continuity testing remains the independent
-hardware confirmation.
+Next, vary known parameters within one authentic renderer/descriptor pairing,
+starting with the proven pitch pair at words 46/47 and the dense `229..244` and
+`309..320` clusters. Correlate those changes with the non-FPGA serial/control
+devices visible on CPU8251D. Continue generic live-pad routing only where it
+answers a specific signal question; do not use direction/locality alone to
+relabel DSPI1 as a live FPGA application bus. Board continuity testing remains
+the independent hardware confirmation.
 
 The reproducible join is `research/fpga_config_bus_reuse_probe.py`, with committed
 output `research/AR172_FPGA_CONFIG_BUS_REUSE.json`.

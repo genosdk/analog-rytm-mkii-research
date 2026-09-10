@@ -98,6 +98,31 @@ class FpgaIobGeometryTests(unittest.TestCase):
         self.assertTrue(routes["sck"]["parked_after_configuration"])
         self.assertTrue(routes["sout"]["parked_after_configuration"])
 
+    def test_renderer_payload_map_covers_all_asserted_pcs0_words(self):
+        report = json.loads(
+            (HERE / "AR172_DSPI1_RENDERER_PAYLOAD_MAP.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(report["result"], "PASS")
+        self.assertEqual(report["method"]["renderer_count"], 53)
+        self.assertEqual(report["method"]["payload_word_count"], 492)
+        self.assertEqual(report["summary"]["successful_renderers"], 53)
+        self.assertEqual(report["summary"]["emulator_coverage_gaps"], 0)
+        self.assertEqual(report["summary"]["distinct_packet_hashes"], 41)
+        self.assertEqual(report["summary"]["difference_signature_families"], 32)
+        self.assertEqual(report["summary"]["renderer_sensitive_words"], 119)
+        self.assertEqual(report["summary"]["invariant_words"], 373)
+        self.assertEqual(len(report["word_map"]), 492)
+        self.assertEqual(
+            [row["word_index"] for row in report["word_map"]],
+            list(range(1, 493)),
+        )
+        sensitive = report["summary"]["renderer_sensitive_word_indices"]
+        self.assertIn(46, sensitive)
+        self.assertIn(47, sensitive)
+        self.assertTrue(all(row["status"] == "PASS" for row in report["executions"]))
+
 
 class QemuEmacPatchTests(unittest.TestCase):
     def test_load_operand_and_fractional_scale_patch(self):
@@ -613,6 +638,15 @@ class MiniColdFirePeripheralTests(unittest.TestCase):
         cpu.d[0] = 0x00008001
         self.assertEqual(cpu.step(), "EXT.L")
         self.assertEqual(cpu.d[0], 0xFFFF8001)
+
+    def test_ext_byte_encoding_overrides_lea(self):
+        module = self.load_emulator()
+        bus = module.Bus()
+        cpu = module.CPU(bus)
+        bus.write(module.ENTRY, 2, 0x49C0)  # EXT.B D0
+        cpu.d[0] = 0x00000081
+        self.assertEqual(cpu.step(), "EXT.B")
+        self.assertEqual(cpu.d[0], 0xFFFFFF81)
 
     @unittest.skipUnless(
         (HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin").exists(),

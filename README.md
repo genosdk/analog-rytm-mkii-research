@@ -76,6 +76,11 @@ and reproducible tooling.
   the stock application image parks FPGA P53/CCLK and P51/D0 with both input and
   output disabled. Runtime PCS0 traffic is therefore not proof of a live FPGA
   application receiver; the selected board-level sink remains unresolved.
+- A common-state sweep of all 53 stock renderer entries classifies every one of
+  the 492 asserted-PCS0 payload positions: 119 are renderer-sensitive and 373
+  are invariant in this fixture. All 53 renderers execute, yielding 41 packet
+  hashes and 32 position-difference families. Dense structured regions at words `229..244` and
+  `309..332` are the next parameter-correlation targets.
 - Direct XC3S200A/VQ100 IOB-bit extraction classifies all 68 BOND57 user pins.
   A subsequent IOI/INT first-hop decode rejects the earlier P28-P31 locality
   hypothesis: none has a selected fabric consumer and P29 `MUX_O` is `NONE`.

@@ -27,6 +27,10 @@ DTIM0_DTCN=0xFC07000C
 DTIM_ACCEL=10000  # accelerated free-running DMA-timer ticks per semantic CPU instruction
 FLEX_EXT_BASE=0x4B800000
 FLEX_EXT_SIZE=0x00010000
+AUDIO_EXT_BASE=0x4B400000
+AUDIO_EXT_SIZE=0x00400000
+AUDIO_IO_BASE=0x4F900000
+AUDIO_IO_SIZE=0x00100000
 PIT_PCSR_EN=0x0001
 PIT_PCSR_RLD=0x0002
 PIT_PCSR_PIF=0x0004
@@ -53,6 +57,8 @@ EDMA_TCD_BASE=0xFC045000
 EDMA_TCD_STRIDE=0x20
 EDMA_CSR_INT_MAJOR=0x0002
 EDMA_CSR_D_REQ=0x0008
+EDMA_CSR_START=0x0001
+EDMA_CSR_ESG=0x0010
 EDMA_CSR_DONE=0x0080
 EDMA_CH_UART8_RX=34
 EDMA_CH_UART8_TX=35
@@ -79,6 +85,8 @@ class Bus:
     sdram: bytearray = field(default_factory=lambda: bytearray(SDRAM_SIZE))
     sram: bytearray = field(default_factory=lambda: bytearray(SRAM_PHYS))
     flex_ext: bytearray = field(default_factory=lambda: bytearray(FLEX_EXT_SIZE))
+    audio_ext: bytearray = field(default_factory=lambda: bytearray(AUDIO_EXT_SIZE))
+    audio_io: bytearray = field(default_factory=lambda: bytearray(AUDIO_IO_SIZE))
     mmio: dict[int,int] = field(default_factory=dict)
     mmio_events: list[dict] = field(default_factory=list)
     flex_events: list[dict] = field(default_factory=list)
@@ -107,6 +115,10 @@ class Bus:
             return self.sdram, addr-SDRAM_BASE
         if FLEX_EXT_BASE <= addr and addr+size <= FLEX_EXT_BASE+FLEX_EXT_SIZE:
             return self.flex_ext, addr-FLEX_EXT_BASE
+        if AUDIO_EXT_BASE <= addr and addr+size <= AUDIO_EXT_BASE+AUDIO_EXT_SIZE:
+            return self.audio_ext, addr-AUDIO_EXT_BASE
+        if AUDIO_IO_BASE <= addr and addr+size <= AUDIO_IO_BASE+AUDIO_IO_SIZE:
+            return self.audio_io, addr-AUDIO_IO_BASE
         if 0x80000000 <= addr < 0x8C000000:
             return self.sram, addr & (SRAM_PHYS-1)
         if 0xE0000000 <= addr <= 0xFFFFFFFF:
@@ -167,28 +179,43 @@ class Bus:
         mod=1<<modbits; base=addr & ~(mod-1)
         return base | (((addr-base)+delta)&(mod-1))
 
-    def _edma_service(self,ch):
+    @staticmethod
+    def _edma_iterations(raw):
+        # ELINKYES uses a 9-bit iteration count and a 6-bit link channel.
+        return raw & (0x01ff if raw & 0x8000 else 0x7fff)
+
+    @staticmethod
+    def _edma_width(code):
+        return {0:1,1:2,2:4,4:16,5:32}.get(code,1)
+
+    def _edma_service(self,ch,force=False):
         """Service one complete major loop for the tiny subset needed by AR UART8.
 
         UART8 TX is permanently request-ready in the current board model, so all
         minor iterations of an enabled TX major loop can complete back-to-back.
         RX remains dormant until bytes are explicitly injected later.
         """
-        if ch not in self.edma_erq:
+        if not force and ch not in self.edma_erq:
             return False
         if ch==EDMA_CH_UART8_RX and not self.uart_rx:
             return False
         saddr=self._tcd_read(ch,0x00,4); attr=self._tcd_read(ch,0x04,2)
         soff=sx(self._tcd_read(ch,0x06,2),16); nbytes=self._tcd_read(ch,0x08,4)
         slast=sx(self._tcd_read(ch,0x0C,4),32); daddr=self._tcd_read(ch,0x10,4)
-        citer=self._tcd_read(ch,0x14,2)&0x7fff; doff=sx(self._tcd_read(ch,0x16,2),16)
-        dlast=sx(self._tcd_read(ch,0x18,4),32); biter=self._tcd_read(ch,0x1C,2)&0x7fff
+        citer_raw=self._tcd_read(ch,0x14,2); citer=self._edma_iterations(citer_raw); doff=sx(self._tcd_read(ch,0x16,2),16)
+        dlast_raw=self._tcd_read(ch,0x18,4); dlast=sx(dlast_raw,32)
+        biter_raw=self._tcd_read(ch,0x1C,2); biter=self._edma_iterations(biter_raw)
         csr=self._tcd_read(ch,0x1E,2)
         if citer==0: citer=biter
-        if citer==0 or nbytes==0: return False
+        if citer==0:
+            # A software-started empty TCD is used as a completion token by
+            # the stock audio path.
+            citer=1
         smod=(attr>>11)&0x1f; dmod=(attr>>3)&0x1f
+        ssize=self._edma_width((attr>>8)&7); dsize=self._edma_width(attr&7)
         initial={'pc':self.pc_provider() if self.pc_provider else 0,'ch':ch,'saddr':saddr,'daddr':daddr,
-                 'citer':citer,'biter':biter,'nbytes':nbytes,'csr':csr,'bytes':[]}
+                 'attr':attr,'soff':soff,'nbytes':nbytes,'slast':slast,'citer':citer,
+                 'biter':biter,'doff':doff,'dlast_sga':dlast_raw,'csr':csr,'bytes':[]}
         done=0
         while citer>0:
             # For AR UART8 paths NBYTES=1. Keep generic byte loop for completeness.
@@ -197,24 +224,37 @@ class Bus:
                 for _ in range(nbytes):
                     payload.append(self.uart_rx.pop(0) if self.uart_rx else 0)
             else:
-                for j in range(nbytes): payload.append(self.read((saddr+j)&0xffffffff,1))
+                for j in range(nbytes):
+                    sa=(saddr+(j//ssize)*soff+(j%ssize))&0xffffffff
+                    payload.append(self.read(sa,1))
             if ch==EDMA_CH_UART8_TX and daddr==UART8_BASE+UART_DATA_OFF:
                 for x in payload:
                     self.uart_tx.append(x); self.mmio_events.append({'pc':self.pc_provider() if self.pc_provider else 0,
                         'kind':'DMAW','addr':daddr,'size':1,'value':x})
             else:
-                for j,x in enumerate(payload): self.write((daddr+j)&0xffffffff,1,x)
+                for j,x in enumerate(payload):
+                    da=(daddr+(j//dsize)*doff+(j%dsize))&0xffffffff
+                    self.write(da,1,x)
             initial['bytes'].extend(payload); done+=len(payload)
-            saddr=self._mod_advance(saddr,soff,smod)
-            daddr=self._mod_advance(daddr,doff,dmod)
+            sunits=(nbytes+ssize-1)//ssize if nbytes else 0
+            dunits=(nbytes+dsize-1)//dsize if nbytes else 0
+            saddr=self._mod_advance(saddr,soff*sunits,smod)
+            daddr=self._mod_advance(daddr,doff*dunits,dmod)
             citer-=1
         saddr=(saddr+slast)&0xffffffff; daddr=(daddr+dlast)&0xffffffff
         self._tcd_write(ch,0x00,4,saddr); self._tcd_write(ch,0x10,4,daddr)
         # After major completion hardware reloads CITER from BITER and marks DONE.
-        self._tcd_write(ch,0x14,2,biter)
-        self._tcd_write(ch,0x1E,2,csr|EDMA_CSR_DONE)
+        self._tcd_write(ch,0x14,2,biter_raw)
+        self._tcd_write(ch,0x1E,2,(csr&~EDMA_CSR_START)|EDMA_CSR_DONE)
         if csr & EDMA_CSR_D_REQ: self.edma_erq.discard(ch)
         initial.update({'done_bytes':done,'final_saddr':saddr,'final_daddr':daddr})
+        if csr & EDMA_CSR_ESG:
+            # Scatter/gather replaces the live TCD, including CSR; this is why
+            # the stock renderer can wait for ESG to clear at 0xFC0453DE.
+            next_tcd=dlast_raw&0xffffffff
+            raw=bytes(self.read(next_tcd+i,1) for i in range(EDMA_TCD_STRIDE))
+            self._mmio_raw_write(self._tcd_addr(ch),EDMA_TCD_STRIDE,int.from_bytes(raw,'big'))
+            initial['scatter_gather_tcd']=next_tcd
         self.edma_events.append(initial)
         if csr & EDMA_CSR_INT_MAJOR: self._queue_edma_irq(ch)
         return True
@@ -227,10 +267,8 @@ class Bus:
     def read(self,addr,size):
         buf,off=self._region(addr,size)
         if buf is not None:
-            # The audio-interface command objects are RAM-backed but completed
-            # asynchronously by the peripheral.  Stock 1.72 waits for READY in
-            # the +0x1E status word after writing command state 0/1.  Complete
-            # the command on its first observation, preserving all state bits.
+            # Complete RAM-backed audio-interface commands on first status
+            # observation, matching the asynchronous board-side ready edge.
             obj=self._audio_iface_object_for_status(addr&0xffffffff,size)
             if obj in self.audio_iface_pending:
                 remaining=self.audio_iface_pending[obj]-1
@@ -265,8 +303,7 @@ class Bus:
             steps=self.step_provider() if self.step_provider else 0
             value=(steps*DTIM_ACCEL)&0xffffffff
         elif a==AUDIO_DMA_TCD30_CSR and size==2:
-            # 0x40109FFE polls bit 0x10 until hardware clears it.  Preserve one
-            # visible busy observation, then complete the transient handoff.
+            # Preserve one visible busy observation before the handoff clears.
             value=self._mmio_raw_read(a,size)
             if value&AUDIO_DMA_POLLED_BIT:
                 self._mmio_raw_write(a,size,value&~AUDIO_DMA_POLLED_BIT)
@@ -319,6 +356,8 @@ class Bus:
             # UART8 TX requests are continuously available while TXRDY is set.
             if ch==EDMA_CH_UART8_TX: self._edma_service(ch)
             elif ch==EDMA_CH_UART8_RX and self.uart_rx: self._edma_service(ch)
+        elif a==EDMA_SSRT and size==1:
+            ch=value&0x3f; self._mmio_raw_write(a,1,value); self._edma_service(ch,force=True)
         elif a==EDMA_CERQ and size==1:
             self.edma_erq.discard(value&0x3f); self._mmio_raw_write(a,1,value)
         elif a==EDMA_CINT and size==1:
@@ -331,6 +370,10 @@ class Bus:
             self._mmio_raw_write(a,1,value)
         else:
             for i,x in enumerate(bs): self.mmio[(off+i)&0xffffffff]=x
+            if (EDMA_TCD_BASE <= a < EDMA_TCD_BASE+64*EDMA_TCD_STRIDE and
+                    (a-EDMA_TCD_BASE)%EDMA_TCD_STRIDE==0x1e and size==2 and
+                    value&EDMA_CSR_START):
+                self._edma_service((a-EDMA_TCD_BASE)//EDMA_TCD_STRIDE,force=True)
         self.mmio_events.append({'pc':self.pc_provider() if self.pc_provider else 0,'kind':'W','addr':a,'size':size,'value':value})
 
     def pit0_enabled(self):
@@ -623,7 +666,24 @@ class CPU:
                 ry=((self.a if ext&8 else self.d)[ext&7])&0xffffffff
                 ea=self.ea((op>>3)&7,op&7,4,self.pc); self.pc+=ea.ext_bytes
                 if ea.kind!='M':raise Unsupported('EMAC load EA not memory')
-                ea.addr&=self.mac_mask; loadval=ea.read()&0xffffffff; acc^=1
+                # The MAM bit (extension bit 5) selects circular/masked
+                # addressing. Normal MACL/MSACL loads must ignore MASK. For a
+                # masked postincrement the old An is the output address and
+                # only the updated An is masked; the other supported modes
+                # mask the output address itself. See ColdFire2/2M UM,
+                # Table 6-1 and the MACL/MSACL MAM field.
+                if ext&0x20:
+                    if ea.mode==3:  # (An)+
+                        loadval=ea.read()&0xffffffff
+                        self.a[ea.reg]&=self.mac_mask
+                    else:
+                        ea.addr&=self.mac_mask
+                        if ea.mode==4:  # -(An)
+                            self.a[ea.reg]=ea.addr
+                        loadval=ea.read()&0xffffffff
+                else:
+                    loadval=ea.read()&0xffffffff
+                acc^=1
             else:
                 rx=((self.a if op&0x40 else self.d)[(op>>9)&7])&0xffffffff
                 ry=((self.a if op&8 else self.d)[op&7])&0xffffffff; loadval=None
@@ -639,19 +699,26 @@ class CPU:
                 else:
                     rx=((rx>>16)&0xffff) if upperx else (rx&0xffff)
                     ry=((ry>>16)&0xffff) if uppery else (ry&0xffff)
-            # In fractional mode the operands are signed Q1.31 values.  The
-            # ColdFire accumulator keeps eight guard/rounding bits below the
-            # 32-bit value returned by FROM_MAC, so a 64-bit Q2.62 product is
-            # aligned into that representation by shifting it right 23 bits.
-            # (FROM_MAC performs the remaining eight-bit extraction.)
-            signed_product=bool(self.macsr&(0x020|0x040))
-            if signed_product: prod=sx(rx&0xffffffff,32)*sx(ry&0xffffffff,32)
+            if self.macsr&0x020:
+                # Fractional operands are signed Q1.31 values.  Keep the
+                # product signed through the accumulator-alignment shift;
+                # treating negative polynomial coefficients as unsigned
+                # breaks stock exp2 interpolation at 0x40095A14.
+                raw=sx(rx&0xffffffff,32)*sx(ry&0xffffffff,32)
+                if self.macsr&0x010:
+                    remainder=raw&0x7fffff; prod=raw>>23
+                    if remainder>0x400000 or (remainder==0x400000 and prod&1):prod+=1
+                else:prod=raw>>23
+            elif self.macsr&0x040: prod=sx(rx&0xffffffff,32)*sx(ry&0xffffffff,32)
             else: prod=(rx&0xffffffff)*(ry&0xffffffff)
-            shift=(ext>>9)&3
-            if shift==1:prod<<=1
-            elif shift==3:
-                prod=prod>>1 if signed_product else (prod&0xffffffffffffffff)>>1
-            if self.macsr&0x020:prod>>=23
+            # The scale-factor field is ignored in fractional mode.  The
+            # primary MAC/MSAC selector is extension-word bit 8 (not
+            # operation-word bit 8); stock exp2 interpolation relies on
+            # A200 0900 subtracting the second table product.
+            if not (self.macsr&0x020):
+                shift=(ext>>9)&3
+                if shift==1:prod<<=1
+                elif shift==3:prod=(prod&0xffffffffffffffff)>>1
             targets=[(acc,bool(ext&0x100))]
             if dual:targets.append(((ext>>2)&3,bool(ext&2)))
             for anum,subtract in targets:
@@ -711,6 +778,10 @@ class CPU:
                 desc=f'MOVEA.{"W" if size==2 else "L"} ->A{dr}'
             else:
                 dst.write(val); self.set_nz(val,size); desc=f'MOVE.{ {1:"B",2:"W",4:"L"}[size]}'
+        # ColdFire EXT.B Dn must precede the broader LEA mask: 0x49C0 also
+        # satisfies (op & 0xF1C0) == 0x41C0.
+        elif (op&0xFFF8)==0x49C0:
+            r=op&7;v=sx(self.d[r]&0xff,8)&0xffffffff;self.d[r]=v;self.set_nz(v,4);desc='EXT.B'
         # LEA
         elif (op&0xF1C0)==0x41C0:
             dr=(op>>9)&7; mode=(op>>3)&7; reg=op&7; addr,n=self.addr_ea(mode,reg,self.pc); self.pc+=n; self.a[dr]=addr; desc=f'LEA 0x{addr:08X},A{dr}'
@@ -839,6 +910,13 @@ class CPU:
         # ColdFire FF1 Dn: find first one from MSB, encoded as leading-zero count.
         elif (op&0xFFF8)==0x04C0:
             r=op&7; v=self.d[r]&0xffffffff; self.d[r]=(32 if v==0 else 32-v.bit_length()); self.set_nz(self.d[r],4); desc=f'FF1 D{r}'
+        # ColdFire BYTEREV Dn: reverse the four bytes of a data register.
+        # This register-only encoding otherwise aliases the broad immediate
+        # family below (whose size field is reserved), so decode it first.
+        elif (op&0xFFF8)==0x02C0:
+            r=op&7; v=self.d[r]&0xffffffff
+            self.d[r]=int.from_bytes(v.to_bytes(4,'big')[::-1],'big')
+            desc=f'BYTEREV D{r}'
         # immediate arithmetic/logical
         elif (op&0xF000)==0x0000 and (op&0x0F00) in (0x000,0x200,0x400,0x600,0xA00,0xC00):
             fam=op&0x0F00; sc=(op>>6)&3
