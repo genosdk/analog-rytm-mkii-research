@@ -51,6 +51,18 @@ def wait_frame(path: Path, deadline: float, different_from: bytes | None = None)
     raise TimeoutError("no stable qualifying framebuffer before timeout")
 
 
+def wait_log_count(path: Path, needle: str, count: int, deadline: float) -> None:
+    while time.monotonic() < deadline:
+        try:
+            observed = path.read_text(encoding="utf-8", errors="replace").count(needle)
+        except FileNotFoundError:
+            observed = 0
+        if observed >= count:
+            return
+        time.sleep(0.03)
+    raise TimeoutError(f"observed {observed}/{count} log markers: {needle}")
+
+
 def metrics(data: bytes) -> dict[str, int | str]:
     return {
         "bytes": len(data),
@@ -120,10 +132,20 @@ def main() -> None:
         default=1,
         help="number of bounded Trig-1 edges to issue with --exercise-trigger-audio",
     )
+    parser.add_argument(
+        "--services-per-trigger",
+        type=int,
+        default=8,
+        help="completed vector-191 services required for each trigger edge",
+    )
     args = parser.parse_args()
 
     if args.trigger_count < 1:
         parser.error("--trigger-count must be at least 1")
+    if args.services_per_trigger < 1:
+        parser.error("--services-per-trigger must be at least 1")
+    if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
+        args.qemu_debug = f"unimp,{args.qemu_debug}"
 
     qemu = args.qemu.expanduser().resolve()
     main_image = args.main.expanduser().resolve()
@@ -179,7 +201,12 @@ def main() -> None:
                 panel_writer.write(bytes.fromhex("23 01"))
                 time.sleep(0.08)
                 panel_writer.write(bytes.fromhex("23 00"))
-                time.sleep(args.event_settle_seconds)
+                wait_log_count(
+                    log,
+                    "AR-MK2 AUDIO: completed vector 191 service",
+                    (index + 1) * args.services_per_trigger,
+                    deadline,
+                )
                 events.append(
                     {
                         "control": "TRIG 1",
@@ -200,6 +227,10 @@ def main() -> None:
         print(json.dumps({
             "result": "PASS",
             "events": events,
+            "completed_audio_services": (
+                args.trigger_count * args.services_per_trigger
+                if args.exercise_trigger_audio else 0
+            ),
             "startup_modal": metrics(before),
             "normal_ui": metrics(normal_ui),
             "smp_page": metrics(smp_page),
