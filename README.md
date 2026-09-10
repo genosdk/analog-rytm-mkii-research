@@ -217,12 +217,12 @@ banks. **Step callback** deliberately advances offline processing and refreshes
 the selected lane's telemetry. **Run 16 callbacks** starts a bounded offline
 run, changes to **Stop after current** while active, and polls telemetry until
 completion. **Render selected note** executes up to 32 bounded callbacks with a
-non-proprietary sine source, monitors the selected post-Filter2 Q1.31 lane, and
-packages the exact rendered segment as a repeated 0.75-second 48-kHz stereo WAV
-for browser playback. The stock mixer is executed and audited on every preview
-callback, but its source-gain state remains muted in the storage-free controller
-fixture, so the audition tap is explicitly pre-mixer. The service never writes
-an ELE3 container, SysEx package, or flashable image.
+non-proprietary sine source, processes it through Filter2/LFO2 and stock mixer
+`0x4010A2E0`, and packages the selected mixer-output lane as a repeated
+0.75-second 48-kHz stereo WAV for browser playback. All 256 stock mixer writes
+are audited on every preview callback; other stock source planes remain
+fixture-dependent. The service never writes an ELE3 container, SysEx package,
+or flashable image.
 
 ## Railway dashboard
 

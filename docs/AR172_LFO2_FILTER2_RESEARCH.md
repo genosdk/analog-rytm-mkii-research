@@ -671,13 +671,22 @@ has a bounded audition renderer: it generates a non-proprietary sine from the
 last QWERTY note, injects it at the proven post-ingress boundary, executes 1..32
 authentic Filter2/LFO2 callbacks, converts the selected Q1.31 lane to signed
 16-bit stereo, and repeats the exact captured segment into a 0.75-second 48-kHz
-WAV for browser playback. Each callback also executes and audits the stock
-mixer's complete 256-write geometry. That mixer remains all-zero in the
-storage-free fixture because its source-gain state is not initialized, so the
-audition is explicitly identified as a post-Filter2 pre-mixer monitor rather
-than stock final-output audio. The next gate is to recover the minimum stock
-mixer source-gain initialization and move the same bounded capture downstream
-without enabling an unbounded service clock.
+WAV for browser playback. Each callback executes and audits the stock mixer's
+complete 256-write geometry. A stale dual-EMAC decoder in the audio-capable
+minimal interpreter had made those writes appear all-zero by subtracting and
+re-adding each load-form product into the same accumulator. Matching the
+already-correct QEMU/base-interpreter rule activates the stock external-source
+mix path: the audition now captures the selected lane downstream of stock mixer
+`0x4010A2E0` and uses the renderer tap's proven six-guard-bit conversion to
+signed 16-bit PCM. Other source planes remain fixture-dependent. The next gate is to
+feed this verified bounded mixer output into a paced host-audio stream without
+enabling an unbounded service clock.
+
+The mechanical correction and its bounded runtime proof are recorded in
+`research/AR172_MINICOLDFIRE_AUDIO_EMAC_GATE.json`. It also withdraws the old
+compact active external-ingress vector as live-ingress proof: under the corrected
+EMAC decoder that fixture is zero at ingress and output, so its missing stock
+precondition must be recovered independently before the claim is reinstated.
 
 For Filter 2, state-loaded Q1.31 coefficients, per-sample control slew, all
 eight audio/state lanes, the foreground publication boundary, its

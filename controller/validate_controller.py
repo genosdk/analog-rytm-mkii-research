@@ -110,10 +110,12 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
                 and audio_preview["callbacks"] == 2
                 and audio_preview["rendered_frames"] == 64
                 and audio_preview["playback_frames"] == 36_000
+                and audio_preview["mixer_guard_bits"] == 6
                 and audio_preview["nonzero_samples"] > 0
             ),
             "audio_preview_mixer_boundary_audited": all(
-                item["stock_mixer_nonzero_words"] == 0
+                item["stock_mixer_nonzero_words"] > 0
+                and len(item["stock_mixer_output_sha256"]) == 64
                 for item in audio_preview["callback_audit"]
             ),
             "waveform_index_range_exact": [item["virtual_index"] for item in waveform_publications]
@@ -173,7 +175,7 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
             "audio_preview": audio_preview,
             "assets": assets,
             "checks": checks,
-            "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. The audition WAV uses a generated sine at the selected post-Filter2 lane because the storage-free fixture's stock mixer source-gain state remains muted. Physical MIDI/USB ingress remains untraced.",
+            "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. The audition WAV uses a generated sine injected after external ingress, then captures the selected stock mixer output lane. Other stock source planes remain fixture-dependent. Physical MIDI/USB ingress remains untraced.",
             "safety": "Runtime emulator arming only; no ELE3, SysEx, or flashable image was created.",
         })
     finally:

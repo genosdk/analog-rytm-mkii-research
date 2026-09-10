@@ -119,6 +119,7 @@ MIXER_RETURN = 0x4011CAE8
 SAMPLE_RATE = 48_000
 PREVIEW_SECONDS = 0.75
 PREVIEW_AMPLITUDE = 0x10000000
+MIXER_GUARD_BITS = 6
 VOICE_RESET_FLAG = 0x80
 NOTE_KEYS = {
     "a": 48,
@@ -315,9 +316,16 @@ class EmulatorBridge:
                     raise RuntimeError("audio preview observed unexpected stock mixer geometry")
                 mixer_values = dict(mixer_writes)
                 mixer_base = min(mixer_values)
+                mixer_output = [
+                    mixer_values[0x80000800 + frame * 0x40 + item_lane * 4]
+                    for frame in range(32)
+                    for item_lane in range(LANES)
+                ]
                 block = [
-                    max(-32768, min(32767, self._signed32(word) >> 16))
-                    for word in filtered[lane]
+                    max(-32768, min(32767, self._signed32(
+                        mixer_values[0x80000800 + frame * 0x40 + lane * 4]
+                    ) >> MIXER_GUARD_BITS))
+                    for frame in range(32)
                 ]
                 rendered_samples.extend(block)
                 self.callback_count += 1
@@ -325,6 +333,9 @@ class EmulatorBridge:
                     "filter2_output": self._plane_hash(filtered),
                     "stock_mixer_base": f"0x{mixer_base:08X}",
                     "stock_mixer_nonzero_words": sum(value != 0 for value in mixer_values.values()),
+                    "stock_mixer_output_sha256": hashlib.sha256(b"".join(
+                        word.to_bytes(4, "big") for word in mixer_output
+                    )).hexdigest(),
                 })
 
             raw_pcm = b"".join(
@@ -357,10 +368,11 @@ class EmulatorBridge:
                 "sample_rate_hz": SAMPLE_RATE,
                 "channels": 2,
                 "format": "signed 16-bit little-endian PCM WAV",
+                "mixer_guard_bits": MIXER_GUARD_BITS,
                 "source": "generated sine injected after stock external-audio ingress",
-                "monitor_boundary": "selected post-Filter2 Q1.31 lane",
-                "processing": "runtime Filter2/LFO2 candidate; stock mixer 0x4010A2E0 also executed and audited",
-                "stock_mixer_fixture_state": "muted until source-gain state is recovered",
+                "monitor_boundary": "selected stock mixer output lane",
+                "processing": "runtime Filter2/LFO2 candidate followed by stock mixer 0x4010A2E0",
+                "stock_mixer_fixture_state": "external/Filter2 source path active; other source planes remain fixture-dependent",
                 "repeat_packaging": repeats > 1,
                 "raw_pcm_sha256": hashlib.sha256(raw_pcm).hexdigest(),
                 "wav_sha256": hashlib.sha256(wav_bytes).hexdigest(),
@@ -873,7 +885,8 @@ def make_handler(state: ControllerState):
                         key: metadata[key] for key in (
                             "note", "frequency_hz", "lane", "callbacks", "callback_count",
                             "rendered_frames", "playback_frames", "sample_rate_hz",
-                            "nonzero_samples", "minimum", "maximum", "raw_pcm_sha256", "wav_sha256",
+                            "mixer_guard_bits", "nonzero_samples", "minimum", "maximum",
+                            "raw_pcm_sha256", "wav_sha256",
                         )
                     }
                     self.send_response(HTTPStatus.OK)

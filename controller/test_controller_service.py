@@ -230,6 +230,12 @@ class ServiceApiTests(unittest.TestCase):
         self.assertEqual(body[8:12], b"WAVE")
         self.assertEqual(len(body), 44 + 48_000 * 3)
         self.assertNotEqual(set(body[44:]), {0})
+        preview = self.state.events[-1]
+        self.assertEqual(preview["monitor_boundary"], "selected stock mixer output lane")
+        self.assertTrue(all(
+            item["stock_mixer_nonzero_words"] > 0
+            for item in preview["callback_audit"]
+        ))
 
     def test_audio_preview_validates_callback_bound(self):
         status, _, body = self.request(

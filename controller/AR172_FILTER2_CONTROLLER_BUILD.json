@@ -380,8 +380,8 @@
         "index": 1,
         "instructions": 45202,
         "multiply_calls": 513,
-        "ingress_sha256": "a68c35c729fd164ee082c314beb70eecd951adf54ebbc1d4b405bb5898e96430",
-        "output_sha256": "5f85d22301c805c59e2f272ab26bd25fbac8b8161d3ebd9dc367da965b43604d",
+        "ingress_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
         "phase_before": [
           "0x00000000",
           "0x00000000",
@@ -408,8 +408,8 @@
         "index": 2,
         "instructions": 45202,
         "multiply_calls": 513,
-        "ingress_sha256": "5a43499b17b5cb3a67282fbfab0aa69f3edc8103da1063659b807783b8f97081",
-        "output_sha256": "1b87689a1febb764f120fae2176d9f31344e99ecb2258fff8d6048932ccbef84",
+        "ingress_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
         "phase_before": [
           "0x002D4DD4",
           "0x00000000",
@@ -445,8 +445,8 @@
       "index": 4,
       "instructions": 45202,
       "multiply_calls": 513,
-      "ingress_sha256": "f1e7c1d675f51d988765c8164d9ab5df8d128705f2aa5c2ce74f60b585b5059e",
-      "output_sha256": "03ee4d3491dc03e6233ac3bb241dc15f2da91c006ea5608bae399a30167561a3",
+      "ingress_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+      "output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
       "phase_before": [
         "0x0087E97C",
         "0x00000000",
@@ -483,33 +483,36 @@
     "sample_rate_hz": 48000,
     "channels": 2,
     "format": "signed 16-bit little-endian PCM WAV",
+    "mixer_guard_bits": 6,
     "source": "generated sine injected after stock external-audio ingress",
-    "monitor_boundary": "selected post-Filter2 Q1.31 lane",
-    "processing": "runtime Filter2/LFO2 candidate; stock mixer 0x4010A2E0 also executed and audited",
-    "stock_mixer_fixture_state": "muted until source-gain state is recovered",
+    "monitor_boundary": "selected stock mixer output lane",
+    "processing": "runtime Filter2/LFO2 candidate followed by stock mixer 0x4010A2E0",
+    "stock_mixer_fixture_state": "external/Filter2 source path active; other source planes remain fixture-dependent",
     "repeat_packaging": true,
-    "raw_pcm_sha256": "7c8d2593f8c4f5dc30374f70328473235a621a009fdfc43aecfe417ca37a6cd4",
-    "wav_sha256": "c571444aa30277da71a5ad7b016ec44ba5b639dbed0db613fba996cb72908954",
-    "nonzero_samples": 64,
-    "minimum": -1,
-    "maximum": 3610,
+    "raw_pcm_sha256": "aafb8af890a4bb585a476643a0e391ec3491b87f9b1cb3a9aeecf48aa6fb81a6",
+    "wav_sha256": "044736aa905810c81648200820bc771a662e81fa3eb93fc8caec9c692a4fd007",
+    "nonzero_samples": 63,
+    "minimum": 0,
+    "maximum": 14440,
     "callback_audit": [
       {
-        "filter2_output": "829596c3fe9b5e3d583e4f6e5c94d4f07bd0e5ae09573d2fc33c538cbd93b0d9",
+        "filter2_output": "0215101c6a02a4e4f7aced026377f833e82f97be4fcbf56222de813e2be1c1da",
         "stock_mixer_base": "0x80000800",
-        "stock_mixer_nonzero_words": 0
+        "stock_mixer_nonzero_words": 31,
+        "stock_mixer_output_sha256": "31131e05dd2d2b59271d33f61d3255888d395a36f665ba564873bf75e30bb385"
       },
       {
-        "filter2_output": "28784a82463c5f8a4f63ed4f4ea42cd574ae24dda43d4592230e2e8cba3cb61a",
+        "filter2_output": "6370e5bd8c134421c191ac7ba92973375539f8a8c604d75c6ba876abda76b4bf",
         "stock_mixer_base": "0x80000800",
-        "stock_mixer_nonzero_words": 0
+        "stock_mixer_nonzero_words": 32,
+        "stock_mixer_output_sha256": "7824fef5aec5f79d9fffbd82a881caed3ead013905837e7a68bd92a848657324"
       }
     ]
   },
   "assets": {
     "index.html": {
       "exists": true,
-      "bytes": 5666
+      "bytes": 5630
     },
     "styles.css": {
       "exists": true,
@@ -545,6 +548,6 @@
     "all_static_assets_present": true,
     "no_flashable_image_created": true
   },
-  "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. The audition WAV uses a generated sine at the selected post-Filter2 lane because the storage-free fixture's stock mixer source-gain state remains muted. Physical MIDI/USB ingress remains untraced.",
+  "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. The audition WAV uses a generated sine injected after external ingress, then captures the selected stock mixer output lane. Other stock source planes remain fixture-dependent. Physical MIDI/USB ingress remains untraced.",
   "safety": "Runtime emulator arming only; no ELE3, SysEx, or flashable image was created."
 }

@@ -99,6 +99,23 @@ class QemuEmacPatchTests(unittest.TestCase):
         self.assertIn("(int64_t)(int32_t)op1 * (int32_t)op2", patch)
         self.assertIn("product >>= 23", patch)
 
+    def test_audio_interpreter_emac_gate_records_mixer_and_fixture_correction(self):
+        report = json.loads(
+            (HERE / "AR172_MINICOLDFIRE_AUDIO_EMAC_GATE.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            report["status"],
+            "PASS_AUDIO_INTERPRETER_EMAC_ALIGNED_STOCK_MIXER_ACTIVE",
+        )
+        proof = report["bounded_runtime_proof"]
+        self.assertEqual(proof["unique_writes_per_callback"], 256)
+        self.assertEqual(proof["nonzero_words_per_callback"], [31, 32])
+        self.assertGreater(proof["maximum_s16"], 0)
+        self.assertEqual(
+            report["evidence_correction"]["status"],
+            "OPEN_REVALIDATION_REQUIRED",
+        )
+
 
 class QemuAudioEdmaTests(unittest.TestCase):
     def test_linked_audio_descriptor_semantics_are_modeled(self):
@@ -587,6 +604,29 @@ class MiniColdFirePeripheralTests(unittest.TestCase):
         self.assertEqual(cpu.macc[1], 6)
         self.assertEqual(cpu.d[0], 0x12345678)
         self.assertEqual(cpu.macc[0], 0)
+
+    def test_audio_interpreter_mixer_load_form_is_not_dual_accumulate(self):
+        emulator_path = ROOT / "recovered_library" / "minicoldfire_audio.py"
+        spec = importlib.util.spec_from_file_location("test_minicoldfire_audio_emac", emulator_path)
+        if spec is None or spec.loader is None:
+            self.fail("cannot load audio MiniColdFire")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        bus = module.Bus()
+        cpu = module.CPU(bus)
+        # This exact load-form MSACL encoding occurs at stock mixer 0x4010A398.
+        bus.write(module.ENTRY, 2, 0xAE9B)
+        bus.write(module.ENTRY + 2, 2, 0x7901)
+        cpu.macsr = 0xA0
+        cpu.d[7] = 0x10000000
+        cpu.d[1] = 0x80000000
+        cpu.a[3] = module.SRAM_BASE + 0x100
+        bus.write(cpu.a[3], 4, 0x12345678)
+        self.assertEqual(cpu.step(), "EMAC")
+        self.assertEqual(cpu.macc[0], 0x1000000000)
+        self.assertEqual(cpu.d[7], 0x12345678)
+        self.assertEqual(cpu.macc[1], 0)
 
     def test_emac_fractional_word_subtract_uses_extension_bit(self):
         module = self.load_emulator()

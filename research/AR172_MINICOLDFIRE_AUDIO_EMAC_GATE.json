@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_MINICOLDFIRE_AUDIO_EMAC_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_AUDIO_INTERPRETER_EMAC_ALIGNED_STOCK_MIXER_ACTIVE",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "defect": {
+    "component": "recovered_library/minicoldfire_audio.py",
+    "instruction_family": "ColdFire EMAC MAC/MSAC with parallel load",
+    "stock_site": "0x4010A398",
+    "encoding": "AE9B 7901",
+    "previous_decode": "dual = bool((op & 0x30) and (ext & 3))",
+    "effect": "Load-form mixer products were subtracted and re-added into the same accumulator, cancelling the stock mixer output."
+  },
+  "correction": {
+    "decode": "dual = bool(not (op & 0x30) and (ext & 3))",
+    "independent_matches": [
+      "recovered_library/minicoldfire.py",
+      "qemu/patches/0002-m68k-fix-coldfire-emac-dual-detection.patch",
+      "research/AR172_QEMU_EMAC_LOW_LANE_GATE.json"
+    ],
+    "regression": "research.test_research.MiniColdFirePeripheralTests.test_audio_interpreter_mixer_load_form_is_not_dual_accumulate"
+  },
+  "bounded_runtime_proof": {
+    "source": "non-proprietary sine injected after stock external-audio ingress",
+    "selected_lane": 7,
+    "note": 48,
+    "callbacks": 2,
+    "stock_mixer": "0x4010A2E0",
+    "unique_writes_per_callback": 256,
+    "nonzero_words_per_callback": [31, 32],
+    "host_conversion": "selected signed renderer lane shifted by six proven guard bits, saturated to s16, and mirrored to stereo",
+    "nonzero_s16_samples": 63,
+    "minimum_s16": 0,
+    "maximum_s16": 14440
+  },
+  "evidence_correction": {
+    "status": "OPEN_REVALIDATION_REQUIRED",
+    "finding": "The prior compact active external-ingress vector becomes zero at both ingress and output under the corrected EMAC decoder.",
+    "interpretation": "The old active-vector differential depended on stale interpreter behavior or omitted a stock precondition; it is not retained as proof of live external ingress.",
+    "next_gate": "Recover the missing external-ingress fixture precondition under corrected EMAC semantics, without FPGA pin hunting or hardware capture."
+  },
+  "controller": {
+    "monitor_boundary": "selected stock mixer output lane",
+    "callback_limit": 32,
+    "sample_rate_hz": 48000,
+    "qwerty_notes_preserved": true,
+    "mouse_knob_domain": [0, 127]
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "safety": "Local emulation and generated audio only; no ELE3 container, SysEx package, or flashable image was created."
+}
