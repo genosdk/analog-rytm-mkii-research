@@ -100,9 +100,14 @@ and reproducible tooling.
 - The local controller exposes eight mouse/wheel/keyboard knobs and QWERTY
   notes `A W S E D F T G Y H U J K` (notes 48..60). Note-on and note-off both
   execute through the recovered stock note-event constructor in the emulator.
-- Renderer-scoped execution across all 34 public machines identifies 96 of the
-  510 DSPI1 payload positions as machine-specific ownership. Those positions
-  are now excluded from any shared Filter 2 transport candidate.
+- Renderer-scoped execution across all 34 public machines and five forced
+  states covers 170 stock contexts. It identifies 117 of the packetizer's 492
+  payload halfwords as renderer-owned, with no universal field; the other 375
+  still require whole-callback writer/consumer rejection before use.
+- Whole-callback tracing identifies 233 non-renderer-written fields and 327
+  written fields in total. The stock packetizer reads all 492 payload fields;
+  165 read-but-not-callback-written fields remain for initialization and
+  non-note-event ownership tests.
 - The opt-in continuous research clock now applies interrupt backpressure and
   has sustained 2,303 completed native services while accepting later UI input.
   Its provisional 10 ms period is not yet a claim of physical-device cadence.

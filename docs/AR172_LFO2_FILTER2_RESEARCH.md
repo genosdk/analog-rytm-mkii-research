@@ -384,17 +384,9 @@ New state must use a versioned extension or verified-unused storage; existing
    `0x4010CF2C/36`; packetizer `0x40077D14` reads them at `0x40077D64/66`
    into DSPI1 words 46/47. The local QWERTY bridge now selects stock Synth
    chromatic mode and validates the renderer read on every key-down.
-29. **Public renderer field ownership inventoried:** authentic note vectors
-   48/60/72 were executed through all 34 public machine renderers while tracing
-   every write from renderer entry through nested helpers. Ninety-six of the
-   510 DSPI1 payload positions are renderer-owned, grouped into 11 ranges;
-   none is written by all 34 machines, so every observed renderer-owned field
-   is machine-specific. Pitch words 46/47 are owned by 21 machines and are
-   note-variable in 13/15 respectively. No shared Filter 2 transport may reuse
-   any of those 96 positions.
-30. Separately trace physical MIDI/USB ingress on hardware before binding the
+29. Separately trace physical MIDI/USB ingress on hardware before binding the
    virtual command ABI to a device transport.
-31. Add modes, LFO2 modulation, drive and optional 4-pole cascade.
+30. Add modes, LFO2 modulation, drive and optional 4-pole cascade.
 
 ## Current offline assets
 
@@ -557,11 +549,13 @@ New state must use a versioned extension or verified-unused storage; existing
   `clamp_0_7fff(((exp2_output + 1) * scale) >> 31)` with scales `0x62000` and
   `0x4168F`. All 128 observed pairs match. The full result is
   `research/AR172_SYNTH_PITCH_ENCODING_PROBE.json`.
-- `research/renderer_field_inventory_probe.py` traces renderer-scoped writes
-  into the 510-halfword DSPI1 payload source across all 34 public machines and
-  three note anchors. It reports 96 machine-specific owned indices in 11
-  ranges, with no universally renderer-owned field. The complete ownership
-  matrix is `research/AR172_RENDERER_FIELD_INVENTORY_PROBE.json`.
+- `research/renderer_control_ownership_probe.py` traces renderer-scoped writes
+  across all 34 public machines and forced states 0..4. Its complete 170-context
+  matrix is `research/AR172_RENDERER_CONTROL_OWNERSHIP_PROBE.json`.
+- `research/whole_callback_control_ownership_probe.py` extends that trace over
+  the complete audio callback and verifies that packetizer `0x40077D14` reads
+  all 492 payload fields. Its full writer/consumer inventory is
+  `research/AR172_WHOLE_CALLBACK_CONTROL_OWNERSHIP_PROBE.json`.
 - `recovered_library/minicoldfire_audio.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply, correct fractional-product scaling, and the
@@ -612,24 +606,44 @@ reproduce that exact dual-channel calibration. `0x4168F` recurs in machine IDs
 only one channel, while other renderer families emit symmetric or differently
 scaled note-dependent values into the same DSPI1 words 46/47. These words are
 therefore shared physical-voice control slots with machine-dependent pitch and
-channel topology, not two fixed-function globally calibrated rails. The public
-renderer inventory now excludes 96 of 510 DSPI1 payload positions from any
-shared Filter 2 transport: all 96 are machine-specific, and none is written by
-every public renderer. The next offline target is subtracting common callback
-and packetizer writes from the remaining 414 positions, then exercising
-non-note renderer states to distinguish stable fields from fixture zeros. The
-public Sound-format machine byte maps directly to renderer-table
+channel topology, not two fixed-function globally calibrated rails. The next
+offline target is inventorying renderer-owned per-voice fields across every
+public machine and renderer state, then ruling control fields in or out for
+Filter 2. The public Sound-format machine byte maps directly to renderer-table
 indices 0..33: the exact calibration pair belongs to BD Hard and BD Classic.
 Entries 34..52 have no public Sound-format names and remain explicitly labeled
 internal/reserved rather than being assigned speculative identities. All 34
 public machines now execute through three note anchors; HH Lab initially exposed
 a ColdFire `EXT.B` decoder collision with the broader `LEA` mask, now fixed and
 covered by a register sign-extension regression.
+
+The renderer-control ownership sweep now executes all 34 public renderers under
+forced state selectors 0..4: 170 stock contexts total. The packetizer consumes
+492 consecutive halfwords from `0x800063C0..0x80006796`, with exact mapping
+`word = 1 + (address - 0x800063C0) / 2`; this reproduces pitch words 46/47 and
+packed-control words 195/196. Renderers write 117 distinct outbound halfwords
+and no halfword is written in every context. Those 117 fields are rejected as
+universal Filter 2 transport. The remaining 375 are only *renderer-unobserved*,
+not proven spare: they form packet-word ranges 1..45, 50..57, 60..65, 67..70,
+73..79, 85..180, 197..221, 281..308, 333..422 and 427..492. The next gate is a
+whole-callback writer/consumer inventory over those ranges before any canary is
+published into them.
 DSPI1 SCK-to-FPGA-CCLK and SOUT-to-FPGA-DIN are established,
 while PCS0 and the live FPGA application's interpretation remain unresolved;
 physical pin hunting is intentionally out of scope. Physical MIDI/USB ingress
 remains a separate hardware trace. Hardware timer measurement is still required
 before claiming real-time cycle margin.
+
+The whole-callback ownership sweep extends the same 170 contexts from renderer
+entry to the final audio-callback return. It finds 233 fields written outside
+the selected renderer and 327 fields written by the callback in total (23 are
+written in both scopes). The stock packetizer at `0x40077D14` reads every one of
+the 492 payload halfwords at PCs `0x40077D62`, `0x40077D64`, `0x40077D66` and
+`0x40077D68`. This rejects another 210 renderer-unobserved fields, leaving 165
+payload fields that are read for transmission but not written by any callback
+in the tested matrix. They are not yet spare: persistent initialization,
+non-note events and operating modes outside this matrix may own them. The next
+offline gate is tracing those paths before any inert canary publication.
 
 ## External format cross-checks
 
