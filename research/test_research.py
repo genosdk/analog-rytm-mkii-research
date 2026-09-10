@@ -191,6 +191,16 @@ class QemuAudioEdmaTests(unittest.TestCase):
 
 
 class DesktopPanelInputTests(unittest.TestCase):
+    def test_desktop_input_gate(self):
+        report = json.loads(
+            (HERE / "AR172_QEMU_DESKTOP_INPUT_GATE.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(report["status"], "PASS_QWERTY_AND_ABSOLUTE_MOUSE_KNOBS")
+        self.assertTrue(report["runtime_proof"]["visible_firmware_change"])
+        self.assertEqual(
+            report["runtime_proof"]["native_frames"], ["30 81", "30 40"]
+        )
+
     def test_qwerty_layout_and_knob_clamp(self):
         from qemu.desktop_panel import QWERTY_TRIGS, clamp_panel_value
 
@@ -216,7 +226,16 @@ class DesktopPanelInputTests(unittest.TestCase):
         link = PanelLink(sock)
         link.encoder("A", 127)
         link.encoder("I", -127)
-        self.assertEqual(sock.frames, [bytes((0x30, 0x7F)), bytes((0x38, 0x81))])
+        link.set_encoder_value("A", 64)
+        self.assertEqual(
+            sock.frames,
+            [
+                bytes((0x30, 0x7F)),
+                bytes((0x38, 0x81)),
+                bytes((0x30, 0x81)),
+                bytes((0x30, 0x40)),
+            ],
+        )
 
 
 @unittest.skipUnless(

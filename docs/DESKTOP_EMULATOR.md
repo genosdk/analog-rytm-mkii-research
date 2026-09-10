@@ -33,6 +33,12 @@ The desktop bridge currently exposes only panel mappings verified directly again
 
 The page keys have been validated by causal changes in the firmware's presented OLED framebuffer.
 
+The computer keyboard maps `QWERTYUI` to Trigs 1–8 and `ASDFGHJK` to
+Trigs 9–16. Click and drag a virtual knob vertically, or use the mouse wheel,
+to control its current function from 0–127. On first grab after a page change,
+the bridge synchronizes the firmware parameter to the displayed knob value;
+subsequent movement is relative and clamped at both endpoints.
+
 ## Display
 
 The firmware stores its presented 1 KiB OLED framebuffer as 64x128 row-major MSB data. The desktop frontend rotates that buffer 90 degrees into the physical 128x64 display orientation.
@@ -88,9 +94,10 @@ QEMU now re-arms eDMA channel 15 when the modeled external audio interface
 consumes the DSPI1 transmit FIFO; without that request, firmware waited
 indefinitely for DSPI1 SR.EOQF at `0x40077D90` after the first transfer.
 
-This option remains a geometry-derived research clock rather than a confirmed
-physical-clock claim. The native SSI1/eDMA54 chain sustained 8,732 completed
+The cadence is now derived downstream from the stock SSI1 configuration:
+CCR `0x00056F00` requires a 98.304 MHz SSI clock for its 24.576 MHz bit clock,
+16 32-clock I2S slots, and 48 kHz frame rate. The native SSI1/eDMA54 chain sustained 8,732 completed
 services, delivered a
 nonzero triggered renderer block to the host tap, and retained responsive UI.
-The MAIN image proves SSI1 ownership, but the bootloader-established SSI1 clock
-input/divider is still missing. Without the option, emulator behavior is unchanged.
+The upstream bootloader-established CDRH/PLL handoff is still missing. Without
+the option, emulator behavior is unchanged.

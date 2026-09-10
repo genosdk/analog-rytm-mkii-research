@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_DESKTOP_INPUT_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PASS_QWERTY_AND_ABSOLUTE_MOUSE_KNOBS",
+  "qwerty": {
+    "mapping": "QWERTYUI / ASDFGHJK -> Trigs 1..16",
+    "transport": "keydown/keyup -> validated group-3/group-2 press/release bitmaps",
+    "repeat_suppression": true,
+    "focus_loss_releases_held_trigs": true
+  },
+  "virtual_knobs": {
+    "controls": "A..I",
+    "range": "0..127",
+    "interaction": "vertical mouse drag or wheel",
+    "absolute_sync": "first grab sends -127 to saturate the firmware parameter at zero, then sends the displayed value",
+    "subsequent_motion": "signed relative encoder deltas",
+    "page_change_behavior": "invalidate synchronization because A..I address new functions"
+  },
+  "runtime_proof": {
+    "encoder": "A",
+    "requested_absolute_value": 64,
+    "native_frames": ["30 81", "30 40"],
+    "framebuffer_before_sha256": "a395ede930fbbc35f38d72841fd4923c7154f7e0087c5aef9e243c6127317ab3",
+    "framebuffer_after_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+    "visible_firmware_change": true,
+    "trig_1_press_release": "PASS",
+    "later_smp_page_transition": "PASS",
+    "minimum_completed_audio_services": 64,
+    "nonzero_host_audio": true
+  },
+  "decision": "Desktop key and mouse controls now traverse the native panel UART parser. Knob values are established in firmware instead of merely displaying an unsynchronized host-side number.",
+  "next_gate": {
+    "name": "AR172_QEMU_DESKTOP_CONTROL_CONTEXT_GATE",
+    "objective": "Read or infer the active page parameter values so all nine knob indicators initialize from firmware state without requiring first-grab endpoint synchronization."
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Untouched stock firmware ran locally. No firmware, project data, factory sample names, or proprietary PCM are included."
+}

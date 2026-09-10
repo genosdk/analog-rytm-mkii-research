@@ -31,7 +31,9 @@ def clamp_panel_value(value: int) -> int:
 class VirtualKnob(tk.Canvas):
     """Mouse-draggable 0..127 control that emits relative encoder deltas."""
 
-    def __init__(self, parent, name: str, callback: Callable[[str, int, int], None]):
+    def __init__(self, parent, name: str,
+                 callback: Callable[[str, int, int], None],
+                 sync_callback: Callable[[str, int], None]):
         super().__init__(
             parent,
             width=58,
@@ -42,7 +44,9 @@ class VirtualKnob(tk.Canvas):
         )
         self.name = name
         self.callback = callback
+        self.sync_callback = sync_callback
         self.value = 64
+        self.synced = False
         self.drag_y = 0
         self.drag_value = self.value
         self.bind("<ButtonPress-1>", self.begin_drag)
@@ -54,6 +58,7 @@ class VirtualKnob(tk.Canvas):
 
     def begin_drag(self, event) -> None:
         self.focus_set()
+        self.ensure_synced()
         self.drag_y = event.y_root
         self.drag_value = self.value
 
@@ -61,11 +66,21 @@ class VirtualKnob(tk.Canvas):
         self.set_value(self.drag_value + round((self.drag_y - event.y_root) / 2))
 
     def wheel(self, event) -> str:
+        self.ensure_synced()
         self.adjust(1 if event.delta > 0 else -1)
         return "break"
 
     def adjust(self, delta: int) -> None:
+        self.ensure_synced()
         self.set_value(self.value + delta)
+
+    def ensure_synced(self) -> None:
+        if not self.synced:
+            self.sync_callback(self.name, self.value)
+            self.synced = True
+
+    def invalidate(self) -> None:
+        self.synced = False
 
     def set_value(self, value: int) -> None:
         value = clamp_panel_value(value)
@@ -100,6 +115,7 @@ class PanelApp:
         self.photo = None
         self.held_trigs: dict[int, set[str]] = {}
         self.pending_key_releases: dict[str, str] = {}
+        self.knobs: list[VirtualKnob] = []
 
         root.title("Analog Rytm MKII — Firmware Emulator")
         root.configure(bg="#181818")
@@ -149,7 +165,9 @@ class PanelApp:
         enc_frame = tk.Frame(shell, bg="#181818")
         enc_frame.grid(row=4, column=0, columnspan=9)
         for col, name in enumerate("ABCDEFGHI"):
-            VirtualKnob(enc_frame, name, self.encoder).grid(row=0, column=col, padx=1)
+            knob = VirtualKnob(enc_frame, name, self.encoder, self.sync_encoder)
+            knob.grid(row=0, column=col, padx=1)
+            self.knobs.append(knob)
 
         tk.Label(
             shell,
@@ -172,6 +190,9 @@ class PanelApp:
 
     def panel_button(self, name: str, pressed: bool) -> None:
         self.emit("button", name, "press" if pressed else "release")
+        if pressed and name in {"TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO"}:
+            for knob in self.knobs:
+                knob.invalidate()
         self.status.set(f"{name} {'down' if pressed else 'up'}")
 
     def trig(self, trig: int, pressed: bool, source: str = "mouse") -> None:
@@ -191,6 +212,10 @@ class PanelApp:
         self.emit("encoder", name, delta)
         suffix = f" → {value}" if value is not None else ""
         self.status.set(f"Encoder {name}: {delta:+d}{suffix}")
+
+    def sync_encoder(self, name: str, value: int) -> None:
+        self.emit("encoder_value", name, clamp_panel_value(value))
+        self.status.set(f"Encoder {name} synchronized → {value}")
 
     def key_press(self, event) -> str | None:
         key = event.keysym.lower()

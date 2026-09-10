@@ -127,6 +127,11 @@ def main() -> None:
         help="press and release Trig 1 before the SMP-page responsiveness check",
     )
     parser.add_argument(
+        "--exercise-encoder",
+        action="store_true",
+        help="synchronize encoder A to 64 and require a native framebuffer change",
+    )
+    parser.add_argument(
         "--trigger-count",
         type=int,
         default=1,
@@ -220,6 +225,20 @@ def main() -> None:
         events = [
             {"control": "NO", "press": "24 01", "release": "24 00"},
         ]
+        encoder_frame = None
+        if args.exercise_encoder:
+            panel_writer.write(bytes.fromhex("30 81"))
+            time.sleep(0.08)
+            panel_writer.write(bytes.fromhex("30 40"))
+            time.sleep(args.event_settle_seconds)
+            encoder_frame = wait_frame(frame, deadline, different_from=normal_ui)
+            events.append(
+                {
+                    "control": "ENCODER A",
+                    "absolute_value": 64,
+                    "frames": ["30 81", "30 40"],
+                }
+            )
         if args.exercise_trigger_audio:
             for index in range(args.trigger_count):
                 panel_writer.write(bytes.fromhex("23 01"))
@@ -258,7 +277,9 @@ def main() -> None:
         time.sleep(0.08)
         panel_writer.write(bytes.fromhex("25 00"))
         time.sleep(args.event_settle_seconds)
-        smp_page = wait_frame(frame, deadline, different_from=normal_ui)
+        smp_page = wait_frame(
+            frame, deadline, different_from=encoder_frame or normal_ui
+        )
         events.append(
             {"control": "SMP", "press": "25 10", "release": "25 00"}
         )
@@ -273,6 +294,7 @@ def main() -> None:
             "nonzero_host_audio": args.require_nonzero_audio,
             "startup_modal": metrics(before),
             "normal_ui": metrics(normal_ui),
+            "encoder_frame": metrics(encoder_frame) if encoder_frame else None,
             "smp_page": metrics(smp_page),
             "firmware_embedded": False,
         }, indent=2))

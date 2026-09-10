@@ -52,8 +52,11 @@ focus releases every held trig so the firmware cannot retain a stuck pad.
 
 Encoders A–I are displayed as virtual knobs. Vertical mouse drag changes one
 step per two pixels and the wheel changes one step per notch. Each knob keeps a
-host-side value clamped to 0–127 and emits only the corresponding signed delta
-through the native `0x3n` encoder packet.
+host-side value clamped to 0–127. On first grab, it sends a saturating `-127`
+sweep followed by its displayed value, establishing an actual absolute firmware
+value through the native relative `0x3n` packet. Later movement emits signed
+deltas. Page changes invalidate that synchronization because A–I then address
+different functions.
 
 ## Current target
 
