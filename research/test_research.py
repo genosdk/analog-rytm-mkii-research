@@ -269,8 +269,13 @@ class DesktopPanelInputTests(unittest.TestCase):
         )
         self.assertEqual(
             report["status"],
-            "PARTIAL_ENCODER_ACCUMULATOR_PROVEN_CONSUMER_TRIGGER_OPEN",
+            "PARTIAL_NATIVE_EVENT_DISPATCH_PROVEN_BINDING_READBACK_OPEN",
         )
+        self.assertEqual(
+            report["native_consumer_trace"]["active_page_handler"],
+            "dynamic adapter 0x400761A6 selects target 0x40038B58, entering shared handler body 0x4003882C",
+        )
+        self.assertEqual(report["desktop_status"]["native_type_1_delivery"], "PASS")
         self.assertEqual(
             report["pad_pressure_alias_rejected"]["channel_table"],
             "twelve entries 0..11 at 0x4026D4D8",
