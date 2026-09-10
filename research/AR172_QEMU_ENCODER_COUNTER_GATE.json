@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_ENCODER_COUNTER_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_NATIVE_COUNTER_SEMANTICS_READBACK_OPEN",
+  "decoder": {
+    "parser": "0x4007F30C",
+    "counter_handler": "0x4007F252",
+    "header": "0x3n selects encoder index n",
+    "payload": "wrapping 8-bit hardware counter",
+    "behavior": "firmware retains the previous counter and derives direction, wrap and acceleration",
+    "superseded_interpretation": "payload is a signed parameter delta"
+  },
+  "desktop_correction": {
+    "counter_state_per_encoder": true,
+    "first_event_primes_counter": true,
+    "host_delta_expansion": "one wrapping counter transition per requested detent",
+    "endpoint_sweep": "-127 and target value are expanded into unit transitions instead of sent as two payload bytes"
+  },
+  "runtime_probe": {
+    "encoder": "A",
+    "requested_target": 64,
+    "counter_frames": 192,
+    "initial_counter": 0,
+    "final_counter": 193,
+    "oled_changed": true,
+    "minimum_completed_audio_services": 64,
+    "later_smp_page_transition": "PASS",
+    "authoritative_parameter_readback": false
+  },
+  "state_search": {
+    "per_parameter_state_base": "0x80005F10",
+    "live_parameter_table": "0x8000E5B0",
+    "geometry": "13 tracks x 42 big-endian Q8 words",
+    "observation": "paired guest-memory snapshots are now captured around encoder probes",
+    "remaining_work": "resolve active page/encoder binding to its live Q8 word and separate it from continuously changing renderer state"
+  },
+  "decision": "The desktop now speaks the physical encoder counter protocol correctly. Keep first-grab endpoint synchronization as an experimental fallback; do not present its number as firmware-authoritative until active-context readback is proven.",
+  "next_gate": {
+    "name": "AR172_QEMU_ACTIVE_ENCODER_BINDING_GATE",
+    "objective": "Trace page event 0x30..0x35 and encoder object A..I to the selected track's live Q8 parameter word, then export those nine values to the desktop frontend."
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Untouched stock firmware ran locally; runtime memory snapshots remain uncommitted."
+}

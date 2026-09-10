@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import hashlib
+import io
 import importlib.util
 import json
 import sys
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -195,10 +197,13 @@ class DesktopPanelInputTests(unittest.TestCase):
         report = json.loads(
             (HERE / "AR172_QEMU_DESKTOP_INPUT_GATE.json").read_text(encoding="utf-8")
         )
-        self.assertEqual(report["status"], "PASS_QWERTY_AND_ABSOLUTE_MOUSE_KNOBS")
+        self.assertEqual(
+            report["status"], "PASS_QWERTY_AND_MOUSE_KNOBS_COUNTER_CORRECTED"
+        )
         self.assertTrue(report["runtime_proof"]["visible_firmware_change"])
         self.assertEqual(
-            report["runtime_proof"]["native_frames"], ["30 81", "30 40"]
+            report["runtime_proof"]["superseded_probe_frames"],
+            ["30 81", "30 40"],
         )
 
     def test_qwerty_layout_and_knob_clamp(self):
@@ -212,7 +217,7 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertEqual(clamp_panel_value(64), 64)
         self.assertEqual(clamp_panel_value(128), 127)
 
-    def test_knob_delta_uses_validated_signed_encoder_frame(self):
+    def test_knob_delta_uses_wrapping_encoder_counter_frames(self):
         from qemu.panel_event_bridge import PanelLink
 
         class SocketStub:
@@ -224,17 +229,41 @@ class DesktopPanelInputTests(unittest.TestCase):
 
         sock = SocketStub()
         link = PanelLink(sock)
-        link.encoder("A", 127)
-        link.encoder("I", -127)
-        link.set_encoder_value("A", 64)
+        with redirect_stdout(io.StringIO()):
+            link.encoder("A", 2)
+            link.encoder("I", -1)
         self.assertEqual(
             sock.frames,
             [
-                bytes((0x30, 0x7F)),
-                bytes((0x38, 0x81)),
-                bytes((0x30, 0x81)),
-                bytes((0x30, 0x40)),
+                bytes((0x30, 0x00)),
+                bytes((0x30, 0x01)),
+                bytes((0x30, 0x02)),
+                bytes((0x38, 0x00)),
+                bytes((0x38, 0xFF)),
             ],
+        )
+        absolute_sock = SocketStub()
+        absolute = PanelLink(absolute_sock)
+        with redirect_stdout(io.StringIO()):
+            absolute.set_encoder_value("A", 2)
+        self.assertEqual(len(absolute_sock.frames), 130)
+        self.assertEqual(
+            absolute_sock.frames[:2],
+            [bytes((0x30, 0)), bytes((0x30, 0xFF))],
+        )
+        self.assertEqual(absolute_sock.frames[-1], bytes((0x30, 0x83)))
+
+    def test_encoder_counter_gate(self):
+        report = json.loads(
+            (HERE / "AR172_QEMU_ENCODER_COUNTER_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            report["status"], "PASS_NATIVE_COUNTER_SEMANTICS_READBACK_OPEN"
+        )
+        self.assertFalse(
+            report["runtime_probe"]["authoritative_parameter_readback"]
         )
 
 

@@ -108,6 +108,41 @@ def hmp_command(port: int, command: str, timeout: float = 2.0) -> str:
     raise TimeoutError(f"monitor socket unavailable on port {port}")
 
 
+def save_guest_memory(port: int, path: Path, address: int, size: int) -> bytes:
+    path.unlink(missing_ok=True)
+    response = hmp_command(
+        port, f'pmemsave 0x{address:x} 0x{size:x} "{path}"', timeout=5.0
+    )
+    deadline = time.monotonic() + 2.0
+    while time.monotonic() < deadline:
+        try:
+            data = path.read_bytes()
+        except FileNotFoundError:
+            data = b""
+        if len(data) == size:
+            return data
+        time.sleep(0.02)
+    raise TimeoutError(
+        f"guest-memory snapshot incomplete: {path}; monitor response: {response!r}"
+    )
+
+
+def changed_words(before: bytes, after: bytes, base: int) -> list[dict[str, str]]:
+    changes = []
+    for offset in range(0, min(len(before), len(after)), 2):
+        old = int.from_bytes(before[offset:offset + 2], "big")
+        new = int.from_bytes(after[offset:offset + 2], "big")
+        if old != new:
+            changes.append(
+                {
+                    "address": f"0x{base + offset:08X}",
+                    "before": f"0x{old:04X}",
+                    "after": f"0x{new:04X}",
+                }
+            )
+    return changes
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--qemu", type=Path, required=True)
@@ -226,17 +261,32 @@ def main() -> None:
             {"control": "NO", "press": "24 01", "release": "24 00"},
         ]
         encoder_frame = None
+        encoder_state_changes = None
         if args.exercise_encoder:
-            panel_writer.write(bytes.fromhex("30 81"))
-            time.sleep(0.08)
-            panel_writer.write(bytes.fromhex("30 40"))
+            state_base = 0x80005F00
+            state_size = 0x8800
+            state_before = save_guest_memory(
+                monitor_port, runtime / "encoder-state-before.bin", state_base, state_size
+            )
+            encoder_counter = 0
+            encoder_frames = [bytes((0x30, encoder_counter))]
+            for direction, steps in ((-1, 127), (1, 64)):
+                for _ in range(steps):
+                    encoder_counter = (encoder_counter + direction) & 0xFF
+                    encoder_frames.append(bytes((0x30, encoder_counter)))
+            panel_writer.write(b"".join(encoder_frames))
             time.sleep(args.event_settle_seconds)
             encoder_frame = wait_frame(frame, deadline, different_from=normal_ui)
+            state_after = save_guest_memory(
+                monitor_port, runtime / "encoder-state-after.bin", state_base, state_size
+            )
+            encoder_state_changes = changed_words(state_before, state_after, state_base)
             events.append(
                 {
                     "control": "ENCODER A",
                     "absolute_value": 64,
-                    "frames": ["30 81", "30 40"],
+                    "counter_frames": len(encoder_frames),
+                    "final_counter": encoder_counter,
                 }
             )
         if args.exercise_trigger_audio:
@@ -295,6 +345,7 @@ def main() -> None:
             "startup_modal": metrics(before),
             "normal_ui": metrics(normal_ui),
             "encoder_frame": metrics(encoder_frame) if encoder_frame else None,
+            "encoder_state_changes": encoder_state_changes,
             "smp_page": metrics(smp_page),
             "firmware_embedded": False,
         }, indent=2))

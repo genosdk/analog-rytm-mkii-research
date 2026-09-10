@@ -30,7 +30,7 @@
     "byte_parser": "0x4007f30c",
     "button_bitmap_dispatcher": "0x4007efc8",
     "header_format": "0x2n selects button group n; next byte is the group bitmap",
-    "encoder_format": "0x3n selects encoder n; next byte is signed delta",
+  "encoder_format": "0x3n selects encoder n; next byte is a wrapping 8-bit hardware counter. Firmware derives delta, direction and acceleration from the previous counter.",
     "event_record_bytes": 16,
     "event_queue_pointer_global": "0x4026d4c8"
   },

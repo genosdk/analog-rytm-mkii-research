@@ -29,7 +29,7 @@ def clamp_panel_value(value: int) -> int:
 
 
 class VirtualKnob(tk.Canvas):
-    """Mouse-draggable 0..127 control that emits relative encoder deltas."""
+    """Mouse-draggable 0..127 control using a wrapping encoder counter."""
 
     def __init__(self, parent, name: str,
                  callback: Callable[[str, int, int], None],
@@ -215,7 +215,7 @@ class PanelApp:
 
     def sync_encoder(self, name: str, value: int) -> None:
         self.emit("encoder_value", name, clamp_panel_value(value))
-        self.status.set(f"Encoder {name} synchronized → {value}")
+        self.status.set(f"Encoder {name} endpoint target → {value}")
 
     def key_press(self, event) -> str | None:
         key = event.keysym.lower()

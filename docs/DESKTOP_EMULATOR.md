@@ -35,9 +35,11 @@ The page keys have been validated by causal changes in the firmware's presented 
 
 The computer keyboard maps `QWERTYUI` to Trigs 1–8 and `ASDFGHJK` to
 Trigs 9–16. Click and drag a virtual knob vertically, or use the mouse wheel,
-to control its current function from 0–127. On first grab after a page change,
-the bridge synchronizes the firmware parameter to the displayed knob value;
-subsequent movement is relative and clamped at both endpoints.
+to target its current function from 0–127. On first grab after a page change,
+the bridge performs a unit-counter endpoint sweep toward the displayed knob
+value; subsequent movement is relative and clamped at both endpoints. Exact
+active-value readback is still being mapped, so the displayed number is not yet
+firmware-authoritative before that first grab.
 
 ## Display
 

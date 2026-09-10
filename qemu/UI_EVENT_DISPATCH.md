@@ -41,7 +41,11 @@ Therefore Trig 1 reaches **UI dispatch case 0**.
 
 ## Encoder format
 
-Parser header `0x3n` selects encoder index `n`; the payload is a signed delta. Firmware mapping shows live encoder indices 0..8.
+Parser header `0x3n` selects encoder index `n`; the payload is the encoder's
+wrapping 8-bit hardware counter. Firmware mapping shows live encoder indices
+0..8. The parser retains the previous counter and derives direction, wrap and
+acceleration. The desktop bridge therefore expands a requested delta into unit
+counter transitions instead of putting the signed delta directly on the wire.
 
 ## Desktop bindings
 
@@ -54,9 +58,9 @@ Encoders A–I are displayed as virtual knobs. Vertical mouse drag changes one
 step per two pixels and the wheel changes one step per notch. Each knob keeps a
 host-side value clamped to 0–127. On first grab, it sends a saturating `-127`
 sweep followed by its displayed value, establishing an actual absolute firmware
-value through the native relative `0x3n` packet. Later movement emits signed
-deltas. Page changes invalidate that synchronization because A–I then address
-different functions.
+value through native unit changes of the `0x3n` counter. Later movement is
+expanded into the same unit counter transitions. Page changes invalidate that
+synchronization because A–I then address different functions.
 
 ## Current target
 
