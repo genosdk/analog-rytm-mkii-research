@@ -79,13 +79,20 @@ and reproducible tooling.
 - A common-state sweep of all 53 stock renderer entries classifies every one of
   the 492 asserted-PCS0 payload positions: 119 are renderer-sensitive and 373
   are invariant in this fixture. All 53 renderers execute, yielding 41 packet
-  hashes and 32 position-difference families. Dense structured regions at words `229..244` and
-  `309..332` are the next parameter-correlation targets.
+  hashes and 32 position-difference families.
 - The first authentic-selector sweep maps track 6 / machine ID 10 / renderer
   `0x40110B18` pitch to six interleaved DSPI1 value words at
   `310,312,314,316,318,320`. Combining each preceding tag's range byte with the
   following 16-bit value yields six monotonic 128-note curves with octave-doubling
   residuals limited to 0, 1, or one observed 2-unit rounding case.
+- A paired renderer/packetizer trace resolves the earlier `229..240` target:
+  renderer 10 writes SRAM halfwords `0x80006588..0x8000659E` directly as six
+  fixed longwords, serialized as `0x80010000 | halfword`. These words remain
+  constant for notes 48, 60, and 72; the same call's note-dependent six-longword
+  output is written at `0x80006628..0x8000663E` and becomes words `309..320`.
+  Thus `229..240` is renderer setup in this stock path, not an independently
+  varying sound-parameter field. The next unresolved fields are `321..324` and
+  the higher-level parameter publication path before renderer dispatch.
 - Direct XC3S200A/VQ100 IOB-bit extraction classifies all 68 BOND57 user pins.
   A subsequent IOI/INT first-hop decode rejects the earlier P28-P31 locality
   hypothesis: none has a selected fabric consumer and P29 `MUX_O` is `NONE`.

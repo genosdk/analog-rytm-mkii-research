@@ -157,6 +157,34 @@ class FpgaIobGeometryTests(unittest.TestCase):
             [[310, 312, 314, 316, 318, 320]] * 2,
         )
 
+    def test_renderer_voice_block_source_map(self):
+        report = json.loads(
+            (HERE / "AR172_DSPI1_RENDERER_VOICE_BLOCK_SOURCE_MAP.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(report["result"], "PASS")
+        layout = report["packetizer_layout"]
+        self.assertEqual(layout["source_base"], "0x80006588")
+        self.assertEqual(layout["source_stride_bytes_per_slot"], 32)
+        self.assertEqual(layout["packet_base_word"], 229)
+        self.assertEqual(layout["packet_stride_words_per_slot"], 16)
+        self.assertEqual(len(layout["control_slots"]), 8)
+        authentic = report["authentic_renderer_10"]
+        self.assertEqual(authentic["physical_voice"], 5)
+        self.assertEqual(authentic["packet_word_range"], [309, 320])
+        self.assertFalse(authentic["function_pointer_substitution"])
+        target = report["resolved_target"]
+        self.assertEqual(target["requested_word_range"], [229, 240])
+        self.assertEqual(target["source_halfword_range"], ["0x80006588", "0x8000659E"])
+        self.assertTrue(target["values_constant_across_notes_48_60_72"])
+        self.assertEqual(
+            report["parameter_boundary"][
+                "project_data_reads_in_renderer_0x41000000_0x41FFFFFF"
+            ],
+            0,
+        )
+
 
 class QemuEmacPatchTests(unittest.TestCase):
     def test_load_operand_and_fractional_scale_patch(self):
