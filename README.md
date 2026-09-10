@@ -111,6 +111,9 @@ and reproducible tooling.
 - The modeled machine/audio initialization, control-DMA and queue setup, and
   authentic note-on/note-off constructors write none of those 165 fields. This
   negative result preserves them as unobserved—not as proven-spare—candidates.
+- Static MAIN cross-references find 255 exact address literals for 77 of the 165
+  candidates, grouped into 24 neighborhoods that now prioritize dynamic
+  parameter/event tracing; 88 may still use base-relative/computed addressing.
 - The opt-in continuous research clock now applies interrupt backpressure and
   has sustained 2,303 completed native services while accepting later UI input.
   Its provisional 10 ms period is not yet a claim of physical-device cadence.

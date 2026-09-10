@@ -34,6 +34,9 @@ from render_mixer_probe import probe as probe_render_mixer
 from renderer_control_ownership_probe import probe as probe_renderer_control_ownership
 from whole_callback_control_ownership_probe import probe as probe_whole_callback_control_ownership
 from control_setup_ownership_probe import probe as probe_control_setup_ownership
+from control_candidate_absolute_reference_probe import (
+    probe as probe_control_candidate_absolute_reference,
+)
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -597,6 +600,19 @@ class ControlSetupOwnershipProbeTests(StockProbeTest):
         self.assertEqual(rejection["callback_unwritten_field_count"], 165)
         self.assertEqual(rejection["setup_written_callback_candidate_count"], 0)
         self.assertEqual(rejection["remaining_unobserved_field_count"], 165)
+
+
+class ControlCandidateAbsoluteReferenceProbeTests(StockProbeTest):
+    def test_callback_unwritten_field_literal_inventory(self):
+        report = HERE / "AR172_WHOLE_CALLBACK_CONTROL_OWNERSHIP_PROBE.json"
+        result = probe_control_candidate_absolute_reference(STOCK, report)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["source_candidates"], 165)
+        summary = result["absolute_reference_summary"]
+        self.assertEqual(summary["referenced_field_count"], 77)
+        self.assertEqual(summary["unreferenced_field_count"], 88)
+        self.assertEqual(summary["literal_reference_count"], 255)
+        self.assertEqual(summary["cluster_count"], 24)
 
 
 

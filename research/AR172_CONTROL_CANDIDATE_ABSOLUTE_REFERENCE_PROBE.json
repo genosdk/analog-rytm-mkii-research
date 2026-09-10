@@ -1,0 +1,2117 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "source_candidates": 165,
+  "absolute_reference_summary": {
+    "referenced_field_count": 77,
+    "unreferenced_field_count": 88,
+    "literal_reference_count": 255,
+    "cluster_count": 24,
+    "cluster_maximum_gap": "0x100",
+    "clusters": [
+      {
+        "first_literal": "0x4000080A",
+        "last_literal": "0x4000080A",
+        "literal_count": 1
+      },
+      {
+        "first_literal": "0x4009DB9C",
+        "last_literal": "0x4009DB9C",
+        "literal_count": 1
+      },
+      {
+        "first_literal": "0x401021C2",
+        "last_literal": "0x4010220A",
+        "literal_count": 11
+      },
+      {
+        "first_literal": "0x401040B2",
+        "last_literal": "0x40104114",
+        "literal_count": 14
+      },
+      {
+        "first_literal": "0x40104418",
+        "last_literal": "0x40104424",
+        "literal_count": 3
+      },
+      {
+        "first_literal": "0x401045A8",
+        "last_literal": "0x40104706",
+        "literal_count": 24
+      },
+      {
+        "first_literal": "0x4010487C",
+        "last_literal": "0x401049A0",
+        "literal_count": 38
+      },
+      {
+        "first_literal": "0x40105B58",
+        "last_literal": "0x40105C3E",
+        "literal_count": 14
+      },
+      {
+        "first_literal": "0x40106046",
+        "last_literal": "0x40106136",
+        "literal_count": 8
+      },
+      {
+        "first_literal": "0x4010625A",
+        "last_literal": "0x401063D8",
+        "literal_count": 30
+      },
+      {
+        "first_literal": "0x40107254",
+        "last_literal": "0x401072A4",
+        "literal_count": 13
+      },
+      {
+        "first_literal": "0x40107B7A",
+        "last_literal": "0x40107B86",
+        "literal_count": 3
+      },
+      {
+        "first_literal": "0x40107F6A",
+        "last_literal": "0x40107F88",
+        "literal_count": 6
+      },
+      {
+        "first_literal": "0x4010808A",
+        "last_literal": "0x401080A8",
+        "literal_count": 6
+      },
+      {
+        "first_literal": "0x4011A404",
+        "last_literal": "0x4011A47C",
+        "literal_count": 17
+      },
+      {
+        "first_literal": "0x4011A728",
+        "last_literal": "0x4011A740",
+        "literal_count": 2
+      },
+      {
+        "first_literal": "0x4011A88C",
+        "last_literal": "0x4011A898",
+        "literal_count": 3
+      },
+      {
+        "first_literal": "0x4011A9AC",
+        "last_literal": "0x4011AA5C",
+        "literal_count": 19
+      },
+      {
+        "first_literal": "0x40129F4E",
+        "last_literal": "0x40129F4E",
+        "literal_count": 1
+      },
+      {
+        "first_literal": "0x40131382",
+        "last_literal": "0x40131382",
+        "literal_count": 1
+      },
+      {
+        "first_literal": "0x401D8CC0",
+        "last_literal": "0x401D8CD4",
+        "literal_count": 6
+      },
+      {
+        "first_literal": "0x401D9988",
+        "last_literal": "0x401D999C",
+        "literal_count": 6
+      },
+      {
+        "first_literal": "0x40270E08",
+        "last_literal": "0x40270ED8",
+        "literal_count": 14
+      },
+      {
+        "first_literal": "0x4027101C",
+        "last_literal": "0x402710EC",
+        "literal_count": 14
+      }
+    ],
+    "unreferenced_field_ranges": [
+      {
+        "first_word": 150,
+        "last_word": 150,
+        "first_address": "0x800064EA",
+        "last_address": "0x800064EA"
+      },
+      {
+        "first_word": 152,
+        "last_word": 152,
+        "first_address": "0x800064EE",
+        "last_address": "0x800064EE"
+      },
+      {
+        "first_word": 154,
+        "last_word": 154,
+        "first_address": "0x800064F2",
+        "last_address": "0x800064F2"
+      },
+      {
+        "first_word": 156,
+        "last_word": 156,
+        "first_address": "0x800064F6",
+        "last_address": "0x800064F6"
+      },
+      {
+        "first_word": 158,
+        "last_word": 158,
+        "first_address": "0x800064FA",
+        "last_address": "0x800064FA"
+      },
+      {
+        "first_word": 160,
+        "last_word": 160,
+        "first_address": "0x800064FE",
+        "last_address": "0x800064FE"
+      },
+      {
+        "first_word": 162,
+        "last_word": 162,
+        "first_address": "0x80006502",
+        "last_address": "0x80006502"
+      },
+      {
+        "first_word": 164,
+        "last_word": 164,
+        "first_address": "0x80006506",
+        "last_address": "0x80006506"
+      },
+      {
+        "first_word": 166,
+        "last_word": 166,
+        "first_address": "0x8000650A",
+        "last_address": "0x8000650A"
+      },
+      {
+        "first_word": 168,
+        "last_word": 168,
+        "first_address": "0x8000650E",
+        "last_address": "0x8000650E"
+      },
+      {
+        "first_word": 170,
+        "last_word": 170,
+        "first_address": "0x80006512",
+        "last_address": "0x80006512"
+      },
+      {
+        "first_word": 172,
+        "last_word": 172,
+        "first_address": "0x80006516",
+        "last_address": "0x80006516"
+      },
+      {
+        "first_word": 174,
+        "last_word": 174,
+        "first_address": "0x8000651A",
+        "last_address": "0x8000651A"
+      },
+      {
+        "first_word": 176,
+        "last_word": 176,
+        "first_address": "0x8000651E",
+        "last_address": "0x8000651E"
+      },
+      {
+        "first_word": 178,
+        "last_word": 178,
+        "first_address": "0x80006522",
+        "last_address": "0x80006522"
+      },
+      {
+        "first_word": 180,
+        "last_word": 180,
+        "first_address": "0x80006526",
+        "last_address": "0x80006526"
+      },
+      {
+        "first_word": 197,
+        "last_word": 198,
+        "first_address": "0x80006548",
+        "last_address": "0x8000654A"
+      },
+      {
+        "first_word": 200,
+        "last_word": 202,
+        "first_address": "0x8000654E",
+        "last_address": "0x80006552"
+      },
+      {
+        "first_word": 204,
+        "last_word": 204,
+        "first_address": "0x80006556",
+        "last_address": "0x80006556"
+      },
+      {
+        "first_word": 208,
+        "last_word": 208,
+        "first_address": "0x8000655E",
+        "last_address": "0x8000655E"
+      },
+      {
+        "first_word": 212,
+        "last_word": 214,
+        "first_address": "0x80006566",
+        "last_address": "0x8000656A"
+      },
+      {
+        "first_word": 216,
+        "last_word": 218,
+        "first_address": "0x8000656E",
+        "last_address": "0x80006572"
+      },
+      {
+        "first_word": 220,
+        "last_word": 220,
+        "first_address": "0x80006576",
+        "last_address": "0x80006576"
+      },
+      {
+        "first_word": 281,
+        "last_word": 282,
+        "first_address": "0x800065F0",
+        "last_address": "0x800065F2"
+      },
+      {
+        "first_word": 285,
+        "last_word": 286,
+        "first_address": "0x800065F8",
+        "last_address": "0x800065FA"
+      },
+      {
+        "first_word": 288,
+        "last_word": 290,
+        "first_address": "0x800065FE",
+        "last_address": "0x80006602"
+      },
+      {
+        "first_word": 292,
+        "last_word": 294,
+        "first_address": "0x80006606",
+        "last_address": "0x8000660A"
+      },
+      {
+        "first_word": 296,
+        "last_word": 298,
+        "first_address": "0x8000660E",
+        "last_address": "0x80006612"
+      },
+      {
+        "first_word": 300,
+        "last_word": 302,
+        "first_address": "0x80006616",
+        "last_address": "0x8000661A"
+      },
+      {
+        "first_word": 304,
+        "last_word": 306,
+        "first_address": "0x8000661E",
+        "last_address": "0x80006622"
+      },
+      {
+        "first_word": 308,
+        "last_word": 308,
+        "first_address": "0x80006626",
+        "last_address": "0x80006626"
+      },
+      {
+        "first_word": 334,
+        "last_word": 334,
+        "first_address": "0x8000665A",
+        "last_address": "0x8000665A"
+      },
+      {
+        "first_word": 336,
+        "last_word": 336,
+        "first_address": "0x8000665E",
+        "last_address": "0x8000665E"
+      },
+      {
+        "first_word": 338,
+        "last_word": 338,
+        "first_address": "0x80006662",
+        "last_address": "0x80006662"
+      },
+      {
+        "first_word": 340,
+        "last_word": 340,
+        "first_address": "0x80006666",
+        "last_address": "0x80006666"
+      },
+      {
+        "first_word": 342,
+        "last_word": 342,
+        "first_address": "0x8000666A",
+        "last_address": "0x8000666A"
+      },
+      {
+        "first_word": 344,
+        "last_word": 344,
+        "first_address": "0x8000666E",
+        "last_address": "0x8000666E"
+      },
+      {
+        "first_word": 346,
+        "last_word": 346,
+        "first_address": "0x80006672",
+        "last_address": "0x80006672"
+      },
+      {
+        "first_word": 348,
+        "last_word": 348,
+        "first_address": "0x80006676",
+        "last_address": "0x80006676"
+      },
+      {
+        "first_word": 350,
+        "last_word": 350,
+        "first_address": "0x8000667A",
+        "last_address": "0x8000667A"
+      },
+      {
+        "first_word": 352,
+        "last_word": 352,
+        "first_address": "0x8000667E",
+        "last_address": "0x8000667E"
+      },
+      {
+        "first_word": 354,
+        "last_word": 354,
+        "first_address": "0x80006682",
+        "last_address": "0x80006682"
+      },
+      {
+        "first_word": 356,
+        "last_word": 356,
+        "first_address": "0x80006686",
+        "last_address": "0x80006686"
+      },
+      {
+        "first_word": 358,
+        "last_word": 358,
+        "first_address": "0x8000668A",
+        "last_address": "0x8000668A"
+      },
+      {
+        "first_word": 360,
+        "last_word": 360,
+        "first_address": "0x8000668E",
+        "last_address": "0x8000668E"
+      },
+      {
+        "first_word": 362,
+        "last_word": 362,
+        "first_address": "0x80006692",
+        "last_address": "0x80006692"
+      },
+      {
+        "first_word": 364,
+        "last_word": 364,
+        "first_address": "0x80006696",
+        "last_address": "0x80006696"
+      },
+      {
+        "first_word": 366,
+        "last_word": 366,
+        "first_address": "0x8000669A",
+        "last_address": "0x8000669A"
+      },
+      {
+        "first_word": 368,
+        "last_word": 368,
+        "first_address": "0x8000669E",
+        "last_address": "0x8000669E"
+      },
+      {
+        "first_word": 370,
+        "last_word": 370,
+        "first_address": "0x800066A2",
+        "last_address": "0x800066A2"
+      },
+      {
+        "first_word": 372,
+        "last_word": 372,
+        "first_address": "0x800066A6",
+        "last_address": "0x800066A6"
+      },
+      {
+        "first_word": 374,
+        "last_word": 374,
+        "first_address": "0x800066AA",
+        "last_address": "0x800066AA"
+      },
+      {
+        "first_word": 376,
+        "last_word": 376,
+        "first_address": "0x800066AE",
+        "last_address": "0x800066AE"
+      },
+      {
+        "first_word": 378,
+        "last_word": 378,
+        "first_address": "0x800066B2",
+        "last_address": "0x800066B2"
+      },
+      {
+        "first_word": 380,
+        "last_word": 380,
+        "first_address": "0x800066B6",
+        "last_address": "0x800066B6"
+      },
+      {
+        "first_word": 382,
+        "last_word": 382,
+        "first_address": "0x800066BA",
+        "last_address": "0x800066BA"
+      },
+      {
+        "first_word": 384,
+        "last_word": 384,
+        "first_address": "0x800066BE",
+        "last_address": "0x800066BE"
+      },
+      {
+        "first_word": 386,
+        "last_word": 386,
+        "first_address": "0x800066C2",
+        "last_address": "0x800066C2"
+      },
+      {
+        "first_word": 388,
+        "last_word": 388,
+        "first_address": "0x800066C6",
+        "last_address": "0x800066C6"
+      },
+      {
+        "first_word": 448,
+        "last_word": 448,
+        "first_address": "0x8000673E",
+        "last_address": "0x8000673E"
+      },
+      {
+        "first_word": 450,
+        "last_word": 450,
+        "first_address": "0x80006742",
+        "last_address": "0x80006742"
+      },
+      {
+        "first_word": 452,
+        "last_word": 452,
+        "first_address": "0x80006746",
+        "last_address": "0x80006746"
+      },
+      {
+        "first_word": 454,
+        "last_word": 454,
+        "first_address": "0x8000674A",
+        "last_address": "0x8000674A"
+      },
+      {
+        "first_word": 456,
+        "last_word": 456,
+        "first_address": "0x8000674E",
+        "last_address": "0x8000674E"
+      },
+      {
+        "first_word": 458,
+        "last_word": 458,
+        "first_address": "0x80006752",
+        "last_address": "0x80006752"
+      },
+      {
+        "first_word": 460,
+        "last_word": 460,
+        "first_address": "0x80006756",
+        "last_address": "0x80006756"
+      },
+      {
+        "first_word": 462,
+        "last_word": 462,
+        "first_address": "0x8000675A",
+        "last_address": "0x8000675A"
+      },
+      {
+        "first_word": 464,
+        "last_word": 464,
+        "first_address": "0x8000675E",
+        "last_address": "0x8000675E"
+      },
+      {
+        "first_word": 476,
+        "last_word": 476,
+        "first_address": "0x80006776",
+        "last_address": "0x80006776"
+      }
+    ]
+  },
+  "referenced_fields": [
+    {
+      "address": "0x80006422",
+      "dspi1_word_index": 50,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x40105C38",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40106046",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006424",
+      "dspi1_word_index": 51,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40106076",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006426",
+      "dspi1_word_index": 52,
+      "reference_count": 3,
+      "references": [
+        {
+          "literal_address": "0x40105B6A",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4010611E",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40106330",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006428",
+      "dspi1_word_index": 53,
+      "reference_count": 3,
+      "references": [
+        {
+          "literal_address": "0x40105B58",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40106130",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x40106336",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000642A",
+      "dspi1_word_index": 54,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x40105C3E",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x4010604C",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000642C",
+      "dspi1_word_index": 55,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4010607C",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000642E",
+      "dspi1_word_index": 56,
+      "reference_count": 3,
+      "references": [
+        {
+          "literal_address": "0x40105B70",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40106124",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40106344",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006430",
+      "dspi1_word_index": 57,
+      "reference_count": 3,
+      "references": [
+        {
+          "literal_address": "0x40105B5E",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40106136",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x4010634A",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006436",
+      "dspi1_word_index": 60,
+      "reference_count": 8,
+      "references": [
+        {
+          "literal_address": "0x40104706",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x4010625A",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401063BA",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40107F6A",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x4010808A",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x4011A404",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x401D8CC0",
+          "preceding_word": "0x0095"
+        },
+        {
+          "literal_address": "0x401D9988",
+          "preceding_word": "0x0004"
+        }
+      ]
+    },
+    {
+      "address": "0x80006438",
+      "dspi1_word_index": 61,
+      "reference_count": 9,
+      "references": [
+        {
+          "literal_address": "0x401040B2",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40106270",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401063D8",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x40107B7A",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40107F7C",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010809C",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011A41A",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401D8CCC",
+          "preceding_word": "0x643E"
+        },
+        {
+          "literal_address": "0x401D9994",
+          "preceding_word": "0x643E"
+        }
+      ]
+    },
+    {
+      "address": "0x8000643A",
+      "dspi1_word_index": 62,
+      "reference_count": 8,
+      "references": [
+        {
+          "literal_address": "0x40104700",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40106260",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401063B4",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40107F70",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x40108090",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x4011A40A",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x401D8CC4",
+          "preceding_word": "0x6436"
+        },
+        {
+          "literal_address": "0x401D998C",
+          "preceding_word": "0x6436"
+        }
+      ]
+    },
+    {
+      "address": "0x8000643C",
+      "dspi1_word_index": 63,
+      "reference_count": 9,
+      "references": [
+        {
+          "literal_address": "0x401040B8",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40106276",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401063D2",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x40107B80",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40107F82",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401080A2",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011A420",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401D8CD0",
+          "preceding_word": "0x6438"
+        },
+        {
+          "literal_address": "0x401D9998",
+          "preceding_word": "0x6438"
+        }
+      ]
+    },
+    {
+      "address": "0x8000643E",
+      "dspi1_word_index": 64,
+      "reference_count": 8,
+      "references": [
+        {
+          "literal_address": "0x401046FA",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40106266",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40106360",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40107F76",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x40108096",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x4011A410",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x401D8CC8",
+          "preceding_word": "0x643A"
+        },
+        {
+          "literal_address": "0x401D9990",
+          "preceding_word": "0x643A"
+        }
+      ]
+    },
+    {
+      "address": "0x80006440",
+      "dspi1_word_index": 65,
+      "reference_count": 9,
+      "references": [
+        {
+          "literal_address": "0x401040BE",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x4010627C",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401063CC",
+          "preceding_word": "0x33C2"
+        },
+        {
+          "literal_address": "0x40107B86",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40107F88",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401080A8",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011A426",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401D8CD4",
+          "preceding_word": "0x643C"
+        },
+        {
+          "literal_address": "0x401D999C",
+          "preceding_word": "0x643C"
+        }
+      ]
+    },
+    {
+      "address": "0x80006444",
+      "dspi1_word_index": 67,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x401021C2",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401040C6",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40106288",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A42E",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E78",
+          "preceding_word": "0x000B"
+        },
+        {
+          "literal_address": "0x4027108C",
+          "preceding_word": "0x000B"
+        }
+      ]
+    },
+    {
+      "address": "0x80006446",
+      "dspi1_word_index": 68,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x401021CC",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401040CC",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40106292",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A434",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E88",
+          "preceding_word": "0x0002"
+        },
+        {
+          "literal_address": "0x4027109C",
+          "preceding_word": "0x0002"
+        }
+      ]
+    },
+    {
+      "address": "0x80006448",
+      "dspi1_word_index": 69,
+      "reference_count": 12,
+      "references": [
+        {
+          "literal_address": "0x401021D2",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401040D2",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40106298",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A43A",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E98",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x40270EB8",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x40270EC8",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x40270ED8",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x402710AC",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x402710CC",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x402710DC",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x402710EC",
+          "preceding_word": "0x0001"
+        }
+      ]
+    },
+    {
+      "address": "0x8000644A",
+      "dspi1_word_index": 70,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x401021D8",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401040D8",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010629E",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A440",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270EA8",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x402710BC",
+          "preceding_word": "0x0001"
+        }
+      ]
+    },
+    {
+      "address": "0x80006450",
+      "dspi1_word_index": 73,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x401021E2",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401040DE",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401062A8",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A446",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E08",
+          "preceding_word": "0x5000"
+        },
+        {
+          "literal_address": "0x4027101C",
+          "preceding_word": "0x5000"
+        }
+      ]
+    },
+    {
+      "address": "0x80006452",
+      "dspi1_word_index": 74,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x401021E8",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401040F6",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401062AE",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A44C",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E18",
+          "preceding_word": "0x0002"
+        },
+        {
+          "literal_address": "0x4027102C",
+          "preceding_word": "0x0002"
+        }
+      ]
+    },
+    {
+      "address": "0x80006454",
+      "dspi1_word_index": 75,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x401021F8",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x401040FC",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401062BE",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A452",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E38",
+          "preceding_word": "0x0007"
+        },
+        {
+          "literal_address": "0x4027104C",
+          "preceding_word": "0x0007"
+        }
+      ]
+    },
+    {
+      "address": "0x80006456",
+      "dspi1_word_index": 76,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x401021FE",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40104102",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401062C4",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A458",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E48",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x4027105C",
+          "preceding_word": "0x0001"
+        }
+      ]
+    },
+    {
+      "address": "0x80006458",
+      "dspi1_word_index": 77,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x40102204",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40104108",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401062CA",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A45E",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E58",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x4027106C",
+          "preceding_word": "0x0001"
+        }
+      ]
+    },
+    {
+      "address": "0x8000645A",
+      "dspi1_word_index": 78,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x401021EE",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4010410E",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401062B4",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A476",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E28",
+          "preceding_word": "0x0002"
+        },
+        {
+          "literal_address": "0x4027103C",
+          "preceding_word": "0x0002"
+        }
+      ]
+    },
+    {
+      "address": "0x8000645C",
+      "dspi1_word_index": 79,
+      "reference_count": 6,
+      "references": [
+        {
+          "literal_address": "0x4010220A",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40104114",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401062D0",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4011A47C",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40270E68",
+          "preceding_word": "0x0001"
+        },
+        {
+          "literal_address": "0x4027107C",
+          "preceding_word": "0x0001"
+        }
+      ]
+    },
+    {
+      "address": "0x80006558",
+      "dspi1_word_index": 205,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4010637E",
+          "preceding_word": "0x23C2"
+        }
+      ]
+    },
+    {
+      "address": "0x8000655A",
+      "dspi1_word_index": 206,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x4010467A",
+          "preceding_word": "0x13C0"
+        },
+        {
+          "literal_address": "0x4011A728",
+          "preceding_word": "0x13C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006560",
+      "dspi1_word_index": 209,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4010638A",
+          "preceding_word": "0x23C2"
+        }
+      ]
+    },
+    {
+      "address": "0x80006562",
+      "dspi1_word_index": 210,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x40104686",
+          "preceding_word": "0x13C0"
+        },
+        {
+          "literal_address": "0x4011A740",
+          "preceding_word": "0x13C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006578",
+      "dspi1_word_index": 221,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40106396",
+          "preceding_word": "0x23C2"
+        }
+      ]
+    },
+    {
+      "address": "0x800065F6",
+      "dspi1_word_index": 284,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4000080A",
+          "preceding_word": "0x8000"
+        }
+      ]
+    },
+    {
+      "address": "0x8000665C",
+      "dspi1_word_index": 335,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x40104418",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011A88C",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006660",
+      "dspi1_word_index": 337,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x4010441E",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011A892",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006664",
+      "dspi1_word_index": 339,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x40104424",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011A898",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x800066CA",
+      "dspi1_word_index": 390,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40131382",
+          "preceding_word": "0x8000"
+        }
+      ]
+    },
+    {
+      "address": "0x80006716",
+      "dspi1_word_index": 428,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4010487C",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000671A",
+      "dspi1_word_index": 430,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104882",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000671C",
+      "dspi1_word_index": 431,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x401045A8",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401048A0",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40105BEA",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x4011A9AC",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000671E",
+      "dspi1_word_index": 432,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x401048EE",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40105BF2",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006720",
+      "dspi1_word_index": 433,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x401045AE",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401048A6",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40105BFC",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x4011A9B2",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006722",
+      "dspi1_word_index": 434,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x401048F4",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40105C04",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006726",
+      "dspi1_word_index": 436,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x4009DB9C",
+          "preceding_word": "0x0000"
+        },
+        {
+          "literal_address": "0x401048FA",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000672A",
+      "dspi1_word_index": 438,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104900",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000672C",
+      "dspi1_word_index": 439,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x401045C0",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401048B8",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40105C0E",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x4011A9C4",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000672E",
+      "dspi1_word_index": 440,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x40104906",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40105C16",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006730",
+      "dspi1_word_index": 441,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x401045C6",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401048BE",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40105C20",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x4011A9CA",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006732",
+      "dspi1_word_index": 442,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x4010490C",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x40105C28",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006736",
+      "dspi1_word_index": 444,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104912",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000673A",
+      "dspi1_word_index": 446,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104918",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000673C",
+      "dspi1_word_index": 447,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x401045D8",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011A9DC",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006740",
+      "dspi1_word_index": 449,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x401045DE",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011A9E2",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000675C",
+      "dspi1_word_index": 463,
+      "reference_count": 3,
+      "references": [
+        {
+          "literal_address": "0x40104608",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA0C",
+          "preceding_word": "0x33C1"
+        },
+        {
+          "literal_address": "0x40129F4E",
+          "preceding_word": "0x0000"
+        }
+      ]
+    },
+    {
+      "address": "0x80006760",
+      "dspi1_word_index": 465,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x4010460E",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401048D0",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40107254",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA12",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006762",
+      "dspi1_word_index": 466,
+      "reference_count": 2,
+      "references": [
+        {
+          "literal_address": "0x4010491E",
+          "preceding_word": "0x33C0"
+        },
+        {
+          "literal_address": "0x4010725A",
+          "preceding_word": "0x33C4"
+        }
+      ]
+    },
+    {
+      "address": "0x80006764",
+      "dspi1_word_index": 467,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x40104614",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401048D6",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40107260",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA18",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006766",
+      "dspi1_word_index": 468,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104924",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006768",
+      "dspi1_word_index": 469,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x4010461A",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401048DC",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40107266",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA20",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000676A",
+      "dspi1_word_index": 470,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4010492A",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000676C",
+      "dspi1_word_index": 471,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x40104620",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401048E2",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010726C",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA26",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000676E",
+      "dspi1_word_index": 472,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104930",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006772",
+      "dspi1_word_index": 474,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104970",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006774",
+      "dspi1_word_index": 475,
+      "reference_count": 3,
+      "references": [
+        {
+          "literal_address": "0x4010462C",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40107278",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA32",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006778",
+      "dspi1_word_index": 477,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x40104632",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010493C",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010727E",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA38",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000677A",
+      "dspi1_word_index": 478,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104976",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000677C",
+      "dspi1_word_index": 479,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x40104638",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40104942",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40107284",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA3E",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000677E",
+      "dspi1_word_index": 480,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4010497C",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006780",
+      "dspi1_word_index": 481,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x4010463E",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40104948",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010728C",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA44",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006782",
+      "dspi1_word_index": 482,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104982",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006784",
+      "dspi1_word_index": 483,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x40104644",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010494E",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40107292",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA4A",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006786",
+      "dspi1_word_index": 484,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104988",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006788",
+      "dspi1_word_index": 485,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x4010464A",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40104954",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40107298",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA50",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000678A",
+      "dspi1_word_index": 486,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4010498E",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x8000678C",
+      "dspi1_word_index": 487,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x40104650",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010495A",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4010729E",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA56",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x8000678E",
+      "dspi1_word_index": 488,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x40104994",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006790",
+      "dspi1_word_index": 489,
+      "reference_count": 4,
+      "references": [
+        {
+          "literal_address": "0x40104656",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x40104960",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x401072A4",
+          "preceding_word": "0x33C3"
+        },
+        {
+          "literal_address": "0x4011AA5C",
+          "preceding_word": "0x33C1"
+        }
+      ]
+    },
+    {
+      "address": "0x80006792",
+      "dspi1_word_index": 490,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x4010499A",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    },
+    {
+      "address": "0x80006796",
+      "dspi1_word_index": 492,
+      "reference_count": 1,
+      "references": [
+        {
+          "literal_address": "0x401049A0",
+          "preceding_word": "0x33C0"
+        }
+      ]
+    }
+  ],
+  "interpretation": "The 24 literal clusters prioritize routines or tables for dynamic tracing. A literal is not proof of a write, and 88 fields without exact literals can still be accessed through base registers or computed addresses.",
+  "next_target": "Classify the high-density literal clusters around 0x401040B2..0x401049A0, 0x40105B58..0x401063D8 and 0x4011A404..0x4011AA5C, then execute their callers.",
+  "safety": "Static read-only analysis of stock MAIN; no firmware was modified."
+}

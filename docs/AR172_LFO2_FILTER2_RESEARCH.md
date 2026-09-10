@@ -560,6 +560,9 @@ New state must use a versioned extension or verified-unused storage; existing
   control-DMA initialization, queue setup, and authentic note-on/note-off
   constructors. Its negative ownership result is captured in
   `research/AR172_CONTROL_SETUP_OWNERSHIP_PROBE.json`.
+- `research/control_candidate_absolute_reference_probe.py` indexes exact MAIN
+  address literals for the remaining candidates. Its field and cluster map is
+  `research/AR172_CONTROL_CANDIDATE_ABSOLUTE_REFERENCE_PROBE.json`.
 - `recovered_library/minicoldfire_audio.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply, correct fractional-product scaling, and the
@@ -657,6 +660,14 @@ begins zero-filled and omits earlier board startup. Consequently, zero values in
 those 165 fields are not evidence that they are spare. Parameter-change and
 other non-note event paths, plus modes outside the 170-context matrix, remain
 the next offline ownership targets.
+
+A static exact-literal pass provides the next execution priorities. Seventy-seven
+of the 165 fields occur as 255 absolute address literals in stock MAIN, grouped
+into 24 neighborhoods. The densest are `0x401040B2..0x401049A0`,
+`0x40105B58..0x401063D8` and `0x4011A404..0x4011AA5C`. These may be instruction
+operands or data, so each still needs dynamic classification. The 88 fields
+without exact literals remain reachable through base-register-relative or
+computed addressing and are not cleared by this negative static result.
 
 ## External format cross-checks
 
