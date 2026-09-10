@@ -10,6 +10,7 @@ only this executable plus the custom qemu-system-m68k backend.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -22,6 +23,11 @@ import time
 import tkinter as tk
 from tkinter import filedialog
 
+if not getattr(sys, "frozen", False):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "research"))
+
+from audio_callback_probe import EXPECTED_MAIN_SHA256
+from filter2_publication_shim_probe import build_candidate as build_filter2_candidate
 from firmware_loader import extract_main
 from panel_event_bridge import PanelLink, connect_unix, follow_events
 from desktop_panel import PanelApp
@@ -150,6 +156,11 @@ def main() -> None:
         ),
     )
     ap.add_argument(
+        "--no-filter2",
+        action="store_true",
+        help="boot untouched MAIN and disable the emulator-only eight-lane Filter 2 controller",
+    )
+    ap.add_argument(
         "--mock-audio-service",
         action="store_true",
         help=(
@@ -171,6 +182,7 @@ def main() -> None:
     monitor = runtime / "monitor.sock"
     frame = runtime / "front-buffer.bin"
     events = runtime / "panel-events.jsonl"
+    filter2_controls = runtime / "filter2-controls.bin"
     log = runtime / "qemu.log"
 
     if args.main:
@@ -191,8 +203,27 @@ def main() -> None:
                 file=sys.stderr,
             )
 
+    filter2_enabled = not args.no_filter2
+    if filter2_enabled:
+        stock = main_image.read_bytes()
+        digest = hashlib.sha256(stock).hexdigest()
+        if digest != EXPECTED_MAIN_SHA256:
+            raise SystemExit(
+                "The live Filter 2 extension currently requires official OS 1.72 "
+                f"MAIN ({EXPECTED_MAIN_SHA256}); selected MAIN is {digest}. "
+                "Use --no-filter2 to boot it untouched."
+            )
+        candidate, _ = build_filter2_candidate(stock, True)
+        main_image = runtime / "main-filter2-runtime.bin"
+        main_image.write_bytes(candidate)
+        filter2_controls.write_bytes(bytes([64] * 8))
+
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
+    if filter2_enabled:
+        env["AR_MK2_FILTER2_CONTROL_IN"] = str(filter2_controls)
+    else:
+        env.pop("AR_MK2_FILTER2_CONTROL_IN", None)
     if args.no_mock_calibration:
         env.pop("AR_MK2_MOCK_CALIBRATION", None)
     else:
@@ -245,14 +276,14 @@ def main() -> None:
         threading.Thread(target=link.reader, daemon=True).start()
         threading.Thread(
             target=follow_events,
-            args=(events, link, True),
+            args=(events, link, True, filter2_controls if filter2_enabled else None),
             daemon=True,
         ).start()
 
         hmp_continue(monitor)
 
         root = tk.Tk()
-        PanelApp(root, frame, events, args.scale)
+        PanelApp(root, frame, events, args.scale, filter2_enabled)
         root.mainloop()
 
         if qemu_proc.poll() is not None and qemu_proc.returncode:

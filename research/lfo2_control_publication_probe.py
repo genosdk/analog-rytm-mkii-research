@@ -43,8 +43,11 @@ RATE_INDEX_BASE = 0x7FE8
 DEPTH_INDEX_BASE = 0x7FF0
 FILTER_INDEX_BASE = 0x7FF8
 CONTROL_INDEX_END = 0x8000
-CONTROL_SHIM_BASE = 0x402B4C00
-RATE_TABLE_BASE = 0x402B4E00
+# The ColdFire-safe Filter 2 kernel occupies two extra bytes beyond the
+# original 0x402B4800 boundary.  Keep the later LFO2 regions disjoint by
+# moving this shim and its rate table one 0x200-byte page forward.
+CONTROL_SHIM_BASE = 0x402B4E00
+RATE_TABLE_BASE = 0x402B5000
 TRIGGER_MASK_ADDRESS = 0x402B4418
 RANDOM_INDEX_OFFSET = 24
 CALLBACKS_PER_SECOND = 1500.0

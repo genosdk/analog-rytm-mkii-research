@@ -431,7 +431,7 @@ class Filter2EightLaneProbeTests(StockProbeTest):
         self.assertEqual(full["plane_writes"], 256)
         self.assertEqual(full["state_writes"], 520)
         self.assertTrue(full["oracle_match"])
-        self.assertEqual(result["modeled_cost"]["semantic_instruction_delta"], 8605)
+        self.assertEqual(result["modeled_cost"]["semantic_instruction_delta"], 229353)
         for comparison in result["disabled_stock_equivalence"]:
             self.assertTrue(all(comparison["bit_identical"].values()))
 

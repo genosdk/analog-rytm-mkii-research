@@ -15,6 +15,7 @@ from filter2_coefficient_slew_probe import control_to_q31, oracle
 from filter2_eight_lane_probe import ALL_LANES_MASK, Builder, EXTENSION_BASE, FILTER2_STATE0, FILTER2_STATE_STRIDE, LANES
 from filter2_lfo2_cutoff_binding_probe import (
     FILTER_SYMBOLS,
+    LFO_UPDATE_BASE,
     LFO2_MASK_ADDRESS,
     LFO2_STATE0,
     LFO2_STATE_STRIDE,
@@ -56,7 +57,7 @@ WAVE_UPDATE_BASE = 0x402B5400
 
 
 def relocate_extension() -> bytes:
-    old = bytes.fromhex("4eb9402b4a00")
+    old = bytes.fromhex(f"4eb9{LFO_UPDATE_BASE:08x}")
     new = bytes.fromhex(f"4eb9{WAVE_UPDATE_BASE:08x}")
     if MODULATED_EXTENSION.count(old) != 1:
         raise ValueError("LFO updater call signature changed")

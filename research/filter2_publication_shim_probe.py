@@ -41,8 +41,8 @@ from trigger_queue_probe import load_emulator, stock_call
 
 VIRTUAL_INDEX_BASE = 0x7FF8
 VIRTUAL_INDEX_END = VIRTUAL_INDEX_BASE + LANES
-SHIM_BASE = 0x402B4780
-TABLE_BASE = 0x402B4800
+SHIM_BASE = 0x402B4820
+TABLE_BASE = 0x402B4A00
 FILTER2_FLAG = 1
 TARGET_OFFSET = 12
 
@@ -219,7 +219,7 @@ def integrated_publication_to_filter(module, armed_path: Path, stock: bytes) -> 
     cpu.pushl(RETURN_PC)
     cpu.pc = AUDIO_CALLBACK
     start = cpu.steps
-    for _ in range(200_000):
+    for _ in range(400_000):
         if cpu.pc == MIXER:
             break
         if cpu.pc == FILTER_SYMBOLS["post_ingress"]:

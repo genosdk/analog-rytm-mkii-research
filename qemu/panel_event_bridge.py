@@ -115,9 +115,22 @@ def connect_unix(path: Path, timeout: float) -> socket.socket:
     raise TimeoutError(f"UART socket did not become ready: {path}")
 
 
-def follow_events(path: Path, link: PanelLink, start_at_end: bool) -> None:
+def publish_filter2_controls(path: Path, controls: bytearray) -> None:
+    """Atomically publish all eight absolute controls for QEMU's live bridge."""
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_bytes(controls)
+    os.replace(temporary, path)
+
+
+def follow_events(path: Path, link: PanelLink, start_at_end: bool,
+                  filter2_control_file: Path | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.touch(exist_ok=True)
+    filter2_controls = bytearray([64] * 8)
+    if filter2_control_file is not None and filter2_control_file.is_file():
+        existing = filter2_control_file.read_bytes()
+        if len(existing) == 8:
+            filter2_controls[:] = existing
     with path.open("r", encoding="utf-8") as f:
         if start_at_end:
             f.seek(0, os.SEEK_END)
@@ -162,6 +175,17 @@ def follow_events(path: Path, link: PanelLink, start_at_end: bool) -> None:
                 link.encoder(name, delta)
                 continue
 
+            if kind == "filter2" and filter2_control_file is not None:
+                try:
+                    lane = int(name)
+                    control = max(0, min(127, int(value)))
+                except (TypeError, ValueError):
+                    continue
+                if 0 <= lane < len(filter2_controls):
+                    filter2_controls[lane] = control
+                    publish_filter2_controls(filter2_control_file, filter2_controls)
+                continue
+
             print(f"unmapped panel event: {event}", flush=True)
 
 
@@ -171,6 +195,7 @@ def main() -> None:
     ap.add_argument("--events", type=Path, default=Path("panel_events.jsonl"))
     ap.add_argument("--connect-timeout", type=float, default=15.0)
     ap.add_argument("--replay-existing", action="store_true")
+    ap.add_argument("--filter2-controls", type=Path)
     args = ap.parse_args()
 
     sock = connect_unix(args.socket, args.connect_timeout)
@@ -178,7 +203,12 @@ def main() -> None:
     reader = threading.Thread(target=link.reader, daemon=True)
     reader.start()
     try:
-        follow_events(args.events, link, start_at_end=not args.replay_existing)
+        follow_events(
+            args.events,
+            link,
+            start_at_end=not args.replay_existing,
+            filter2_control_file=args.filter2_controls,
+        )
     finally:
         try:
             sock.close()

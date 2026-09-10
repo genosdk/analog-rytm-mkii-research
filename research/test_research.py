@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -117,6 +118,25 @@ class QemuEmacPatchTests(unittest.TestCase):
         )
 
 
+class MacosPackagingTests(unittest.TestCase):
+    def test_factory_storage_device_is_included_in_qemu_build(self):
+        workflow = (
+            ROOT / ".github" / "workflows" / "package-macos-app.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "cp research/qemu/hw/m68k/ar_mk2_esdhc.c qemu-src/hw/m68k/",
+            workflow,
+        )
+        self.assertIn("'ar_mk2_esdhc.c'", workflow)
+
+    def test_filter2_runtime_modules_are_on_pyinstaller_path(self):
+        workflow = (
+            ROOT / ".github" / "workflows" / "package-macos-app.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("working-directory: research", workflow)
+        self.assertIn("--paths .", workflow)
+
+
 class QemuAudioEdmaTests(unittest.TestCase):
     def test_linked_audio_descriptor_semantics_are_modeled(self):
         source = (
@@ -181,7 +201,13 @@ class QemuAudioEdmaTests(unittest.TestCase):
 
 class DesktopPanelInputTests(unittest.TestCase):
     def test_qwerty_layout_and_knob_clamp(self):
-        from qemu.desktop_panel import QWERTY_TRIGS, clamp_panel_value
+        from qemu.desktop_panel import (
+            PAGE_BUTTONS,
+            PANEL_ASPECT,
+            QWERTY_TRIGS,
+            clamp_panel_value,
+            panel_window_size,
+        )
 
         self.assertEqual(
             [QWERTY_TRIGS[key] for key in "qwertyuiasdfghjk"],
@@ -190,6 +216,10 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertEqual(clamp_panel_value(-1), 0)
         self.assertEqual(clamp_panel_value(64), 64)
         self.assertEqual(clamp_panel_value(128), 127)
+        self.assertEqual(PAGE_BUTTONS, ("TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO"))
+        window_w, window_h = panel_window_size(6)
+        self.assertAlmostEqual(window_w / window_h, PANEL_ASPECT, places=2)
+        self.assertEqual(panel_window_size(6), panel_window_size(6))
 
     def test_knob_delta_uses_validated_signed_encoder_frame(self):
         from qemu.panel_event_bridge import PanelLink
@@ -206,6 +236,25 @@ class DesktopPanelInputTests(unittest.TestCase):
         link.encoder("A", 127)
         link.encoder("I", -127)
         self.assertEqual(sock.frames, [bytes((0x30, 0x7F)), bytes((0x38, 0x81))])
+
+    def test_filter2_controls_publish_as_one_eight_byte_snapshot(self):
+        from qemu.panel_event_bridge import publish_filter2_controls
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "filter2-controls.bin"
+            controls = bytearray((0, 16, 32, 48, 64, 80, 96, 127))
+            publish_filter2_controls(path, controls)
+            self.assertEqual(path.read_bytes(), bytes(controls))
+            self.assertFalse(path.with_suffix(".bin.tmp").exists())
+
+    def test_qemu_machine_imports_live_filter2_targets(self):
+        source = (
+            ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_MK2_FILTER2_CONTROL_IN", source)
+        self.assertIn("ar_import_filter2_controls", source)
+        self.assertIn("AR_FILTER2_STATE0", source)
+        self.assertIn("physical_memory_write(target, word, sizeof(word))", source)
 
 
 @unittest.skipUnless(

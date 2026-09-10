@@ -9,12 +9,13 @@ The desktop emulator runs the unmodified Analog Rytm MKII OS 1.72 MAIN image in 
 1. Open `AR MKII Emulator.app`.
 2. Choose an official Analog Rytm MKII firmware `.syx` file when prompted.
 3. The app extracts/decompresses MAIN locally and boots it in the embedded custom QEMU backend.
-4. The emulated firmware currently presents a finite chain of four warnings because persistent storage/calibration hardware is not yet modeled. Press **NO** four times to continue:
-   - improved tuning/calibration prompt
-   - `+DRIVE ERROR 10`
-   - missing synth calibration / factory samples
-   - analog calibration missing
-5. The normal parameter UI is then usable.
+4. The emulated firmware presents one dismissible startup modal. Press **NO**
+   once to continue to the normal parameter UI.
+
+The desktop profile supplies synthetic calibration plus empty, volatile
+factory-storage state. Stock OS 1.72 validates the modeled eMMC identity and
+block count, `ekFS`, the empty `MaGj` manifest, and the `SM` version-2 record.
+It contains no factory PCM or project sample assignment.
 
 ## Proven controls
 
@@ -33,6 +34,17 @@ The desktop bridge currently exposes only panel mappings verified directly again
 
 The page keys have been validated by causal changes in the firmware's presented OLED framebuffer.
 
+The nine encoders are mouse-draggable 0–127 knobs; the wheel and keyboard also
+change their values. QWERTYUI/ASDFGHJK provide press/release control for Trigs
+1–16. The hardware-proportional shell gives page and trigger keys persistent
+visual state.
+
+The **FILTER 2** button opens an eight-knob runtime drawer. Each knob controls
+one audio lane using drag, wheel, arrows, Page Up/Down, Home/End, and
+double-click reset. The drawer is explicitly labeled as an emulator extension,
+not a recovered physical-panel page. This mode requires the verified OS 1.72
+MAIN; `--no-filter2` boots the selected MAIN untouched and disables the drawer.
+
 ## Display
 
 The firmware stores its presented 1 KiB OLED framebuffer as 64x128 row-major MSB data. The desktop frontend rotates that buffer 90 degrees into the physical 128x64 display orientation.
@@ -47,13 +59,24 @@ The standalone application contains:
 
 The application starts QEMU paused, connects the emulated front-panel UART first, and only then releases the guest CPU. This prevents the initial panel identity query from being lost during host startup.
 
+By default, the launcher derives a temporary, non-flashable Filter 2 runtime
+candidate from the caller-supplied, hash-verified OS 1.72 MAIN. Eight absolute
+control bytes are atomically published to QEMU, mapped to proven Q1.31 targets,
+and consumed by the eight-lane kernel. The candidate and control snapshot live
+only in the temporary runtime directory and are removed when the app exits.
+
 ## Firmware flow already validated
 
 `desktop control -> UART8 -> eDMA -> INTC -> firmware ISR -> parser -> live UI queue -> UI dispatcher -> firmware renderer -> presented OLED framebuffer`
 
 ## Limitations
 
-This is an experimental research emulator, not an Elektron product. Persistent drive/calibration/factory-sample state, audio hardware, LEDs and a number of MCF5441x peripherals remain incomplete or unmodeled. Do not treat emulator behavior as validation that a modified `.syx` image is safe to flash to hardware.
+This is an experimental research emulator, not an Elektron product. The modeled
+drive is sparse, volatile, and empty; changes disappear when the app exits.
+Factory samples, project persistence, the physical analog-control receiver,
+and a number of MCF5441x peripherals remain incomplete or unmodeled. Do not
+treat emulator behavior as validation that a modified `.syx` image is safe to
+flash to hardware.
 
 ## Experimental audio-service trace
 

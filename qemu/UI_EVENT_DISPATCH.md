@@ -55,8 +55,16 @@ step per two pixels and the wheel changes one step per notch. Each knob keeps a
 host-side value clamped to 0–127 and emits only the corresponding signed delta
 through the native `0x3n` encoder packet.
 
-## Current target
+## Filter 2 runtime drawer
 
-Trace UI dispatch case 0 through its state mutation and redraw/presentation calls. The goal is to prove one native panel frame causes a visible change in the presented framebuffer at pointer global `0x4026F474`.
+The standalone shell includes a separate **FILTER 2** drawer with one absolute
+0–127 knob for each audio lane. These are explicitly emulator-extension
+controls, not claimed physical-panel mappings. Changes flow through the event
+follower into one atomically replaced eight-byte snapshot; the QEMU machine
+maps changed bytes to Q1.31 and writes the corresponding target coefficient
+cells. The runtime MAIN candidate is generated locally from verified OS 1.72
+and deleted when the app exits.
 
-The emulator is not considered standalone-interactive until that round trip is reproducible without manual debugger intervention.
+The next native-GUI target is folding the proved LFO2 controls and bounded
+audition transport into this drawer. Physical MIDI/USB transport for Filter 2
+and LFO2 remains untraced.

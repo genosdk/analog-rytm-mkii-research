@@ -1,12 +1,12 @@
 {
   "result": "PASS",
   "stock": {
-    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
     "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
   },
   "disabled_candidate": {
-    "path": "ar172_workspace/AR172_FILTER2_EIGHT_LANE_CANARY_MAIN_DO_NOT_FLASH.bin",
-    "sha256": "577e1c1d75cfe76c556b663143786cf200b2488f0c709716deafd7b011f47bb6",
+    "path": "temporary execution image",
+    "sha256": "2bb31adf32b05fb80f67de5d9b9f7509d67a95616f11e3e9a070630e0a17d5a6",
     "state": {
       "bypass": {
         "call_site": "0x4011CACC",
@@ -44,33 +44,40 @@
     "cave_stub_address": "0x402B4340",
     "cave_stub_body": "4ef9402b4600",
     "extension_address": "0x402B4600",
-    "extension_end_exclusive": "0x402B476A",
-    "extension_bytes": 362,
-    "extension_body": "4eb940117f0040e74ab9402b4408670000ea48e7ffc008390000402b440d6700001241f9800067f843f9402b4420610000ce08390001402b440d6700001241f98000687843f9402b4440610000b208390002402b440d6700001241f9800068f843f9402b44606100009608390003402b440d6700001241f98000697843f9402b44806100007a08390004402b440d6700001241f9800069f843f9402b44a06100005e08390005402b440d6700001241f980006a7843f9402b44c06100004208390006402b440d6700001241f980006af843f9402b44e06100002608390007402b440d6700001241f980006b7843f9402b45006100000a4cdf03ff46df4e757020282900082a29000c2c059c844c864a866a00000806860000001f7e05eea6d8864c842210241192824c8161000030d4814c82228226290004220292834c816100001cd6814c832343000420c353806600ffce2a29000c234500084e754c041c057e1feea9da8582854e75",
+    "extension_end_exclusive": "0x402B4802",
+    "extension_bytes": 514,
+    "extension_body": "4eb940117f002f002f012f022f032f042f052f062f072f082f0940c03f004ab9402b4408670000e208390000402b440d6700001241f9800067f843f9402b4420610000e008390001402b440d6700001241f98000687843f9402b4440610000c408390002402b440d6700001241f9800068f843f9402b4460610000a808390003402b440d6700001241f98000697843f9402b44806100008c08390004402b440d6700001241f9800069f843f9402b44a06100007008390005402b440d6700001241f980006a7843f9402b44c06100005408390006402b440d6700001241f980006af843f9402b44e06100003808390007402b440d6700001241f980006b7843f9402b45006100001c301f46c0225f205f2e1f2c1f2a1f281f261f241f221f201f4e757020282900082a29000c2c059c844c864a866a00000806860000001f7e05eea6d8864c842210241192824c8161000030d4814c82228226290004220292834c816100001cd6814c832343000420c353806600ffce2a29000c234500084e752f002f022f032f06240126042c02b9862f064a826a00000444824a836a00000444837c007a007e00702008030000670000107200da82640000045281de86de817200d482640000045281dc86dc81e28b53806600ffd6261f4a836a00001244856700000a448753876000000444872205761fe6a9de8782872c1f261f241f201f4e75",
     "symbols": {
       "entry": "0x402B4600",
       "post_ingress": "0x402B4606",
-      "lane_0_skip": "0x402B4632",
-      "lane_1_skip": "0x402B464E",
-      "lane_2_skip": "0x402B466A",
-      "lane_3_skip": "0x402B4686",
-      "lane_4_skip": "0x402B46A2",
-      "lane_5_skip": "0x402B46BE",
-      "lane_6_skip": "0x402B46DA",
-      "lane_7_skip": "0x402B46F6",
-      "restore_registers": "0x402B46F6",
-      "restore_sr": "0x402B46FA",
-      "process_lane": "0x402B46FE",
-      "positive_division": "0x402B471A",
-      "sample_loop": "0x402B471E",
-      "multiply": "0x402B475C"
+      "lane_0_skip": "0x402B4644",
+      "lane_1_skip": "0x402B4660",
+      "lane_2_skip": "0x402B467C",
+      "lane_3_skip": "0x402B4698",
+      "lane_4_skip": "0x402B46B4",
+      "lane_5_skip": "0x402B46D0",
+      "lane_6_skip": "0x402B46EC",
+      "lane_7_skip": "0x402B4708",
+      "restore_state": "0x402B4708",
+      "process_lane": "0x402B4722",
+      "positive_division": "0x402B473E",
+      "sample_loop": "0x402B4742",
+      "multiply": "0x402B4780",
+      "multiply_abs_a_done": "0x402B479A",
+      "multiply_abs_b_done": "0x402B47A2",
+      "multiply_loop": "0x402B47AA",
+      "multiply_accumulate_high": "0x402B47BC",
+      "multiply_no_add": "0x402B47C0",
+      "multiply_shift_high": "0x402B47CA",
+      "multiply_negate_high": "0x402B47EC",
+      "multiply_positive": "0x402B47EE"
     },
     "flags": 0,
     "filter2_lane_mask": 0,
-    "changed_byte_positions": 313
+    "changed_byte_positions": 438
   },
   "armed_emulation_probe": {
-    "sha256": "b14e0d23bf5056bb9510d03e45906ba8f9aa8bba5ee09518ff33fc72a921a2b0",
+    "sha256": "caeffc30695d1c6ffadae0d19b511ac3831c9ca1486ebe4c251ebe1afca3e667",
     "state": {
       "bypass": {
         "call_site": "0x4011CACC",
@@ -108,30 +115,37 @@
     "cave_stub_address": "0x402B4340",
     "cave_stub_body": "4ef9402b4600",
     "extension_address": "0x402B4600",
-    "extension_end_exclusive": "0x402B476A",
-    "extension_bytes": 362,
-    "extension_body": "4eb940117f0040e74ab9402b4408670000ea48e7ffc008390000402b440d6700001241f9800067f843f9402b4420610000ce08390001402b440d6700001241f98000687843f9402b4440610000b208390002402b440d6700001241f9800068f843f9402b44606100009608390003402b440d6700001241f98000697843f9402b44806100007a08390004402b440d6700001241f9800069f843f9402b44a06100005e08390005402b440d6700001241f980006a7843f9402b44c06100004208390006402b440d6700001241f980006af843f9402b44e06100002608390007402b440d6700001241f980006b7843f9402b45006100000a4cdf03ff46df4e757020282900082a29000c2c059c844c864a866a00000806860000001f7e05eea6d8864c842210241192824c8161000030d4814c82228226290004220292834c816100001cd6814c832343000420c353806600ffce2a29000c234500084e754c041c057e1feea9da8582854e75",
+    "extension_end_exclusive": "0x402B4802",
+    "extension_bytes": 514,
+    "extension_body": "4eb940117f002f002f012f022f032f042f052f062f072f082f0940c03f004ab9402b4408670000e208390000402b440d6700001241f9800067f843f9402b4420610000e008390001402b440d6700001241f98000687843f9402b4440610000c408390002402b440d6700001241f9800068f843f9402b4460610000a808390003402b440d6700001241f98000697843f9402b44806100008c08390004402b440d6700001241f9800069f843f9402b44a06100007008390005402b440d6700001241f980006a7843f9402b44c06100005408390006402b440d6700001241f980006af843f9402b44e06100003808390007402b440d6700001241f980006b7843f9402b45006100001c301f46c0225f205f2e1f2c1f2a1f281f261f241f221f201f4e757020282900082a29000c2c059c844c864a866a00000806860000001f7e05eea6d8864c842210241192824c8161000030d4814c82228226290004220292834c816100001cd6814c832343000420c353806600ffce2a29000c234500084e752f002f022f032f06240126042c02b9862f064a826a00000444824a836a00000444837c007a007e00702008030000670000107200da82640000045281de86de817200d482640000045281dc86dc81e28b53806600ffd6261f4a836a00001244856700000a448753876000000444872205761fe6a9de8782872c1f261f241f201f4e75",
     "symbols": {
       "entry": "0x402B4600",
       "post_ingress": "0x402B4606",
-      "lane_0_skip": "0x402B4632",
-      "lane_1_skip": "0x402B464E",
-      "lane_2_skip": "0x402B466A",
-      "lane_3_skip": "0x402B4686",
-      "lane_4_skip": "0x402B46A2",
-      "lane_5_skip": "0x402B46BE",
-      "lane_6_skip": "0x402B46DA",
-      "lane_7_skip": "0x402B46F6",
-      "restore_registers": "0x402B46F6",
-      "restore_sr": "0x402B46FA",
-      "process_lane": "0x402B46FE",
-      "positive_division": "0x402B471A",
-      "sample_loop": "0x402B471E",
-      "multiply": "0x402B475C"
+      "lane_0_skip": "0x402B4644",
+      "lane_1_skip": "0x402B4660",
+      "lane_2_skip": "0x402B467C",
+      "lane_3_skip": "0x402B4698",
+      "lane_4_skip": "0x402B46B4",
+      "lane_5_skip": "0x402B46D0",
+      "lane_6_skip": "0x402B46EC",
+      "lane_7_skip": "0x402B4708",
+      "restore_state": "0x402B4708",
+      "process_lane": "0x402B4722",
+      "positive_division": "0x402B473E",
+      "sample_loop": "0x402B4742",
+      "multiply": "0x402B4780",
+      "multiply_abs_a_done": "0x402B479A",
+      "multiply_abs_b_done": "0x402B47A2",
+      "multiply_loop": "0x402B47AA",
+      "multiply_accumulate_high": "0x402B47BC",
+      "multiply_no_add": "0x402B47C0",
+      "multiply_shift_high": "0x402B47CA",
+      "multiply_negate_high": "0x402B47EC",
+      "multiply_positive": "0x402B47EE"
     },
     "flags": 1,
     "filter2_lane_mask": 255,
-    "changed_byte_positions": 315,
+    "changed_byte_positions": 440,
     "artifact_retained": false
   },
   "lane_geometry": {
@@ -156,7 +170,7 @@
       "selected_lanes": [
         0
       ],
-      "instructions_to_mixer": 36460,
+      "instructions_to_mixer": 63900,
       "multiply_calls": 64,
       "plane_writes": 32,
       "state_writes": 65,
@@ -164,8 +178,8 @@
         {
           "lane": 0,
           "selected": true,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "795d23f84fbc798de135eb6c0f7a89b7045c84d8602431327a70b32e86b4bc2c",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "34df751da199e834d2f8aea22c6e17b48c993d6ce9d7212e3369fa519d5cf738",
           "audio_changed": true,
           "state_changed": true,
           "oracle_match": true
@@ -173,8 +187,8 @@
         {
           "lane": 1,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -182,8 +196,8 @@
         {
           "lane": 2,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -191,8 +205,8 @@
         {
           "lane": 3,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -200,8 +214,8 @@
         {
           "lane": 4,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -209,8 +223,8 @@
         {
           "lane": 5,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -218,8 +232,8 @@
         {
           "lane": 6,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -227,8 +241,8 @@
         {
           "lane": 7,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -241,7 +255,7 @@
       "selected_lanes": [
         1
       ],
-      "instructions_to_mixer": 36460,
+      "instructions_to_mixer": 63813,
       "multiply_calls": 64,
       "plane_writes": 32,
       "state_writes": 65,
@@ -249,8 +263,8 @@
         {
           "lane": 0,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -258,8 +272,8 @@
         {
           "lane": 1,
           "selected": true,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "ab6416af938738790b7726f3fc0e05fcb480cb98d5f43b8c6e1d936ed0dd57f9",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "65b5962dbe9491e4358718411f635c8b573f4ec9bceefe491ae8a45540546965",
           "audio_changed": true,
           "state_changed": true,
           "oracle_match": true
@@ -267,8 +281,8 @@
         {
           "lane": 2,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -276,8 +290,8 @@
         {
           "lane": 3,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -285,8 +299,8 @@
         {
           "lane": 4,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -294,8 +308,8 @@
         {
           "lane": 5,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -303,8 +317,8 @@
         {
           "lane": 6,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -312,8 +326,8 @@
         {
           "lane": 7,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -326,7 +340,7 @@
       "selected_lanes": [
         2
       ],
-      "instructions_to_mixer": 36460,
+      "instructions_to_mixer": 63962,
       "multiply_calls": 64,
       "plane_writes": 32,
       "state_writes": 65,
@@ -334,8 +348,8 @@
         {
           "lane": 0,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -343,8 +357,8 @@
         {
           "lane": 1,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -352,8 +366,8 @@
         {
           "lane": 2,
           "selected": true,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "fc2fcb3f8b41dec3a1f87a86d7781855933bc2a6b1bb09ece2dfd6b8b08c3537",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "be5dd6b113fc68843c148ec908d9b9e9ce38f18fe8d1967d1d89a3aba835cc14",
           "audio_changed": true,
           "state_changed": true,
           "oracle_match": true
@@ -361,8 +375,8 @@
         {
           "lane": 3,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -370,8 +384,8 @@
         {
           "lane": 4,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -379,8 +393,8 @@
         {
           "lane": 5,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -388,8 +402,8 @@
         {
           "lane": 6,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -397,8 +411,8 @@
         {
           "lane": 7,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -411,7 +425,7 @@
       "selected_lanes": [
         3
       ],
-      "instructions_to_mixer": 36460,
+      "instructions_to_mixer": 63550,
       "multiply_calls": 64,
       "plane_writes": 32,
       "state_writes": 65,
@@ -419,8 +433,8 @@
         {
           "lane": 0,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -428,8 +442,8 @@
         {
           "lane": 1,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -437,8 +451,8 @@
         {
           "lane": 2,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -446,8 +460,8 @@
         {
           "lane": 3,
           "selected": true,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "4eda581504e56aaf7ed51be807f96e549e12a25d49e57e20ea427223e057ec05",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "ca39eae512348ed4bb46a8110fa0333a13493f9f39cc050f5e4cbfacbe8f00ae",
           "audio_changed": true,
           "state_changed": true,
           "oracle_match": true
@@ -455,8 +469,8 @@
         {
           "lane": 4,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -464,8 +478,8 @@
         {
           "lane": 5,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -473,8 +487,8 @@
         {
           "lane": 6,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -482,8 +496,8 @@
         {
           "lane": 7,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -496,7 +510,7 @@
       "selected_lanes": [
         4
       ],
-      "instructions_to_mixer": 36459,
+      "instructions_to_mixer": 64543,
       "multiply_calls": 64,
       "plane_writes": 32,
       "state_writes": 65,
@@ -504,8 +518,8 @@
         {
           "lane": 0,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -513,8 +527,8 @@
         {
           "lane": 1,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -522,8 +536,8 @@
         {
           "lane": 2,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -531,8 +545,8 @@
         {
           "lane": 3,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -540,8 +554,8 @@
         {
           "lane": 4,
           "selected": true,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "7960dc2854c93edad3c98f66243c852f04632477760dc842e81f1def22c46dd0",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "d8f0a926b7e027489300dab33bc724154d6e4b40ffee5edf929a9143a09b7c75",
           "audio_changed": true,
           "state_changed": true,
           "oracle_match": true
@@ -549,8 +563,8 @@
         {
           "lane": 5,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -558,8 +572,8 @@
         {
           "lane": 6,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -567,8 +581,8 @@
         {
           "lane": 7,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -581,7 +595,7 @@
       "selected_lanes": [
         5
       ],
-      "instructions_to_mixer": 36459,
+      "instructions_to_mixer": 64330,
       "multiply_calls": 64,
       "plane_writes": 32,
       "state_writes": 65,
@@ -589,8 +603,8 @@
         {
           "lane": 0,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -598,8 +612,8 @@
         {
           "lane": 1,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -607,8 +621,8 @@
         {
           "lane": 2,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -616,8 +630,8 @@
         {
           "lane": 3,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -625,8 +639,8 @@
         {
           "lane": 4,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -634,8 +648,8 @@
         {
           "lane": 5,
           "selected": true,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "9a06a80fa21634a6cf84f0154a8a8bde21aa3c44cfe58287f1a03717e9ea955f",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "fa7c631f9710f979530d01a91268717e2a7d58f4824abe26ec56b1331cbdd8d2",
           "audio_changed": true,
           "state_changed": true,
           "oracle_match": true
@@ -643,8 +657,8 @@
         {
           "lane": 6,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -652,8 +666,8 @@
         {
           "lane": 7,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -666,7 +680,7 @@
       "selected_lanes": [
         6
       ],
-      "instructions_to_mixer": 36459,
+      "instructions_to_mixer": 64362,
       "multiply_calls": 64,
       "plane_writes": 32,
       "state_writes": 65,
@@ -674,8 +688,8 @@
         {
           "lane": 0,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -683,8 +697,8 @@
         {
           "lane": 1,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -692,8 +706,8 @@
         {
           "lane": 2,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -701,8 +715,8 @@
         {
           "lane": 3,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -710,8 +724,8 @@
         {
           "lane": 4,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -719,8 +733,8 @@
         {
           "lane": 5,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -728,8 +742,8 @@
         {
           "lane": 6,
           "selected": true,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "9ec86661d67c782d566b2b562e5e957feeeaafd4201422fc151c279c4b9391fd",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "920da13af4b6199cd1f87265b63db54c658f3283462fc505fcd88014b4be03d8",
           "audio_changed": true,
           "state_changed": true,
           "oracle_match": true
@@ -737,8 +751,8 @@
         {
           "lane": 7,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -751,7 +765,7 @@
       "selected_lanes": [
         7
       ],
-      "instructions_to_mixer": 36459,
+      "instructions_to_mixer": 64104,
       "multiply_calls": 64,
       "plane_writes": 32,
       "state_writes": 65,
@@ -759,8 +773,8 @@
         {
           "lane": 0,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -768,8 +782,8 @@
         {
           "lane": 1,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -777,8 +791,8 @@
         {
           "lane": 2,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -786,8 +800,8 @@
         {
           "lane": 3,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -795,8 +809,8 @@
         {
           "lane": 4,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -804,8 +818,8 @@
         {
           "lane": 5,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -813,8 +827,8 @@
         {
           "lane": 6,
           "selected": false,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
           "audio_changed": false,
           "state_changed": false,
           "oracle_match": true
@@ -822,8 +836,8 @@
         {
           "lane": 7,
           "selected": true,
-          "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-          "after_sha256": "404552b5e84a1b323e373afccbb85e89382d77f8978b04e18f04645461305936",
+          "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+          "after_sha256": "14ddd921410671b176de86e827d4cdea44fe76df904a2e0971f3115fe96c2522",
           "audio_changed": true,
           "state_changed": true,
           "oracle_match": true
@@ -844,7 +858,7 @@
       6,
       7
     ],
-    "instructions_to_mixer": 43967,
+    "instructions_to_mixer": 264715,
     "multiply_calls": 512,
     "plane_writes": 256,
     "state_writes": 520,
@@ -852,8 +866,8 @@
       {
         "lane": 0,
         "selected": true,
-        "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-        "after_sha256": "795d23f84fbc798de135eb6c0f7a89b7045c84d8602431327a70b32e86b4bc2c",
+        "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "after_sha256": "34df751da199e834d2f8aea22c6e17b48c993d6ce9d7212e3369fa519d5cf738",
         "audio_changed": true,
         "state_changed": true,
         "oracle_match": true
@@ -861,8 +875,8 @@
       {
         "lane": 1,
         "selected": true,
-        "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-        "after_sha256": "ab6416af938738790b7726f3fc0e05fcb480cb98d5f43b8c6e1d936ed0dd57f9",
+        "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "after_sha256": "65b5962dbe9491e4358718411f635c8b573f4ec9bceefe491ae8a45540546965",
         "audio_changed": true,
         "state_changed": true,
         "oracle_match": true
@@ -870,8 +884,8 @@
       {
         "lane": 2,
         "selected": true,
-        "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-        "after_sha256": "fc2fcb3f8b41dec3a1f87a86d7781855933bc2a6b1bb09ece2dfd6b8b08c3537",
+        "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "after_sha256": "be5dd6b113fc68843c148ec908d9b9e9ce38f18fe8d1967d1d89a3aba835cc14",
         "audio_changed": true,
         "state_changed": true,
         "oracle_match": true
@@ -879,8 +893,8 @@
       {
         "lane": 3,
         "selected": true,
-        "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-        "after_sha256": "4eda581504e56aaf7ed51be807f96e549e12a25d49e57e20ea427223e057ec05",
+        "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "after_sha256": "ca39eae512348ed4bb46a8110fa0333a13493f9f39cc050f5e4cbfacbe8f00ae",
         "audio_changed": true,
         "state_changed": true,
         "oracle_match": true
@@ -888,8 +902,8 @@
       {
         "lane": 4,
         "selected": true,
-        "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-        "after_sha256": "7960dc2854c93edad3c98f66243c852f04632477760dc842e81f1def22c46dd0",
+        "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "after_sha256": "d8f0a926b7e027489300dab33bc724154d6e4b40ffee5edf929a9143a09b7c75",
         "audio_changed": true,
         "state_changed": true,
         "oracle_match": true
@@ -897,8 +911,8 @@
       {
         "lane": 5,
         "selected": true,
-        "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-        "after_sha256": "9a06a80fa21634a6cf84f0154a8a8bde21aa3c44cfe58287f1a03717e9ea955f",
+        "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "after_sha256": "fa7c631f9710f979530d01a91268717e2a7d58f4824abe26ec56b1331cbdd8d2",
         "audio_changed": true,
         "state_changed": true,
         "oracle_match": true
@@ -906,8 +920,8 @@
       {
         "lane": 6,
         "selected": true,
-        "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-        "after_sha256": "9ec86661d67c782d566b2b562e5e957feeeaafd4201422fc151c279c4b9391fd",
+        "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "after_sha256": "920da13af4b6199cd1f87265b63db54c658f3283462fc505fcd88014b4be03d8",
         "audio_changed": true,
         "state_changed": true,
         "oracle_match": true
@@ -915,8 +929,8 @@
       {
         "lane": 7,
         "selected": true,
-        "before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
-        "after_sha256": "404552b5e84a1b323e373afccbb85e89382d77f8978b04e18f04645461305936",
+        "before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "after_sha256": "14ddd921410671b176de86e827d4cdea44fe76df904a2e0971f3115fe96c2522",
         "audio_changed": true,
         "state_changed": true,
         "oracle_match": true
@@ -926,8 +940,8 @@
   },
   "modeled_cost": {
     "stock_active_instructions_to_mixer": 35362,
-    "eight_lane_active_instructions_to_mixer": 43967,
-    "semantic_instruction_delta": 8605,
+    "eight_lane_active_instructions_to_mixer": 264715,
+    "semantic_instruction_delta": 229353,
     "multiply_calls_per_block": 512,
     "qualification": "Emulator semantic instruction count, not measured ColdFire hardware cycles."
   },

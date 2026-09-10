@@ -93,6 +93,10 @@ and reproducible tooling.
 - Desktop pad/QWERTY rising edges now schedule eight bounded vector-191 renderer
   services. Re-arming DSPI1's channel-15 transmit request at each external
   audio event prevents the firmware's EOQ wait from stalling repeated blocks.
+- The packaged macOS shell now uses a hardware-proportional native panel with
+  persistent page/trigger LEDs and keyboard-accessible A-I encoders. Its
+  **FILTER 2** drawer publishes eight absolute runtime controls through an
+  atomic snapshot consumed by the custom QEMU machine.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
