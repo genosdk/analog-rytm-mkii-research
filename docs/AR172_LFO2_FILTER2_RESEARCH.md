@@ -538,7 +538,8 @@ New state must use a versioned extension or verified-unused storage; existing
   ABI through the desktop controller across 22 consecutive callbacks. It
   proves dynamic waveform/depth/mode changes, hold/resume behavior, exact
   one-shot and half-shot terminal phases, stable terminal modulation/targets,
-  and per-block Filter 2 oracle agreement. Its report is
+  active random-lane disable/resume/reset transitions, and per-block Filter 2
+  oracle agreement. Its report is
   `research/AR172_LFO2_CONTROLLER_SEQUENCE_PROBE.json`.
 - `controller/filter2_controller_service.py` serves the local control surface
   and owns the long-lived emulator bridge. `controller/static/` contains the
@@ -651,9 +652,13 @@ reset without disturbing its QWERTY note path or 0..127 mouse controls. A
 22-callback controller-driven sequence also passes exact audio oracles and
 proves one-shot clamps at `0xFFFFFFFF`, half-shot clamps at `0x80000000`, and
 hold resumes without phase drift. This sequence exposed and corrected an
-earlier half-shot immediate encoded as `0x00008000`. The next gate is active
-enable/disable and reset-transition testing plus runtime phase/status telemetry
-through the desktop state endpoint.
+earlier half-shot immediate encoded as `0x00008000`. Active random-lane testing
+also proves three disabled callbacks freeze phase, re-enable resumes it, and
+reset clears phase, last modulation, and random index before the next callback.
+The desktop state endpoint now reports actual per-lane emulator phase,
+increment, depth, modulation, effective target, random index and enable/trigger
+masks. The next gate is an offline callback-step diagnostic endpoint and
+browser-visible telemetry refresh across stepped callbacks.
 
 For Filter 2, state-loaded Q1.31 coefficients, per-sample control slew, all
 eight audio/state lanes, the foreground publication boundary, its

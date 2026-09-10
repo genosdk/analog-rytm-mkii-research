@@ -17,6 +17,11 @@ EMULATOR = ROOT / "recovered_library" / "minicoldfire_audio.py"
 from filter2_controller_service import (  # noqa: E402
     ControllerState,
     EmulatorBridge,
+    FILTER2_STATE0,
+    FILTER2_STATE_STRIDE,
+    LFO2_STATE0,
+    LFO2_STATE_STRIDE,
+    RANDOM_INDEX_OFFSET,
     make_handler,
 )
 
@@ -157,6 +162,35 @@ class ServiceApiTests(unittest.TestCase):
         )
         self.assertEqual(status, 400)
         self.assertIn("waveform", json.loads(body)["error"])
+
+    def test_runtime_telemetry_tracks_masks_and_reset(self):
+        lane = 5
+        lbase = LFO2_STATE0 + lane * LFO2_STATE_STRIDE
+        fbase = FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE
+        with self.bridge.lock:
+            self.bridge.bus.write(lbase, 4, 0xA1234567)
+            self.bridge.bus.write(lbase + 12, 4, 0x89ABCDEF)
+            self.bridge.bus.write(fbase + RANDOM_INDEX_OFFSET, 4, 37)
+        self.request("POST", "/api/lfo2", {"lane": lane, "parameter": "enable", "value": True})
+        status, _, body = self.request(
+            "POST", "/api/lfo2", {"lane": lane, "parameter": "trigger", "value": True},
+        )
+        snapshot = json.loads(body)["state"]["lfo2"]["runtime"]
+        self.assertEqual(status, 200)
+        self.assertEqual(snapshot["enable_mask"], "0x0020")
+        self.assertEqual(snapshot["trigger_mask"], "0x0020")
+        self.assertEqual(snapshot["lanes"][lane]["phase"], "0xA1234567")
+        self.assertEqual(snapshot["lanes"][lane]["last_modulation"], "0x89ABCDEF")
+        self.assertEqual(snapshot["lanes"][lane]["random_index"], 37)
+
+        status, _, body = self.request(
+            "POST", "/api/lfo2", {"lane": lane, "parameter": "reset", "value": 1},
+        )
+        runtime = json.loads(body)["state"]["lfo2"]["runtime"]["lanes"][lane]
+        self.assertEqual(status, 200)
+        self.assertEqual(runtime["phase"], "0x00000000")
+        self.assertEqual(runtime["last_modulation"], "0x00000000")
+        self.assertEqual(runtime["random_index"], 0)
 
 
 if __name__ == "__main__":

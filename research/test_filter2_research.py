@@ -766,6 +766,11 @@ class Lfo2CpuIntegrationProbeTests(StockProbeTest):
         self.assertEqual(terminal["hold_callbacks"], [4, 5])
         self.assertTrue(terminal["phase_modulation_and_target_stable_after_terminal"])
         self.assertTrue(terminal["every_audio_block_matches_filter_oracle"])
+        transitions = result["active_transitions"]
+        self.assertEqual(transitions["disabled_callbacks"], [3, 4, 5])
+        self.assertTrue(transitions["disabled_phase_frozen"])
+        self.assertTrue(transitions["reset_clears_phase_modulation_and_random_index"])
+        self.assertTrue(transitions["all_transition_audio_blocks_match_oracle"])
 
 
 

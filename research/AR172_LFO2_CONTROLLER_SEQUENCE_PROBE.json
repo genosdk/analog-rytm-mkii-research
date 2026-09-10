@@ -10,16 +10,18 @@
       {
         "index": 0,
         "parameter_changes": [],
-        "multiply_calls": 514,
+        "multiply_calls": 515,
         "lanes": [
           {
             "lane": 0,
             "waveform": 2,
             "mode": 1,
+            "enabled": true,
             "phase": "0x11111111",
             "increment": "0x11111111",
             "modulation": "0xE40C5CFE",
             "effective_target": "0x1C7D3EC1",
+            "random_index": 0,
             "output_sha256": "757b6daf0f2ef56f81cf6ed8e1561f0c03b3a074fb6128da950fabe9edacbc5a",
             "terminal": false,
             "oracle_match": true
@@ -28,11 +30,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x11111111",
             "increment": "0x11111111",
             "modulation": "0x29ED7482",
             "effective_target": "0x727E96C6",
+            "random_index": 0,
             "output_sha256": "6b11b60ed0b4e8c2cd46bfeeeea2bd658633a6069dcb393c56eb6557a6d2c9d1",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x11111111",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "101036de8ce654f3ef9ff8cfa4b363b24ae1cb260977efd38e8cf6f27da117b8",
             "terminal": false,
             "oracle_match": true
           }
@@ -42,16 +60,18 @@
       {
         "index": 1,
         "parameter_changes": [],
-        "multiply_calls": 514,
+        "multiply_calls": 515,
         "lanes": [
           {
             "lane": 0,
             "waveform": 2,
             "mode": 1,
+            "enabled": true,
             "phase": "0x22222222",
             "increment": "0x11111111",
             "modulation": "0xE8593AFE",
             "effective_target": "0x20CA1CC1",
+            "random_index": 0,
             "output_sha256": "30bf56a5349c24257a4e06e97319d19a90bdc854e5f1ff2ddaeec2e6a057ec1e",
             "terminal": false,
             "oracle_match": true
@@ -60,11 +80,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x22222222",
             "increment": "0x11111111",
             "modulation": "0x237A2781",
             "effective_target": "0x6C0B49C5",
+            "random_index": 0,
             "output_sha256": "0b462f67c08347bdbed974be2c33a1e7ce11af04ff2f24489c965f64549fe240",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x22222222",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "f13739266cb6e4d6a0a2d360cb2657d42e48981673a41635346438a6db7ffb20",
             "terminal": false,
             "oracle_match": true
           }
@@ -77,24 +113,32 @@
           {
             "lane": 0,
             "parameter": "waveform",
-            "value": "exponential"
+            "value": "exponential",
+            "phase_after_publication": "0x22222222",
+            "last_modulation_after_publication": "0xE8593AFE",
+            "random_index_after_publication": 0
           },
           {
             "lane": 0,
             "parameter": "depth",
-            "value": 80
+            "value": 80,
+            "phase_after_publication": "0x22222222",
+            "last_modulation_after_publication": "0xE8593AFE",
+            "random_index_after_publication": 0
           }
         ],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0x33333333",
             "increment": "0x11111111",
             "modulation": "0xB5D20A7B",
             "effective_target": "0x00000000",
+            "random_index": 0,
             "output_sha256": "3fad03700757d053f659fb94b3e67b502bd5f2e968352443e10cd42defc39204",
             "terminal": false,
             "oracle_match": true
@@ -103,11 +147,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x33333333",
             "increment": "0x11111111",
             "modulation": "0x1D06DA81",
             "effective_target": "0x6597FCC5",
+            "random_index": 0,
             "output_sha256": "5c0d6bab626288e8ebcf79eccc7e566bbc345d4096ca383ef661cbb23b47e583",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x33333333",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "632c9d68add8bbd9aba450372e58a97aa4e4b7fdc3f0cf7a9b715cdacd80ba40",
             "terminal": false,
             "oracle_match": true
           }
@@ -116,17 +176,28 @@
       },
       {
         "index": 3,
-        "parameter_changes": [],
+        "parameter_changes": [
+          {
+            "lane": 2,
+            "parameter": "enable",
+            "value": false,
+            "phase_after_publication": "0x33333333",
+            "last_modulation_after_publication": "0x1007E02F",
+            "random_index_after_publication": 0
+          }
+        ],
         "multiply_calls": 515,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0x44444444",
             "increment": "0x11111111",
             "modulation": "0xBAD662D1",
             "effective_target": "0x00000000",
+            "random_index": 0,
             "output_sha256": "ee654585a944710209f90d4848b3facf76181ea787d3ba9c640146f1f24ac764",
             "terminal": false,
             "oracle_match": true
@@ -135,11 +206,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x44444444",
             "increment": "0x11111111",
             "modulation": "0x16938D81",
             "effective_target": "0x5F24AFC5",
+            "random_index": 0,
             "output_sha256": "caf37e11cc8d69b9343a0b76bcef145b5e88b9aff8e8c7fac0d00170cb51404f",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": false,
+            "phase": "0x33333333",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x40810204",
+            "random_index": 0,
+            "output_sha256": "bb8da48bb81fd48b33e399cc6b597303444e89327312a40ac097b47f569c6298",
             "terminal": false,
             "oracle_match": true
           }
@@ -152,7 +239,10 @@
           {
             "lane": 1,
             "parameter": "mode",
-            "value": "hold"
+            "value": "hold",
+            "phase_after_publication": "0x44444444",
+            "last_modulation_after_publication": "0x16938D81",
+            "random_index_after_publication": 0
           }
         ],
         "multiply_calls": 515,
@@ -161,10 +251,12 @@
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0x55555555",
             "increment": "0x11111111",
             "modulation": "0xC149AFD0",
             "effective_target": "0x00000000",
+            "random_index": 0,
             "output_sha256": "ee654585a944710209f90d4848b3facf76181ea787d3ba9c640146f1f24ac764",
             "terminal": false,
             "oracle_match": true
@@ -173,11 +265,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 3,
+            "enabled": true,
             "phase": "0x44444444",
             "increment": "0x11111111",
             "modulation": "0x16938D81",
             "effective_target": "0x5F24AFC5",
+            "random_index": 0,
             "output_sha256": "9cb4f135cad0616150674456abd8c54f112756ffaa64aa52f8585e394cecf173",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": false,
+            "phase": "0x33333333",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x40810204",
+            "random_index": 0,
+            "output_sha256": "e1e509ff4f6724b3730ed2480d69b57674fa3d0c889e591f56fe7d37845e3108",
             "terminal": false,
             "oracle_match": true
           }
@@ -193,10 +301,12 @@
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0x66666666",
             "increment": "0x11111111",
             "modulation": "0xC92BF17C",
             "effective_target": "0x019CD33F",
+            "random_index": 0,
             "output_sha256": "c47fe9861bcdbbe43da8859d87c3260ca34ef4743a14a0640122df4359dcc444",
             "terminal": false,
             "oracle_match": true
@@ -205,11 +315,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 3,
+            "enabled": true,
             "phase": "0x44444444",
             "increment": "0x11111111",
             "modulation": "0x16938D81",
             "effective_target": "0x5F24AFC5",
+            "random_index": 0,
             "output_sha256": "b27bd272a80e5ba22c979753665c02f6cf7689203bb9e88c4db17d6ca6dd7633",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": false,
+            "phase": "0x33333333",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x40810204",
+            "random_index": 0,
+            "output_sha256": "7272d78be3f36d5b27287ea541a94b811bd2455c55e9cdb528f5f17dfcf14932",
             "terminal": false,
             "oracle_match": true
           }
@@ -222,19 +348,32 @@
           {
             "lane": 1,
             "parameter": "mode",
-            "value": "half-shot"
+            "value": "half-shot",
+            "phase_after_publication": "0x44444444",
+            "last_modulation_after_publication": "0x16938D81",
+            "random_index_after_publication": 0
+          },
+          {
+            "lane": 2,
+            "parameter": "enable",
+            "value": true,
+            "phase_after_publication": "0x33333333",
+            "last_modulation_after_publication": "0x1007E02F",
+            "random_index_after_publication": 0
           }
         ],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0x77777777",
             "increment": "0x11111111",
             "modulation": "0xD27D27D0",
             "effective_target": "0x0AEE0993",
+            "random_index": 0,
             "output_sha256": "c31738c0cf784559c73862b8023633ae6c5aacb6a52c72bda03c821b554bc234",
             "terminal": false,
             "oracle_match": true
@@ -243,11 +382,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x55555555",
             "increment": "0x11111111",
             "modulation": "0x10204080",
             "effective_target": "0x58B162C4",
+            "random_index": 0,
             "output_sha256": "5f33fee6152af574a3a8f1e791b98d82a8a7ffd5fd48f21d0f466b25018e4a2f",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x44444444",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "6f26406ab029fffa4bc9211c72333cca974570853a1ffea33561d61e77314033",
             "terminal": false,
             "oracle_match": true
           }
@@ -257,16 +412,18 @@
       {
         "index": 7,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0x88888888",
             "increment": "0x11111111",
             "modulation": "0xDD3D52D2",
             "effective_target": "0x15AE3495",
+            "random_index": 0,
             "output_sha256": "40e002cee2c819a03d31f169d21e7bbd0c83e401e45878875686eb5e05ed8cbc",
             "terminal": false,
             "oracle_match": true
@@ -275,11 +432,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x66666666",
             "increment": "0x11111111",
             "modulation": "0x09ACF380",
             "effective_target": "0x523E15C4",
+            "random_index": 0,
             "output_sha256": "31ae604cf80cfc8dd306cb73772df453982b6aa5c234f34fd9a45bc6548ebfa9",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x55555555",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "2f02b9adfdf29115e652c2f5859540a5c6f59fb3cb736cf024dda307f7b6e353",
             "terminal": false,
             "oracle_match": true
           }
@@ -289,16 +462,18 @@
       {
         "index": 8,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0x99999999",
             "increment": "0x11111111",
             "modulation": "0xE96C727D",
             "effective_target": "0x21DD5440",
+            "random_index": 0,
             "output_sha256": "b854ad46a6f32d2267ef4098530798e0648a0960ba8839902505fe6fa22694b9",
             "terminal": false,
             "oracle_match": true
@@ -307,11 +482,27 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x77777777",
             "increment": "0x11111111",
             "modulation": "0x0339A67F",
             "effective_target": "0x4BCAC8C3",
+            "random_index": 0,
             "output_sha256": "1b012de6f63902fec45c2fa80faec40c324fe50648391b4c169d7d8a1c1bad82",
+            "terminal": false,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x66666666",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
             "terminal": false,
             "oracle_match": true
           }
@@ -321,16 +512,18 @@
       {
         "index": 9,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xAAAAAAAA",
             "increment": "0x11111111",
             "modulation": "0xF70A86D3",
             "effective_target": "0x2F7B6896",
+            "random_index": 0,
             "output_sha256": "dd820a53571a581d65d73dd25a6f89704d6bde9723cd324dd6de1ec0703c2354",
             "terminal": false,
             "oracle_match": true
@@ -339,12 +532,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "b7b1656d52f206cf57153fd71a737d07cc2eb83250e7409c239b5d795565ba0c",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x77777777",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -352,17 +561,28 @@
       },
       {
         "index": 10,
-        "parameter_changes": [],
-        "multiply_calls": 515,
+        "parameter_changes": [
+          {
+            "lane": 2,
+            "parameter": "reset",
+            "value": 1,
+            "phase_after_publication": "0x00000000",
+            "last_modulation_after_publication": "0x00000000",
+            "random_index_after_publication": 0
+          }
+        ],
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xBBBBBBBB",
             "increment": "0x11111111",
             "modulation": "0x06178FD3",
             "effective_target": "0x3E887196",
+            "random_index": 0,
             "output_sha256": "d5f5902a8b3d26ad6daa26a69a06d27f3903d09d5362d9da0a987ff1a03b13c3",
             "terminal": false,
             "oracle_match": true
@@ -371,12 +591,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "dfb35306bf79359c4eb258edd7d62eb9653df0d63e26897f7919a9f2b9a8258b",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x11111111",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -385,16 +621,18 @@
       {
         "index": 11,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xCCCCCCCC",
             "increment": "0x11111111",
             "modulation": "0x16938D80",
             "effective_target": "0x4F046F43",
+            "random_index": 0,
             "output_sha256": "c83d8ea54f4df28e8b4898df0e165d13165137912a619c75e66f93545febad00",
             "terminal": false,
             "oracle_match": true
@@ -403,12 +641,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x22222222",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -417,16 +671,18 @@
       {
         "index": 12,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xDDDDDDDD",
             "increment": "0x11111111",
             "modulation": "0x287E7FD4",
             "effective_target": "0x60EF6197",
+            "random_index": 0,
             "output_sha256": "86a0689767a418f042d9922271f2ce15096ffeefe2b10c272607befae5ab7ba2",
             "terminal": false,
             "oracle_match": true
@@ -435,12 +691,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x33333333",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -449,16 +721,18 @@
       {
         "index": 13,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xEEEEEEEE",
             "increment": "0x11111111",
             "modulation": "0x3BD866D6",
             "effective_target": "0x74494899",
+            "random_index": 0,
             "output_sha256": "46f50fe368af82e826bb7c3f1c055e3cfd8285449b4702ccb3beb4526abbda54",
             "terminal": false,
             "oracle_match": true
@@ -467,12 +741,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x44444444",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -481,16 +771,18 @@
       {
         "index": 14,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xFFFFFFFF",
             "increment": "0x11111111",
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
+            "random_index": 0,
             "output_sha256": "9267274e1d778d4a195517d820ee7ebef66f5eb094fb4dfbb26b302d99f6b603",
             "terminal": true,
             "oracle_match": true
@@ -499,12 +791,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x55555555",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -513,16 +821,18 @@
       {
         "index": 15,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xFFFFFFFF",
             "increment": "0x11111111",
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
+            "random_index": 0,
             "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
             "terminal": true,
             "oracle_match": true
@@ -531,12 +841,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x66666666",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -545,16 +871,18 @@
       {
         "index": 16,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xFFFFFFFF",
             "increment": "0x11111111",
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
+            "random_index": 0,
             "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
             "terminal": true,
             "oracle_match": true
@@ -563,12 +891,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x77777777",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -577,16 +921,18 @@
       {
         "index": 17,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xFFFFFFFF",
             "increment": "0x11111111",
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
+            "random_index": 0,
             "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
             "terminal": true,
             "oracle_match": true
@@ -595,12 +941,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x88888888",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -609,16 +971,18 @@
       {
         "index": 18,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xFFFFFFFF",
             "increment": "0x11111111",
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
+            "random_index": 0,
             "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
             "terminal": true,
             "oracle_match": true
@@ -627,12 +991,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0x99999999",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -641,16 +1021,18 @@
       {
         "index": 19,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xFFFFFFFF",
             "increment": "0x11111111",
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
+            "random_index": 0,
             "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
             "terminal": true,
             "oracle_match": true
@@ -659,12 +1041,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0xAAAAAAAA",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -673,16 +1071,18 @@
       {
         "index": 20,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xFFFFFFFF",
             "increment": "0x11111111",
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
+            "random_index": 0,
             "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
             "terminal": true,
             "oracle_match": true
@@ -691,12 +1091,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0xBBBBBBBB",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -705,16 +1121,18 @@
       {
         "index": 21,
         "parameter_changes": [],
-        "multiply_calls": 515,
+        "multiply_calls": 516,
         "lanes": [
           {
             "lane": 0,
             "waveform": 5,
             "mode": 1,
+            "enabled": true,
             "phase": "0xFFFFFFFF",
             "increment": "0x11111111",
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
+            "random_index": 0,
             "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
             "terminal": true,
             "oracle_match": true
@@ -723,12 +1141,28 @@
             "lane": 1,
             "waveform": 3,
             "mode": 2,
+            "enabled": true,
             "phase": "0x80000000",
             "increment": "0x11111111",
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
+            "random_index": 0,
             "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
             "terminal": true,
+            "oracle_match": true
+          },
+          {
+            "lane": 2,
+            "waveform": 6,
+            "mode": 0,
+            "enabled": true,
+            "phase": "0xCCCCCCCC",
+            "increment": "0x11111111",
+            "modulation": "0x1007E02F",
+            "effective_target": "0x5088E233",
+            "random_index": 0,
+            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "terminal": false,
             "oracle_match": true
           }
         ],
@@ -748,6 +1182,13 @@
           80
         ]
       ],
+      "3": [
+        [
+          2,
+          "enable",
+          false
+        ]
+      ],
       "4": [
         [
           1,
@@ -760,10 +1201,22 @@
           1,
           "mode",
           "half-shot"
+        ],
+        [
+          2,
+          "enable",
+          true
+        ]
+      ],
+      "10": [
+        [
+          2,
+          "reset",
+          1
         ]
       ]
     },
-    "publication_count": 16,
+    "publication_count": 25,
     "all_publications_use_controller_state": true
   },
   "terminal_behavior": {
@@ -780,7 +1233,20 @@
     "phase_modulation_and_target_stable_after_terminal": true,
     "every_audio_block_matches_filter_oracle": true
   },
-  "conclusion": "The desktop controller ABI can change waveform, depth and run mode between live callbacks without discontinuity in the phase contract. One-shot clamps at the final full-cycle phase, half-shot clamps at the half-cycle phase, hold pauses and resumes, and every resulting audio block matches the exact Filter2 oracle.",
-  "next_target": "Exercise enable/disable and reset transitions during active controller sequences, then bind observable runtime phase/status telemetry into the desktop state endpoint.",
+  "active_transitions": {
+    "random_lane": 2,
+    "disabled_callbacks": [
+      3,
+      4,
+      5
+    ],
+    "disabled_phase_frozen": true,
+    "reenabled_callback": 6,
+    "reset_callback": 10,
+    "reset_clears_phase_modulation_and_random_index": true,
+    "all_transition_audio_blocks_match_oracle": true
+  },
+  "conclusion": "The desktop controller ABI can change waveform, depth and run mode between live callbacks without discontinuity in the phase contract. One-shot clamps at the final full-cycle phase, half-shot clamps at the half-cycle phase, hold pauses and resumes, and every resulting audio block matches the exact Filter2 oracle. A random lane also freezes while disabled, resumes when enabled, and clears phase, modulation and random index on an active reset.",
+  "next_target": "Expose a deliberate callback-step diagnostic endpoint for the offline controller, then validate browser-visible telemetry refresh across stepped callbacks.",
   "safety": "Runtime-only emulator candidate; no ELE3 container, SysEx package, or flashable firmware image was created."
 }

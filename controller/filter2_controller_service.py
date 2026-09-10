@@ -25,17 +25,30 @@ sys.path.insert(0, str(RESEARCH))
 from audio_callback_probe import EXPECTED_MAIN_SHA256, prepared_machine  # noqa: E402
 from filter2_coefficient_slew_probe import control_to_q31  # noqa: E402
 from filter2_publication_shim_probe import VIRTUAL_INDEX_BASE, target_address  # noqa: E402
-from filter2_lfo2_cutoff_binding_probe import COMBINED_FLAGS  # noqa: E402
+from filter2_eight_lane_probe import FILTER2_STATE0, FILTER2_STATE_STRIDE  # noqa: E402
+from filter2_lfo2_cutoff_binding_probe import (  # noqa: E402
+    COMBINED_FLAGS,
+    LFO2_MASK_ADDRESS,
+    LFO2_STATE0,
+    LFO2_STATE_STRIDE,
+)
 from filter2_unity_kernel_probe import FILTER2_MASK_ADDRESS, FLAGS_ADDRESS  # noqa: E402
 from lfo2_control_publication_probe import (  # noqa: E402
     DEPTH_INDEX_BASE,
     ENABLE_INDEX_BASE,
     RATE_INDEX_BASE,
     RESET_INDEX_BASE,
+    RANDOM_INDEX_OFFSET,
     TRIGGER_INDEX_BASE,
+    TRIGGER_MASK_ADDRESS,
 )
 from lfo2_extended_waveform_probe import build_candidate  # noqa: E402
-from lfo2_waveform_mode_probe import MODE_INDEX_BASE, WAVE_INDEX_BASE, WAVE_SHIM_BASE  # noqa: E402
+from lfo2_waveform_mode_probe import (  # noqa: E402
+    CONFIG_OFFSET,
+    MODE_INDEX_BASE,
+    WAVE_INDEX_BASE,
+    WAVE_SHIM_BASE,
+)
 from note_event_constructor_probe import (  # noqa: E402
     EVENT_FLAGS as NOTE_EVENT_FLAGS,
     EVENT_INPUT,
@@ -197,6 +210,34 @@ class EmulatorBridge:
             "virtual_index": f"0x{virtual_index:04X}",
             "instructions": steps,
         }
+
+    def lfo2_runtime_snapshot(self) -> dict[str, Any]:
+        with self.lock:
+            enable_mask = self.bus.read(LFO2_MASK_ADDRESS, 2)
+            trigger_mask = self.bus.read(TRIGGER_MASK_ADDRESS, 2)
+            lanes = []
+            for lane in range(LANES):
+                lbase = LFO2_STATE0 + lane * LFO2_STATE_STRIDE
+                fbase = FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE
+                config = self.bus.read(fbase + CONFIG_OFFSET, 4)
+                lanes.append({
+                    "lane": lane,
+                    "enabled": bool(enable_mask & (1 << lane)),
+                    "trigger": bool(trigger_mask & (1 << lane)),
+                    "waveform": config & 0x07,
+                    "mode": (config >> 3) & 0x03,
+                    "phase": f"0x{self.bus.read(lbase, 4):08X}",
+                    "increment": f"0x{self.bus.read(lbase + 4, 4):08X}",
+                    "depth": f"0x{self.bus.read(lbase + 8, 4):08X}",
+                    "last_modulation": f"0x{self.bus.read(lbase + 12, 4):08X}",
+                    "effective_target": f"0x{self.bus.read(fbase + 16, 4):08X}",
+                    "random_index": self.bus.read(fbase + RANDOM_INDEX_OFFSET, 4),
+                })
+            return {
+                "enable_mask": f"0x{enable_mask:04X}",
+                "trigger_mask": f"0x{trigger_mask:04X}",
+                "lanes": lanes,
+            }
 
     def trigger_note(self, note: int) -> dict[str, Any]:
         if not 0 <= note <= 127:
@@ -424,6 +465,7 @@ class ControllerState:
                         for name, base in LFO2_PARAMETERS.items()
                     },
                     "transport": "emulator extended-wave publication shim",
+                    "runtime": self.bridge.lfo2_runtime_snapshot(),
                 },
                 "notes": {
                     "keys": NOTE_KEYS,

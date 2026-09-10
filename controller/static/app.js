@@ -12,6 +12,7 @@ const state = {
     waveform: Array(LANES).fill(0), mode: Array(LANES).fill(0),
     trigger: Array(LANES).fill(0), enable: Array(LANES).fill(0),
     rate: Array(LANES).fill(DEFAULT_VALUE), depth: Array(LANES).fill(DEFAULT_VALUE),
+    runtime: null,
   },
 };
 let filterQueue = Promise.resolve();
@@ -78,6 +79,18 @@ function renderLfo2() {
   document.querySelector("#lfo2-trigger").checked = Boolean(state.lfo2.trigger[lane]);
   document.querySelector("#lfo2-publication").textContent =
     `Wave 0x${(0x7fc0 + lane).toString(16).toUpperCase()} · Mode 0x${(0x7fc8 + lane).toString(16).toUpperCase()}`;
+  const runtime = state.lfo2.runtime?.lanes?.[lane];
+  document.querySelector("#lfo2-runtime").textContent = runtime
+    ? `Phase ${runtime.phase} · ${runtime.enabled ? "running" : "disabled"} · Mod ${runtime.last_modulation} · Target ${runtime.effective_target}`
+    : "Phase unavailable";
+}
+
+function ingestLfo2(payload) {
+  state.lfo2 = {
+    waveform: payload.waveform, mode: payload.mode,
+    trigger: payload.trigger, enable: payload.enable,
+    rate: payload.rate, depth: payload.depth, runtime: payload.runtime,
+  };
 }
 
 function selectLane(lane) {
@@ -144,11 +157,7 @@ function publishLfo2(parameter, value, source = "mouse") {
   lfoQueue = lfoQueue.then(async () => {
     try {
       const body = await request("/api/lfo2", { lane, parameter, value, source });
-      state.lfo2 = {
-        waveform: body.state.lfo2.waveform, mode: body.state.lfo2.mode,
-        trigger: body.state.lfo2.trigger, enable: body.state.lfo2.enable,
-        rate: body.state.lfo2.rate, depth: body.state.lfo2.depth,
-      };
+      ingestLfo2(body.state.lfo2);
       renderLfo2();
       setConnection(true, "Emulator connected");
     } catch (error) {
@@ -169,7 +178,9 @@ function publishNote(key, action) {
       const body = await request("/api/note", { key, action, velocity: 100 });
       if (revision === noteRevision) {
         state.held = new Set(body.state.notes.held);
+        ingestLfo2(body.state.lfo2);
         renderNotes();
+        renderLfo2();
       }
     } catch (error) {
       setConnection(false, "Note event failed");
@@ -279,11 +290,7 @@ async function initialize() {
     const body = await response.json();
     state.values = body.filter2.values;
     state.selectedLane = body.filter2.selected_lane;
-    state.lfo2 = {
-      waveform: body.lfo2.waveform, mode: body.lfo2.mode,
-      trigger: body.lfo2.trigger, enable: body.lfo2.enable,
-      rate: body.lfo2.rate, depth: body.lfo2.depth,
-    };
+    ingestLfo2(body.lfo2);
     state.held = new Set(body.notes.held);
     for (let lane = 0; lane < LANES; lane += 1) renderKnob(lane);
     renderLfo2();

@@ -186,8 +186,10 @@ lanes and implements triangle, sine, square, saw, ramp, exponential and
 deterministic-random waveforms. Loop, one-shot, half-shot and hold modes are
 executable; explicit reset and authentic trigger-mode note-on restart phase and
 the random sequence. A 22-callback controller-driven sequence proves dynamic
-parameter changes and exact one-shot/half-shot terminal behavior. The disabled
-callback remains bit-identical to stock.
+parameter changes, active enable/disable/reset transitions, and exact
+one-shot/half-shot terminal behavior. `/api/state` exposes the resulting
+read-only per-lane runtime telemetry. The disabled callback remains
+bit-identical to stock.
 
 The detailed evidence and memory map are in
 `docs/AR172_LFO2_FILTER2_RESEARCH.md`.

@@ -40,6 +40,18 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
             "note_path_did_not_mutate_filter2": snapshot["filter2"]["values"] == before_notes,
             "seven_waveforms_publish": snapshot["lfo2"]["waveform"] == [0, 1, 2, 3, 4, 5, 6, 0],
             "four_modes_publish": snapshot["lfo2"]["mode"] == [0, 1, 2, 3, 0, 1, 2, 3],
+            "runtime_telemetry_all_lanes": len(snapshot["lfo2"]["runtime"]["lanes"]) == 8,
+            "runtime_masks_exact": (
+                snapshot["lfo2"]["runtime"]["enable_mask"] == "0x0001"
+                and snapshot["lfo2"]["runtime"]["trigger_mask"] == "0x0001"
+            ),
+            "runtime_config_matches_controller": all(
+                runtime["waveform"] == snapshot["lfo2"]["waveform"][lane]
+                and runtime["mode"] == snapshot["lfo2"]["mode"][lane]
+                and runtime["enabled"] == bool(snapshot["lfo2"]["enable"][lane])
+                and runtime["trigger"] == bool(snapshot["lfo2"]["trigger"][lane])
+                for lane, runtime in enumerate(snapshot["lfo2"]["runtime"]["lanes"])
+            ),
             "waveform_index_range_exact": [item["virtual_index"] for item in waveform_publications]
             == [f"0x{0x7FC0 + lane:04X}" for lane in range(8)],
             "mode_index_range_exact": [item["virtual_index"] for item in mode_publications]

@@ -28,7 +28,7 @@ from filter2_controller_service import ControllerState, EmulatorBridge
 
 
 CALLBACKS = 22
-LANES = (0, 1)
+LANES = (0, 1, 2)
 TERMINALS = {0: 0xFFFFFFFF, 1: 0x80000000}
 
 
@@ -57,6 +57,7 @@ def probe(stock_path: Path, emulator_path: Path, report_path: Path | None = None
         for lane, waveform, mode, depth in (
             (0, "saw", "one-shot", 32),
             (1, "ramp", "half-shot", 48),
+            (2, "random", "loop", 64),
         ):
             publish(lane, "waveform", waveform)
             publish(lane, "mode", mode)
@@ -71,18 +72,35 @@ def probe(stock_path: Path, emulator_path: Path, report_path: Path | None = None
             "mac_mask": bridge.cpu.mac_mask, "macc": bridge.cpu.macc.copy(),
         }
         expected_phases = [0] * 8
+        expected_random = [0] * 8
+        expected_last = [0] * 8
         callbacks = []
         schedule = {
             2: [(0, "waveform", "exponential"), (0, "depth", 80)],
+            3: [(2, "enable", False)],
             4: [(1, "mode", "hold")],
-            6: [(1, "mode", "half-shot")],
+            6: [(1, "mode", "half-shot"), (2, "enable", True)],
+            10: [(2, "reset", 1)],
         }
 
         for callback_index in range(CALLBACKS):
             changes = []
             for lane, parameter, value in schedule.get(callback_index, []):
                 publish(lane, parameter, value)
-                changes.append({"lane": lane, "parameter": parameter, "value": value})
+                if parameter == "reset":
+                    expected_phases[lane] = 0
+                    expected_random[lane] = 0
+                    expected_last[lane] = 0
+                lbase = LFO2_STATE0 + lane * LFO2_STATE_STRIDE
+                fbase = FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE
+                changes.append({
+                    "lane": lane,
+                    "parameter": parameter,
+                    "value": value,
+                    "phase_after_publication": f"0x{bridge.bus.read(lbase, 4):08X}",
+                    "last_modulation_after_publication": f"0x{bridge.bus.read(lbase + 12, 4):08X}",
+                    "random_index_after_publication": bridge.bus.read(fbase + 24, 4),
+                })
 
             prior_filter = {}
             for lane in LANES:
@@ -117,19 +135,31 @@ def probe(stock_path: Path, emulator_path: Path, report_path: Path | None = None
                 fbase = FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE
                 increment = bridge.bus.read(lbase + 4, 4)
                 depth = bridge.bus.read(lbase + 8, 4)
-                phase = advance_phase(expected_phases[lane], increment, mode)
-                expected_phases[lane] = phase
-                wave = waveform_q31(waveform, phase, bridge.bus.read(fbase + 24, 4))
-                modulation = modulation_q31(wave, depth)
                 base_target = bridge.bus.read(fbase + 12, 4)
-                target = effective_target(base_target, modulation)
+                enabled = bool(state.lfo2["enable"][lane])
+                old_phase = expected_phases[lane]
+                if enabled:
+                    phase = advance_phase(old_phase, increment, mode)
+                    expected_phases[lane] = phase
+                    if waveform == 6 and phase < old_phase:
+                        expected_random[lane] = (expected_random[lane] + 1) & 0xFF
+                    wave = waveform_q31(waveform, phase, expected_random[lane])
+                    modulation = modulation_q31(wave, depth)
+                    expected_last[lane] = modulation & 0xFFFFFFFF
+                    target = effective_target(base_target, modulation)
+                else:
+                    phase = old_phase
+                    modulation = expected_last[lane]
+                    target = base_target
                 s1, s2, current = prior_filter[lane]
                 expected_audio, next_s1, next_s2, _ = oracle(before[lane], current, target, s1, s2)
                 observed_state = tuple(bridge.bus.read(fbase + offset, 4) for offset in (0, 4, 8, 16))
                 wanted_state = (next_s1, next_s2, target, target)
                 observed_lfo = (bridge.bus.read(lbase, 4), bridge.bus.read(lbase + 12, 4))
-                wanted_lfo = (phase, modulation & 0xFFFFFFFF)
-                if after[lane] != expected_audio or observed_state != wanted_state or observed_lfo != wanted_lfo:
+                wanted_lfo = (phase, expected_last[lane])
+                observed_random = bridge.bus.read(fbase + 24, 4)
+                if (after[lane] != expected_audio or observed_state != wanted_state
+                        or observed_lfo != wanted_lfo or observed_random != expected_random[lane]):
                     raise ValueError(
                         f"controller sequence callback {callback_index} lane {lane} diverged: "
                         f"audio={after[lane] == expected_audio} state={observed_state!r}/{wanted_state!r} "
@@ -139,15 +169,22 @@ def probe(stock_path: Path, emulator_path: Path, report_path: Path | None = None
                     "lane": lane,
                     "waveform": waveform,
                     "mode": mode,
+                    "enabled": enabled,
                     "phase": f"0x{phase:08X}",
                     "increment": f"0x{increment:08X}",
-                    "modulation": f"0x{modulation & 0xFFFFFFFF:08X}",
+                    "modulation": f"0x{expected_last[lane]:08X}",
                     "effective_target": f"0x{target:08X}",
+                    "random_index": expected_random[lane],
                     "output_sha256": words_hash(after[lane]),
-                    "terminal": phase == TERMINALS[lane],
+                    "terminal": phase == TERMINALS.get(lane),
                     "oracle_match": True,
                 })
-            expected_multiplies = 8 * 64 + 2 + int(state.lfo2["waveform"][0] == 5)
+            enabled_lanes = sum(state.lfo2["enable"][lane] for lane in LANES)
+            exponential_lanes = sum(
+                state.lfo2["enable"][lane] and state.lfo2["waveform"][lane] == 5
+                for lane in LANES
+            )
+            expected_multiplies = 8 * 64 + enabled_lanes + exponential_lanes
             if multiply_calls != expected_multiplies:
                 raise ValueError(
                     f"callback {callback_index} multiply count {multiply_calls} != {expected_multiplies}"
@@ -162,7 +199,7 @@ def probe(stock_path: Path, emulator_path: Path, report_path: Path | None = None
 
         lane_rows = {lane: [item["lanes"][lane] for item in callbacks] for lane in LANES}
         first_terminal = {}
-        for lane in LANES:
+        for lane in TERMINALS:
             indices = [row for row, value in enumerate(lane_rows[lane]) if value["terminal"]]
             if not indices:
                 raise ValueError(f"lane {lane} never reached its terminal phase")
@@ -177,6 +214,14 @@ def probe(stock_path: Path, emulator_path: Path, report_path: Path | None = None
             raise ValueError("controller hold-mode sequence advanced phase")
         if first_terminal != {0: 14, 1: 9}:
             raise ValueError(f"unexpected terminal callback indices: {first_terminal}")
+        disabled_random = lane_rows[2][3:6]
+        if any(row["enabled"] or row["phase"] != lane_rows[2][2]["phase"] for row in disabled_random):
+            raise ValueError("disabled random lane did not freeze phase")
+        reset_change = callbacks[10]["parameter_changes"][0]
+        if (reset_change["phase_after_publication"],
+                reset_change["last_modulation_after_publication"],
+                reset_change["random_index_after_publication"]) != ("0x00000000", "0x00000000", 0):
+            raise ValueError("active random reset did not clear all deterministic state")
 
         result = {
             "result": "PASS",
@@ -199,15 +244,26 @@ def probe(stock_path: Path, emulator_path: Path, report_path: Path | None = None
                 "phase_modulation_and_target_stable_after_terminal": True,
                 "every_audio_block_matches_filter_oracle": True,
             },
+            "active_transitions": {
+                "random_lane": 2,
+                "disabled_callbacks": [3, 4, 5],
+                "disabled_phase_frozen": True,
+                "reenabled_callback": 6,
+                "reset_callback": 10,
+                "reset_clears_phase_modulation_and_random_index": True,
+                "all_transition_audio_blocks_match_oracle": True,
+            },
             "conclusion": (
                 "The desktop controller ABI can change waveform, depth and run mode between live "
                 "callbacks without discontinuity in the phase contract. One-shot clamps at the final "
                 "full-cycle phase, half-shot clamps at the half-cycle phase, hold pauses and resumes, "
-                "and every resulting audio block matches the exact Filter2 oracle."
+                "and every resulting audio block matches the exact Filter2 oracle. A random lane "
+                "also freezes while disabled, resumes when enabled, and clears phase, modulation and "
+                "random index on an active reset."
             ),
             "next_target": (
-                "Exercise enable/disable and reset transitions during active controller sequences, "
-                "then bind observable runtime phase/status telemetry into the desktop state endpoint."
+                "Expose a deliberate callback-step diagnostic endpoint for the offline controller, "
+                "then validate browser-visible telemetry refresh across stepped callbacks."
             ),
             "safety": (
                 "Runtime-only emulator candidate; no ELE3 container, SysEx package, or flashable "
