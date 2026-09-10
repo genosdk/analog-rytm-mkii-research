@@ -185,6 +185,26 @@ class FpgaIobGeometryTests(unittest.TestCase):
             0,
         )
 
+    def test_renderer_optional_extension_source_map(self):
+        report = json.loads(
+            (HERE / "AR172_DSPI1_RENDERER_EXTENSION_SOURCE_MAP.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(report["result"], "PASS")
+        self.assertEqual(report["method"]["packet_word_indices"], [321, 322, 323, 324])
+        classification = report["classification"]
+        self.assertEqual(
+            classification["nonzero_renderer_indices"],
+            [11, 12, 19, 20, 25, 51, 52],
+        )
+        self.assertEqual(classification["zero_renderer_count"], 46)
+        self.assertFalse(classification["renderer_10_writes_source"])
+        self.assertEqual(
+            set(classification["renderer_10_packet_words"].values()),
+            {"0x80010000"},
+        )
+
 
 class QemuEmacPatchTests(unittest.TestCase):
     def test_load_operand_and_fractional_scale_patch(self):

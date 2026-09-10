@@ -91,8 +91,13 @@ and reproducible tooling.
   constant for notes 48, 60, and 72; the same call's note-dependent six-longword
   output is written at `0x80006628..0x8000663E` and becomes words `309..320`.
   Thus `229..240` is renderer setup in this stock path, not an independently
-  varying sound-parameter field. The next unresolved fields are `321..324` and
-  the higher-level parameter publication path before renderer dispatch.
+  varying sound-parameter field.
+- The four trailing words `321..324` map directly from SRAM
+  `0x80006640..0x80006647` and form an optional two-longword renderer extension.
+  A full common-state sweep finds nonzero values only for renderer indices
+  `11,12,19,20,25,51,52`; renderer 10 does not write the source and emits four
+  `0x80010000` payloads. The next target is therefore the generic pre-render
+  publication path, not another hidden renderer-10 field in this block.
 - Direct XC3S200A/VQ100 IOB-bit extraction classifies all 68 BOND57 user pins.
   A subsequent IOI/INT first-hop decode rejects the earlier P28-P31 locality
   hypothesis: none has a selected fabric consumer and P29 `MUX_O` is `NONE`.

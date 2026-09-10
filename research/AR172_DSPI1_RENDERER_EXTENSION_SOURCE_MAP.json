@@ -1,0 +1,1108 @@
+{
+  "result": "PASS",
+  "main": {
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "emulator": {
+    "sha256": "0c1a914148d84b378acf04bf576ef92840c91a87f37dce49d72bd1d0f0b974ee"
+  },
+  "method": {
+    "renderer_count": 53,
+    "common_state": "note 60, synth-live gate, one stock callback",
+    "function_pointer_substitution": true,
+    "source_byte_range": [
+      "0x80006640",
+      "0x80006647"
+    ],
+    "packet_word_indices": [
+      321,
+      322,
+      323,
+      324
+    ],
+    "packet_encoding": "0x80010000 | source_halfword"
+  },
+  "classification": {
+    "nonzero_renderer_indices": [
+      11,
+      12,
+      19,
+      20,
+      25,
+      51,
+      52
+    ],
+    "zero_renderer_count": 46,
+    "nonzero_renderer_count": 7,
+    "renderer_10_writes_source": false,
+    "renderer_10_packet_words": {
+      "321": "0x80010000",
+      "322": "0x80010000",
+      "323": "0x80010000",
+      "324": "0x80010000"
+    },
+    "finding": "Words 321..324 form an optional two-longword renderer extension. Renderer 10 leaves the source untouched and emits four zero payloads."
+  },
+  "executions": [
+    {
+      "index": 0,
+      "renderer": "0x4010CBA8",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 1,
+      "renderer": "0x4010BE10",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 2,
+      "renderer": "0x40113D78",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 3,
+      "renderer": "0x40113204",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 4,
+      "renderer": "0x401118E4",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 5,
+      "renderer": "0x40111454",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 6,
+      "renderer": "0x4010E52C",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 7,
+      "renderer": "0x40116DE8",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 8,
+      "renderer": "0x40117098",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 9,
+      "renderer": "0x40110210",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 10,
+      "renderer": "0x40110B18",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 11,
+      "renderer": "0x4010F094",
+      "nonzero": true,
+      "source_halfwords": [
+        "0x4040",
+        "0x0E83",
+        "0x4040",
+        "0x1580"
+      ],
+      "packet_words": {
+        "321": "0x80014040",
+        "322": "0x80010E83",
+        "323": "0x80014040",
+        "324": "0x80011580"
+      },
+      "writes": [
+        {
+          "pc": "0x4011A342",
+          "address": "0x80006640",
+          "size": 4,
+          "value": "0x40400E83"
+        },
+        {
+          "pc": "0x4011A342",
+          "address": "0x80006644",
+          "size": 4,
+          "value": "0x40401580"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "renderer": "0x4010EB24",
+      "nonzero": true,
+      "source_halfwords": [
+        "0x00C0",
+        "0x0E10",
+        "0x00C0",
+        "0x0E10"
+      ],
+      "packet_words": {
+        "321": "0x800100C0",
+        "322": "0x80010E10",
+        "323": "0x800100C0",
+        "324": "0x80010E10"
+      },
+      "writes": [
+        {
+          "pc": "0x4010ED98",
+          "address": "0x80006640",
+          "size": 4,
+          "value": "0x00C00E10"
+        },
+        {
+          "pc": "0x4010EDB6",
+          "address": "0x80006644",
+          "size": 4,
+          "value": "0x00C00E10"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "renderer": "0x4010C4A8",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 14,
+      "renderer": "0x401137CC",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 15,
+      "renderer": "0x4010F910",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 16,
+      "renderer": "0x4010F810",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 17,
+      "renderer": "0x40110028",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 18,
+      "renderer": "0x4011094C",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 19,
+      "renderer": "0x4010EDF8",
+      "nonzero": true,
+      "source_halfwords": [
+        "0x4680",
+        "0x074F",
+        "0x4680",
+        "0xE72E"
+      ],
+      "packet_words": {
+        "321": "0x80014680",
+        "322": "0x8001074F",
+        "323": "0x80014680",
+        "324": "0x8001E72E"
+      },
+      "writes": [
+        {
+          "pc": "0x4011A342",
+          "address": "0x80006640",
+          "size": 4,
+          "value": "0x4680074F"
+        },
+        {
+          "pc": "0x4011A342",
+          "address": "0x80006644",
+          "size": 4,
+          "value": "0x4680E72E"
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "renderer": "0x4010E84C",
+      "nonzero": true,
+      "source_halfwords": [
+        "0x00C0",
+        "0x2370",
+        "0x00C0",
+        "0x2370"
+      ],
+      "packet_words": {
+        "321": "0x800100C0",
+        "322": "0x80012370",
+        "323": "0x800100C0",
+        "324": "0x80012370"
+      },
+      "writes": [
+        {
+          "pc": "0x4010EAC6",
+          "address": "0x80006640",
+          "size": 4,
+          "value": "0x00C02370"
+        },
+        {
+          "pc": "0x4010EAE4",
+          "address": "0x80006644",
+          "size": 4,
+          "value": "0x00C02370"
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "renderer": "0x4010D7A2",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 22,
+      "renderer": "0x4010D274",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 23,
+      "renderer": "0x401142FC",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 24,
+      "renderer": "0x40110474",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 25,
+      "renderer": "0x4010F3C6",
+      "nonzero": true,
+      "source_halfwords": [
+        "0xC040",
+        "0x0E83",
+        "0xC040",
+        "0x1580"
+      ],
+      "packet_words": {
+        "321": "0x8001C040",
+        "322": "0x80010E83",
+        "323": "0x8001C040",
+        "324": "0x80011580"
+      },
+      "writes": [
+        {
+          "pc": "0x4011A342",
+          "address": "0x80006640",
+          "size": 4,
+          "value": "0xC0400E83"
+        },
+        {
+          "pc": "0x4011A342",
+          "address": "0x80006644",
+          "size": 4,
+          "value": "0xC0401580"
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "renderer": "0x4010DEA0",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 27,
+      "renderer": "0x4010F7B0",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 28,
+      "renderer": "0x40115188",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 29,
+      "renderer": "0x40115844",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 30,
+      "renderer": "0x4010B754",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 31,
+      "renderer": "0x40112B9C",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 32,
+      "renderer": "0x40116294",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 33,
+      "renderer": "0x40110698",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 34,
+      "renderer": "0x40116B2C",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 35,
+      "renderer": "0x4010B244",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 36,
+      "renderer": "0x4010A6BC",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 37,
+      "renderer": "0x4011270C",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 38,
+      "renderer": "0x40111E30",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 39,
+      "renderer": "0x4011108C",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 40,
+      "renderer": "0x40110CD0",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 41,
+      "renderer": "0x4010AC00",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 42,
+      "renderer": "0x401122AC",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 43,
+      "renderer": "0x4010FB10",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 44,
+      "renderer": "0x401193A6",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 45,
+      "renderer": "0x40118B3C",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 46,
+      "renderer": "0x40118CC0",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 47,
+      "renderer": "0x401197B4",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 48,
+      "renderer": "0x4011A14C",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 49,
+      "renderer": "0x401196C4",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 50,
+      "renderer": "0x4010FD14",
+      "nonzero": false,
+      "source_halfwords": [
+        "0x0000",
+        "0x0000",
+        "0x0000",
+        "0x0000"
+      ],
+      "packet_words": {
+        "321": "0x80010000",
+        "322": "0x80010000",
+        "323": "0x80010000",
+        "324": "0x80010000"
+      },
+      "writes": []
+    },
+    {
+      "index": 51,
+      "renderer": "0x40118E68",
+      "nonzero": true,
+      "source_halfwords": [
+        "0x0080",
+        "0xB9AF",
+        "0x0016",
+        "0xBE76"
+      ],
+      "packet_words": {
+        "321": "0x80010080",
+        "322": "0x8001B9AF",
+        "323": "0x80010016",
+        "324": "0x8001BE76"
+      },
+      "writes": [
+        {
+          "pc": "0x4011901C",
+          "address": "0x80006641",
+          "size": 1,
+          "value": "0x80"
+        },
+        {
+          "pc": "0x4011903C",
+          "address": "0x80006640",
+          "size": 4,
+          "value": "0x0080B9AF"
+        },
+        {
+          "pc": "0x4011904E",
+          "address": "0x80006644",
+          "size": 4,
+          "value": "0x0016BE76"
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "renderer": "0x40119164",
+      "nonzero": true,
+      "source_halfwords": [
+        "0x00CA",
+        "0x85CD",
+        "0x0001",
+        "0xF307"
+      ],
+      "packet_words": {
+        "321": "0x800100CA",
+        "322": "0x800185CD",
+        "323": "0x80010001",
+        "324": "0x8001F307"
+      },
+      "writes": [
+        {
+          "pc": "0x40119258",
+          "address": "0x80006641",
+          "size": 1,
+          "value": "0xC0"
+        },
+        {
+          "pc": "0x40119272",
+          "address": "0x80006640",
+          "size": 4,
+          "value": "0x00CA85CD"
+        },
+        {
+          "pc": "0x401192A0",
+          "address": "0x80006644",
+          "size": 4,
+          "value": "0x0001F307"
+        }
+      ]
+    }
+  ],
+  "interpretation_boundary": "Function-pointer substitution classifies renderer behavior in a common state; it does not establish authentic machine availability on each track or identify electrical units.",
+  "next_target": "Trace the generic pre-render publication stages that feed the shared control pointer and identify parameter-dependent DSPI1 words outside the renderer pitch/setup groups.",
+  "safety": "Stock firmware execution and synthetic RAM state only; no image was modified."
+}
