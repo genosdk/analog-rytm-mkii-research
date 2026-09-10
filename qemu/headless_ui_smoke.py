@@ -271,11 +271,11 @@ def main() -> None:
             encoder_frames = [bytes((0x30, 0x81)), bytes((0x30, 0x40))]
             panel_writer.write(b"".join(encoder_frames))
             time.sleep(args.event_settle_seconds)
-            encoder_frame = wait_frame(frame, deadline, different_from=normal_ui)
             state_after = save_guest_memory(
                 monitor_port, runtime / "encoder-state-after.bin", state_base, state_size
             )
             encoder_state_changes = changed_words(state_before, state_after, state_base)
+            encoder_frame = wait_frame(frame, deadline, different_from=normal_ui)
             events.append(
                 {
                     "control": "ENCODER A",

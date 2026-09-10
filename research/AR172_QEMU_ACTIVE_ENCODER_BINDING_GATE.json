@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_ACTIVE_ENCODER_BINDING_GATE",
+  "recorded_at_utc": "2026-09-10",
+  "status": "PARTIAL_ENCODER_ACCUMULATOR_PROVEN_CONSUMER_TRIGGER_OPEN",
+  "encoder_motion_path": {
+    "wire": "0x3n followed by signed 8-bit movement delta",
+    "parser": "0x4007F30C",
+    "handler": "0x4007F252",
+    "magnitude_call": "0x401524B8",
+    "accumulators": "nine big-endian 32-bit words at 0x418B7644",
+    "activity_mask": "nine bits at 0x418B7668",
+    "encoder_a_vector": "30 05 -> accumulator[0] = 5 and activity bit 0 = 1"
+  },
+  "negative_controls": {
+    "neutral_panel_scans": "0x20..0x25 with zero payload do not consume the encoder accumulator",
+    "group_0_bit_0_transition": "constructs type-0 events whose values remain 1/0x10 for delta +1 and +5; it is a switch event, not rotary magnitude dispatch",
+    "q8_parameter_search": "0x30 signed-delta probes changed only continuously moving words 0x800067B4/0x800067B6; the candidate live parameter bank at 0x8000E5B0 did not change"
+  },
+  "pad_pressure_alias_rejected": {
+    "wire": "0x9n followed by unsigned pressure",
+    "event_type": 2,
+    "channel_table": "twelve entries 0..11 at 0x4026D4D8",
+    "setter": "0x4011ACD8",
+    "getter": "0x4011ACF2",
+    "q8_bank": "0x800067DE",
+    "vectors": [
+      "90 01 -> 0x800067DE = 0x0080",
+      "90 FE -> 0x800067DE = 0x7F00",
+      "90..98 values 2..18 -> nine words 0x0100..0x0900"
+    ],
+    "decision": "Do not route mouse knobs through 0x9n; this is the 12-pad pressure path."
+  },
+  "desktop_status": {
+    "qwerty_trigs": "PASS",
+    "mouse_gesture_and_0_127_display": "PASS",
+    "native_encoder_accumulation": "PASS",
+    "active_function_mutation": "NOT_YET_PROVEN",
+    "authoritative_readback": false
+  },
+  "next_gate": {
+    "name": "AR172_QEMU_ENCODER_CONSUMER_TRIGGER_GATE",
+    "objective": "Find the native poll, packet phase, or interrupt that consumes 0x418B7644/0x418B7668, then trace its event through the active page callback to the selected track Q8 word."
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Untouched stock firmware ran locally; runtime RAM captures and proprietary firmware were not committed."
+}

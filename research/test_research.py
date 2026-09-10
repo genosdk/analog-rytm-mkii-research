@@ -198,7 +198,7 @@ class DesktopPanelInputTests(unittest.TestCase):
             (HERE / "AR172_QEMU_DESKTOP_INPUT_GATE.json").read_text(encoding="utf-8")
         )
         self.assertEqual(
-            report["status"], "PASS_QWERTY_AND_MOUSE_KNOBS_DELTA_CORRECTED"
+            report["status"], "PARTIAL_QWERTY_PASS_MOUSE_ENCODER_CONSUMER_OPEN"
         )
         self.assertTrue(report["runtime_proof"]["visible_firmware_change"])
         self.assertEqual(
@@ -260,6 +260,22 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertFalse(
             report["runtime_probe"]["authoritative_parameter_readback"]
         )
+
+    def test_active_encoder_binding_gate(self):
+        report = json.loads(
+            (HERE / "AR172_QEMU_ACTIVE_ENCODER_BINDING_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            report["status"],
+            "PARTIAL_ENCODER_ACCUMULATOR_PROVEN_CONSUMER_TRIGGER_OPEN",
+        )
+        self.assertEqual(
+            report["pad_pressure_alias_rejected"]["channel_table"],
+            "twelve entries 0..11 at 0x4026D4D8",
+        )
+        self.assertFalse(report["desktop_status"]["authoritative_readback"])
 
 
 @unittest.skipUnless(
