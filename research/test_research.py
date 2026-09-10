@@ -20,6 +20,7 @@ from br_consumer_trace import trace as trace_br_consumer
 from br_quantizer_runtime_trace import trace as trace_br_quantizer_runtime
 from control_frame_trace import trace as trace_control_frame
 from filter2_bypass_timing_trace import trace as trace_filter2_bypass_timing
+from fpga_config_bus_reuse_probe import probe as probe_fpga_config_bus_reuse
 from fpga_iob_mode_inventory import inventory as inventory_fpga_iobs
 from lfo2_filter2_reference import run_tests
 from runtime_descriptor_probe import probe as probe_runtime_descriptors
@@ -84,6 +85,18 @@ class FpgaIobGeometryTests(unittest.TestCase):
                 "sck": "internal bus clock / 8",
             },
         )
+
+    def test_dspi1_fpga_configuration_pads_are_parked(self):
+        report = probe_fpga_config_bus_reuse(
+            HERE / "AR172_FPGA_IOB_MODE_INVENTORY.json",
+            HERE / "AR172_DSPI1_WIRE_MODE_TRACE.json",
+        )
+        self.assertEqual(report["result"], "PASS_DSPI1_FPGA_CONFIG_PADS_PARKED")
+        routes = report["configuration_bus_routes"]
+        self.assertEqual(routes["sck"]["fpga_package_pin"], 53)
+        self.assertEqual(routes["sout"]["fpga_package_pin"], 51)
+        self.assertTrue(routes["sck"]["parked_after_configuration"])
+        self.assertTrue(routes["sout"]["parked_after_configuration"])
 
 
 class QemuEmacPatchTests(unittest.TestCase):

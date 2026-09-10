@@ -72,9 +72,28 @@ The coordinates are pinned to Project Combine commit
 
 ## Next gate
 
-Enumerate the live package-pad nets from configured IOI muxes, including dedicated
-`CLKPAD` paths and fixed/branch routing beyond the local `INT_IOI` tile, then rank
-the remaining three-input/one-output sets by shared receiver/serializer topology.
-Board continuity testing remains the independent hardware confirmation.
+The configuration-pin reuse gate changes the search boundary. The established
+board routes are DSPI1 SCK -> FPGA P53/CCLK and DSPI1 SOUT -> FPGA P51/D0
+(DIN in slave-serial mode). Direct stock-image extraction shows both P53 and P51
+parked after configuration: `IBUF_MODE=NONE`, input disabled, output disabled.
+The BR/control stream's use of DSPI1 SCK/SOUT therefore does not establish that
+the live FPGA fabric consumes it. `PCS0` can select a separate shared-bus device
+or board glue while the FPGA configuration pads ignore post-configuration traffic.
+
+The CPU8251D component-side photographs corroborate the physical topology: U1 is
+the ColdFire CPU, U11 is the XC3S200A, memory/storage packages sit near U1, and no
+obvious dedicated Xilinx configuration PROM is adjacent to U11. They do not prove
+continuity because relevant traces disappear into vias and inner layers, and the
+CPU-board solder side is not shown.
+
+Next, classify the 492 asserted-PCS0 payload positions across stock machine
+renderers and correlate changing fields with the non-FPGA serial/control devices
+visible on CPU8251D. Continue generic live-pad routing only where it answers a
+specific signal question; do not use direction/locality alone to relabel DSPI1 as
+a live FPGA application bus. Board continuity testing remains the independent
+hardware confirmation.
+
+The reproducible join is `research/fpga_config_bus_reuse_probe.py`, with committed
+output `research/AR172_FPGA_CONFIG_BUS_REUSE.json`.
 
 This work is read-only. Nothing here is a flashable FPGA or firmware modification.

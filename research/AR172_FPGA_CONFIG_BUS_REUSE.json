@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "result": "PASS_DSPI1_FPGA_CONFIG_PADS_PARKED",
+  "dspi1_runtime_transport": {
+    "wire_mode": {
+      "word_bits": 16,
+      "spi_mode": 3,
+      "clock_idle": "high",
+      "data_change_edge": "falling",
+      "data_sample_edge": "rising",
+      "bit_order": "MSB-first",
+      "sck": "internal bus clock / 8"
+    },
+    "chip_select": "PCS0",
+    "known_signals": [
+      "SCK",
+      "SOUT"
+    ]
+  },
+  "configuration_bus_routes": {
+    "sck": {
+      "cpu": "PG5 / ball A10 / DSPI1_SCK",
+      "fpga_package_pin": 53,
+      "fpga_configuration_role": "CCLK",
+      "edge_iob": "IOB_S24_1",
+      "stock_user_iob": {
+        "ibuf_mode": "NONE",
+        "input_enabled": false,
+        "output_enabled": false,
+        "direction": "unused"
+      },
+      "parked_after_configuration": true
+    },
+    "sout": {
+      "cpu": "PG7 / ball B12 / DSPI1_SOUT",
+      "fpga_package_pin": 51,
+      "fpga_configuration_role": "D0 (DIN in slave-serial mode)",
+      "edge_iob": "IOB_S24_0",
+      "stock_user_iob": {
+        "ibuf_mode": "NONE",
+        "input_enabled": false,
+        "output_enabled": false,
+        "direction": "unused"
+      },
+      "parked_after_configuration": true
+    }
+  },
+  "conclusion": "DSPI1 SCK and SOUT reach the FPGA slave-serial configuration pins, but the stock application image leaves both corresponding user IOBs disabled. Runtime PCS0 traffic therefore is not evidence of a live FPGA-fabric receiver on those two pads. PCS0 may select another shared-bus peripheral or board glue; its consumer remains unresolved.",
+  "photo_corroboration": "CPU8251D component-side photographs show U1 (ColdFire), U11 (XC3S200A), nearby RAM/storage packages, and no obvious dedicated Xilinx configuration PROM. Traces enter vias/inner layers, so the photographs do not establish continuity or identify the PCS0 sink.",
+  "next_target": "Classify every DSPI1 PCS0 payload position across stock machine renderers and correlate changed fields with the non-FPGA serial/control devices visible on CPU8251D.",
+  "safety": "Read-only synthesis of committed evidence; no firmware or FPGA bytes are modified."
+}

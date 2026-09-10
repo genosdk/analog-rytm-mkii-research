@@ -72,6 +72,10 @@ and reproducible tooling.
   channel 15 to DSPI1 PUSHR; MAIN does not show a proven BR-dependent PCM mask/shift.
 - DSPI1 sends 16-bit payloads as `0x8001xxxx` PUSHR entries: `CONT=1`, PCS mask
   `0x01`; the BR/control link is therefore PCS0, SCK, SOUT and SIN.
+- DSPI1 SCK/SOUT share the FPGA slave-serial CCLK/D0 configuration wiring, but
+  the stock application image parks FPGA P53/CCLK and P51/D0 with both input and
+  output disabled. Runtime PCS0 traffic is therefore not proof of a live FPGA
+  application receiver; the selected board-level sink remains unresolved.
 - Direct XC3S200A/VQ100 IOB-bit extraction classifies all 68 BOND57 user pins.
   A subsequent IOI/INT first-hop decode rejects the earlier P28-P31 locality
   hypothesis: none has a selected fabric consumer and P29 `MUX_O` is `NONE`.
