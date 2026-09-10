@@ -90,9 +90,9 @@ and reproducible tooling.
 - The opt-in desktop audio tap follows selector `0x42F78044`, waits for a stable
   completed renderer block, mixes its eight signed lanes, and supplies 48 kHz
   stereo PCM through QEMU's paced host-audio backend.
-- Desktop pad/QWERTY rising edges now schedule one bounded vector-191 renderer
-  service. The one-block budget preserves subsequent UI input; four or more
-  consecutive blocks still expose a ColdFire TCG throughput bottleneck.
+- Desktop pad/QWERTY rising edges now schedule eight bounded vector-191 renderer
+  services. Re-arming DSPI1's channel-15 transmit request at each external
+  audio event prevents the firmware's EOQ wait from stalling repeated blocks.
 - A BR-low/high test with deterministic nonzero CPU render planes produces identical
   CPU PCM/combined output while the hardware control word diverges.
 

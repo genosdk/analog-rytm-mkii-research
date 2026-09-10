@@ -39,7 +39,7 @@
 #define AR_TYPE8_START_NS 5000000000LL
 #define AR_TYPE8_PERIOD_NS 10000000LL
 #define AR_AUDIO_TIMELINE_ADDR 0x8000FE54u
-#define AR_AUDIO_TRIGGER_BLOCKS 1u
+#define AR_AUDIO_TRIGGER_BLOCKS 8u
 #define AR_AUDIO_TRIGGER_DELAY_TICKS 10u
 #define AR_ACTIVE_PROFILE_ADDR 0x412FF99Fu
 #define AR_PROFILE_STATE_BASE 0x413001DBu
@@ -148,6 +148,7 @@ struct ARCoreState {
     unsigned audio_service_delay;
     bool audio_service_pending;
     bool audio_service_entered;
+    unsigned audio_service_completed;
     uint8_t panel_pending_command;
     uint8_t panel_button_groups[16];
     bool audio_service_seen;
@@ -662,6 +663,22 @@ static void ar_edma_pump_channel(AREdmaState *s, unsigned channel)
     }
 }
 
+static void ar_edma_pump_dspi1_tx(AREdmaState *s)
+{
+    uint8_t *tcd = s->tcd[AR_EDMA_DSPI1_TX_CHANNEL];
+    uint16_t csr;
+
+    if (!(s->erq & (1ULL << AR_EDMA_DSPI1_TX_CHANNEL))) {
+        return;
+    }
+
+    /* DSPI1 immediately consumes its transmit FIFO.  With D_REQ clear the
+     * empty FIFO can request another major loop after DONE is asserted. */
+    csr = lduw_be_p(tcd + AR_EDMA_TCD_CSR);
+    stw_be_p(tcd + AR_EDMA_TCD_CSR, csr & ~AR_EDMA_CSR_DONE);
+    ar_edma_pump_channel(s, AR_EDMA_DSPI1_TX_CHANNEL);
+}
+
 static void ar_edma_software_start(AREdmaState *s, unsigned channel)
 {
     uint8_t *tcd = s->tcd[channel];
@@ -804,7 +821,7 @@ static void ar_edma_write(void *opaque, hwaddr addr,
                 s->erq |= 1ULL << (value & 0x3f);
             }
             if ((value & 0x3f) == AR_EDMA_DSPI1_TX_CHANNEL) {
-                ar_edma_pump_channel(s, AR_EDMA_DSPI1_TX_CHANNEL);
+                ar_edma_pump_dspi1_tx(s);
             }
             ar_edma_pump_uarts(s->core);
         }
@@ -1109,11 +1126,17 @@ static void ar_type8_feed(void *opaque)
         !(c->intc[1].ifr & (1ULL << 63))) {
         c->audio_service_pending = false;
         c->audio_service_entered = true;
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 AUDIO: entered vector 191 service\n");
     }
     if (c->trigger_audio_service && c->audio_service_entered &&
         ((c->cpu->env.sr & SR_I) >> SR_I_SHIFT) < 5) {
         c->audio_service_entered = false;
         c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS;
+        c->audio_service_completed++;
+        qemu_log_mask(LOG_UNIMP,
+                      "AR-MK2 AUDIO: completed vector 191 service count=%u\n",
+                      c->audio_service_completed);
     }
     if (!c->mock_audio_service && c->audio_service_delay) {
         c->audio_service_delay--;
@@ -1126,6 +1149,7 @@ static void ar_type8_feed(void *opaque)
          * before raising the block-service interrupt.  Finish the prior
          * outbound chain first, then populate the input chain consumed by
          * the ISR. */
+        ar_edma_pump_dspi1_tx(&c->edma);
         ar_edma_pump_channel(&c->edma, 42);
         ar_edma_pump_channel(&c->edma, 30);
         c->intc[1].ifr |= 1ULL << 63;

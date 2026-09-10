@@ -65,9 +65,9 @@ result to QEMU at 48 kHz. The same mono mix is currently sent to left and right;
 the hardware pan/return mapping is not yet proven.
 
 The tap itself remains passive. In desktop mode, `--audio` also enables a
-bounded service gate: each rising Trig/pad edge schedules exactly one stock
-vector-191 renderer pass. This is enough to prove QWERTY-to-host-PCM operation
-without trapping the UI in continuous DSP work. Longer realtime playback is
+bounded service gate: each rising Trig/pad edge schedules eight stock
+vector-191 renderer passes. This proves repeated QWERTY-to-host-PCM operation
+without enabling the unbounded research clock. Longer realtime playback is
 still blocked on ColdFire TCG throughput.
 
 `--mock-audio-service` enables a default-off research shim for the external
@@ -79,9 +79,10 @@ reaches the stock audio routine at `0x40117A28`.
 For the bounded trigger gate, a pad edge is delayed by 10 Type-8 ticks so the
 native trigger state is visible before source 63 is raised. The shim observes
 the native IFR63 clear on entry and CPU interrupt level returning below 5 on
-completion. The verified desktop budget remains one 32-frame block per pad
-edge; a second block currently stalls in the stock library/self path and is the
-next research gate.
+completion. The verified desktop budget is eight 32-frame blocks per pad edge.
+QEMU now re-arms eDMA channel 15 when the modeled external audio interface
+consumes the DSPI1 transmit FIFO; without that request, firmware waited
+indefinitely for DSPI1 SR.EOQF at `0x40077D90` after the first transfer.
 
 This option is currently for tracing, not realtime audio. The stock per-voice
 DSP loop is slow under the present ColdFire TCG model, and the physical device
