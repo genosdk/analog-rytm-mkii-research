@@ -123,6 +123,40 @@ class FpgaIobGeometryTests(unittest.TestCase):
         self.assertIn(47, sensitive)
         self.assertTrue(all(row["status"] == "PASS" for row in report["executions"]))
 
+    def test_authentic_renderer_10_pitch_block(self):
+        report = json.loads(
+            (HERE / "AR172_DSPI1_AUTHENTIC_RENDERER_PITCH.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(report["result"], "PASS")
+        selection = report["authentic_selection"]
+        self.assertEqual(selection["routing_values"], [0, 4, 1, 5, 8, 6, 10, 2])
+        self.assertEqual(selection["track"], 6)
+        self.assertEqual(selection["physical_voice"], 5)
+        self.assertEqual(selection["machine_id"], 10)
+        self.assertEqual(selection["renderer"], "0x40110B18")
+        self.assertFalse(selection["function_pointer_substitution"])
+        block = report["pitch_block"]
+        self.assertEqual(block["tag_word_indices"], [309, 311, 313, 315, 317, 319])
+        self.assertEqual(block["value_word_indices"], [310, 312, 314, 316, 318, 320])
+        self.assertTrue(
+            all(
+                channel["reconstructed_monotonic_notes_0_127"]
+                for channel in block["channel_laws"]
+            )
+        )
+        self.assertEqual(
+            block["channel_laws"][1][
+                "reconstructed_octave_residuals_notes_30_127"
+            ],
+            [0, 1, 2],
+        )
+        self.assertEqual(
+            [row["differing_word_indices"] for row in report["comparisons"]],
+            [[310, 312, 314, 316, 318, 320]] * 2,
+        )
+
 
 class QemuEmacPatchTests(unittest.TestCase):
     def test_load_operand_and_fractional_scale_patch(self):

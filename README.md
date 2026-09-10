@@ -81,6 +81,11 @@ and reproducible tooling.
   are invariant in this fixture. All 53 renderers execute, yielding 41 packet
   hashes and 32 position-difference families. Dense structured regions at words `229..244` and
   `309..332` are the next parameter-correlation targets.
+- The first authentic-selector sweep maps track 6 / machine ID 10 / renderer
+  `0x40110B18` pitch to six interleaved DSPI1 value words at
+  `310,312,314,316,318,320`. Combining each preceding tag's range byte with the
+  following 16-bit value yields six monotonic 128-note curves with octave-doubling
+  residuals limited to 0, 1, or one observed 2-unit rounding case.
 - Direct XC3S200A/VQ100 IOB-bit extraction classifies all 68 BOND57 user pins.
   A subsequent IOI/INT first-hop decode rejects the earlier P28-P31 locality
   hypothesis: none has a selected fabric consumer and P29 `MUX_O` is `NONE`.

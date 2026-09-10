@@ -101,11 +101,36 @@ The classification is deliberately bounded: swapping a function pointer does not
 install each renderer's authentic machine descriptor or preset state. A word that
 is invariant here may still vary with a parameter or a later runtime phase.
 
+The first authentic-selector correlation is also complete. The stock routing
+table at `0x40278A44` is `[0,4,1,5,8,6,10,2]`; track 6 therefore reaches physical
+voice 5. Seeding machine selector `0x8000EA06` with ID 10 makes stock dispatch
+select renderer `0x40110B18` without replacing a function pointer. Across all 128
+MIDI notes, pitch is encoded as six interleaved tag/value pairs:
+
+| Channel | Tag word | Value word |
+|---:|---:|---:|
+| 0 | 309 | 310 |
+| 1 | 311 | 312 |
+| 2 | 313 | 314 |
+| 3 | 315 | 316 |
+| 4 | 317 | 318 |
+| 5 | 319 | 320 |
+
+The tag low byte begins at `0x40` and increments when the 16-bit value rolls
+over. Reconstructing each channel as
+`((tag_low8 - 0x40) << 16) | value_low16` produces six monotonic 128-note curves.
+Five channels obey the exact octave residual set `{0,1}` from notes 30..127;
+channel 1 uses `{0,1,2}`, with the lone `+2` rounding case beginning at note 49.
+This establishes a six-channel pitch-derived control group. It still does not
+identify the receiving chip, electrical units, or physical channel pins.
+
 Artifacts:
 
 - `research/renderer_payload_sweep.py` — reproducible common-state sweep
 - `research/AR172_DSPI1_RENDERER_PAYLOAD_MAP.json` — all 492 classifications,
   renderer results, hashes, values, and signature families
+- `research/authentic_renderer_pitch_probe.py` — stock selector and 128-note sweep
+- `research/AR172_DSPI1_AUTHENTIC_RENDERER_PITCH.json` — six-channel pitch laws
 
 ## Configuration-bus boundary
 
@@ -123,9 +148,9 @@ obvious dedicated Xilinx configuration PROM is adjacent to U11. They do not prov
 continuity because relevant traces disappear into vias and inner layers, and the
 CPU-board solder side is not shown.
 
-Next, vary known parameters within one authentic renderer/descriptor pairing,
-starting with the proven pitch pair at words 46/47 and the dense `229..244` and
-`309..320` clusters. Correlate those changes with the non-FPGA serial/control
+Next, vary one renderer-10 sound parameter at a time against the dense
+`229..240` cluster, using the now-proven track-6 selector path. Correlate those
+changes with the non-FPGA serial/control
 devices visible on CPU8251D. Continue generic live-pad routing only where it
 answers a specific signal question; do not use direction/locality alone to
 relabel DSPI1 as a live FPGA application bus. Board continuity testing remains
