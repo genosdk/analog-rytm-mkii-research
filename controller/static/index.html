@@ -83,9 +83,13 @@
       <p class="lfo-publication" id="lfo2-publication" aria-live="polite">Wave 0x7FC0 · Mode 0x7FC8</p>
       <div class="runtime-row">
         <p class="lfo-runtime" id="lfo2-runtime">Phase 0x00000000 · idle</p>
-        <button id="callback-step" class="step-button" type="button">Step callback</button>
+        <div class="runtime-actions">
+          <button id="callback-step" class="step-button" type="button">Step callback</button>
+          <button id="callback-run" class="run-button" type="button">Run 16 callbacks</button>
+        </div>
       </div>
       <p class="callback-runtime" id="callback-runtime" aria-live="polite">0 callbacks stepped · pre-mixer boundary</p>
+      <p class="callback-run-status" id="callback-run-status" aria-live="polite">Bounded runner idle</p>
     </section>
 
     <section class="panel keyboard-panel" aria-labelledby="keyboard-title">

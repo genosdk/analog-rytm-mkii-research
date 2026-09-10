@@ -8,6 +8,7 @@ const WAVEFORMS = ["triangle", "square", "saw", "ramp", "sine", "exponential", "
 const MODES = ["loop", "one-shot", "half-shot", "hold"];
 const state = {
   values: Array(LANES).fill(DEFAULT_VALUE), selectedLane: 0, held: new Set(), online: false,
+  callbackRun: { status: "idle", requested: 0, completed: 0 },
   lfo2: {
     waveform: Array(LANES).fill(0), mode: Array(LANES).fill(0),
     trigger: Array(LANES).fill(0), enable: Array(LANES).fill(0),
@@ -19,6 +20,8 @@ let filterQueue = Promise.resolve();
 let lfoQueue = Promise.resolve();
 let noteQueue = Promise.resolve();
 let stepQueue = Promise.resolve();
+let runQueue = Promise.resolve();
+let runPollTimer = null;
 let filterRevision = 0;
 let noteRevision = 0;
 
@@ -87,6 +90,20 @@ function renderLfo2() {
   const callbackCount = state.lfo2.runtime?.callback_count ?? 0;
   document.querySelector("#callback-runtime").textContent =
     `${callbackCount} callback${callbackCount === 1 ? "" : "s"} stepped · pre-mixer boundary`;
+  renderCallbackRun();
+}
+
+function renderCallbackRun() {
+  const run = state.callbackRun;
+  const active = run.status === "running" || run.status === "stopping";
+  const button = document.querySelector("#callback-run");
+  button.textContent = active ? "Stop after current" : "Run 16 callbacks";
+  button.classList.toggle("active", active);
+  document.querySelector("#callback-step").disabled = active;
+  const detail = active || run.status === "completed" || run.status === "stopped"
+    ? `${run.completed}/${run.requested}` : "idle";
+  document.querySelector("#callback-run-status").textContent =
+    `Bounded runner ${run.status} · ${detail}${run.error ? ` · ${run.error}` : ""}`;
 }
 
 function ingestLfo2(payload) {
@@ -95,6 +112,14 @@ function ingestLfo2(payload) {
     trigger: payload.trigger, enable: payload.enable,
     rate: payload.rate, depth: payload.depth, runtime: payload.runtime,
   };
+}
+
+function ingestSnapshot(snapshot) {
+  state.values = snapshot.filter2.values;
+  state.selectedLane = snapshot.filter2.selected_lane;
+  ingestLfo2(snapshot.lfo2);
+  state.held = new Set(snapshot.notes.held);
+  state.callbackRun = snapshot.callback_run;
 }
 
 function selectLane(lane) {
@@ -213,6 +238,42 @@ function stepCallback() {
   return stepQueue;
 }
 
+async function refreshRunState() {
+  try {
+    const response = await fetch("/api/state", { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    ingestSnapshot(await response.json());
+    renderLfo2();
+    renderNotes();
+    setConnection(true, state.callbackRun.status === "running" ? "Callbacks running" : "Emulator connected");
+  } catch (error) {
+    setConnection(false, "Run telemetry failed");
+    console.error(error);
+  }
+  if (["running", "stopping"].includes(state.callbackRun.status)) {
+    runPollTimer = window.setTimeout(refreshRunState, 250);
+  } else {
+    runPollTimer = null;
+  }
+}
+
+function controlCallbackRun() {
+  const active = ["running", "stopping"].includes(state.callbackRun.status);
+  const action = active ? "stop" : "start";
+  runQueue = runQueue.then(async () => {
+    try {
+      const body = await request("/api/run", { action, max_callbacks: 16 });
+      ingestSnapshot(body.state);
+      renderLfo2();
+      if (!runPollTimer) refreshRunState();
+    } catch (error) {
+      setConnection(false, "Callback run failed");
+      console.error(error);
+    }
+  });
+  return runQueue;
+}
+
 function bindKnobs() {
   document.querySelectorAll(".knob").forEach(knob => {
     const lane = Number(knob.dataset.lane);
@@ -268,6 +329,7 @@ function bindLfo2() {
   }
   document.querySelector("#lfo2-reset").addEventListener("click", () => publishLfo2("reset", 1));
   document.querySelector("#callback-step").addEventListener("click", stepCallback);
+  document.querySelector("#callback-run").addEventListener("click", controlCallbackRun);
 }
 
 function bindNotes() {
@@ -312,10 +374,7 @@ async function initialize() {
     const response = await fetch("/api/state", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const body = await response.json();
-    state.values = body.filter2.values;
-    state.selectedLane = body.filter2.selected_lane;
-    ingestLfo2(body.lfo2);
-    state.held = new Set(body.notes.held);
+    ingestSnapshot(body);
     for (let lane = 0; lane < LANES; lane += 1) renderKnob(lane);
     renderLfo2();
     renderNotes();

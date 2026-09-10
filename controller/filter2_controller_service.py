@@ -444,6 +444,16 @@ class ControllerState:
         self.lock = threading.RLock()
         self.started_at = time.time()
         self.event_sequence = 0
+        self._run_stop = threading.Event()
+        self._run_thread: threading.Thread | None = None
+        self.callback_run: dict[str, Any] = {
+            "status": "idle",
+            "requested": 0,
+            "completed": 0,
+            "started_callback_count": 0,
+            "last_callback": None,
+            "error": None,
+        }
         for lane, value in enumerate(self.values):
             self._publish_filter(lane, value, "initialization")
             for parameter in ("waveform", "mode", "trigger", "enable", "rate", "depth"):
@@ -530,8 +540,88 @@ class ControllerState:
 
     def step_callbacks(self, count: int = 1) -> dict[str, Any]:
         with self.lock:
+            if self.callback_run["status"] in {"running", "stopping"}:
+                raise ValueError("manual callback stepping is unavailable while a run is active")
             result = self.bridge.step_callbacks(count)
             return self._record({"type": "callback_step", "source": "api", **result})
+
+    def _callback_run_worker(self, requested: int) -> None:
+        status = "completed"
+        error = None
+        try:
+            for _ in range(requested):
+                if self._run_stop.is_set():
+                    status = "stopped"
+                    break
+                result = self.bridge.step_callbacks(1)
+                with self.lock:
+                    self.callback_run["completed"] += 1
+                    self.callback_run["last_callback"] = result["callbacks"][0]
+            if self._run_stop.is_set() and self.callback_run["completed"] < requested:
+                status = "stopped"
+        except Exception as caught:  # background errors must remain visible to the API
+            status = "error"
+            error = str(caught)
+        with self.lock:
+            self.callback_run["status"] = status
+            self.callback_run["error"] = error
+            self._record({
+                "type": "callback_run_finished",
+                "source": "runner",
+                "status": status,
+                "requested": requested,
+                "completed": self.callback_run["completed"],
+                "error": error,
+            })
+
+    def control_callback_run(self, action: str, max_callbacks: int = 16) -> dict[str, Any]:
+        if action not in {"start", "stop"}:
+            raise ValueError("run action must be 'start' or 'stop'")
+        if action == "start":
+            if (not isinstance(max_callbacks, int) or isinstance(max_callbacks, bool)
+                    or not 1 <= max_callbacks <= 32):
+                raise ValueError("max_callbacks must be an integer from 1 through 32")
+            with self.lock:
+                if self.callback_run["status"] in {"running", "stopping"}:
+                    raise ValueError("a callback run is already active")
+                self._run_stop.clear()
+                self.callback_run = {
+                    "status": "running",
+                    "requested": max_callbacks,
+                    "completed": 0,
+                    "started_callback_count": self.bridge.callback_count,
+                    "last_callback": None,
+                    "error": None,
+                }
+                event = self._record({
+                    "type": "callback_run_started",
+                    "source": "api",
+                    "requested": max_callbacks,
+                })
+                self._run_thread = threading.Thread(
+                    target=self._callback_run_worker,
+                    args=(max_callbacks,),
+                    name="offline-callback-runner",
+                    daemon=True,
+                )
+                self._run_thread.start()
+                return event
+        with self.lock:
+            if self.callback_run["status"] not in {"running", "stopping"}:
+                raise ValueError("no callback run is active")
+            self._run_stop.set()
+            self.callback_run["status"] = "stopping"
+            return self._record({
+                "type": "callback_run_stop_requested",
+                "source": "api",
+                "completed": self.callback_run["completed"],
+            })
+
+    def close(self) -> None:
+        self._run_stop.set()
+        thread = self._run_thread
+        if thread is not None and thread.is_alive():
+            thread.join(timeout=10)
 
     def snapshot(self) -> dict[str, Any]:
         with self.lock:
@@ -566,6 +656,7 @@ class ControllerState:
                     "runtime_armed_only": True,
                     "flashable_image_created": False,
                 },
+                "callback_run": dict(self.callback_run),
                 "events": list(self.events),
                 "uptime_seconds": round(time.time() - self.started_at, 3),
             }
@@ -625,6 +716,10 @@ def make_handler(state: ControllerState):
                     event = state.note(payload.get("key", ""), payload.get("action", ""), payload.get("velocity", 100))
                 elif path == "/api/step":
                     event = state.step_callbacks(payload.get("count", 1))
+                elif path == "/api/run":
+                    event = state.control_callback_run(
+                        payload.get("action", ""), payload.get("max_callbacks", 16),
+                    )
                 else:
                     self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                     return
@@ -663,6 +758,7 @@ def main() -> None:
         pass
     finally:
         server.server_close()
+        state.close()
         bridge.close()
 
 

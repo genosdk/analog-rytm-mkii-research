@@ -102,7 +102,9 @@ and reproducible tooling.
   controls. QWERTY notes `A W S E D F T G Y H U J K` (notes 48..60) retain
   their distinct recovered stock note-event constructor path. A deliberate
   callback-step control advances the authentic emulated callback to its proven
-  pre-mixer boundary and refreshes live phase/modulation telemetry.
+  pre-mixer boundary and refreshes live phase/modulation telemetry; an opt-in
+  bounded runner executes at most 32 callbacks with explicit stop-after-current
+  behavior.
 - Renderer-scoped execution across all 34 public machines and five forced
   states covers 170 stock contexts. It identifies 117 of the packetizer's 492
   payload halfwords as renderer-owned, with no universal field; the other 375
@@ -212,8 +214,10 @@ Open `http://127.0.0.1:8765`. The service creates only a temporary runtime
 candidate. Selecting a Filter 2 lane also selects its LFO2 editor; the seven
 waveforms and four run modes publish through their recovered virtual-index
 banks. **Step callback** deliberately advances offline processing and refreshes
-the selected lane's telemetry; it does not start continuous playback. The
-service never writes an ELE3 container, SysEx package, or flashable image.
+the selected lane's telemetry. **Run 16 callbacks** starts a bounded offline
+run, changes to **Stop after current** while active, and polls telemetry until
+completion. Neither control starts host audio playback. The service never
+writes an ELE3 container, SysEx package, or flashable image.
 
 ## Railway dashboard
 

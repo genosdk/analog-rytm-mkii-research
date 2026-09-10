@@ -3,6 +3,7 @@
 import json
 import sys
 import threading
+import time
 import unittest
 from http.client import HTTPConnection
 from http.server import ThreadingHTTPServer
@@ -67,6 +68,7 @@ class ServiceApiTests(unittest.TestCase):
         cls.server.shutdown()
         cls.server.server_close()
         cls.thread.join(timeout=2)
+        cls.state.close()
         cls.bridge.close()
 
     def request(self, method, path, payload=None):
@@ -217,6 +219,47 @@ class ServiceApiTests(unittest.TestCase):
             status, _, body = self.request("POST", "/api/step", {"count": count})
             self.assertEqual(status, 400)
             self.assertIn("count", json.loads(body)["error"])
+
+    def test_bounded_callback_run_completes_and_reports_progress(self):
+        before = self.state.snapshot()["lfo2"]["runtime"]["callback_count"]
+        status, _, body = self.request(
+            "POST", "/api/run", {"action": "start", "max_callbacks": 2},
+        )
+        result = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertEqual(result["event"]["type"], "callback_run_started")
+        deadline = time.monotonic() + 15
+        snapshot = result["state"]
+        while snapshot["callback_run"]["status"] in {"running", "stopping"}:
+            self.assertLess(time.monotonic(), deadline)
+            time.sleep(0.05)
+            poll_status, _, poll_body = self.request("GET", "/api/state")
+            self.assertEqual(poll_status, 200)
+            snapshot = json.loads(poll_body)
+        self.assertEqual(snapshot["callback_run"]["status"], "completed")
+        self.assertEqual(snapshot["callback_run"]["completed"], 2)
+        self.assertEqual(snapshot["callback_run"]["requested"], 2)
+        self.assertEqual(snapshot["lfo2"]["runtime"]["callback_count"], before + 2)
+        self.assertEqual(snapshot["callback_run"]["last_callback"]["boundary"], "0x4010A2E0")
+
+    def test_callback_run_stop_is_explicit_and_bounded(self):
+        status, _, _ = self.request(
+            "POST", "/api/run", {"action": "start", "max_callbacks": 32},
+        )
+        self.assertEqual(status, 200)
+        status, _, body = self.request("POST", "/api/run", {"action": "stop"})
+        result = json.loads(body)
+        self.assertEqual(status, 200)
+        self.assertEqual(result["event"]["type"], "callback_run_stop_requested")
+        deadline = time.monotonic() + 15
+        snapshot = result["state"]
+        while snapshot["callback_run"]["status"] in {"running", "stopping"}:
+            self.assertLess(time.monotonic(), deadline)
+            time.sleep(0.05)
+            _, _, poll_body = self.request("GET", "/api/state")
+            snapshot = json.loads(poll_body)
+        self.assertEqual(snapshot["callback_run"]["status"], "stopped")
+        self.assertLess(snapshot["callback_run"]["completed"], 32)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from pathlib import Path
 
 from filter2_controller_service import ControllerState, EmulatorBridge, NOTE_KEYS, STATIC, default_paths
@@ -28,6 +29,13 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
         note_off = state.note("a", "off", 100)
         state.set_lfo2(0, "reset", 1, "api")
         callback_step = state.step_callbacks(2)
+        step_snapshot = state.snapshot()
+        callback_run_started = state.control_callback_run("start", 2)
+        deadline = time.monotonic() + 15
+        while state.callback_run["status"] in {"running", "stopping"}:
+            if time.monotonic() >= deadline:
+                raise ValueError("bounded callback run did not complete")
+            time.sleep(0.05)
         snapshot = state.snapshot()
         assets = {}
         for name in ("index.html", "styles.css", "app.js"):
@@ -59,16 +67,24 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
                 and callback_step["callback_count"] == 2
                 and len(callback_step["callbacks"]) == 2
                 and all(item["boundary"] == "0x4010A2E0" for item in callback_step["callbacks"])
-                and snapshot["lfo2"]["runtime"]["callback_count"] == 2
+                and step_snapshot["lfo2"]["runtime"]["callback_count"] == 2
             ),
             "stepped_phase_visible": (
                 callback_step["callbacks"][0]["phase_before"][0] == "0x00000000"
                 and callback_step["callbacks"][0]["phase_after"][0] != "0x00000000"
-                and snapshot["lfo2"]["runtime"]["lanes"][0]["phase"]
+                and step_snapshot["lfo2"]["runtime"]["lanes"][0]["phase"]
                 == callback_step["callbacks"][-1]["phase_after"][0]
             ),
             "callback_filter_kernel_executed": all(
                 item["multiply_calls"] >= 512 for item in callback_step["callbacks"]
+            ),
+            "bounded_callback_run_exact": (
+                callback_run_started["type"] == "callback_run_started"
+                and snapshot["callback_run"]["status"] == "completed"
+                and snapshot["callback_run"]["requested"] == 2
+                and snapshot["callback_run"]["completed"] == 2
+                and snapshot["lfo2"]["runtime"]["callback_count"] == 4
+                and snapshot["callback_run"]["last_callback"]["boundary"] == "0x4010A2E0"
             ),
             "waveform_index_range_exact": [item["virtual_index"] for item in waveform_publications]
             == [f"0x{0x7FC0 + lane:04X}" for lane in range(8)],
@@ -113,11 +129,14 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
                 "lfo2_modes": list(snapshot["lfo2"]["modes"]),
                 "offline_callback_step": True,
                 "callback_step_limit": 32,
+                "bounded_callback_run": True,
+                "callback_run_limit": 32,
             },
             "publications": publications,
             "lfo2_publications": waveform_publications + mode_publications,
             "note_events": [note_on, note_off],
             "callback_step": callback_step,
+            "callback_run": snapshot["callback_run"],
             "assets": assets,
             "checks": checks,
             "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. Physical MIDI/USB ingress remains untraced.",

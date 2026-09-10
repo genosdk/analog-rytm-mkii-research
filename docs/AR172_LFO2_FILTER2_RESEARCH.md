@@ -662,9 +662,13 @@ callbacks to the proven pre-mixer boundary and returns callback number,
 instruction/multiply counts, phase-before/after arrays and input/output hashes.
 The browser's deliberate **Step callback** control executes one callback and
 immediately refreshes selected-lane telemetry and the persistent callback
-counter. Real-fixture service tests and the machine-readable controller build
-validation pass. The next gate is an opt-in bounded continuous-run control with
-explicit start/stop semantics; host audio playback remains a later gate.
+counter. Its **Run 16 callbacks** control now drives the same endpoint machinery
+in a background thread, polls live state, stops explicitly after the current
+callback, and cannot exceed the API's 32-callback bound. Manual stepping is
+rejected while a run is active. Real-fixture start/completion and stop tests plus
+the machine-readable controller build validation pass. The next gate is to bind
+this controlled execution to the already-proven host audio tap with an explicit
+buffer/timing contract; host playback remains disabled in this controller build.
 
 For Filter 2, state-loaded Q1.31 coefficients, per-sample control slew, all
 eight audio/state lanes, the foreground publication boundary, its
