@@ -1,0 +1,2070 @@
+{
+  "result": "PASS",
+  "inputs": {
+    "main_sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "trace_sha256": "5e8cadc710c290a066b5130771b327097f78a9be0d31f492fb1cd3e405337018",
+    "ownership_report_sha256": "0bcc79a9d7c0742ec0d08966f7baa7ded7e2a6f31217160300325292c621fbcb"
+  },
+  "capture": {
+    "trace_events": 845,
+    "live_pc_matches_translated_pc": true,
+    "mock_calibration": true,
+    "mock_factory_state": true,
+    "ui_events": [
+      "NO",
+      "SMP"
+    ],
+    "tracer": "qemu/ar_mk2_control_write_trace.c",
+    "harness": "qemu/headless_ui_smoke.py"
+  },
+  "transmitted_source": {
+    "first_halfword": "0x800063C0",
+    "last_halfword": "0x80006796",
+    "halfwords": 492
+  },
+  "static_data_copy": {
+    "store_pc": "0x400007F6",
+    "instruction": "move.l (a2)+,(a1)",
+    "events": 246,
+    "fields": 492,
+    "sequence": [
+      1,
+      246
+    ]
+  },
+  "runtime_zero_fill": {
+    "routine_entry": "0x40095C32",
+    "store_pcs": [
+      "0x40095C50",
+      "0x40095C52",
+      "0x40095C54",
+      "0x40095C56",
+      "0x40095C68"
+    ],
+    "events": 246,
+    "fields": 492,
+    "sequence": [
+      247,
+      492
+    ]
+  },
+  "post_zero_startup": {
+    "events": 353,
+    "fields_rewritten": 292,
+    "prior_unobserved_fields_rewritten": 104,
+    "prior_unobserved_fields_retaining_zero": 61,
+    "rewritten_prior_unobserved_ranges": [
+      {
+        "first_word": 50,
+        "last_word": 57,
+        "first_address": "0x80006422",
+        "last_address": "0x80006430"
+      },
+      {
+        "first_word": 60,
+        "last_word": 65,
+        "first_address": "0x80006436",
+        "last_address": "0x80006440"
+      },
+      {
+        "first_word": 67,
+        "last_word": 70,
+        "first_address": "0x80006444",
+        "last_address": "0x8000644A"
+      },
+      {
+        "first_word": 73,
+        "last_word": 79,
+        "first_address": "0x80006450",
+        "last_address": "0x8000645C"
+      },
+      {
+        "first_word": 206,
+        "last_word": 206,
+        "first_address": "0x8000655A",
+        "last_address": "0x8000655A"
+      },
+      {
+        "first_word": 210,
+        "last_word": 210,
+        "first_address": "0x80006562",
+        "last_address": "0x80006562"
+      },
+      {
+        "first_word": 334,
+        "last_word": 335,
+        "first_address": "0x8000665A",
+        "last_address": "0x8000665C"
+      },
+      {
+        "first_word": 337,
+        "last_word": 337,
+        "first_address": "0x80006660",
+        "last_address": "0x80006660"
+      },
+      {
+        "first_word": 339,
+        "last_word": 339,
+        "first_address": "0x80006664",
+        "last_address": "0x80006664"
+      },
+      {
+        "first_word": 342,
+        "last_word": 342,
+        "first_address": "0x8000666A",
+        "last_address": "0x8000666A"
+      },
+      {
+        "first_word": 344,
+        "last_word": 344,
+        "first_address": "0x8000666E",
+        "last_address": "0x8000666E"
+      },
+      {
+        "first_word": 346,
+        "last_word": 346,
+        "first_address": "0x80006672",
+        "last_address": "0x80006672"
+      },
+      {
+        "first_word": 348,
+        "last_word": 348,
+        "first_address": "0x80006676",
+        "last_address": "0x80006676"
+      },
+      {
+        "first_word": 350,
+        "last_word": 350,
+        "first_address": "0x8000667A",
+        "last_address": "0x8000667A"
+      },
+      {
+        "first_word": 352,
+        "last_word": 352,
+        "first_address": "0x8000667E",
+        "last_address": "0x8000667E"
+      },
+      {
+        "first_word": 354,
+        "last_word": 354,
+        "first_address": "0x80006682",
+        "last_address": "0x80006682"
+      },
+      {
+        "first_word": 356,
+        "last_word": 356,
+        "first_address": "0x80006686",
+        "last_address": "0x80006686"
+      },
+      {
+        "first_word": 358,
+        "last_word": 358,
+        "first_address": "0x8000668A",
+        "last_address": "0x8000668A"
+      },
+      {
+        "first_word": 360,
+        "last_word": 360,
+        "first_address": "0x8000668E",
+        "last_address": "0x8000668E"
+      },
+      {
+        "first_word": 362,
+        "last_word": 362,
+        "first_address": "0x80006692",
+        "last_address": "0x80006692"
+      },
+      {
+        "first_word": 364,
+        "last_word": 364,
+        "first_address": "0x80006696",
+        "last_address": "0x80006696"
+      },
+      {
+        "first_word": 366,
+        "last_word": 366,
+        "first_address": "0x8000669A",
+        "last_address": "0x8000669A"
+      },
+      {
+        "first_word": 368,
+        "last_word": 368,
+        "first_address": "0x8000669E",
+        "last_address": "0x8000669E"
+      },
+      {
+        "first_word": 370,
+        "last_word": 370,
+        "first_address": "0x800066A2",
+        "last_address": "0x800066A2"
+      },
+      {
+        "first_word": 372,
+        "last_word": 372,
+        "first_address": "0x800066A6",
+        "last_address": "0x800066A6"
+      },
+      {
+        "first_word": 374,
+        "last_word": 374,
+        "first_address": "0x800066AA",
+        "last_address": "0x800066AA"
+      },
+      {
+        "first_word": 376,
+        "last_word": 376,
+        "first_address": "0x800066AE",
+        "last_address": "0x800066AE"
+      },
+      {
+        "first_word": 378,
+        "last_word": 378,
+        "first_address": "0x800066B2",
+        "last_address": "0x800066B2"
+      },
+      {
+        "first_word": 380,
+        "last_word": 380,
+        "first_address": "0x800066B6",
+        "last_address": "0x800066B6"
+      },
+      {
+        "first_word": 382,
+        "last_word": 382,
+        "first_address": "0x800066BA",
+        "last_address": "0x800066BA"
+      },
+      {
+        "first_word": 384,
+        "last_word": 384,
+        "first_address": "0x800066BE",
+        "last_address": "0x800066BE"
+      },
+      {
+        "first_word": 386,
+        "last_word": 386,
+        "first_address": "0x800066C2",
+        "last_address": "0x800066C2"
+      },
+      {
+        "first_word": 388,
+        "last_word": 388,
+        "first_address": "0x800066C6",
+        "last_address": "0x800066C6"
+      },
+      {
+        "first_word": 390,
+        "last_word": 390,
+        "first_address": "0x800066CA",
+        "last_address": "0x800066CA"
+      },
+      {
+        "first_word": 428,
+        "last_word": 428,
+        "first_address": "0x80006716",
+        "last_address": "0x80006716"
+      },
+      {
+        "first_word": 430,
+        "last_word": 431,
+        "first_address": "0x8000671A",
+        "last_address": "0x8000671C"
+      },
+      {
+        "first_word": 433,
+        "last_word": 433,
+        "first_address": "0x80006720",
+        "last_address": "0x80006720"
+      },
+      {
+        "first_word": 436,
+        "last_word": 436,
+        "first_address": "0x80006726",
+        "last_address": "0x80006726"
+      },
+      {
+        "first_word": 438,
+        "last_word": 439,
+        "first_address": "0x8000672A",
+        "last_address": "0x8000672C"
+      },
+      {
+        "first_word": 441,
+        "last_word": 441,
+        "first_address": "0x80006730",
+        "last_address": "0x80006730"
+      },
+      {
+        "first_word": 444,
+        "last_word": 444,
+        "first_address": "0x80006736",
+        "last_address": "0x80006736"
+      },
+      {
+        "first_word": 446,
+        "last_word": 450,
+        "first_address": "0x8000673A",
+        "last_address": "0x80006742"
+      },
+      {
+        "first_word": 452,
+        "last_word": 452,
+        "first_address": "0x80006746",
+        "last_address": "0x80006746"
+      },
+      {
+        "first_word": 454,
+        "last_word": 454,
+        "first_address": "0x8000674A",
+        "last_address": "0x8000674A"
+      },
+      {
+        "first_word": 456,
+        "last_word": 456,
+        "first_address": "0x8000674E",
+        "last_address": "0x8000674E"
+      },
+      {
+        "first_word": 458,
+        "last_word": 458,
+        "first_address": "0x80006752",
+        "last_address": "0x80006752"
+      },
+      {
+        "first_word": 460,
+        "last_word": 460,
+        "first_address": "0x80006756",
+        "last_address": "0x80006756"
+      },
+      {
+        "first_word": 462,
+        "last_word": 472,
+        "first_address": "0x8000675A",
+        "last_address": "0x8000676E"
+      },
+      {
+        "first_word": 474,
+        "last_word": 490,
+        "first_address": "0x80006772",
+        "last_address": "0x80006792"
+      },
+      {
+        "first_word": 492,
+        "last_word": 492,
+        "first_address": "0x80006796",
+        "last_address": "0x80006796"
+      }
+    ],
+    "retained_zero_prior_unobserved_ranges": [
+      {
+        "first_word": 150,
+        "last_word": 150,
+        "first_address": "0x800064EA",
+        "last_address": "0x800064EA"
+      },
+      {
+        "first_word": 152,
+        "last_word": 152,
+        "first_address": "0x800064EE",
+        "last_address": "0x800064EE"
+      },
+      {
+        "first_word": 154,
+        "last_word": 154,
+        "first_address": "0x800064F2",
+        "last_address": "0x800064F2"
+      },
+      {
+        "first_word": 156,
+        "last_word": 156,
+        "first_address": "0x800064F6",
+        "last_address": "0x800064F6"
+      },
+      {
+        "first_word": 158,
+        "last_word": 158,
+        "first_address": "0x800064FA",
+        "last_address": "0x800064FA"
+      },
+      {
+        "first_word": 160,
+        "last_word": 160,
+        "first_address": "0x800064FE",
+        "last_address": "0x800064FE"
+      },
+      {
+        "first_word": 162,
+        "last_word": 162,
+        "first_address": "0x80006502",
+        "last_address": "0x80006502"
+      },
+      {
+        "first_word": 164,
+        "last_word": 164,
+        "first_address": "0x80006506",
+        "last_address": "0x80006506"
+      },
+      {
+        "first_word": 166,
+        "last_word": 166,
+        "first_address": "0x8000650A",
+        "last_address": "0x8000650A"
+      },
+      {
+        "first_word": 168,
+        "last_word": 168,
+        "first_address": "0x8000650E",
+        "last_address": "0x8000650E"
+      },
+      {
+        "first_word": 170,
+        "last_word": 170,
+        "first_address": "0x80006512",
+        "last_address": "0x80006512"
+      },
+      {
+        "first_word": 172,
+        "last_word": 172,
+        "first_address": "0x80006516",
+        "last_address": "0x80006516"
+      },
+      {
+        "first_word": 174,
+        "last_word": 174,
+        "first_address": "0x8000651A",
+        "last_address": "0x8000651A"
+      },
+      {
+        "first_word": 176,
+        "last_word": 176,
+        "first_address": "0x8000651E",
+        "last_address": "0x8000651E"
+      },
+      {
+        "first_word": 178,
+        "last_word": 178,
+        "first_address": "0x80006522",
+        "last_address": "0x80006522"
+      },
+      {
+        "first_word": 180,
+        "last_word": 180,
+        "first_address": "0x80006526",
+        "last_address": "0x80006526"
+      },
+      {
+        "first_word": 197,
+        "last_word": 198,
+        "first_address": "0x80006548",
+        "last_address": "0x8000654A"
+      },
+      {
+        "first_word": 200,
+        "last_word": 202,
+        "first_address": "0x8000654E",
+        "last_address": "0x80006552"
+      },
+      {
+        "first_word": 204,
+        "last_word": 205,
+        "first_address": "0x80006556",
+        "last_address": "0x80006558"
+      },
+      {
+        "first_word": 208,
+        "last_word": 209,
+        "first_address": "0x8000655E",
+        "last_address": "0x80006560"
+      },
+      {
+        "first_word": 212,
+        "last_word": 214,
+        "first_address": "0x80006566",
+        "last_address": "0x8000656A"
+      },
+      {
+        "first_word": 216,
+        "last_word": 218,
+        "first_address": "0x8000656E",
+        "last_address": "0x80006572"
+      },
+      {
+        "first_word": 220,
+        "last_word": 221,
+        "first_address": "0x80006576",
+        "last_address": "0x80006578"
+      },
+      {
+        "first_word": 281,
+        "last_word": 282,
+        "first_address": "0x800065F0",
+        "last_address": "0x800065F2"
+      },
+      {
+        "first_word": 284,
+        "last_word": 286,
+        "first_address": "0x800065F6",
+        "last_address": "0x800065FA"
+      },
+      {
+        "first_word": 288,
+        "last_word": 290,
+        "first_address": "0x800065FE",
+        "last_address": "0x80006602"
+      },
+      {
+        "first_word": 292,
+        "last_word": 294,
+        "first_address": "0x80006606",
+        "last_address": "0x8000660A"
+      },
+      {
+        "first_word": 296,
+        "last_word": 298,
+        "first_address": "0x8000660E",
+        "last_address": "0x80006612"
+      },
+      {
+        "first_word": 300,
+        "last_word": 302,
+        "first_address": "0x80006616",
+        "last_address": "0x8000661A"
+      },
+      {
+        "first_word": 304,
+        "last_word": 306,
+        "first_address": "0x8000661E",
+        "last_address": "0x80006622"
+      },
+      {
+        "first_word": 308,
+        "last_word": 308,
+        "first_address": "0x80006626",
+        "last_address": "0x80006626"
+      },
+      {
+        "first_word": 336,
+        "last_word": 336,
+        "first_address": "0x8000665E",
+        "last_address": "0x8000665E"
+      },
+      {
+        "first_word": 338,
+        "last_word": 338,
+        "first_address": "0x80006662",
+        "last_address": "0x80006662"
+      },
+      {
+        "first_word": 340,
+        "last_word": 340,
+        "first_address": "0x80006666",
+        "last_address": "0x80006666"
+      },
+      {
+        "first_word": 432,
+        "last_word": 432,
+        "first_address": "0x8000671E",
+        "last_address": "0x8000671E"
+      },
+      {
+        "first_word": 434,
+        "last_word": 434,
+        "first_address": "0x80006722",
+        "last_address": "0x80006722"
+      },
+      {
+        "first_word": 440,
+        "last_word": 440,
+        "first_address": "0x8000672E",
+        "last_address": "0x8000672E"
+      },
+      {
+        "first_word": 442,
+        "last_word": 442,
+        "first_address": "0x80006732",
+        "last_address": "0x80006732"
+      }
+    ],
+    "prior_unobserved_writer_families": [
+      {
+        "pc": "0x401149BE",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 50,
+            "last_word": 50,
+            "first_address": "0x80006422",
+            "last_address": "0x80006422"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149C2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 51,
+            "last_word": 51,
+            "first_address": "0x80006424",
+            "last_address": "0x80006424"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149C6",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 52,
+            "last_word": 52,
+            "first_address": "0x80006426",
+            "last_address": "0x80006426"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149CA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 53,
+            "last_word": 53,
+            "first_address": "0x80006428",
+            "last_address": "0x80006428"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149CE",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 54,
+            "last_word": 54,
+            "first_address": "0x8000642A",
+            "last_address": "0x8000642A"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149D2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 55,
+            "last_word": 55,
+            "first_address": "0x8000642C",
+            "last_address": "0x8000642C"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149D6",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 56,
+            "last_word": 56,
+            "first_address": "0x8000642E",
+            "last_address": "0x8000642E"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149DA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 57,
+            "last_word": 57,
+            "first_address": "0x80006430",
+            "last_address": "0x80006430"
+          }
+        ]
+      },
+      {
+        "pc": "0x401168D2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 60,
+            "last_word": 60,
+            "first_address": "0x80006436",
+            "last_address": "0x80006436"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A402",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 60,
+            "last_word": 60,
+            "first_address": "0x80006436",
+            "last_address": "0x80006436"
+          }
+        ]
+      },
+      {
+        "pc": "0x401168DE",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 61,
+            "last_word": 61,
+            "first_address": "0x80006438",
+            "last_address": "0x80006438"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A418",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 61,
+            "last_word": 61,
+            "first_address": "0x80006438",
+            "last_address": "0x80006438"
+          }
+        ]
+      },
+      {
+        "pc": "0x401168D6",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 62,
+            "last_word": 62,
+            "first_address": "0x8000643A",
+            "last_address": "0x8000643A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A408",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 62,
+            "last_word": 62,
+            "first_address": "0x8000643A",
+            "last_address": "0x8000643A"
+          }
+        ]
+      },
+      {
+        "pc": "0x401168E2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 63,
+            "last_word": 63,
+            "first_address": "0x8000643C",
+            "last_address": "0x8000643C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A41E",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 63,
+            "last_word": 63,
+            "first_address": "0x8000643C",
+            "last_address": "0x8000643C"
+          }
+        ]
+      },
+      {
+        "pc": "0x401168DA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 64,
+            "last_word": 64,
+            "first_address": "0x8000643E",
+            "last_address": "0x8000643E"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A40E",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 64,
+            "last_word": 64,
+            "first_address": "0x8000643E",
+            "last_address": "0x8000643E"
+          }
+        ]
+      },
+      {
+        "pc": "0x401168E6",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 65,
+            "last_word": 65,
+            "first_address": "0x80006440",
+            "last_address": "0x80006440"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A424",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 65,
+            "last_word": 65,
+            "first_address": "0x80006440",
+            "last_address": "0x80006440"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCF4",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 67,
+            "last_word": 67,
+            "first_address": "0x80006444",
+            "last_address": "0x80006444"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A42C",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 67,
+            "last_word": 67,
+            "first_address": "0x80006444",
+            "last_address": "0x80006444"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCF8",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 68,
+            "last_word": 68,
+            "first_address": "0x80006446",
+            "last_address": "0x80006446"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A432",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 68,
+            "last_word": 68,
+            "first_address": "0x80006446",
+            "last_address": "0x80006446"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCFC",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 69,
+            "last_word": 69,
+            "first_address": "0x80006448",
+            "last_address": "0x80006448"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A438",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 69,
+            "last_word": 69,
+            "first_address": "0x80006448",
+            "last_address": "0x80006448"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FD00",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 70,
+            "last_word": 70,
+            "first_address": "0x8000644A",
+            "last_address": "0x8000644A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A43E",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 70,
+            "last_word": 70,
+            "first_address": "0x8000644A",
+            "last_address": "0x8000644A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E810",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 73,
+            "last_word": 73,
+            "first_address": "0x80006450",
+            "last_address": "0x80006450"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A444",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 73,
+            "last_word": 73,
+            "first_address": "0x80006450",
+            "last_address": "0x80006450"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E814",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 74,
+            "last_word": 74,
+            "first_address": "0x80006452",
+            "last_address": "0x80006452"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A44A",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 74,
+            "last_word": 74,
+            "first_address": "0x80006452",
+            "last_address": "0x80006452"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7F8",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 75,
+            "last_word": 75,
+            "first_address": "0x80006454",
+            "last_address": "0x80006454"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A450",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 75,
+            "last_word": 75,
+            "first_address": "0x80006454",
+            "last_address": "0x80006454"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7FC",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 76,
+            "last_word": 76,
+            "first_address": "0x80006456",
+            "last_address": "0x80006456"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A456",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 76,
+            "last_word": 76,
+            "first_address": "0x80006456",
+            "last_address": "0x80006456"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E800",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 77,
+            "last_word": 77,
+            "first_address": "0x80006458",
+            "last_address": "0x80006458"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A45C",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 77,
+            "last_word": 77,
+            "first_address": "0x80006458",
+            "last_address": "0x80006458"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E804",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 78,
+            "last_word": 78,
+            "first_address": "0x8000645A",
+            "last_address": "0x8000645A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A474",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 78,
+            "last_word": 78,
+            "first_address": "0x8000645A",
+            "last_address": "0x8000645A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E808",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 79,
+            "last_word": 79,
+            "first_address": "0x8000645C",
+            "last_address": "0x8000645C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A47A",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 79,
+            "last_word": 79,
+            "first_address": "0x8000645C",
+            "last_address": "0x8000645C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A726",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 206,
+            "last_word": 206,
+            "first_address": "0x8000655A",
+            "last_address": "0x8000655A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A72C",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 206,
+            "last_word": 206,
+            "first_address": "0x8000655A",
+            "last_address": "0x8000655A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A73E",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 210,
+            "last_word": 210,
+            "first_address": "0x80006562",
+            "last_address": "0x80006562"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A744",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 210,
+            "last_word": 210,
+            "first_address": "0x80006562",
+            "last_address": "0x80006562"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011D16E",
+        "field_count": 36,
+        "word_ranges": [
+          {
+            "first_word": 334,
+            "last_word": 334,
+            "first_address": "0x8000665A",
+            "last_address": "0x8000665A"
+          },
+          {
+            "first_word": 342,
+            "last_word": 342,
+            "first_address": "0x8000666A",
+            "last_address": "0x8000666A"
+          },
+          {
+            "first_word": 344,
+            "last_word": 344,
+            "first_address": "0x8000666E",
+            "last_address": "0x8000666E"
+          },
+          {
+            "first_word": 346,
+            "last_word": 346,
+            "first_address": "0x80006672",
+            "last_address": "0x80006672"
+          },
+          {
+            "first_word": 348,
+            "last_word": 348,
+            "first_address": "0x80006676",
+            "last_address": "0x80006676"
+          },
+          {
+            "first_word": 350,
+            "last_word": 350,
+            "first_address": "0x8000667A",
+            "last_address": "0x8000667A"
+          },
+          {
+            "first_word": 352,
+            "last_word": 352,
+            "first_address": "0x8000667E",
+            "last_address": "0x8000667E"
+          },
+          {
+            "first_word": 354,
+            "last_word": 354,
+            "first_address": "0x80006682",
+            "last_address": "0x80006682"
+          },
+          {
+            "first_word": 356,
+            "last_word": 356,
+            "first_address": "0x80006686",
+            "last_address": "0x80006686"
+          },
+          {
+            "first_word": 358,
+            "last_word": 358,
+            "first_address": "0x8000668A",
+            "last_address": "0x8000668A"
+          },
+          {
+            "first_word": 360,
+            "last_word": 360,
+            "first_address": "0x8000668E",
+            "last_address": "0x8000668E"
+          },
+          {
+            "first_word": 362,
+            "last_word": 362,
+            "first_address": "0x80006692",
+            "last_address": "0x80006692"
+          },
+          {
+            "first_word": 364,
+            "last_word": 364,
+            "first_address": "0x80006696",
+            "last_address": "0x80006696"
+          },
+          {
+            "first_word": 366,
+            "last_word": 366,
+            "first_address": "0x8000669A",
+            "last_address": "0x8000669A"
+          },
+          {
+            "first_word": 368,
+            "last_word": 368,
+            "first_address": "0x8000669E",
+            "last_address": "0x8000669E"
+          },
+          {
+            "first_word": 370,
+            "last_word": 370,
+            "first_address": "0x800066A2",
+            "last_address": "0x800066A2"
+          },
+          {
+            "first_word": 372,
+            "last_word": 372,
+            "first_address": "0x800066A6",
+            "last_address": "0x800066A6"
+          },
+          {
+            "first_word": 374,
+            "last_word": 374,
+            "first_address": "0x800066AA",
+            "last_address": "0x800066AA"
+          },
+          {
+            "first_word": 376,
+            "last_word": 376,
+            "first_address": "0x800066AE",
+            "last_address": "0x800066AE"
+          },
+          {
+            "first_word": 378,
+            "last_word": 378,
+            "first_address": "0x800066B2",
+            "last_address": "0x800066B2"
+          },
+          {
+            "first_word": 380,
+            "last_word": 380,
+            "first_address": "0x800066B6",
+            "last_address": "0x800066B6"
+          },
+          {
+            "first_word": 382,
+            "last_word": 382,
+            "first_address": "0x800066BA",
+            "last_address": "0x800066BA"
+          },
+          {
+            "first_word": 384,
+            "last_word": 384,
+            "first_address": "0x800066BE",
+            "last_address": "0x800066BE"
+          },
+          {
+            "first_word": 386,
+            "last_word": 386,
+            "first_address": "0x800066C2",
+            "last_address": "0x800066C2"
+          },
+          {
+            "first_word": 388,
+            "last_word": 388,
+            "first_address": "0x800066C6",
+            "last_address": "0x800066C6"
+          },
+          {
+            "first_word": 390,
+            "last_word": 390,
+            "first_address": "0x800066CA",
+            "last_address": "0x800066CA"
+          },
+          {
+            "first_word": 428,
+            "last_word": 428,
+            "first_address": "0x80006716",
+            "last_address": "0x80006716"
+          },
+          {
+            "first_word": 430,
+            "last_word": 430,
+            "first_address": "0x8000671A",
+            "last_address": "0x8000671A"
+          },
+          {
+            "first_word": 436,
+            "last_word": 436,
+            "first_address": "0x80006726",
+            "last_address": "0x80006726"
+          },
+          {
+            "first_word": 438,
+            "last_word": 438,
+            "first_address": "0x8000672A",
+            "last_address": "0x8000672A"
+          },
+          {
+            "first_word": 444,
+            "last_word": 444,
+            "first_address": "0x80006736",
+            "last_address": "0x80006736"
+          },
+          {
+            "first_word": 446,
+            "last_word": 446,
+            "first_address": "0x8000673A",
+            "last_address": "0x8000673A"
+          },
+          {
+            "first_word": 448,
+            "last_word": 448,
+            "first_address": "0x8000673E",
+            "last_address": "0x8000673E"
+          },
+          {
+            "first_word": 450,
+            "last_word": 450,
+            "first_address": "0x80006742",
+            "last_address": "0x80006742"
+          },
+          {
+            "first_word": 474,
+            "last_word": 474,
+            "first_address": "0x80006772",
+            "last_address": "0x80006772"
+          },
+          {
+            "first_word": 492,
+            "last_word": 492,
+            "first_address": "0x80006796",
+            "last_address": "0x80006796"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A88A",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 335,
+            "last_word": 335,
+            "first_address": "0x8000665C",
+            "last_address": "0x8000665C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A890",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 337,
+            "last_word": 337,
+            "first_address": "0x80006660",
+            "last_address": "0x80006660"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A896",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 339,
+            "last_word": 339,
+            "first_address": "0x80006664",
+            "last_address": "0x80006664"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A9AA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 431,
+            "last_word": 431,
+            "first_address": "0x8000671C",
+            "last_address": "0x8000671C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A9B0",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 433,
+            "last_word": 433,
+            "first_address": "0x80006720",
+            "last_address": "0x80006720"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A9C2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 439,
+            "last_word": 439,
+            "first_address": "0x8000672C",
+            "last_address": "0x8000672C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A9C8",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 441,
+            "last_word": 441,
+            "first_address": "0x80006730",
+            "last_address": "0x80006730"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149AA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 447,
+            "last_word": 447,
+            "first_address": "0x8000673C",
+            "last_address": "0x8000673C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A9DA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 447,
+            "last_word": 447,
+            "first_address": "0x8000673C",
+            "last_address": "0x8000673C"
+          }
+        ]
+      },
+      {
+        "pc": "0x401149AE",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 449,
+            "last_word": 449,
+            "first_address": "0x80006740",
+            "last_address": "0x80006740"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011A9E0",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 449,
+            "last_word": 449,
+            "first_address": "0x80006740",
+            "last_address": "0x80006740"
+          }
+        ]
+      },
+      {
+        "pc": "0x401168FA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 452,
+            "last_word": 452,
+            "first_address": "0x80006746",
+            "last_address": "0x80006746"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011690A",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 454,
+            "last_word": 454,
+            "first_address": "0x8000674A",
+            "last_address": "0x8000674A"
+          }
+        ]
+      },
+      {
+        "pc": "0x401168FE",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 456,
+            "last_word": 456,
+            "first_address": "0x8000674E",
+            "last_address": "0x8000674E"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011690E",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 458,
+            "last_word": 458,
+            "first_address": "0x80006752",
+            "last_address": "0x80006752"
+          }
+        ]
+      },
+      {
+        "pc": "0x40116902",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 460,
+            "last_word": 460,
+            "first_address": "0x80006756",
+            "last_address": "0x80006756"
+          }
+        ]
+      },
+      {
+        "pc": "0x40116906",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 462,
+            "last_word": 462,
+            "first_address": "0x8000675A",
+            "last_address": "0x8000675A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FC9E",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 463,
+            "last_word": 463,
+            "first_address": "0x8000675C",
+            "last_address": "0x8000675C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA0A",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 463,
+            "last_word": 463,
+            "first_address": "0x8000675C",
+            "last_address": "0x8000675C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCA4",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 464,
+            "last_word": 464,
+            "first_address": "0x8000675E",
+            "last_address": "0x8000675E"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCAC",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 465,
+            "last_word": 465,
+            "first_address": "0x80006760",
+            "last_address": "0x80006760"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA10",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 465,
+            "last_word": 465,
+            "first_address": "0x80006760",
+            "last_address": "0x80006760"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCB4",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 466,
+            "last_word": 466,
+            "first_address": "0x80006762",
+            "last_address": "0x80006762"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCBC",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 467,
+            "last_word": 467,
+            "first_address": "0x80006764",
+            "last_address": "0x80006764"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA16",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 467,
+            "last_word": 467,
+            "first_address": "0x80006764",
+            "last_address": "0x80006764"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCC4",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 468,
+            "last_word": 468,
+            "first_address": "0x80006766",
+            "last_address": "0x80006766"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCCC",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 469,
+            "last_word": 469,
+            "first_address": "0x80006768",
+            "last_address": "0x80006768"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA1E",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 469,
+            "last_word": 469,
+            "first_address": "0x80006768",
+            "last_address": "0x80006768"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCD2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 470,
+            "last_word": 470,
+            "first_address": "0x8000676A",
+            "last_address": "0x8000676A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCDA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 471,
+            "last_word": 471,
+            "first_address": "0x8000676C",
+            "last_address": "0x8000676C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA24",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 471,
+            "last_word": 471,
+            "first_address": "0x8000676C",
+            "last_address": "0x8000676C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCE2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 472,
+            "last_word": 472,
+            "first_address": "0x8000676E",
+            "last_address": "0x8000676E"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010FCF0",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 474,
+            "last_word": 474,
+            "first_address": "0x80006772",
+            "last_address": "0x80006772"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E798",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 475,
+            "last_word": 475,
+            "first_address": "0x80006774",
+            "last_address": "0x80006774"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA30",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 475,
+            "last_word": 475,
+            "first_address": "0x80006774",
+            "last_address": "0x80006774"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7A0",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 476,
+            "last_word": 476,
+            "first_address": "0x80006776",
+            "last_address": "0x80006776"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7B0",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 477,
+            "last_word": 477,
+            "first_address": "0x80006778",
+            "last_address": "0x80006778"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA36",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 477,
+            "last_word": 477,
+            "first_address": "0x80006778",
+            "last_address": "0x80006778"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7A4",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 478,
+            "last_word": 478,
+            "first_address": "0x8000677A",
+            "last_address": "0x8000677A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7B4",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 479,
+            "last_word": 479,
+            "first_address": "0x8000677C",
+            "last_address": "0x8000677C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA3C",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 479,
+            "last_word": 479,
+            "first_address": "0x8000677C",
+            "last_address": "0x8000677C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7A8",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 480,
+            "last_word": 480,
+            "first_address": "0x8000677E",
+            "last_address": "0x8000677E"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7BA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 481,
+            "last_word": 481,
+            "first_address": "0x80006780",
+            "last_address": "0x80006780"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA42",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 481,
+            "last_word": 481,
+            "first_address": "0x80006780",
+            "last_address": "0x80006780"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7CA",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 482,
+            "last_word": 482,
+            "first_address": "0x80006782",
+            "last_address": "0x80006782"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7BE",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 483,
+            "last_word": 483,
+            "first_address": "0x80006784",
+            "last_address": "0x80006784"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA48",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 483,
+            "last_word": 483,
+            "first_address": "0x80006784",
+            "last_address": "0x80006784"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7CE",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 484,
+            "last_word": 484,
+            "first_address": "0x80006786",
+            "last_address": "0x80006786"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7C2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 485,
+            "last_word": 485,
+            "first_address": "0x80006788",
+            "last_address": "0x80006788"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA4E",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 485,
+            "last_word": 485,
+            "first_address": "0x80006788",
+            "last_address": "0x80006788"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7D2",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 486,
+            "last_word": 486,
+            "first_address": "0x8000678A",
+            "last_address": "0x8000678A"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7DE",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 487,
+            "last_word": 487,
+            "first_address": "0x8000678C",
+            "last_address": "0x8000678C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA54",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 487,
+            "last_word": 487,
+            "first_address": "0x8000678C",
+            "last_address": "0x8000678C"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7D6",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 488,
+            "last_word": 488,
+            "first_address": "0x8000678E",
+            "last_address": "0x8000678E"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7E4",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 489,
+            "last_word": 489,
+            "first_address": "0x80006790",
+            "last_address": "0x80006790"
+          }
+        ]
+      },
+      {
+        "pc": "0x4011AA5A",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 489,
+            "last_word": 489,
+            "first_address": "0x80006790",
+            "last_address": "0x80006790"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7F0",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 490,
+            "last_word": 490,
+            "first_address": "0x80006792",
+            "last_address": "0x80006792"
+          }
+        ]
+      },
+      {
+        "pc": "0x4010E7F4",
+        "field_count": 1,
+        "word_ranges": [
+          {
+            "first_word": 492,
+            "last_word": 492,
+            "first_address": "0x80006796",
+            "last_address": "0x80006796"
+          }
+        ]
+      }
+    ]
+  },
+  "ownership_conclusion": {
+    "fields_initialized_by_stock_boot": 492,
+    "fields_not_initialized_by_stock_boot": 0,
+    "canary_candidates": 0,
+    "reason": "Stock startup initializes and then explicitly clears every transmitted halfword. Later startup code rewrites 292 fields; the other fields retain the firmware-established zero value."
+  },
+  "limitation": "This proves stock-firmware boot ownership under the synthetic empty factory state. It does not identify the physical PCS0 receiver or assign semantics to fields that retain zero.",
+  "next_target": "Treat the DSPI1 frame as fully stock-owned; continue through receiver/protocol inference without publishing an in-band canary.",
+  "safety": "No firmware bytes or flashable image were modified; the trace came from stock MAIN execution and emulator-only hardware models."
+}

@@ -117,6 +117,16 @@ def main() -> None:
     parser.add_argument("--timeout", type=float, default=35.0)
     parser.add_argument("--keep-runtime", action="store_true")
     parser.add_argument(
+        "--plugin",
+        type=Path,
+        help="optional QEMU plugin shared object",
+    )
+    parser.add_argument(
+        "--plugin-output",
+        type=Path,
+        help="output path passed to the plugin as out=PATH",
+    )
+    parser.add_argument(
         "--qemu-debug",
         default="guest_errors",
         help="comma-separated QEMU -d log categories",
@@ -164,6 +174,14 @@ def main() -> None:
     main_image = args.main.expanduser().resolve()
     if not qemu.is_file() or not main_image.is_file():
         raise SystemExit("--qemu and --main must name existing files")
+    plugin = args.plugin.expanduser().resolve() if args.plugin else None
+    plugin_output = (
+        args.plugin_output.expanduser().resolve() if args.plugin_output else None
+    )
+    if bool(plugin) != bool(plugin_output):
+        parser.error("--plugin and --plugin-output must be supplied together")
+    if plugin is not None and not plugin.is_file():
+        parser.error("--plugin must name an existing file")
 
     runtime = Path(tempfile.mkdtemp(prefix="ar-mk2-ui-smoke-"))
     panel_base = runtime / "panel"
@@ -190,6 +208,11 @@ def main() -> None:
         "-monitor", f"tcp:127.0.0.1:{monitor_port},server=on,wait=off",
         "-d", args.qemu_debug, "-D", str(log),
     ]
+    if plugin is not None:
+        plugin_output.parent.mkdir(parents=True, exist_ok=True)
+        command.extend(
+            ["-plugin", f"file={plugin},out={plugin_output}"]
+        )
 
     proc: subprocess.Popen | None = None
     panel_writer = None

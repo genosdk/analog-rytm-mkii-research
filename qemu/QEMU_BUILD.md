@@ -113,6 +113,38 @@ identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,
 normal UI, and SMP page.
 
+## Control-buffer write tracing
+
+A QEMU build configured with `--enable-plugins` can trace stock writes to the
+492-halfword DSPI1 source window without altering MAIN. Build the matching
+plugin against that QEMU checkout:
+
+```bash
+cc -O2 -fPIC -shared -fvisibility=hidden \
+  -I/path/to/qemu/include/plugins $(pkg-config --cflags glib-2.0) \
+  qemu/ar_mk2_control_write_trace.c \
+  -o /tmp/ar_mk2_control_write_trace.so \
+  $(pkg-config --libs glib-2.0)
+```
+
+Then add these arguments to the headless smoke command:
+
+```bash
+  --plugin /tmp/ar_mk2_control_write_trace.so \
+  --plugin-output /tmp/ar_mk2_control_writes.jsonl
+```
+
+Reduce the JSONL trace to the checked ownership report with:
+
+```bash
+python research/qemu_boot_control_ownership_probe.py \
+  --trace /tmp/ar_mk2_control_writes.jsonl \
+  --ownership research/AR172_WHOLE_CALLBACK_CONTROL_OWNERSHIP_PROBE.json \
+  --output research/AR172_QEMU_BOOT_CONTROL_OWNERSHIP_GATE.json
+```
+
+The trace is emulator-only evidence: it does not modify or package firmware.
+
 The standalone desktop launcher can expose the stock renderer ring through
 QEMU's host-audio backend:
 

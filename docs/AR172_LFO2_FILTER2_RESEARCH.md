@@ -617,11 +617,15 @@ renderer/state inventory now excludes 117 of the 492 transmitted DSPI1 payload
 positions across 34 machines and five forced renderer states. A whole-callback
 matrix rejects another 210 of the 375 renderer-unobserved positions because
 stock code outside renderer scope writes them. In total, 327 fields have an
-observed stock writer and 165 remain unobserved in these 170 contexts. All 492
-are nevertheless serialized to PCS0, so none is proven safe merely by lacking
-an observed writer. Queue index 493 is not a candidate: stock overwrites it
-with the fixed `0x5555` end marker. The next offline target is initialization
-and project-load ownership of the remaining 165 fields. The
+observed callback writer and 165 remain unobserved in these 170 contexts. A
+plugin-instrumented stock boot now closes the initialization question: the
+startup copy at `0x400007F6` initializes all 492 fields and the firmware fill
+routine at `0x40095C32` then clears all 492. Later startup code rewrites 292,
+including 104 of the prior 165, while the remaining 61 retain the explicit
+zero. All 492 are serialized to PCS0, so there is no evidence-backed in-band
+canary. Queue index 493 is not a candidate: stock overwrites it with the fixed
+`0x5555` end marker. The next offline target is receiver/protocol inference
+without altering the stock-owned frame. The
 public Sound-format machine byte maps directly to renderer-table
 indices 0..33: the exact calibration pair belongs to BD Hard and BD Classic.
 Entries 34..52 have no public Sound-format names and remain explicitly labeled

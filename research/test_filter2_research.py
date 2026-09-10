@@ -573,6 +573,28 @@ class WholeCallbackControlOwnershipReportTests(unittest.TestCase):
         self.assertEqual(report["non_renderer_ownership"]["writer_family_count"], 46)
 
 
+class QemuBootControlOwnershipReportTests(unittest.TestCase):
+    def test_stock_boot_initializes_every_transmitted_field(self):
+        report = json.loads(
+            (HERE / "AR172_QEMU_BOOT_CONTROL_OWNERSHIP_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(report["result"], "PASS")
+        self.assertEqual(report["capture"]["trace_events"], 845)
+        self.assertTrue(report["capture"]["live_pc_matches_translated_pc"])
+        self.assertEqual(report["static_data_copy"]["fields"], 492)
+        self.assertEqual(report["runtime_zero_fill"]["fields"], 492)
+        post_zero = report["post_zero_startup"]
+        self.assertEqual(post_zero["fields_rewritten"], 292)
+        self.assertEqual(post_zero["prior_unobserved_fields_rewritten"], 104)
+        self.assertEqual(post_zero["prior_unobserved_fields_retaining_zero"], 61)
+        conclusion = report["ownership_conclusion"]
+        self.assertEqual(conclusion["fields_initialized_by_stock_boot"], 492)
+        self.assertEqual(conclusion["fields_not_initialized_by_stock_boot"], 0)
+        self.assertEqual(conclusion["canary_candidates"], 0)
+
+
 
 
 if __name__ == "__main__":

@@ -135,6 +135,12 @@ and reproducible tooling.
   callback writers; 165 remain unobserved but are still serialized and are not
   proven spare. Queue index 493 is the fixed `0x5555` end marker, not a payload
   candidate.
+- A plugin-instrumented stock OS 1.72 boot closes that remaining ownership
+  question: startup first copies initialized data across all 492 halfwords,
+  then the firmware's `0x40095C32` fill routine explicitly clears all 492.
+  Later startup code rewrites 292 fields, including 104 of the earlier 165;
+  the other 61 retain the firmware-established zero. Therefore no transmitted
+  DSPI1 word is an evidence-backed in-band canary candidate.
 - The opt-in continuous research clock now applies interrupt backpressure and
   has sustained 2,303 completed native services while accepting later UI input.
   Its provisional 10 ms period is not yet a claim of physical-device cadence.
