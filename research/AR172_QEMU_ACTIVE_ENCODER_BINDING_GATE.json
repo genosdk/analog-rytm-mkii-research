@@ -23,7 +23,10 @@
     "filter_constructor": "0x4006C7C0 receives active UI object, encoder index 0, delta 5, binding context, and direction flag 0",
     "subscriber_dispatch": "0x400770F6 / 0x40076F62",
     "active_page_handler": "dynamic adapter 0x400761A6 selects target 0x40038B58, entering shared handler body 0x4003882C",
-    "interrupt_result": "No missing or stalling panel interrupt remains in this path; the correctly aligned 0x4007EB58 service breakpoint fires continuously"
+    "parameter_selection": "the active page vtable lookup at 0x4003886E resolves encoder index 0 to parameter descriptor ID 100",
+    "value_resolution": "the generic adjustment call at 0x400389D4 enters 0x4006CAD2 and returns normally at the correctly aligned boundary 0x40038A02, but D0 is null",
+    "interrupt_result": "No missing or stalling panel interrupt remains in this path; the correctly aligned 0x4007EB58 service breakpoint fires continuously",
+    "current_blocker": "Parameter ID 100 is selected, but its live value/binding object is absent or inactive, so the handler exits without a Q8 mutation."
   },
   "negative_controls": {
     "neutral_panel_scans": "0x20..0x25 with zero payload do not consume the encoder accumulator",
@@ -55,7 +58,7 @@
   },
   "next_gate": {
     "name": "AR172_QEMU_ENCODER_BINDING_READBACK_GATE",
-    "objective": "Resolve the parameter descriptor selected by active handler 0x4003882C, then prove its before/after Q8 word and 0..127 UI readback for positive and negative encoder deltas."
+    "objective": "Determine why parameter ID 100 returns a null live value/binding object from 0x4006CAD2, activate it through the native page/track descriptor path, then prove before/after Q8 readback for positive and negative deltas."
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."
