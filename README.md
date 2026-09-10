@@ -119,6 +119,10 @@ and reproducible tooling.
 - Desktop pad/QWERTY rising edges now schedule eight bounded vector-191 renderer
   services. Re-arming DSPI1's channel-15 transmit request at each external
   audio event prevents the firmware's EOQ wait from stalling repeated blocks.
+- The packaged desktop shell now keeps the physical panel's 385:225 proportion,
+  presents the firmware OLED at a fixed size, uses persistent page and trigger
+  LEDs, and renders custom A-I encoders with mouse, wheel and keyboard control
+  across the full `0..127` host range.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to

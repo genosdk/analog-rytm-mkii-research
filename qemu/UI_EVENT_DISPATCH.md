@@ -55,8 +55,18 @@ step per two pixels and the wheel changes one step per notch. Each knob keeps a
 host-side value clamped to 0–127 and emits only the corresponding signed delta
 through the native `0x3n` encoder packet.
 
-## Current target
+The desktop shell is fixed to the hardware's 385:225 panel proportion. Its OLED
+bezel and control regions do not resize when firmware pages change. The six
+proven page keys retain one active red LED after release; trigger keys show the
+combined mouse/QWERTY held state, including focus-loss cleanup. Encoders also
+accept arrow keys (one step), Page Up/Down (eight steps), Home/End (0/127) and
+double-click reset (64). OLED activity and transient control feedback use
+separate status fields so the 30 Hz framebuffer poll cannot erase an input
+message immediately.
 
-Trace UI dispatch case 0 through its state mutation and redraw/presentation calls. The goal is to prove one native panel frame causes a visible change in the presented framebuffer at pointer global `0x4026F474`.
+## Current GUI target
 
-The emulator is not considered standalone-interactive until that round trip is reproducible without manual debugger intervention.
+The standalone bridge, native panel round trip and first cohesive desktop shell
+are complete. Continue by adding context labels from proven firmware state and
+folding the separate Filter 2 laboratory controls into the same shell without
+inventing unverified hardware controls.
