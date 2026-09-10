@@ -33,6 +33,7 @@ from post_voice_ingress_probe import probe as probe_post_voice_ingress
 from render_mixer_probe import probe as probe_render_mixer
 from renderer_control_ownership_probe import probe as probe_renderer_control_ownership
 from whole_callback_control_ownership_probe import probe as probe_whole_callback_control_ownership
+from control_setup_ownership_probe import probe as probe_control_setup_ownership
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -572,6 +573,30 @@ class WholeCallbackControlOwnershipProbeTests(StockProbeTest):
             consumer["read_pcs"],
             ["0x40077D62", "0x40077D64", "0x40077D66", "0x40077D68"],
         )
+
+
+class ControlSetupOwnershipProbeTests(StockProbeTest):
+    def test_initializers_and_note_constructors_do_not_write_packet_source(self):
+        report = HERE / "AR172_WHOLE_CALLBACK_CONTROL_OWNERSHIP_PROBE.json"
+        result = probe_control_setup_ownership(STOCK, EMULATOR, report)
+        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["setup"]["write_event_count"], 0)
+        self.assertEqual(result["setup"]["written_field_count"], 0)
+        self.assertEqual(
+            [phase["phase"] for phase in result["setup"]["phases"]],
+            [
+                "machine_preparation",
+                "control_dma_initializer",
+                "queue_initializer",
+                "queue_installer",
+                "note_on_constructor",
+                "note_off_constructor",
+            ],
+        )
+        rejection = result["candidate_rejection"]
+        self.assertEqual(rejection["callback_unwritten_field_count"], 165)
+        self.assertEqual(rejection["setup_written_callback_candidate_count"], 0)
+        self.assertEqual(rejection["remaining_unobserved_field_count"], 165)
 
 
 

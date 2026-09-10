@@ -556,6 +556,10 @@ New state must use a versioned extension or verified-unused storage; existing
   the complete audio callback and verifies that packetizer `0x40077D14` reads
   all 492 payload fields. Its full writer/consumer inventory is
   `research/AR172_WHOLE_CALLBACK_CONTROL_OWNERSHIP_PROBE.json`.
+- `research/control_setup_ownership_probe.py` traces modeled machine/audio and
+  control-DMA initialization, queue setup, and authentic note-on/note-off
+  constructors. Its negative ownership result is captured in
+  `research/AR172_CONTROL_SETUP_OWNERSHIP_PROBE.json`.
 - `recovered_library/minicoldfire_audio.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply, correct fractional-product scaling, and the
@@ -644,6 +648,15 @@ payload fields that are read for transmission but not written by any callback
 in the tested matrix. They are not yet spare: persistent initialization,
 non-note events and operating modes outside this matrix may own them. The next
 offline gate is tracing those paths before any inert canary publication.
+
+The currently modeled pre-callback lifecycle does not narrow the 165 fields:
+machine/audio preparation, control-DMA initialization, queue initialization and
+installation, and the authentic note-on and note-off constructors write zero
+packet-source halfwords. This is useful negative evidence, but the SRAM fixture
+begins zero-filled and omits earlier board startup. Consequently, zero values in
+those 165 fields are not evidence that they are spare. Parameter-change and
+other non-note event paths, plus modes outside the 170-context matrix, remain
+the next offline ownership targets.
 
 ## External format cross-checks
 
