@@ -578,6 +578,10 @@ New state must use a versioned extension or verified-unused storage; existing
   independent stock baselines with 1,360 words-67/68 seeded callbacks. Its
   compact per-lane digest report is
   `research/AR172_CONTROL_FRAME_EIGHT_LANE_TWO_WORD_LOCALITY_PROBE.json`.
+- `research/control_frame_static_move_writer_probe.py` rejects callback-silent
+  fields that are explicit destinations of stock absolute `MOVE.W` operations.
+  Its instruction inventory is
+  `research/AR172_CONTROL_FRAME_STATIC_MOVE_WRITER_PROBE.json`.
 - `recovered_library/minicoldfire_audio.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply, correct fractional-product scaling, and the
@@ -713,6 +717,16 @@ eight voice mappings. This proves eight-lane software persistence and exact
 serialization locality, not spare FPGA semantics. The next gate is resolving
 the surrounding words 67..70 structure and all non-callback initialization or
 parameter-event writers before selecting the pair for an inert firmware canary.
+
+That structural gate rejects words 67/68. Each of words 67..70 and 73..79 is
+the destination of four explicit `MOVE.W Dn,(absolute-long)` instructions in
+stock MAIN, even though none executes in the 1,360 callback contexts. Extending
+the same exact-opcode scan over all 124 eight-lane writer-unobserved fields finds
+48 fields targeted by 123 concrete writer instructions. Those fields are removed
+from consideration. Seventy-six fields survive this specific static screen,
+with 13 adjacent pairs; the deterministic next pair is words 281/282 at
+`0x800065F0/0x800065F2`. This is not yet a spare-field claim because immediate,
+byte/long, base-relative and computed writer forms still require classification.
 
 ## External format cross-checks
 

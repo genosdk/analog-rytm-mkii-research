@@ -44,6 +44,9 @@ from control_frame_track_lane_probe import probe as probe_control_frame_track_la
 from control_frame_eight_lane_two_word_locality_probe import (
     probe as probe_control_frame_eight_lane_two_word_locality,
 )
+from control_frame_static_move_writer_probe import (
+    probe as probe_control_frame_static_move_writer,
+)
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -661,6 +664,21 @@ class ControlFrameEightLaneTwoWordLocalityProbeTests(StockProbeTest):
         self.assertEqual(result["coverage"]["seeded_callbacks"], 1360)
         self.assertEqual(result["candidate"]["words"], [67, 68])
         self.assertTrue(result["candidate"]["exact_packet_locality_in_every_context"])
+
+
+class ControlFrameStaticMoveWriterProbeTests(StockProbeTest):
+    def test_direct_absolute_word_writers_reject_locality_winner(self):
+        report = HERE / "AR172_CONTROL_FRAME_EIGHT_LANE_OWNERSHIP_PROBE.json"
+        result = probe_control_frame_static_move_writer(STOCK, report)
+        self.assertEqual(result["result"], "PASS")
+        writers = result["direct_absolute_word_writers"]
+        self.assertEqual(writers["rejected_field_count"], 48)
+        self.assertEqual(writers["writer_instruction_count"], 123)
+        rejected = {row["word"] for row in writers["fields"]}
+        self.assertTrue({67, 68}.issubset(rejected))
+        self.assertEqual(result["remaining"]["field_count"], 76)
+        self.assertEqual(result["remaining"]["adjacent_pair_count"], 13)
+        self.assertEqual(result["remaining"]["ranked_winner"]["words"], [281, 282])
 
 
 

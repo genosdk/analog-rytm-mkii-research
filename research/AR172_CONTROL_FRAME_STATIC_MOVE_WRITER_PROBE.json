@@ -1,0 +1,1512 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "input": {
+    "eight_lane_writer_unobserved_fields": 124,
+    "report": "research/AR172_CONTROL_FRAME_EIGHT_LANE_OWNERSHIP_PROBE.json"
+  },
+  "direct_absolute_word_writers": {
+    "encoding": "0x33C0..0x33C7 = MOVE.W Dn,(absolute-long address)",
+    "rejected_field_count": 48,
+    "writer_instruction_count": 123,
+    "fields": [
+      {
+        "word": 67,
+        "address": "0x80006444",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021C0",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x401040C4",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40106286",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A42C",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 68,
+        "address": "0x80006446",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021CA",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x401040CA",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40106290",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A432",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 69,
+        "address": "0x80006448",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021D0",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x401040D0",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40106296",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A438",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 70,
+        "address": "0x8000644A",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021D6",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x401040D6",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010629C",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A43E",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 73,
+        "address": "0x80006450",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021E0",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x401040DC",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401062A6",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A444",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 74,
+        "address": "0x80006452",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021E6",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x401040F4",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401062AC",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A44A",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 75,
+        "address": "0x80006454",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021F6",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x401040FA",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401062BC",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A450",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 76,
+        "address": "0x80006456",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021FC",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x40104100",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401062C2",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A456",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 77,
+        "address": "0x80006458",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40102202",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x40104106",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401062C8",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A45C",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 78,
+        "address": "0x8000645A",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x401021EC",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4010410C",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401062B2",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A474",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 79,
+        "address": "0x8000645C",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40102208",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x40104112",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401062CE",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x4011A47A",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 335,
+        "address": "0x8000665C",
+        "writer_count": 2,
+        "writers": [
+          {
+            "instruction": "0x40104416",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011A88A",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 337,
+        "address": "0x80006660",
+        "writer_count": 2,
+        "writers": [
+          {
+            "instruction": "0x4010441C",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011A890",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 339,
+        "address": "0x80006664",
+        "writer_count": 2,
+        "writers": [
+          {
+            "instruction": "0x40104422",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011A896",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 428,
+        "address": "0x80006716",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x4010487A",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 430,
+        "address": "0x8000671A",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104880",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 436,
+        "address": "0x80006726",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x401048F8",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 438,
+        "address": "0x8000672A",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x401048FE",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 444,
+        "address": "0x80006736",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104910",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 446,
+        "address": "0x8000673A",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104916",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 447,
+        "address": "0x8000673C",
+        "writer_count": 2,
+        "writers": [
+          {
+            "instruction": "0x401045D6",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011A9DA",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 449,
+        "address": "0x80006740",
+        "writer_count": 2,
+        "writers": [
+          {
+            "instruction": "0x401045DC",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011A9E0",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 463,
+        "address": "0x8000675C",
+        "writer_count": 2,
+        "writers": [
+          {
+            "instruction": "0x40104606",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA0A",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 465,
+        "address": "0x80006760",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x4010460C",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401048CE",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40107252",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA10",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 466,
+        "address": "0x80006762",
+        "writer_count": 2,
+        "writers": [
+          {
+            "instruction": "0x4010491C",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          },
+          {
+            "instruction": "0x40107258",
+            "opcode": "0x33C4",
+            "source_register": "D4"
+          }
+        ]
+      },
+      {
+        "word": 467,
+        "address": "0x80006764",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40104612",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401048D4",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010725E",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA16",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 468,
+        "address": "0x80006766",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104922",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 469,
+        "address": "0x80006768",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40104618",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401048DA",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40107264",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA1E",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 470,
+        "address": "0x8000676A",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104928",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 471,
+        "address": "0x8000676C",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x4010461E",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401048E0",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010726A",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA24",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 472,
+        "address": "0x8000676E",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x4010492E",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 474,
+        "address": "0x80006772",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x4010496E",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 475,
+        "address": "0x80006774",
+        "writer_count": 3,
+        "writers": [
+          {
+            "instruction": "0x4010462A",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40107276",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA30",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 477,
+        "address": "0x80006778",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40104630",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010493A",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010727C",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA36",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 478,
+        "address": "0x8000677A",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104974",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 479,
+        "address": "0x8000677C",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40104636",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40104940",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40107282",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA3C",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 480,
+        "address": "0x8000677E",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x4010497A",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 481,
+        "address": "0x80006780",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x4010463C",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40104946",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010728A",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA42",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 482,
+        "address": "0x80006782",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104980",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 483,
+        "address": "0x80006784",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40104642",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010494C",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40107290",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA48",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 484,
+        "address": "0x80006786",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104986",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 485,
+        "address": "0x80006788",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40104648",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40104952",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40107296",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA4E",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 486,
+        "address": "0x8000678A",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x4010498C",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 487,
+        "address": "0x8000678C",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x4010464E",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x40104958",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010729C",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA54",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 488,
+        "address": "0x8000678E",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104992",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 489,
+        "address": "0x80006790",
+        "writer_count": 4,
+        "writers": [
+          {
+            "instruction": "0x40104654",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4010495E",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x401072A2",
+            "opcode": "0x33C3",
+            "source_register": "D3"
+          },
+          {
+            "instruction": "0x4011AA5A",
+            "opcode": "0x33C1",
+            "source_register": "D1"
+          }
+        ]
+      },
+      {
+        "word": 490,
+        "address": "0x80006792",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x40104998",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      },
+      {
+        "word": 492,
+        "address": "0x80006796",
+        "writer_count": 1,
+        "writers": [
+          {
+            "instruction": "0x4010499E",
+            "opcode": "0x33C0",
+            "source_register": "D0"
+          }
+        ]
+      }
+    ]
+  },
+  "remaining": {
+    "field_count": 76,
+    "ranges": [
+      {
+        "first_word": 150,
+        "last_word": 150,
+        "first_address": "0x800064EA",
+        "last_address": "0x800064EA"
+      },
+      {
+        "first_word": 152,
+        "last_word": 152,
+        "first_address": "0x800064EE",
+        "last_address": "0x800064EE"
+      },
+      {
+        "first_word": 154,
+        "last_word": 154,
+        "first_address": "0x800064F2",
+        "last_address": "0x800064F2"
+      },
+      {
+        "first_word": 156,
+        "last_word": 156,
+        "first_address": "0x800064F6",
+        "last_address": "0x800064F6"
+      },
+      {
+        "first_word": 158,
+        "last_word": 158,
+        "first_address": "0x800064FA",
+        "last_address": "0x800064FA"
+      },
+      {
+        "first_word": 160,
+        "last_word": 160,
+        "first_address": "0x800064FE",
+        "last_address": "0x800064FE"
+      },
+      {
+        "first_word": 162,
+        "last_word": 162,
+        "first_address": "0x80006502",
+        "last_address": "0x80006502"
+      },
+      {
+        "first_word": 164,
+        "last_word": 164,
+        "first_address": "0x80006506",
+        "last_address": "0x80006506"
+      },
+      {
+        "first_word": 166,
+        "last_word": 166,
+        "first_address": "0x8000650A",
+        "last_address": "0x8000650A"
+      },
+      {
+        "first_word": 168,
+        "last_word": 168,
+        "first_address": "0x8000650E",
+        "last_address": "0x8000650E"
+      },
+      {
+        "first_word": 170,
+        "last_word": 170,
+        "first_address": "0x80006512",
+        "last_address": "0x80006512"
+      },
+      {
+        "first_word": 172,
+        "last_word": 172,
+        "first_address": "0x80006516",
+        "last_address": "0x80006516"
+      },
+      {
+        "first_word": 174,
+        "last_word": 174,
+        "first_address": "0x8000651A",
+        "last_address": "0x8000651A"
+      },
+      {
+        "first_word": 176,
+        "last_word": 176,
+        "first_address": "0x8000651E",
+        "last_address": "0x8000651E"
+      },
+      {
+        "first_word": 178,
+        "last_word": 178,
+        "first_address": "0x80006522",
+        "last_address": "0x80006522"
+      },
+      {
+        "first_word": 180,
+        "last_word": 180,
+        "first_address": "0x80006526",
+        "last_address": "0x80006526"
+      },
+      {
+        "first_word": 281,
+        "last_word": 282,
+        "first_address": "0x800065F0",
+        "last_address": "0x800065F2"
+      },
+      {
+        "first_word": 284,
+        "last_word": 286,
+        "first_address": "0x800065F6",
+        "last_address": "0x800065FA"
+      },
+      {
+        "first_word": 288,
+        "last_word": 290,
+        "first_address": "0x800065FE",
+        "last_address": "0x80006602"
+      },
+      {
+        "first_word": 292,
+        "last_word": 294,
+        "first_address": "0x80006606",
+        "last_address": "0x8000660A"
+      },
+      {
+        "first_word": 296,
+        "last_word": 298,
+        "first_address": "0x8000660E",
+        "last_address": "0x80006612"
+      },
+      {
+        "first_word": 300,
+        "last_word": 302,
+        "first_address": "0x80006616",
+        "last_address": "0x8000661A"
+      },
+      {
+        "first_word": 304,
+        "last_word": 306,
+        "first_address": "0x8000661E",
+        "last_address": "0x80006622"
+      },
+      {
+        "first_word": 308,
+        "last_word": 308,
+        "first_address": "0x80006626",
+        "last_address": "0x80006626"
+      },
+      {
+        "first_word": 334,
+        "last_word": 334,
+        "first_address": "0x8000665A",
+        "last_address": "0x8000665A"
+      },
+      {
+        "first_word": 336,
+        "last_word": 336,
+        "first_address": "0x8000665E",
+        "last_address": "0x8000665E"
+      },
+      {
+        "first_word": 338,
+        "last_word": 338,
+        "first_address": "0x80006662",
+        "last_address": "0x80006662"
+      },
+      {
+        "first_word": 340,
+        "last_word": 340,
+        "first_address": "0x80006666",
+        "last_address": "0x80006666"
+      },
+      {
+        "first_word": 342,
+        "last_word": 342,
+        "first_address": "0x8000666A",
+        "last_address": "0x8000666A"
+      },
+      {
+        "first_word": 344,
+        "last_word": 344,
+        "first_address": "0x8000666E",
+        "last_address": "0x8000666E"
+      },
+      {
+        "first_word": 346,
+        "last_word": 346,
+        "first_address": "0x80006672",
+        "last_address": "0x80006672"
+      },
+      {
+        "first_word": 348,
+        "last_word": 348,
+        "first_address": "0x80006676",
+        "last_address": "0x80006676"
+      },
+      {
+        "first_word": 350,
+        "last_word": 350,
+        "first_address": "0x8000667A",
+        "last_address": "0x8000667A"
+      },
+      {
+        "first_word": 352,
+        "last_word": 352,
+        "first_address": "0x8000667E",
+        "last_address": "0x8000667E"
+      },
+      {
+        "first_word": 354,
+        "last_word": 354,
+        "first_address": "0x80006682",
+        "last_address": "0x80006682"
+      },
+      {
+        "first_word": 356,
+        "last_word": 356,
+        "first_address": "0x80006686",
+        "last_address": "0x80006686"
+      },
+      {
+        "first_word": 358,
+        "last_word": 358,
+        "first_address": "0x8000668A",
+        "last_address": "0x8000668A"
+      },
+      {
+        "first_word": 360,
+        "last_word": 360,
+        "first_address": "0x8000668E",
+        "last_address": "0x8000668E"
+      },
+      {
+        "first_word": 362,
+        "last_word": 362,
+        "first_address": "0x80006692",
+        "last_address": "0x80006692"
+      },
+      {
+        "first_word": 364,
+        "last_word": 364,
+        "first_address": "0x80006696",
+        "last_address": "0x80006696"
+      },
+      {
+        "first_word": 366,
+        "last_word": 366,
+        "first_address": "0x8000669A",
+        "last_address": "0x8000669A"
+      },
+      {
+        "first_word": 368,
+        "last_word": 368,
+        "first_address": "0x8000669E",
+        "last_address": "0x8000669E"
+      },
+      {
+        "first_word": 370,
+        "last_word": 370,
+        "first_address": "0x800066A2",
+        "last_address": "0x800066A2"
+      },
+      {
+        "first_word": 372,
+        "last_word": 372,
+        "first_address": "0x800066A6",
+        "last_address": "0x800066A6"
+      },
+      {
+        "first_word": 374,
+        "last_word": 374,
+        "first_address": "0x800066AA",
+        "last_address": "0x800066AA"
+      },
+      {
+        "first_word": 376,
+        "last_word": 376,
+        "first_address": "0x800066AE",
+        "last_address": "0x800066AE"
+      },
+      {
+        "first_word": 378,
+        "last_word": 378,
+        "first_address": "0x800066B2",
+        "last_address": "0x800066B2"
+      },
+      {
+        "first_word": 380,
+        "last_word": 380,
+        "first_address": "0x800066B6",
+        "last_address": "0x800066B6"
+      },
+      {
+        "first_word": 382,
+        "last_word": 382,
+        "first_address": "0x800066BA",
+        "last_address": "0x800066BA"
+      },
+      {
+        "first_word": 384,
+        "last_word": 384,
+        "first_address": "0x800066BE",
+        "last_address": "0x800066BE"
+      },
+      {
+        "first_word": 386,
+        "last_word": 386,
+        "first_address": "0x800066C2",
+        "last_address": "0x800066C2"
+      },
+      {
+        "first_word": 388,
+        "last_word": 388,
+        "first_address": "0x800066C6",
+        "last_address": "0x800066C6"
+      },
+      {
+        "first_word": 390,
+        "last_word": 390,
+        "first_address": "0x800066CA",
+        "last_address": "0x800066CA"
+      },
+      {
+        "first_word": 448,
+        "last_word": 448,
+        "first_address": "0x8000673E",
+        "last_address": "0x8000673E"
+      },
+      {
+        "first_word": 450,
+        "last_word": 450,
+        "first_address": "0x80006742",
+        "last_address": "0x80006742"
+      },
+      {
+        "first_word": 452,
+        "last_word": 452,
+        "first_address": "0x80006746",
+        "last_address": "0x80006746"
+      },
+      {
+        "first_word": 454,
+        "last_word": 454,
+        "first_address": "0x8000674A",
+        "last_address": "0x8000674A"
+      },
+      {
+        "first_word": 456,
+        "last_word": 456,
+        "first_address": "0x8000674E",
+        "last_address": "0x8000674E"
+      },
+      {
+        "first_word": 458,
+        "last_word": 458,
+        "first_address": "0x80006752",
+        "last_address": "0x80006752"
+      },
+      {
+        "first_word": 460,
+        "last_word": 460,
+        "first_address": "0x80006756",
+        "last_address": "0x80006756"
+      },
+      {
+        "first_word": 462,
+        "last_word": 462,
+        "first_address": "0x8000675A",
+        "last_address": "0x8000675A"
+      },
+      {
+        "first_word": 464,
+        "last_word": 464,
+        "first_address": "0x8000675E",
+        "last_address": "0x8000675E"
+      },
+      {
+        "first_word": 476,
+        "last_word": 476,
+        "first_address": "0x80006776",
+        "last_address": "0x80006776"
+      }
+    ],
+    "adjacent_pair_count": 13,
+    "ranked_winner": {
+      "words": [
+        281,
+        282
+      ],
+      "addresses": [
+        "0x800065F0",
+        "0x800065F2"
+      ],
+      "nearest_known_control_distance_words": 85
+    },
+    "pairs": [
+      {
+        "words": [
+          281,
+          282
+        ],
+        "addresses": [
+          "0x800065F0",
+          "0x800065F2"
+        ],
+        "nearest_known_control_distance_words": 85
+      },
+      {
+        "words": [
+          284,
+          285
+        ],
+        "addresses": [
+          "0x800065F6",
+          "0x800065F8"
+        ],
+        "nearest_known_control_distance_words": 88
+      },
+      {
+        "words": [
+          285,
+          286
+        ],
+        "addresses": [
+          "0x800065F8",
+          "0x800065FA"
+        ],
+        "nearest_known_control_distance_words": 89
+      },
+      {
+        "words": [
+          288,
+          289
+        ],
+        "addresses": [
+          "0x800065FE",
+          "0x80006600"
+        ],
+        "nearest_known_control_distance_words": 92
+      },
+      {
+        "words": [
+          289,
+          290
+        ],
+        "addresses": [
+          "0x80006600",
+          "0x80006602"
+        ],
+        "nearest_known_control_distance_words": 93
+      },
+      {
+        "words": [
+          292,
+          293
+        ],
+        "addresses": [
+          "0x80006606",
+          "0x80006608"
+        ],
+        "nearest_known_control_distance_words": 96
+      },
+      {
+        "words": [
+          293,
+          294
+        ],
+        "addresses": [
+          "0x80006608",
+          "0x8000660A"
+        ],
+        "nearest_known_control_distance_words": 97
+      },
+      {
+        "words": [
+          296,
+          297
+        ],
+        "addresses": [
+          "0x8000660E",
+          "0x80006610"
+        ],
+        "nearest_known_control_distance_words": 100
+      },
+      {
+        "words": [
+          297,
+          298
+        ],
+        "addresses": [
+          "0x80006610",
+          "0x80006612"
+        ],
+        "nearest_known_control_distance_words": 101
+      },
+      {
+        "words": [
+          300,
+          301
+        ],
+        "addresses": [
+          "0x80006616",
+          "0x80006618"
+        ],
+        "nearest_known_control_distance_words": 104
+      },
+      {
+        "words": [
+          301,
+          302
+        ],
+        "addresses": [
+          "0x80006618",
+          "0x8000661A"
+        ],
+        "nearest_known_control_distance_words": 105
+      },
+      {
+        "words": [
+          304,
+          305
+        ],
+        "addresses": [
+          "0x8000661E",
+          "0x80006620"
+        ],
+        "nearest_known_control_distance_words": 108
+      },
+      {
+        "words": [
+          305,
+          306
+        ],
+        "addresses": [
+          "0x80006620",
+          "0x80006622"
+        ],
+        "nearest_known_control_distance_words": 109
+      }
+    ]
+  },
+  "conclusion": "Forty-eight callback-unobserved fields have explicit stock absolute word writers and are rejected, including words 67/68. Seventy-six fields survive this specific static writer class; absence of this opcode is not proof of no writer.",
+  "next_target": "Classify additional absolute and base-relative writer encodings around the remaining words, beginning with ranked pair 281/282.",
+  "safety": "Static read-only stock MAIN analysis; no firmware was modified."
+}
