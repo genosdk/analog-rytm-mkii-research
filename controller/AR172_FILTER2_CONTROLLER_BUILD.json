@@ -42,7 +42,10 @@
     "offline_callback_step": true,
     "callback_step_limit": 32,
     "bounded_callback_run": true,
-    "callback_run_limit": 32
+    "callback_run_limit": 32,
+    "audio_preview": true,
+    "audio_preview_callback_limit": 32,
+    "audio_preview_sample_rate_hz": 48000
   },
   "publications": [
     {
@@ -468,18 +471,53 @@
     },
     "error": null
   },
+  "audio_preview": {
+    "note": 48,
+    "frequency_hz": 130.812783,
+    "lane": 7,
+    "callbacks": 2,
+    "start_callback_count": 4,
+    "callback_count": 6,
+    "rendered_frames": 64,
+    "playback_frames": 36000,
+    "sample_rate_hz": 48000,
+    "channels": 2,
+    "format": "signed 16-bit little-endian PCM WAV",
+    "source": "generated sine injected after stock external-audio ingress",
+    "monitor_boundary": "selected post-Filter2 Q1.31 lane",
+    "processing": "runtime Filter2/LFO2 candidate; stock mixer 0x4010A2E0 also executed and audited",
+    "stock_mixer_fixture_state": "muted until source-gain state is recovered",
+    "repeat_packaging": true,
+    "raw_pcm_sha256": "7c8d2593f8c4f5dc30374f70328473235a621a009fdfc43aecfe417ca37a6cd4",
+    "wav_sha256": "c571444aa30277da71a5ad7b016ec44ba5b639dbed0db613fba996cb72908954",
+    "nonzero_samples": 64,
+    "minimum": -1,
+    "maximum": 3610,
+    "callback_audit": [
+      {
+        "filter2_output": "829596c3fe9b5e3d583e4f6e5c94d4f07bd0e5ae09573d2fc33c538cbd93b0d9",
+        "stock_mixer_base": "0x80000800",
+        "stock_mixer_nonzero_words": 0
+      },
+      {
+        "filter2_output": "28784a82463c5f8a4f63ed4f4ea42cd574ae24dda43d4592230e2e8cba3cb61a",
+        "stock_mixer_base": "0x80000800",
+        "stock_mixer_nonzero_words": 0
+      }
+    ]
+  },
   "assets": {
     "index.html": {
       "exists": true,
-      "bytes": 4720
+      "bytes": 5666
     },
     "styles.css": {
       "exists": true,
-      "bytes": 7963
+      "bytes": 8624
     },
     "app.js": {
       "exists": true,
-      "bytes": 15239
+      "bytes": 17167
     }
   },
   "checks": {
@@ -497,6 +535,8 @@
     "stepped_phase_visible": true,
     "callback_filter_kernel_executed": true,
     "bounded_callback_run_exact": true,
+    "audio_preview_wav_exact": true,
+    "audio_preview_mixer_boundary_audited": true,
     "waveform_index_range_exact": true,
     "mode_index_range_exact": true,
     "note_on_off_exact": true,
@@ -505,6 +545,6 @@
     "all_static_assets_present": true,
     "no_flashable_image_created": true
   },
-  "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. Physical MIDI/USB ingress remains untraced.",
+  "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. The audition WAV uses a generated sine at the selected post-Filter2 lane because the storage-free fixture's stock mixer source-gain state remains muted. Physical MIDI/USB ingress remains untraced.",
   "safety": "Runtime emulator arming only; no ELE3, SysEx, or flashable image was created."
 }

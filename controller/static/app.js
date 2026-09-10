@@ -8,6 +8,7 @@ const WAVEFORMS = ["triangle", "square", "saw", "ramp", "sine", "exponential", "
 const MODES = ["loop", "one-shot", "half-shot", "hold"];
 const state = {
   values: Array(LANES).fill(DEFAULT_VALUE), selectedLane: 0, held: new Set(), online: false,
+  auditionNote: 60,
   callbackRun: { status: "idle", requested: 0, completed: 0 },
   lfo2: {
     waveform: Array(LANES).fill(0), mode: Array(LANES).fill(0),
@@ -22,6 +23,7 @@ let noteQueue = Promise.resolve();
 let stepQueue = Promise.resolve();
 let runQueue = Promise.resolve();
 let runPollTimer = null;
+let previewUrl = null;
 let filterRevision = 0;
 let noteRevision = 0;
 
@@ -119,6 +121,7 @@ function ingestSnapshot(snapshot) {
   state.selectedLane = snapshot.filter2.selected_lane;
   ingestLfo2(snapshot.lfo2);
   state.held = new Set(snapshot.notes.held);
+  state.auditionNote = snapshot.notes.audition_note;
   state.callbackRun = snapshot.callback_run;
 }
 
@@ -134,6 +137,8 @@ function renderNotes() {
   });
   const held = [...state.held].sort((a, b) => a - b);
   document.querySelector("#note-readout").textContent = held.length ? `Held: ${held.join(", ")}` : "No notes held";
+  const status = document.querySelector("#audio-status");
+  if (status?.dataset.rendering !== "true") status.textContent = `Ready · note ${state.auditionNote} · 32 bounded callbacks`;
 }
 
 function setConnection(online, label) {
@@ -200,7 +205,10 @@ function publishLfo2(parameter, value, source = "mouse") {
 function publishNote(key, action) {
   const note = NOTE_KEYS[key];
   const revision = ++noteRevision;
-  if (action === "on") state.held.add(note); else state.held.delete(note);
+  if (action === "on") {
+    state.held.add(note);
+    state.auditionNote = note;
+  } else state.held.delete(note);
   renderNotes();
   noteQueue = noteQueue.then(async () => {
     try {
@@ -217,6 +225,43 @@ function publishNote(key, action) {
     }
   });
   return noteQueue;
+}
+
+async function renderAudioPreview() {
+  const button = document.querySelector("#audio-preview");
+  const status = document.querySelector("#audio-status");
+  const player = document.querySelector("#audio-player");
+  button.disabled = true;
+  status.dataset.rendering = "true";
+  status.textContent = `Rendering note ${state.auditionNote} through 32 callbacks…`;
+  try {
+    const response = await fetch("/api/audio-preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ count: 32 }),
+    });
+    if (!response.ok) {
+      const body = await response.json();
+      throw new Error(body.error || `HTTP ${response.status}`);
+    }
+    const metadata = JSON.parse(response.headers.get("X-Rytm-Audio-Metadata"));
+    const blob = await response.blob();
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(blob);
+    player.src = previewUrl;
+    status.textContent = `Rendered note ${metadata.note} · lane ${metadata.lane + 1} · ${metadata.rendered_frames} processed frames repeated to 0.75 s · ${metadata.nonzero_samples} nonzero`;
+    setConnection(true, "Audio preview ready");
+    player.play().catch(() => {
+      status.textContent += " · press play";
+    });
+  } catch (error) {
+    status.textContent = `Preview failed · ${error.message}`;
+    setConnection(false, "Audio preview failed");
+    console.error(error);
+  } finally {
+    status.dataset.rendering = "false";
+    button.disabled = false;
+  }
 }
 
 function stepCallback() {
@@ -370,6 +415,7 @@ async function initialize() {
   bindKnobs();
   bindLfo2();
   bindNotes();
+  document.querySelector("#audio-preview").addEventListener("click", renderAudioPreview);
   try {
     const response = await fetch("/api/state", { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);

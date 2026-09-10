@@ -50,6 +50,8 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
                 raise ValueError("bounded callback run did not complete")
             time.sleep(0.05)
         snapshot = state.snapshot()
+        state.set_filter(7, 127, "api")
+        preview_wav, audio_preview = state.render_audio_preview(2)
         assets = {}
         for name in ("index.html", "styles.css", "app.js"):
             path = STATIC / name
@@ -99,6 +101,21 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
                 and snapshot["lfo2"]["runtime"]["callback_count"] == 4
                 and snapshot["callback_run"]["last_callback"]["boundary"] == "0x4010A2E0"
             ),
+            "audio_preview_wav_exact": (
+                preview_wav[:4] == b"RIFF"
+                and preview_wav[8:12] == b"WAVE"
+                and len(preview_wav) == 44 + 48_000 * 3
+                and audio_preview["note"] == 48
+                and audio_preview["lane"] == 7
+                and audio_preview["callbacks"] == 2
+                and audio_preview["rendered_frames"] == 64
+                and audio_preview["playback_frames"] == 36_000
+                and audio_preview["nonzero_samples"] > 0
+            ),
+            "audio_preview_mixer_boundary_audited": all(
+                item["stock_mixer_nonzero_words"] == 0
+                for item in audio_preview["callback_audit"]
+            ),
             "waveform_index_range_exact": [item["virtual_index"] for item in waveform_publications]
             == [f"0x{0x7FC0 + lane:04X}" for lane in range(8)],
             "mode_index_range_exact": [item["virtual_index"] for item in mode_publications]
@@ -144,18 +161,23 @@ def validate(stock_main: Path | None = None, emulator: Path | None = None) -> di
                 "callback_step_limit": 32,
                 "bounded_callback_run": True,
                 "callback_run_limit": 32,
+                "audio_preview": True,
+                "audio_preview_callback_limit": 32,
+                "audio_preview_sample_rate_hz": 48_000,
             },
             "publications": publications,
             "lfo2_publications": waveform_publications + mode_publications,
             "note_events": [note_on, note_off],
             "callback_step": callback_step,
             "callback_run": snapshot["callback_run"],
+            "audio_preview": audio_preview,
             "assets": assets,
             "checks": checks,
-            "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. Physical MIDI/USB ingress remains untraced.",
+            "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. The audition WAV uses a generated sine at the selected post-Filter2 lane because the storage-free fixture's stock mixer source-gain state remains muted. Physical MIDI/USB ingress remains untraced.",
             "safety": "Runtime emulator arming only; no ELE3, SysEx, or flashable image was created.",
         })
     finally:
+        state.close()
         bridge.close()
 
 

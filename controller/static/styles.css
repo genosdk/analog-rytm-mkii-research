@@ -129,6 +129,15 @@ h2 { font-size: 1rem; }
 .note-status { margin-top: 15px; color: #8f9a9e; font: .76rem "SFMono-Regular", Consolas, monospace; }
 #note-readout { color: #ff9b48; }
 
+.audio-panel { margin-bottom: 26px; }
+.audio-row { display: grid; grid-template-columns: minmax(190px, auto) 1fr; gap: 18px; align-items: center; }
+.audio-button { min-height: 42px; padding: 0 18px; border: 1px solid #326568; border-radius: 5px; color: #9ef5f1; background: #0b2428; cursor: pointer; }
+.audio-button:disabled { cursor: wait; opacity: .55; }
+.audio-row audio { width: 100%; height: 42px; }
+.audio-status, .audio-boundary { font: .7rem "SFMono-Regular", Consolas, monospace; }
+.audio-status { margin: 15px 0 0; color: #78cbc8; }
+.audio-boundary { margin: 7px 0 0; color: #6f7d82; line-height: 1.55; }
+
 footer { padding: 0 32px 25px; color: #657075; font-size: .75rem; }
 
 @media (max-width: 900px) {
@@ -150,6 +159,7 @@ footer { padding: 0 32px 25px; color: #657075; font-size: .75rem; }
   .display strong { font-size: .95rem; }
   .runtime-row { align-items: stretch; flex-direction: column; }
   .runtime-actions { flex-direction: column; }
+  .audio-row { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

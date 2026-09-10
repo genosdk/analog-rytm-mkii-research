@@ -216,8 +216,13 @@ waveforms and four run modes publish through their recovered virtual-index
 banks. **Step callback** deliberately advances offline processing and refreshes
 the selected lane's telemetry. **Run 16 callbacks** starts a bounded offline
 run, changes to **Stop after current** while active, and polls telemetry until
-completion. Neither control starts host audio playback. The service never
-writes an ELE3 container, SysEx package, or flashable image.
+completion. **Render selected note** executes up to 32 bounded callbacks with a
+non-proprietary sine source, monitors the selected post-Filter2 Q1.31 lane, and
+packages the exact rendered segment as a repeated 0.75-second 48-kHz stereo WAV
+for browser playback. The stock mixer is executed and audited on every preview
+callback, but its source-gain state remains muted in the storage-free controller
+fixture, so the audition tap is explicitly pre-mixer. The service never writes
+an ELE3 container, SysEx package, or flashable image.
 
 ## Railway dashboard
 

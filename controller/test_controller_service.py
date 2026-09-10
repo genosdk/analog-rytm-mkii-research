@@ -220,6 +220,24 @@ class ServiceApiTests(unittest.TestCase):
             self.assertEqual(status, 400)
             self.assertIn("count", json.loads(body)["error"])
 
+    def test_audio_preview_returns_bounded_stereo_wav(self):
+        status, content_type, body = self.request(
+            "POST", "/api/audio-preview", {"count": 2},
+        )
+        self.assertEqual(status, 200)
+        self.assertEqual(content_type, "audio/wav")
+        self.assertEqual(body[:4], b"RIFF")
+        self.assertEqual(body[8:12], b"WAVE")
+        self.assertEqual(len(body), 44 + 48_000 * 3)
+        self.assertNotEqual(set(body[44:]), {0})
+
+    def test_audio_preview_validates_callback_bound(self):
+        status, _, body = self.request(
+            "POST", "/api/audio-preview", {"count": 33},
+        )
+        self.assertEqual(status, 400)
+        self.assertIn("count", json.loads(body)["error"])
+
     def test_bounded_callback_run_completes_and_reports_progress(self):
         before = self.state.snapshot()["lfo2"]["runtime"]["callback_count"]
         status, _, body = self.request(

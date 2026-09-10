@@ -90,3 +90,13 @@ This option remains a research clock rather than a physical realtime claim.
 The backpressured 10 ms model has sustained 2,303 completed services while the
 UI remained responsive, but the physical device cadence has not yet been
 measured. Without the option, emulator behavior is unchanged.
+
+## Local controller audition render
+
+The browser controller's **Render selected note** action is separate from
+QEMU's realtime `--audio` backend. It executes at most 32 callbacks, drives the
+chosen lane with a generated sine at the most recent QWERTY pitch, monitors the
+proven post-Filter2 Q1.31 output, and returns a repeated 0.75-second 48-kHz
+stereo WAV. The stock mixer still executes and its 256 writes are checked, but
+the compact storage-free fixture has not initialized its source-gain state and
+therefore produces zero there. The UI labels this pre-mixer boundary directly.

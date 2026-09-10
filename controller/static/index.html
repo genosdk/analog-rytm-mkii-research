@@ -107,6 +107,22 @@
       </div>
     </section>
 
+    <section class="panel audio-panel" aria-labelledby="audio-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-index">04</p>
+          <h2 id="audio-title">AUDITION RENDER</h2>
+        </div>
+        <p>Generated test tone · post-Filter 2/LFO 2 monitor · no firmware output</p>
+      </div>
+      <div class="audio-row">
+        <button id="audio-preview" class="audio-button" type="button">Render selected note</button>
+        <audio id="audio-player" controls preload="none"></audio>
+      </div>
+      <p class="audio-status" id="audio-status" aria-live="polite">Ready · note 60 · 32 bounded callbacks</p>
+      <p class="audio-boundary">The source is a non-proprietary sine injected after external ingress. Audio is monitored from the selected post-Filter 2 lane; the stock mixer is also executed and audited, but its source-gain state remains muted in this storage-free fixture.</p>
+    </section>
+
     <footer>
       <span>Runtime-only emulator control</span>
       <span>No flashable firmware generated</span>

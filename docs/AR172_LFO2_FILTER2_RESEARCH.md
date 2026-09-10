@@ -666,9 +666,18 @@ counter. Its **Run 16 callbacks** control now drives the same endpoint machinery
 in a background thread, polls live state, stops explicitly after the current
 callback, and cannot exceed the API's 32-callback bound. Manual stepping is
 rejected while a run is active. Real-fixture start/completion and stop tests plus
-the machine-readable controller build validation pass. The next gate is to bind
-this controlled execution to the already-proven host audio tap with an explicit
-buffer/timing contract; host playback remains disabled in this controller build.
+the machine-readable controller build validation pass. The controller now also
+has a bounded audition renderer: it generates a non-proprietary sine from the
+last QWERTY note, injects it at the proven post-ingress boundary, executes 1..32
+authentic Filter2/LFO2 callbacks, converts the selected Q1.31 lane to signed
+16-bit stereo, and repeats the exact captured segment into a 0.75-second 48-kHz
+WAV for browser playback. Each callback also executes and audits the stock
+mixer's complete 256-write geometry. That mixer remains all-zero in the
+storage-free fixture because its source-gain state is not initialized, so the
+audition is explicitly identified as a post-Filter2 pre-mixer monitor rather
+than stock final-output audio. The next gate is to recover the minimum stock
+mixer source-gain initialization and move the same bounded capture downstream
+without enabling an unbounded service clock.
 
 For Filter 2, state-loaded Q1.31 coefficients, per-sample control slew, all
 eight audio/state lanes, the foreground publication boundary, its

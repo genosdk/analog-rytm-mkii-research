@@ -5,11 +5,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
+import math
 import sys
 import tempfile
 import threading
 import time
+import wave
 from collections import deque
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -112,6 +115,10 @@ LIVE_PITCH = 0x80006388
 TRACK_CHROMATIC_MODE_SOURCE = 0x412FACA1
 LIVE_CHROMATIC_MODE = 0x8000EA18
 LIVE_PITCH_READ_PC = 0x4011CA7E
+MIXER_RETURN = 0x4011CAE8
+SAMPLE_RATE = 48_000
+PREVIEW_SECONDS = 0.75
+PREVIEW_AMPLITUDE = 0x10000000
 VOICE_RESET_FLAG = 0x80
 NOTE_KEYS = {
     "a": 48,
@@ -236,6 +243,133 @@ class EmulatorBridge:
                 "boundary": "pre-mixer",
                 "synthetic_input": True,
             }
+
+    @staticmethod
+    def _signed32(value: int) -> int:
+        return value - 0x100000000 if value & 0x80000000 else value
+
+    def render_audio_preview(self, note: int, lane: int, count: int = 32) -> tuple[bytes, dict[str, Any]]:
+        """Render a bounded generated tone through Filter2 and the stock mixer."""
+        if not isinstance(note, int) or isinstance(note, bool) or not 0 <= note <= 127:
+            raise ValueError("note must be an integer from 0 through 127")
+        if not isinstance(lane, int) or isinstance(lane, bool) or not 0 <= lane < LANES:
+            raise ValueError("lane must be an integer from 0 through 7")
+        if not isinstance(count, int) or isinstance(count, bool) or not 1 <= count <= 32:
+            raise ValueError("count must be an integer from 1 through 32")
+        with self.lock:
+            if self._callback_baseline is None:
+                raise RuntimeError("callback baseline has not been captured")
+            install_tables(self.bus, self._stock)
+            frequency = 440.0 * (2.0 ** ((note - 69) / 12.0))
+            phase = 0.0
+            phase_step = 2.0 * math.pi * frequency / SAMPLE_RATE
+            rendered_samples: list[int] = []
+            callback_hashes = []
+            start_callback_count = self.callback_count
+            for _ in range(count):
+                install_input(self.bus, False)
+                source = []
+                for _frame in range(32):
+                    sample = int(round(math.sin(phase) * PREVIEW_AMPLITUDE))
+                    source.append(sample & 0xFFFFFFFF)
+                    phase = (phase + phase_step) % (2.0 * math.pi)
+                cpu = cpu_from_baseline(self._module, self.bus, self._callback_baseline)
+                cpu.pushl(RETURN_PC)
+                cpu.pc = AUDIO_CALLBACK
+                injected = False
+                for _instruction in range(230_000):
+                    if cpu.pc == FILTER_SYMBOLS["post_ingress"]:
+                        for item_lane in range(LANES):
+                            base = 0x800067F8 + item_lane * 0x80
+                            words = source if item_lane == lane else [0] * 32
+                            for frame, word in enumerate(words):
+                                self.bus.write(base + frame * 4, 4, word)
+                        injected = True
+                    if cpu.pc == MIXER:
+                        break
+                    cpu.step()
+                else:
+                    raise RuntimeError("audio preview did not reach the stock mixer")
+                if not injected:
+                    raise RuntimeError("audio preview missed its generated-source boundary")
+                filtered = plane_lanes(self.bus)
+                mixer_writes: list[tuple[int, int]] = []
+                original_write = self.bus.write
+
+                def traced_write(address: int, size: int, value: int) -> None:
+                    if cpu.pc == 0x4010A3B8 and size == 4:
+                        mixer_writes.append((address, value & 0xFFFFFFFF))
+                    original_write(address, size, value)
+
+                self.bus.write = traced_write
+                try:
+                    for _instruction in range(10_000):
+                        if cpu.pc == MIXER_RETURN:
+                            break
+                        cpu.step()
+                    else:
+                        raise RuntimeError("audio preview mixer did not return")
+                finally:
+                    self.bus.write = original_write
+                if len(mixer_writes) != 256 or len({address for address, _ in mixer_writes}) != 256:
+                    raise RuntimeError("audio preview observed unexpected stock mixer geometry")
+                mixer_values = dict(mixer_writes)
+                mixer_base = min(mixer_values)
+                block = [
+                    max(-32768, min(32767, self._signed32(word) >> 16))
+                    for word in filtered[lane]
+                ]
+                rendered_samples.extend(block)
+                self.callback_count += 1
+                callback_hashes.append({
+                    "filter2_output": self._plane_hash(filtered),
+                    "stock_mixer_base": f"0x{mixer_base:08X}",
+                    "stock_mixer_nonzero_words": sum(value != 0 for value in mixer_values.values()),
+                })
+
+            raw_pcm = b"".join(
+                sample.to_bytes(2, "little", signed=True) * 2
+                for sample in rendered_samples
+            )
+            target_frames = int(SAMPLE_RATE * PREVIEW_SECONDS)
+            repeats = math.ceil(target_frames / len(rendered_samples))
+            playback_samples = (rendered_samples * repeats)[:target_frames]
+            playback_pcm = b"".join(
+                sample.to_bytes(2, "little", signed=True) * 2
+                for sample in playback_samples
+            )
+            output = io.BytesIO()
+            with wave.open(output, "wb") as wav:
+                wav.setnchannels(2)
+                wav.setsampwidth(2)
+                wav.setframerate(SAMPLE_RATE)
+                wav.writeframes(playback_pcm)
+            wav_bytes = output.getvalue()
+            metadata = {
+                "note": note,
+                "frequency_hz": round(frequency, 6),
+                "lane": lane,
+                "callbacks": count,
+                "start_callback_count": start_callback_count,
+                "callback_count": self.callback_count,
+                "rendered_frames": len(rendered_samples),
+                "playback_frames": len(playback_samples),
+                "sample_rate_hz": SAMPLE_RATE,
+                "channels": 2,
+                "format": "signed 16-bit little-endian PCM WAV",
+                "source": "generated sine injected after stock external-audio ingress",
+                "monitor_boundary": "selected post-Filter2 Q1.31 lane",
+                "processing": "runtime Filter2/LFO2 candidate; stock mixer 0x4010A2E0 also executed and audited",
+                "stock_mixer_fixture_state": "muted until source-gain state is recovered",
+                "repeat_packaging": repeats > 1,
+                "raw_pcm_sha256": hashlib.sha256(raw_pcm).hexdigest(),
+                "wav_sha256": hashlib.sha256(wav_bytes).hexdigest(),
+                "nonzero_samples": sum(sample != 0 for sample in rendered_samples),
+                "minimum": min(rendered_samples),
+                "maximum": max(rendered_samples),
+                "callback_audit": callback_hashes,
+            }
+            return wav_bytes, metadata
 
     def publish(self, lane: int, value: int) -> dict[str, Any]:
         if not 0 <= lane < LANES:
@@ -440,6 +574,7 @@ class ControllerState:
             "depth": [DEFAULT_CONTROL] * LANES,
         }
         self.held_notes: set[int] = set()
+        self.audition_note = 60
         self.events: deque[dict[str, Any]] = deque(maxlen=32)
         self.lock = threading.RLock()
         self.started_at = time.time()
@@ -518,6 +653,7 @@ class ControllerState:
         with self.lock:
             if action == "on":
                 self.held_notes.add(note)
+                self.audition_note = note
                 stock_trigger = self.bridge.trigger_note(note)
                 transport = "emulated_stock_trigger"
             else:
@@ -537,6 +673,16 @@ class ControllerState:
             }
             event["stock_trigger" if action == "on" else "stock_release"] = stock_trigger
             return self._record(event)
+
+    def render_audio_preview(self, count: int = 32) -> tuple[bytes, dict[str, Any]]:
+        with self.lock:
+            if self.callback_run["status"] in {"running", "stopping"}:
+                raise ValueError("audio preview is unavailable while a callback run is active")
+            wav_bytes, metadata = self.bridge.render_audio_preview(
+                self.audition_note, self.selected_lane, count,
+            )
+            self._record({"type": "audio_preview", "source": "api", **metadata})
+            return wav_bytes, metadata
 
     def step_callbacks(self, count: int = 1) -> dict[str, Any]:
         with self.lock:
@@ -648,6 +794,7 @@ class ControllerState:
                 "notes": {
                     "keys": NOTE_KEYS,
                     "held": sorted(self.held_notes),
+                    "audition_note": self.audition_note,
                     "transport": "key-down: stock constructor type 1; key-up: stock constructor type 2",
                 },
                 "emulator": {
@@ -720,6 +867,27 @@ def make_handler(state: ControllerState):
                     event = state.control_callback_run(
                         payload.get("action", ""), payload.get("max_callbacks", 16),
                     )
+                elif path == "/api/audio-preview":
+                    wav_bytes, metadata = state.render_audio_preview(payload.get("count", 32))
+                    public_metadata = {
+                        key: metadata[key] for key in (
+                            "note", "frequency_hz", "lane", "callbacks", "callback_count",
+                            "rendered_frames", "playback_frames", "sample_rate_hz",
+                            "nonzero_samples", "minimum", "maximum", "raw_pcm_sha256", "wav_sha256",
+                        )
+                    }
+                    self.send_response(HTTPStatus.OK)
+                    self.send_header("Content-Type", "audio/wav")
+                    self.send_header("Content-Length", str(len(wav_bytes)))
+                    self.send_header("Cache-Control", "no-store")
+                    self.send_header("X-Content-Type-Options", "nosniff")
+                    self.send_header(
+                        "X-Rytm-Audio-Metadata",
+                        json.dumps(public_metadata, separators=(",", ":")),
+                    )
+                    self.end_headers()
+                    self.wfile.write(wav_bytes)
+                    return
                 else:
                     self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
                     return
