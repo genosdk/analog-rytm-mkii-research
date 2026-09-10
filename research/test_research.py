@@ -220,6 +220,18 @@ class QemuEmacPatchTests(unittest.TestCase):
         self.assertIn("product >>= 23", patch)
 
 
+class MacosPackagingTests(unittest.TestCase):
+    def test_factory_storage_device_is_included_in_qemu_build(self):
+        workflow = (
+            ROOT / ".github" / "workflows" / "package-macos-app.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "cp research/qemu/hw/m68k/ar_mk2_esdhc.c qemu-src/hw/m68k/",
+            workflow,
+        )
+        self.assertIn("'ar_mk2_esdhc.c'", workflow)
+
+
 class QemuAudioEdmaTests(unittest.TestCase):
     def test_linked_audio_descriptor_semantics_are_modeled(self):
         source = (
