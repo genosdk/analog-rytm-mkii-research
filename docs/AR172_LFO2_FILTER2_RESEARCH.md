@@ -516,6 +516,24 @@ New state must use a versioned extension or verified-unused storage; existing
   setter ABI. Its passing output is
   `research/AR172_FILTER2_HOST_CONTROL_INGRESS_PROBE.json`; it creates no new
   firmware image.
+- `research/filter2_lfo2_cutoff_binding_probe.py` binds eight block-rate LFO2
+  lanes to separate Filter 2 base/effective cutoff targets while preserving
+  mask-off identity. Its report is
+  `research/AR172_FILTER2_LFO2_CUTOFF_BINDING_PROBE.json`.
+- `research/lfo2_control_publication_probe.py` publishes per-lane enable,
+  trigger/free, reset, logarithmic rate, depth and Filter 2 cutoff through the
+  proven foreground setter ABI. Its report is
+  `research/AR172_LFO2_CONTROL_PUBLICATION_PROBE.json`.
+- `research/lfo2_note_trigger_reset_probe.py` attaches phase/output/random-state
+  reset to the authentic stock note-on constructor for trigger-mode lanes and
+  proves free-mode and note-off preservation. Its report is
+  `research/AR172_LFO2_NOTE_TRIGGER_RESET_PROBE.json`.
+- `research/lfo2_waveform_mode_probe.py` proves the table-free triangle,
+  square, saw and ramp paths plus loop, one-shot, half-shot and hold modes.
+  `research/lfo2_extended_waveform_probe.py` completes sine, exponential and
+  deterministic random using two locked 256-entry tables. Their reports are
+  `research/AR172_LFO2_WAVEFORM_MODE_PROBE.json` and
+  `research/AR172_LFO2_EXTENDED_WAVEFORM_PROBE.json`.
 - `controller/filter2_controller_service.py` serves the local control surface
   and owns the long-lived emulator bridge. `controller/static/` contains the
   eight-knob and QWERTY interface, while `controller/validate_controller.py`
@@ -617,10 +635,13 @@ Only after those gates pass should an isolated LFO2 bypass canary be packaged.
 
 ## Immediate next target
 
-For LFO2, map the 492 asserted-PCS0 DSPI1 payload positions to analog control
-fields. A second modulator can reuse
-the proven destination equation and write control fields via shadow state
-without enlarging the stock 42-word record.
+The DSPI1 spare-field route is closed: every candidate lies in a stock-managed
+structure. LFO2 therefore remains CPU-resident in the versioned shadow-state
+extension and modulates the proven CPU-side Filter 2 effective-cutoff path.
+All seven waveform shapes and four run modes now execute under emulation. The
+next gate is a multi-callback reset/retrigger matrix for sine, exponential and
+random, followed by exposing waveform and mode through the existing desktop
+controller without disturbing its QWERTY note path or 0..127 mouse controls.
 
 For Filter 2, state-loaded Q1.31 coefficients, per-sample control slew, all
 eight audio/state lanes, the foreground publication boundary, its

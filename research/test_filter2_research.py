@@ -50,6 +50,13 @@ from control_frame_static_move_writer_probe import (
 from control_frame_computed_record_writer_probe import (
     probe as probe_control_frame_computed_record_writer,
 )
+from filter2_lfo2_cutoff_binding_probe import (
+    probe as probe_filter2_lfo2_cutoff_binding,
+)
+from lfo2_control_publication_probe import probe as probe_lfo2_control_publication
+from lfo2_note_trigger_reset_probe import probe as probe_lfo2_note_trigger_reset
+from lfo2_waveform_mode_probe import probe as probe_lfo2_waveform_mode
+from lfo2_extended_waveform_probe import probe as probe_lfo2_extended_waveform
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -704,6 +711,45 @@ class ControlFrameComputedRecordWriterProbeTests(StockProbeTest):
         self.assertEqual(slots["candidate_companion_fields_quarantined"], 39)
         self.assertEqual(result["remaining"]["field_count"], 0)
         self.assertEqual(result["remaining"]["adjacent_pair_count"], 0)
+
+
+class Lfo2CpuIntegrationProbeTests(StockProbeTest):
+    def test_cutoff_binding_all_eight_lanes(self):
+        result = probe_filter2_lfo2_cutoff_binding(STOCK, EMULATOR)
+        self.assertEqual(result["result"], "PASS")
+        integration = result["lfo2_filter2_integration"]
+        self.assertEqual(len(integration["controls"]), 8)
+        self.assertTrue(integration["base_targets_immutable"])
+        self.assertTrue(integration["all_oracles_match"])
+
+    def test_foreground_publication_and_random_reset(self):
+        result = probe_lfo2_control_publication(STOCK, EMULATOR)
+        self.assertEqual(result["result"], "PASS")
+        vectors = result["publication_vectors"]
+        self.assertEqual(vectors["reset_lane5_random_index"], 0)
+        self.assertTrue(result["published_control_to_audio"]["oracle_match"])
+
+    def test_note_trigger_reset_and_four_base_waveforms(self):
+        note = probe_lfo2_note_trigger_reset(STOCK, EMULATOR)
+        self.assertEqual(note["result"], "PASS")
+        self.assertEqual(len(note["note_on_mode_matrix"]), 8)
+        for row in note["note_on_mode_matrix"]:
+            expected = 0 if row["mode"] == "trigger" else 0x60 + row["track"]
+            self.assertEqual(row["random_index_after"], expected)
+        wave = probe_lfo2_waveform_mode(STOCK, EMULATOR)
+        self.assertEqual(wave["result"], "PASS")
+        self.assertTrue(wave["waveform_mode_matrix"]["all_oracles_match"])
+
+    def test_all_seven_waveforms_and_disabled_identity(self):
+        result = probe_lfo2_extended_waveform(STOCK, EMULATOR)
+        self.assertEqual(result["result"], "PASS")
+        matrix = result["waveform_matrix"]
+        self.assertEqual(len(matrix["lanes"]), 7)
+        self.assertTrue(matrix["all_seven_waveforms_match"])
+        self.assertTrue(all(
+            all(row["bit_identical"].values())
+            for row in result["disabled_callback_stock_equivalence"]
+        ))
 
 
 

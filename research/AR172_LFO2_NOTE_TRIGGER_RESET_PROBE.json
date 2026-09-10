@@ -1,0 +1,485 @@
+{
+  "result": "PASS",
+  "stock": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "disabled_candidate": {
+    "path": "temporary execution image",
+    "sha256": "5e388a3fc1410c67432aa71cd35b1a6ec87c639885f1d115b170f5cd67e2193e",
+    "publication": {
+      "binding": {
+        "publication": {
+          "eight_lane_kernel": {
+            "state": {
+              "bypass": {
+                "call_site": "0x4011CACC",
+                "original_call": "4eb940117f00",
+                "replacement_call": "4eb9402b4340",
+                "cave": "0x402B4340",
+                "cave_body": "4eb940117f004e75",
+                "changed_bytes": 10,
+                "changed_ranges": [
+                  {
+                    "address": "0x4011CACC",
+                    "bytes": 6
+                  },
+                  {
+                    "address": "0x402B4340",
+                    "bytes": 8
+                  }
+                ],
+                "stock_cave_references": {
+                  "aligned_literals": [],
+                  "absolute_jmp_jsr": [],
+                  "relative_branches": []
+                }
+              },
+              "state_base": "0x402B4400",
+              "state_end_exclusive": "0x402B45F0",
+              "state_bytes_reserved": 496,
+              "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+              "stock_references": {
+                "aligned_literals": [],
+                "absolute_jmp_jsr": [],
+                "relative_branches": []
+              }
+            },
+            "cave_stub_address": "0x402B4340",
+            "cave_stub_body": "4ef9402b4600",
+            "extension_address": "0x402B4600",
+            "extension_end_exclusive": "0x402B476A",
+            "extension_bytes": 362,
+            "extension_body": "4eb940117f0040e74ab9402b4408670000ea48e7ffc008390000402b440d6700001241f9800067f843f9402b4420610000ce08390001402b440d6700001241f98000687843f9402b4440610000b208390002402b440d6700001241f9800068f843f9402b44606100009608390003402b440d6700001241f98000697843f9402b44806100007a08390004402b440d6700001241f9800069f843f9402b44a06100005e08390005402b440d6700001241f980006a7843f9402b44c06100004208390006402b440d6700001241f980006af843f9402b44e06100002608390007402b440d6700001241f980006b7843f9402b45006100000a4cdf03ff46df4e757020282900082a29000c2c059c844c864a866a00000806860000001f7e05eea6d8864c842210241192824c8161000030d4814c82228226290004220292834c816100001cd6814c832343000420c353806600ffce2a29000c234500084e754c041c057e1feea9da8582854e75",
+            "symbols": {
+              "entry": "0x402B4600",
+              "post_ingress": "0x402B4606",
+              "lane_0_skip": "0x402B4632",
+              "lane_1_skip": "0x402B464E",
+              "lane_2_skip": "0x402B466A",
+              "lane_3_skip": "0x402B4686",
+              "lane_4_skip": "0x402B46A2",
+              "lane_5_skip": "0x402B46BE",
+              "lane_6_skip": "0x402B46DA",
+              "lane_7_skip": "0x402B46F6",
+              "restore_registers": "0x402B46F6",
+              "restore_sr": "0x402B46FA",
+              "process_lane": "0x402B46FE",
+              "positive_division": "0x402B471A",
+              "sample_loop": "0x402B471E",
+              "multiply": "0x402B475C"
+            },
+            "flags": 0,
+            "filter2_lane_mask": 0,
+            "changed_byte_positions": 313
+          },
+          "callsite": "0x400B5936",
+          "callsite_patch": "4eb9402b4780",
+          "shim_address": "0x402B4780",
+          "shim_end_exclusive": "0x402B47D8",
+          "shim_bytes": 88,
+          "shim_body": "4ab9402b44086700004a202f00040c8000007ff86500003c0c8000007fff62000032222f00080c810000007f63000004727fe58943f9402b4800d3c12211048000007ff8eb8841f9402b442cd1c020814e754ef94011af4c",
+          "shim_symbols": {
+            "entry": "0x402B4780",
+            "control_valid": "0x402B47B2",
+            "shadow_store": "0x402B47CE",
+            "stock": "0x402B47D2"
+          },
+          "table_address": "0x402B4800",
+          "table_end_exclusive": "0x402B4A00",
+          "table_bytes": 512,
+          "virtual_index_range": [
+            "0x7FF8",
+            "0x7FFF"
+          ],
+          "armed": false,
+          "changed_byte_positions": 892
+        },
+        "flags": 0,
+        "filter_extension": [
+          "0x402B4600",
+          "0x402B4770"
+        ],
+        "lfo_update_extension": [
+          "0x402B4A00",
+          "0x402B4BB0"
+        ],
+        "lfo2_state0": "0x402B4520",
+        "lfo2_mask": "0x402B440E",
+        "state_contract": {
+          "lfo2_stride_bytes": 16,
+          "lfo2_fields": {
+            "phase": 0,
+            "increment": 4,
+            "depth": 8,
+            "last_modulation": 12
+          },
+          "filter2_base_target_offset": 12,
+          "filter2_effective_target_offset": 16
+        },
+        "changed_byte_positions": 1246
+      },
+      "callsite": "0x400B5936",
+      "callsite_patch": "4eb9402b4c00",
+      "shim": [
+        "0x402B4C00",
+        "0x402B4D26"
+      ],
+      "shim_bytes": 294,
+      "symbols": {
+        "entry": "0x402B4C00",
+        "trigger_mode": "0x402B4C5A",
+        "free_mode_bit": "0x402B4C72",
+        "enable": "0x402B4C7A",
+        "disable_bit": "0x402B4C92",
+        "reset": "0x402B4C9A",
+        "rate": "0x402B4CC0",
+        "rate_valid": "0x402B4CD6",
+        "depth": "0x402B4CF0",
+        "depth_valid": "0x402B4D06",
+        "stock": "0x402B4D20"
+      },
+      "rate_table": [
+        "0x402B4E00",
+        "0x402B5000"
+      ],
+      "rate_table_sha256": "6631d003a4503666ca7e3a1aa510246b2bc6cf14d7b8762372e3cb49a0164daf",
+      "index_banks": {
+        "trigger_mode": [
+          "0x7FD0",
+          "0x7FD7"
+        ],
+        "enable": [
+          "0x7FD8",
+          "0x7FDF"
+        ],
+        "reset": [
+          "0x7FE0",
+          "0x7FE7"
+        ],
+        "rate": [
+          "0x7FE8",
+          "0x7FEF"
+        ],
+        "depth": [
+          "0x7FF0",
+          "0x7FF7"
+        ],
+        "filter2": [
+          "0x7FF8",
+          "0x7FFF"
+        ]
+      },
+      "armed": false,
+      "changed_byte_positions": 1887
+    },
+    "epilogue_patch": "0x40118AE6",
+    "original": "46c14cd7041c",
+    "replacement": "4eb9402b5100",
+    "hook": [
+      "0x402B5100",
+      "0x402B5158"
+    ],
+    "hook_bytes": 88,
+    "symbols": {
+      "entry": "0x402B5100",
+      "epilogue": "0x402B514C"
+    },
+    "armed": false,
+    "changed_byte_positions": 1965
+  },
+  "armed_emulation_probe": {
+    "sha256": "972d85b8b87b832609b191a31c300a2f4bb5f604532fe1068bc4bbb0949d7cdd",
+    "publication": {
+      "binding": {
+        "publication": {
+          "eight_lane_kernel": {
+            "state": {
+              "bypass": {
+                "call_site": "0x4011CACC",
+                "original_call": "4eb940117f00",
+                "replacement_call": "4eb9402b4340",
+                "cave": "0x402B4340",
+                "cave_body": "4eb940117f004e75",
+                "changed_bytes": 10,
+                "changed_ranges": [
+                  {
+                    "address": "0x4011CACC",
+                    "bytes": 6
+                  },
+                  {
+                    "address": "0x402B4340",
+                    "bytes": 8
+                  }
+                ],
+                "stock_cave_references": {
+                  "aligned_literals": [],
+                  "absolute_jmp_jsr": [],
+                  "relative_branches": []
+                }
+              },
+              "state_base": "0x402B4400",
+              "state_end_exclusive": "0x402B45F0",
+              "state_bytes_reserved": 496,
+              "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+              "stock_references": {
+                "aligned_literals": [],
+                "absolute_jmp_jsr": [],
+                "relative_branches": []
+              }
+            },
+            "cave_stub_address": "0x402B4340",
+            "cave_stub_body": "4ef9402b4600",
+            "extension_address": "0x402B4600",
+            "extension_end_exclusive": "0x402B476A",
+            "extension_bytes": 362,
+            "extension_body": "4eb940117f0040e74ab9402b4408670000ea48e7ffc008390000402b440d6700001241f9800067f843f9402b4420610000ce08390001402b440d6700001241f98000687843f9402b4440610000b208390002402b440d6700001241f9800068f843f9402b44606100009608390003402b440d6700001241f98000697843f9402b44806100007a08390004402b440d6700001241f9800069f843f9402b44a06100005e08390005402b440d6700001241f980006a7843f9402b44c06100004208390006402b440d6700001241f980006af843f9402b44e06100002608390007402b440d6700001241f980006b7843f9402b45006100000a4cdf03ff46df4e757020282900082a29000c2c059c844c864a866a00000806860000001f7e05eea6d8864c842210241192824c8161000030d4814c82228226290004220292834c816100001cd6814c832343000420c353806600ffce2a29000c234500084e754c041c057e1feea9da8582854e75",
+            "symbols": {
+              "entry": "0x402B4600",
+              "post_ingress": "0x402B4606",
+              "lane_0_skip": "0x402B4632",
+              "lane_1_skip": "0x402B464E",
+              "lane_2_skip": "0x402B466A",
+              "lane_3_skip": "0x402B4686",
+              "lane_4_skip": "0x402B46A2",
+              "lane_5_skip": "0x402B46BE",
+              "lane_6_skip": "0x402B46DA",
+              "lane_7_skip": "0x402B46F6",
+              "restore_registers": "0x402B46F6",
+              "restore_sr": "0x402B46FA",
+              "process_lane": "0x402B46FE",
+              "positive_division": "0x402B471A",
+              "sample_loop": "0x402B471E",
+              "multiply": "0x402B475C"
+            },
+            "flags": 1,
+            "filter2_lane_mask": 255,
+            "changed_byte_positions": 315
+          },
+          "callsite": "0x400B5936",
+          "callsite_patch": "4eb9402b4780",
+          "shim_address": "0x402B4780",
+          "shim_end_exclusive": "0x402B47D8",
+          "shim_bytes": 88,
+          "shim_body": "4ab9402b44086700004a202f00040c8000007ff86500003c0c8000007fff62000032222f00080c810000007f63000004727fe58943f9402b4800d3c12211048000007ff8eb8841f9402b442cd1c020814e754ef94011af4c",
+          "shim_symbols": {
+            "entry": "0x402B4780",
+            "control_valid": "0x402B47B2",
+            "shadow_store": "0x402B47CE",
+            "stock": "0x402B47D2"
+          },
+          "table_address": "0x402B4800",
+          "table_end_exclusive": "0x402B4A00",
+          "table_bytes": 512,
+          "virtual_index_range": [
+            "0x7FF8",
+            "0x7FFF"
+          ],
+          "armed": true,
+          "changed_byte_positions": 894
+        },
+        "flags": 3,
+        "filter_extension": [
+          "0x402B4600",
+          "0x402B4770"
+        ],
+        "lfo_update_extension": [
+          "0x402B4A00",
+          "0x402B4BB0"
+        ],
+        "lfo2_state0": "0x402B4520",
+        "lfo2_mask": "0x402B440E",
+        "state_contract": {
+          "lfo2_stride_bytes": 16,
+          "lfo2_fields": {
+            "phase": 0,
+            "increment": 4,
+            "depth": 8,
+            "last_modulation": 12
+          },
+          "filter2_base_target_offset": 12,
+          "filter2_effective_target_offset": 16
+        },
+        "changed_byte_positions": 1248
+      },
+      "callsite": "0x400B5936",
+      "callsite_patch": "4eb9402b4c00",
+      "shim": [
+        "0x402B4C00",
+        "0x402B4D26"
+      ],
+      "shim_bytes": 294,
+      "symbols": {
+        "entry": "0x402B4C00",
+        "trigger_mode": "0x402B4C5A",
+        "free_mode_bit": "0x402B4C72",
+        "enable": "0x402B4C7A",
+        "disable_bit": "0x402B4C92",
+        "reset": "0x402B4C9A",
+        "rate": "0x402B4CC0",
+        "rate_valid": "0x402B4CD6",
+        "depth": "0x402B4CF0",
+        "depth_valid": "0x402B4D06",
+        "stock": "0x402B4D20"
+      },
+      "rate_table": [
+        "0x402B4E00",
+        "0x402B5000"
+      ],
+      "rate_table_sha256": "6631d003a4503666ca7e3a1aa510246b2bc6cf14d7b8762372e3cb49a0164daf",
+      "index_banks": {
+        "trigger_mode": [
+          "0x7FD0",
+          "0x7FD7"
+        ],
+        "enable": [
+          "0x7FD8",
+          "0x7FDF"
+        ],
+        "reset": [
+          "0x7FE0",
+          "0x7FE7"
+        ],
+        "rate": [
+          "0x7FE8",
+          "0x7FEF"
+        ],
+        "depth": [
+          "0x7FF0",
+          "0x7FF7"
+        ],
+        "filter2": [
+          "0x7FF8",
+          "0x7FFF"
+        ]
+      },
+      "armed": true,
+      "changed_byte_positions": 1889
+    },
+    "epilogue_patch": "0x40118AE6",
+    "original": "46c14cd7041c",
+    "replacement": "4eb9402b5100",
+    "hook": [
+      "0x402B5100",
+      "0x402B5158"
+    ],
+    "hook_bytes": 88,
+    "symbols": {
+      "entry": "0x402B5100",
+      "epilogue": "0x402B514C"
+    },
+    "armed": true,
+    "changed_byte_positions": 1967,
+    "artifact_retained": false
+  },
+  "note_on_mode_matrix": [
+    {
+      "track": 0,
+      "mode": "trigger",
+      "constructor_instructions": 130,
+      "phase_after": "0x00000000",
+      "last_after": "0x00000000",
+      "random_index_after": 0,
+      "reset_match": true
+    },
+    {
+      "track": 1,
+      "mode": "free",
+      "constructor_instructions": 120,
+      "phase_after": "0xA0000001",
+      "last_after": "0xB0000001",
+      "random_index_after": 97,
+      "reset_match": true
+    },
+    {
+      "track": 2,
+      "mode": "trigger",
+      "constructor_instructions": 130,
+      "phase_after": "0x00000000",
+      "last_after": "0x00000000",
+      "random_index_after": 0,
+      "reset_match": true
+    },
+    {
+      "track": 3,
+      "mode": "free",
+      "constructor_instructions": 120,
+      "phase_after": "0xA0000003",
+      "last_after": "0xB0000003",
+      "random_index_after": 99,
+      "reset_match": true
+    },
+    {
+      "track": 4,
+      "mode": "trigger",
+      "constructor_instructions": 130,
+      "phase_after": "0x00000000",
+      "last_after": "0x00000000",
+      "random_index_after": 0,
+      "reset_match": true
+    },
+    {
+      "track": 5,
+      "mode": "free",
+      "constructor_instructions": 120,
+      "phase_after": "0xA0000005",
+      "last_after": "0xB0000005",
+      "random_index_after": 101,
+      "reset_match": true
+    },
+    {
+      "track": 6,
+      "mode": "trigger",
+      "constructor_instructions": 130,
+      "phase_after": "0x00000000",
+      "last_after": "0x00000000",
+      "random_index_after": 0,
+      "reset_match": true
+    },
+    {
+      "track": 7,
+      "mode": "free",
+      "constructor_instructions": 120,
+      "phase_after": "0xA0000007",
+      "last_after": "0xB0000007",
+      "random_index_after": 103,
+      "reset_match": true
+    }
+  ],
+  "note_off_nonreset": {
+    "track": 2,
+    "constructor_instructions": 45,
+    "state_preserved": [
+      "0xDEADBEEF",
+      "0x01020304",
+      "0x50607080",
+      "0xCAFEBABE"
+    ]
+  },
+  "disabled_constructor_equivalence": [
+    {
+      "event": "note_on",
+      "semantic_identity": {
+        "watched_sha256": true,
+        "d": true,
+        "a": true,
+        "sr": true
+      },
+      "added_instructions": 5
+    },
+    {
+      "event": "note_off",
+      "semantic_identity": {
+        "watched_sha256": true,
+        "d": true,
+        "a": true,
+        "sr": true
+      },
+      "added_instructions": 5
+    }
+  ],
+  "conclusion": "The authentic stock note constructor now detours only at its shared epilogue. Note-on resets phase and last modulation for each trigger-mode audio lane, free-mode note-on preserves them, and note-off never resets. The hook then executes the displaced stock epilogue exactly.",
+  "scope_limit": "The hook covers the eight audio lanes currently processed by Filter2. Tracks 8..12 and the remaining LFO modes/waveforms are intentionally outside this gate.",
+  "next_target": "Pack waveform and one-shot/half/hold mode selection into the existing ABI, beginning with square, saw and ramp because they need no lookup table.",
+  "safety": "Default-disabled decompressed MAIN only; no ELE3 container or flashable SysEx was built."
+}

@@ -180,6 +180,12 @@ foreground control-publication shim through all eight renderer lanes. Disabled
 operation remains stock-equivalent. Physical-device cycle margin and a safe hardware
 activation sequence remain unproved, so no flashable image is produced.
 
+The CPU-side LFO2 path now shares that publication/state ABI across all eight
+lanes and implements triangle, sine, square, saw, ramp, exponential and
+deterministic-random waveforms. Loop, one-shot, half-shot and hold modes are
+executable; explicit reset and authentic trigger-mode note-on restart phase and
+the random sequence. The disabled callback remains bit-identical to stock.
+
 The detailed evidence and memory map are in
 `docs/AR172_LFO2_FILTER2_RESEARCH.md`.
 
