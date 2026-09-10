@@ -40,8 +40,8 @@
     "interrupt_safety": "A trigger request waits 10 Type-8 ticks for native trigger state, then remains pending until firmware clears IFR63; completion requires CPU IPL below 5 before another request is issued. The verified desktop budget is eight blocks."
   },
   "next_gate": {
-    "name": "AR172_QEMU_SUSTAINED_AUDIO_GATE",
-    "objective": "Measure and model the physical external-audio cadence, then determine whether sustained host playback can remain responsive without the bounded eight-block trigger budget."
+    "name": "AR172_QEMU_PHYSICAL_AUDIO_CADENCE_GATE",
+    "objective": "The backpressured sustained 10 ms model now passes. Establish the physical source-63 period, then validate sustained host playback at that cadence."
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

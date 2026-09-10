@@ -131,6 +131,8 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("c->audio_service_pending", source)
         self.assertIn("c->audio_service_entered", source)
         self.assertIn("c->audio_service_completed", source)
+        self.assertIn("c->mock_audio_service && !c->audio_service_pending", source)
+        self.assertIn("c->audio_service_pending = true", source)
         self.assertIn("completed vector 191 service count=%u", source)
         self.assertIn("c->intc[1].ifr & (1ULL << 63)", source)
         self.assertIn("c->cpu->env.sr & SR_I", source)

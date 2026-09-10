@@ -145,8 +145,8 @@ def main() -> None:
         "--audio",
         action="store_true",
         help=(
-            "enable the 48 kHz stereo renderer tap and one bounded stock audio "
-            "service pass per rising pad/QWERTY edge"
+            "enable the 48 kHz stereo renderer tap and eight bounded stock audio "
+            "service passes per rising pad/QWERTY edge"
         ),
     )
     ap.add_argument(

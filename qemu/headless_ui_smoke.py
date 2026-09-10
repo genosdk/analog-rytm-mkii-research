@@ -138,12 +138,25 @@ def main() -> None:
         default=8,
         help="completed vector-191 services required for each trigger edge",
     )
+    parser.add_argument(
+        "--mock-audio-service",
+        action="store_true",
+        help="run the backpressured continuous audio-service clock",
+    )
+    parser.add_argument(
+        "--minimum-audio-services",
+        type=int,
+        default=0,
+        help="completed vector-191 services required before the SMP check",
+    )
     args = parser.parse_args()
 
     if args.trigger_count < 1:
         parser.error("--trigger-count must be at least 1")
     if args.services_per_trigger < 1:
         parser.error("--services-per-trigger must be at least 1")
+    if args.minimum_audio_services < 0:
+        parser.error("--minimum-audio-services cannot be negative")
     if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
         args.qemu_debug = f"unimp,{args.qemu_debug}"
 
@@ -166,6 +179,10 @@ def main() -> None:
     env["AR_MK2_MOCK_CALIBRATION"] = "1"
     env["AR_MK2_MOCK_FACTORY_STATE"] = "1"
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
+    if args.mock_audio_service:
+        env["AR_MK2_MOCK_AUDIO_SERVICE"] = "1"
+    else:
+        env.pop("AR_MK2_MOCK_AUDIO_SERVICE", None)
     command = [
         str(qemu), "-M", "elektron-ar-mk2", "-m", "256M",
         "-bios", str(main_image), "-display", "none",
@@ -215,6 +232,13 @@ def main() -> None:
                         "release": "23 00",
                     }
                 )
+        if args.minimum_audio_services:
+            wait_log_count(
+                log,
+                "AR-MK2 AUDIO: completed vector 191 service",
+                args.minimum_audio_services,
+                deadline,
+            )
         time.sleep(1.0)
         panel_writer.write(bytes.fromhex("25 10"))
         time.sleep(0.08)
@@ -227,9 +251,10 @@ def main() -> None:
         print(json.dumps({
             "result": "PASS",
             "events": events,
-            "completed_audio_services": (
+            "completed_audio_services": max(
+                args.minimum_audio_services,
                 args.trigger_count * args.services_per_trigger
-                if args.exercise_trigger_audio else 0
+                if args.exercise_trigger_audio else 0,
             ),
             "startup_modal": metrics(before),
             "normal_ui": metrics(normal_ui),

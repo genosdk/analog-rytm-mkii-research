@@ -1122,14 +1122,16 @@ static void ar_type8_feed(void *opaque)
      * audio clock as a periodic forced event rather than a persistent level.
      * Reusing the observed Type-8 10 ms cadence keeps this research shim
      * narrow until physical hardware timing is measured. */
-    if (c->trigger_audio_service && c->audio_service_pending &&
+    if ((c->mock_audio_service || c->trigger_audio_service) &&
+        c->audio_service_pending &&
         !(c->intc[1].ifr & (1ULL << 63))) {
         c->audio_service_pending = false;
         c->audio_service_entered = true;
         qemu_log_mask(LOG_UNIMP,
                       "AR-MK2 AUDIO: entered vector 191 service\n");
     }
-    if (c->trigger_audio_service && c->audio_service_entered &&
+    if ((c->mock_audio_service || c->trigger_audio_service) &&
+        c->audio_service_entered &&
         ((c->cpu->env.sr & SR_I) >> SR_I_SHIFT) < 5) {
         c->audio_service_entered = false;
         c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS;
@@ -1141,7 +1143,8 @@ static void ar_type8_feed(void *opaque)
     if (!c->mock_audio_service && c->audio_service_delay) {
         c->audio_service_delay--;
     }
-    if ((c->mock_audio_service ||
+    if (((c->mock_audio_service && !c->audio_service_pending &&
+          !c->audio_service_entered) ||
          (c->audio_service_budget && !c->audio_service_delay &&
           !c->audio_service_pending && !c->audio_service_entered)) &&
         c->intc[1].icr[63]) {
@@ -1154,9 +1157,9 @@ static void ar_type8_feed(void *opaque)
         ar_edma_pump_channel(&c->edma, 30);
         c->intc[1].ifr |= 1ULL << 63;
         ar_intc_update(c);
+        c->audio_service_pending = true;
         if (!c->mock_audio_service && c->audio_service_budget) {
             c->audio_service_budget--;
-            c->audio_service_pending = true;
         }
         if (!c->audio_service_seen) {
             c->audio_service_seen = true;
