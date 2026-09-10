@@ -23,11 +23,13 @@ from post_voice_ingress_probe import (
     DMA_BLOCK_BYTES,
     EXTERNAL_AUDIO_WINDOW,
     OUTPUT_PLANE,
+    install_sample_levels,
     install_tables,
 )
 from trigger_queue_probe import load_emulator
 
 CAVE = 0x402B4340
+INGRESS = 0x40117F00
 MIXER = 0x4010A2E0
 FLAGS_ADDRESS = STATE_BASE + 8
 FILTER2_MASK_ADDRESS = STATE_BASE + 12
@@ -133,6 +135,8 @@ def trace_kernel(module, image_path: Path, stock: bytes, active: bool) -> dict:
         for _ in range(100_000):
             if cpu.pc == MIXER:
                 break
+            if cpu.pc == INGRESS:
+                install_sample_levels(bus)
             if CAVE <= cpu.pc < CAVE + len(UNITY_KERNEL_BODY):
                 cave_visits[cpu.pc] += 1
             if cpu.pc == CAVE + 6:

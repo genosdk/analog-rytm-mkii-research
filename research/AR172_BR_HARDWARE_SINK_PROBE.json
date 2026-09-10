@@ -1,13 +1,14 @@
 {
-  "result": "PASS",
+  "result": "PASS_DMA_SINK_BR_PATH_RETRACTED",
   "main": {
-    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
     "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
   },
   "emac_correction": {
     "normal_loads_ignore_mask": true,
+    "load_form_is_single_accumulate": true,
     "mask_addressing_modifier": "MACL/MSACL extension MAM bit 5",
-    "effect": "authentic BR remains live through natural renderer case 3"
+    "effect": "the earlier natural case-3 BR result is no longer reproducible"
   },
   "control_path": {
     "voice_control_word": "0x80006544",
@@ -44,15 +45,15 @@
     },
     {
       "source_br": "0x7F000000",
-      "case_3_br": "0x7B31",
-      "packed_control": "0x001FD285",
+      "case_3_br": "0x0000",
+      "packed_control": "0x00180FFF",
       "packet": {
         "selector": 1,
         "base": "0x80005010",
         "wire_high_address": "0x80005328",
-        "wire_high": "0x8001B01F",
+        "wire_high": "0x8001B018",
         "wire_low_address": "0x8000532C",
-        "wire_low": "0x8001D285"
+        "wire_low": "0x80010FFF"
       },
       "dma": {
         "channel": 15,
@@ -61,8 +62,8 @@
         "minor_bytes": 4,
         "iterations": 510,
         "transferred_bytes": 2040,
-        "payload_sha256": "451880b0227125dee2c28027f8ef1035bf7df21541b13dba7982d4b529c799b2",
-        "payload_hex_near_voice_control": "800100808001b01f8001d28580010000"
+        "payload_sha256": "0af5414e22cfeca97fcb99c530d6f828d75d5f2f4e9ca5d68478a01e5ae5adcd",
+        "payload_hex_near_voice_control": "800100808001b01880010fff80010000"
       }
     }
   ],
@@ -70,12 +71,13 @@
     "0x0BA",
     "0x0BB",
     "0x0BE",
-    "0x0BF",
-    "0x30F",
-    "0x312",
-    "0x313"
+    "0x0BF"
   ],
-  "conclusion": "Natural case-3 BR is serialized as two tagged 0x8001xxxx packet words and transferred by eDMA channel 15 in a 2,040-byte frame to peripheral FIFO 0xFC03C034. The CPU source planes remain unchanged, so this is a physical control sink rather than evidence of CPU-side PCM quantization.",
-  "next_target": "Identify the peripheral behind 0xFC03C034 and whether its control frame is consumed by the FPGA image. For Filter 2, separately test the CPU audio ingress after the hardware voice return; LFO2 can continue targeting control fields.",
+  "retracted_claim": {
+    "claim": "TRACK_BR_SOURCE reaches natural case-3 packed-control words",
+    "reason": "The previous 0x7B31/0x001FD285 result required the stale dual-EMAC decoder. Correct load-form semantics leave case-3 BR at zero."
+  },
+  "conclusion": "The stock packetizer and eDMA channel 15 still transfer a 2,040-byte control frame to peripheral FIFO 0xFC03C034. The current high TRACK_BR_SOURCE fixture changes four earlier payload bytes but does not alter the natural case-3 BR word under corrected EMAC semantics, so that propagation claim is retracted.",
+  "next_target": "Recover the correct stock BR publication source and repeat the packet differential; channel-15 transport geometry itself remains proven.",
   "safety": "Emulation and RAM/MMIO modeling only; firmware bytes were not modified."
 }

@@ -1,7 +1,7 @@
 {
   "result": "PASS",
   "main": {
-    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
     "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
   },
   "corrected_classification": {
@@ -53,9 +53,28 @@
       }
     ]
   },
+  "explicit_level_precondition": {
+    "load_site": "0x401186CC",
+    "field": "signed word 0x0E(A1)",
+    "runtime_record_base": "0x8000F776",
+    "runtime_record_bytes": 84,
+    "physical_voice_records": [
+      1,
+      5,
+      2,
+      6,
+      9,
+      7,
+      11,
+      3
+    ],
+    "seeded_level": "0x4000",
+    "timing": "after callback frame builder and before external ingress"
+  },
   "vectors": [
     {
       "input": "zero",
+      "sample_level": "0x4000",
       "instructions": 17132,
       "table_reads": [
         520,
@@ -83,6 +102,7 @@
     },
     {
       "input": "repeated 0x10000000 words",
+      "sample_level": "0x4000",
       "instructions": 17132,
       "table_reads": [
         520,
@@ -115,10 +135,10 @@
         192,
         224
       ],
-      "output_sha256": "a68c35c729fd164ee082c314beb70eecd951adf54ebbc1d4b405bb5898e96430"
+      "output_sha256": "c48151676a4c06fc65db773dc947d38718e0d357a6f32a74bbaa1dc6205fc6e9"
     }
   ],
-  "conclusion": "The three 0x400-byte regions previously called source planes are immutable DSP tables copied byte-exactly from MAIN during startup. The actual signal dependency enters from external window 0x4F9372E0 through alternating eDMA channels 31/32. With the stock tables installed, zero external input yields zero output, while a repeated nonzero input produces 248 nonzero words in an 8-by-32 layout at 0x800067F8. This corrects the earlier interpretation and establishes 0x800067F8 as a strong post-conversion Filter 2 candidate.",
+  "conclusion": "The three 0x400-byte regions previously called source planes are immutable DSP tables copied byte-exactly from MAIN during startup. The actual signal dependency enters from external window 0x4F9372E0 through alternating eDMA channels 31/32. With the stock tables installed and an explicit nonzero sample-level word seeded after the callback frame builder, zero external input yields zero output, while a repeated nonzero input produces 248 nonzero words in an 8-by-32 layout at 0x800067F8. This corrects the earlier interpretation and establishes 0x800067F8 as a strong post-conversion Filter 2 candidate.",
   "scope_limit": "The repeated-window emulator stimulus proves routing and geometry, not the physical sample rate, exact fixed-point format, or which off-chip converter drives the hardware window.",
   "next_target": "Determine the numeric format and saturation at 0x800067F8, then insert an exact disabled bypass after 0x40117F00 and prove bit-identical combiner input.",
   "safety": "Emulation and RAM observation only; firmware bytes were not modified."

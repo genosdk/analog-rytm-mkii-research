@@ -1,7 +1,7 @@
 {
-  "result": "PASS",
+  "result": "PASS_QUEUE_PROGRESS_BR_PATH_RETRACTED",
   "main": {
-    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
     "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
   },
   "recovered_runtime_contract": {
@@ -230,7 +230,7 @@
             0
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 1,
           "event_value_after": 0,
@@ -244,7 +244,7 @@
             1
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 2,
           "event_value_after": 0,
@@ -258,7 +258,7 @@
             2
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 3,
           "event_value_after": 0,
@@ -272,7 +272,7 @@
             2
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 4,
           "event_value_after": 0,
@@ -286,7 +286,7 @@
             2
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 5,
           "event_value_after": 0,
@@ -300,7 +300,7 @@
             2
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 6,
           "event_value_after": 0,
@@ -314,7 +314,7 @@
             2
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 7,
           "event_value_after": 0,
@@ -328,7 +328,7 @@
             2
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 8,
           "event_value_after": 0,
@@ -342,7 +342,7 @@
             2
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 9,
           "event_value_after": 0,
@@ -356,7 +356,7 @@
             2
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 10,
           "event_value_after": 0,
@@ -370,13 +370,13 @@
             3
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 11,
           "event_value_after": 0,
           "voice_state_after": 4,
-          "voice_timer_after": 4112354,
-          "packed_control_after": "0x001FD285"
+          "voice_timer_after": 2932,
+          "packed_control_after": "0x00180FFF"
         },
         {
           "instructions": 66525,
@@ -384,19 +384,23 @@
             4
           ],
           "br_frame_at_renderer": [
-            31537
+            0
           ],
           "callback": 12,
           "event_value_after": 0,
           "voice_state_after": 4,
-          "voice_timer_after": 4112338,
-          "packed_control_after": "0x001FD285"
+          "voice_timer_after": 2916,
+          "packed_control_after": "0x00180FFF"
         }
       ],
-      "final_packed_control": "0x001FD285"
+      "final_packed_control": "0x00180FFF"
     }
   ],
-  "conclusion": "A stock 56-byte trigger record now reaches the real command queue, is cleared by the complete interrupt, and advances renderer 0 naturally through cases 0, 1, 2, 3, and 4. The corrected EMAC addressing model preserves the BR ramp across all twelve callbacks. High BR reaches natural case 3 and leaves a distinct packed control word; this proves sustained control encoding, not PCM quantization.",
-  "next_target": "Identify the consumer behind peripheral FIFO 0xFC03C034; separately trace post-hardware-return CPU audio ingress for a Filter 2 insertion boundary.",
+  "retracted_claim": {
+    "claim": "TRACK_BR_SOURCE naturally reaches the renderer BR frame in this fixture",
+    "reason": "The earlier nonzero result depended on misclassifying load-form EMAC instructions as dual accumulates. The NXP/QEMU-correct decoder leaves both BR frames zero while preserving the complete queue state machine."
+  },
+  "conclusion": "A stock 56-byte trigger record now reaches the real command queue, is cleared by the complete interrupt, and advances renderer 0 naturally through cases 0, 1, 2, 3, and 4. Under the corrected dual-EMAC decoder, the current TRACK_BR_SOURCE fixture does not reach the renderer BR frame. Queue and state progression remain proven; natural BR propagation is re-opened.",
+  "next_target": "Trace the correct foreground BR publication source through the load-form EMAC chain into BR_FRAME_WORD without relying on the retracted fixture.",
   "safety": "Emulation and RAM initialization only; firmware bytes were not modified."
 }

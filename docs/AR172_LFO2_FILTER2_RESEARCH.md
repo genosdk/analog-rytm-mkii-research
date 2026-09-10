@@ -436,16 +436,20 @@ New state must use a versioned extension or verified-unused storage; existing
 - `research/trigger_queue_probe.py` reconstructs the stock runtime queue,
   submits the authentic 56-byte trigger record, runs the interrupt through its
   final `RTE`, and proves natural five-case renderer progression plus one-shot
-  event cleanup. Passing output is
+  event cleanup. The earlier claim that the chosen `TRACK_BR_SOURCE` fixture
+  also propagated BR is retracted after correcting load-form dual-EMAC decode.
+  Passing output is
   `research/AR172_TRIGGER_QUEUE_PROBE.json`.
 - `research/sample_state_probe.py` (legacy filename) proves trigger flag bit 5
   gates control-frame interpolation, maps the four trigger fields into live
   SRAM, and measures its natural phase/countdown progression over twelve
   complete interrupts. Passing output is
   `research/AR172_SAMPLE_STATE_PROBE.json`.
-- `research/br_hardware_sink_probe.py` follows natural case-3 BR through the
-  stock packetizer and eDMA channel 15 into peripheral FIFO `0xFC03C034`.
-  Passing output is `research/AR172_BR_HARDWARE_SINK_PROBE.json`.
+- `research/br_hardware_sink_probe.py` proves the stock packetizer/eDMA channel
+  15 geometry into peripheral FIFO `0xFC03C034`. Its earlier natural case-3 BR
+  propagation claim is retracted: it depended on the stale dual-EMAC decoder,
+  while corrected semantics leave the current fixture's BR frame at zero.
+  Passing corrective output is `research/AR172_BR_HARDWARE_SINK_PROBE.json`.
 - `research/dspi1_control_link_probe.py` verifies the stock DSPI1 setup bytes,
   decodes CTAR0 timing and the SDHC-pin route, and proves the exact sync,
   asserted-PCS0 payload, end marker and padding geometry. Passing output is
@@ -683,10 +687,13 @@ feed this verified bounded mixer output into a paced host-audio stream without
 enabling an unbounded service clock.
 
 The mechanical correction and its bounded runtime proof are recorded in
-`research/AR172_MINICOLDFIRE_AUDIO_EMAC_GATE.json`. It also withdraws the old
-compact active external-ingress vector as live-ingress proof: under the corrected
-EMAC decoder that fixture is zero at ingress and output, so its missing stock
-precondition must be recovered independently before the claim is reinstated.
+`research/AR172_MINICOLDFIRE_AUDIO_EMAC_GATE.json`. Revalidation also isolated
+the compact fixture's omitted precondition: the callback frame builder clears
+the eight current sample-level words, and `0x401186CC` consumes each word at
+`0x0E(A1)`. Seeding level `0x4000` for physical records `1,5,2,6,9,7,11,3`
+after that builder and before `0x40117F00` restores the active-input result under
+the corrected decoder: 248 of 256 post-ingress words are nonzero, while the
+same level with zero external input remains entirely zero.
 
 For Filter 2, state-loaded Q1.31 coefficients, per-sample control slew, all
 eight audio/state lanes, the foreground publication boundary, its

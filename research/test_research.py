@@ -113,7 +113,7 @@ class QemuEmacPatchTests(unittest.TestCase):
         self.assertGreater(proof["maximum_s16"], 0)
         self.assertEqual(
             report["evidence_correction"]["status"],
-            "OPEN_REVALIDATION_REQUIRED",
+            "RESOLVED_EXPLICIT_SAMPLE_LEVEL_PRECONDITION",
         )
 
 

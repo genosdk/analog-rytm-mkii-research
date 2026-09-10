@@ -185,14 +185,13 @@ def probe(main_path: Path, emulator_path: Path) -> dict:
 
     high_frames = [item["br_frame_at_renderer"][0] for item in high["callbacks"]]
     zero_frames = [item["br_frame_at_renderer"][0] for item in zero["callbacks"]]
-    expected_high_frames = [31537] * 12
-    if zero_frames != [0] * 12 or high_frames != expected_high_frames:
+    if zero_frames != [0] * 12 or high_frames != [0] * 12:
         raise ValueError("unexpected storage-free BR-frame lifetime")
-    if zero["final_packed_control"] == high["final_packed_control"]:
-        raise ValueError("sustained BR did not reach the natural case-3 encoder")
+    if zero["final_packed_control"] != high["final_packed_control"]:
+        raise ValueError("unresolved BR source unexpectedly changed case-3 encoding")
 
     return {
-        "result": "PASS",
+        "result": "PASS_QUEUE_PROGRESS_BR_PATH_RETRACTED",
         "main": {"path": str(main_path), "sha256": digest},
         "recovered_runtime_contract": {
             "sentinel_queue": f"0x{QUEUE_SENTINEL:08X}",
@@ -205,17 +204,24 @@ def probe(main_path: Path, emulator_path: Path) -> dict:
             "br_source_longword": f"0x{TRACK_BR_SOURCE:08X}",
         },
         "vectors": [zero, high],
+        "retracted_claim": {
+            "claim": "TRACK_BR_SOURCE naturally reaches the renderer BR frame in this fixture",
+            "reason": (
+                "The earlier nonzero result depended on misclassifying load-form EMAC "
+                "instructions as dual accumulates. The NXP/QEMU-correct decoder leaves "
+                "both BR frames zero while preserving the complete queue state machine."
+            ),
+        },
         "conclusion": (
             "A stock 56-byte trigger record now reaches the real command queue, is cleared "
             "by the complete interrupt, and advances renderer 0 naturally through cases "
-            "0, 1, 2, 3, and 4. The corrected EMAC addressing model preserves the BR "
-            "ramp across all twelve callbacks. High BR reaches natural case 3 and leaves "
-            "a distinct packed control word; this proves sustained control encoding, not "
-            "PCM quantization."
+            "0, 1, 2, 3, and 4. Under the corrected dual-EMAC decoder, the current "
+            "TRACK_BR_SOURCE fixture does not reach the renderer BR frame. Queue and "
+            "state progression remain proven; natural BR propagation is re-opened."
         ),
         "next_target": (
-            "Identify the consumer behind peripheral FIFO 0xFC03C034; separately trace "
-            "post-hardware-return CPU audio ingress for a Filter 2 insertion boundary."
+            "Trace the correct foreground BR publication source through the load-form "
+            "EMAC chain into BR_FRAME_WORD without relying on the retracted fixture."
         ),
         "safety": "Emulation and RAM initialization only; firmware bytes were not modified.",
     }

@@ -20,6 +20,7 @@ from post_voice_ingress_probe import (
     DMA_BLOCK_BYTES,
     EXTERNAL_AUDIO_WINDOW,
     OUTPUT_PLANE,
+    install_sample_levels,
     install_tables,
 )
 from trigger_queue_probe import load_emulator
@@ -132,6 +133,8 @@ def execute_vector(module, main_path: Path, stock_image: bytes, active: bool, ca
     for _ in range(100_000):
         if cpu.pc in (CAVE, INGRESS, INGRESS_RETURN, MIXER):
             landmarks.append(f"0x{cpu.pc:08X}")
+        if cpu.pc == INGRESS:
+            install_sample_levels(bus)
         if cpu.pc == MIXER:
             break
         cpu.step()

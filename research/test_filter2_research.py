@@ -132,7 +132,7 @@ class TriggerQueueProbeTests(StockProbeTest):
         main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
         emulator_path = EMULATOR
         result = probe_trigger_queue(main_image, emulator_path)
-        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["result"], "PASS_QUEUE_PROGRESS_BR_PATH_RETRACTED")
         contract = result["recovered_runtime_contract"]
         self.assertEqual(contract["runtime_queue"], "0x4192A9D0")
         self.assertEqual(contract["queue_ring"], "0x419531F8")
@@ -146,8 +146,8 @@ class TriggerQueueProbeTests(StockProbeTest):
         high_frames = [
             c["br_frame_at_renderer"][0] for c in result["vectors"][1]["callbacks"]
         ]
-        self.assertEqual(high_frames, [31537] * 12)
-        self.assertNotEqual(
+        self.assertEqual(high_frames, [0] * 12)
+        self.assertEqual(
             result["vectors"][0]["final_packed_control"],
             result["vectors"][1]["final_packed_control"],
         )
@@ -181,20 +181,18 @@ class BrHardwareSinkProbeTests(StockProbeTest):
         main_image = HERE / "extracted_stock_nrv" / "section_3_id_3.decompressed.bin"
         emulator_path = EMULATOR
         result = probe_br_hardware_sink(main_image, emulator_path)
-        self.assertEqual(result["result"], "PASS")
+        self.assertEqual(result["result"], "PASS_DMA_SINK_BR_PATH_RETRACTED")
         zero, high = result["vectors"]
         self.assertEqual(zero["case_3_br"], "0x0000")
-        self.assertEqual(high["case_3_br"], "0x7B31")
+        self.assertEqual(high["case_3_br"], "0x0000")
         self.assertEqual(zero["packed_control"], "0x00180FFF")
-        self.assertEqual(high["packed_control"], "0x001FD285")
-        self.assertEqual(high["packet"]["wire_high"], "0x8001B01F")
-        self.assertEqual(high["packet"]["wire_low"], "0x8001D285")
+        self.assertEqual(high["packed_control"], "0x00180FFF")
+        self.assertEqual(high["packet"]["wire_high"], "0x8001B018")
+        self.assertEqual(high["packet"]["wire_low"], "0x80010FFF")
         self.assertEqual(high["dma"]["channel"], 15)
         self.assertEqual(high["dma"]["destination"], "0xFC03C034")
         self.assertEqual(high["dma"]["transferred_bytes"], 2040)
-        self.assertTrue({"0x30F", "0x312", "0x313"}.issubset(
-            result["payload_difference_offsets"]
-        ))
+        self.assertEqual(result["payload_difference_offsets"], ["0x0BA", "0x0BB", "0x0BE", "0x0BF"])
 
 
 class Dspi1ControlLinkProbeTests(StockProbeTest):
@@ -226,6 +224,10 @@ class PostVoiceIngressProbeTests(StockProbeTest):
         self.assertEqual(classification["ingress_dma_channels"], [31, 32])
         startup = result["stock_startup_provenance"]
         self.assertEqual([entry["longword_writes"] for entry in startup["tables"]], [256] * 3)
+        level = result["explicit_level_precondition"]
+        self.assertEqual(level["load_site"], "0x401186CC")
+        self.assertEqual(level["physical_voice_records"], [1, 5, 2, 6, 9, 7, 11, 3])
+        self.assertEqual(level["seeded_level"], "0x4000")
         zero, active = result["vectors"]
         self.assertEqual(zero["output_nonzero_words"], 0)
         self.assertEqual(active["output_nonzero_words"], 248)

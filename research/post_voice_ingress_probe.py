@@ -29,6 +29,11 @@ DMA_BLOCK_BYTES = 144
 OUTPUT_PLANE = 0x800067F8
 OUTPUT_WORDS = 256
 ACTIVE_INPUT_WORD = 0x10000000
+ACTIVE_SAMPLE_LEVEL = 0x4000
+RUNTIME_RECORD_BASE = 0x8000F776
+RUNTIME_RECORD_BYTES = 0x54
+SAMPLE_LEVEL_OFFSET = 0x0E
+PHYSICAL_VOICE_RECORDS = (1, 5, 2, 6, 9, 7, 11, 3)
 
 
 def image_block(image: bytes, address: int, length: int) -> bytes:
@@ -44,6 +49,16 @@ def install_tables(bus, image: bytes) -> None:
     for destination, source in zip(TABLE_DESTINATIONS, TABLE_SOURCES):
         for index, value in enumerate(image_block(image, source, TABLE_BYTES)):
             bus.write(destination + index, 1, value)
+
+
+def install_sample_levels(bus, level: int = ACTIVE_SAMPLE_LEVEL) -> None:
+    """Seed the eight renderer records after the callback frame builder."""
+    for record in PHYSICAL_VOICE_RECORDS:
+        bus.write(
+            RUNTIME_RECORD_BASE + record * RUNTIME_RECORD_BYTES + SAMPLE_LEVEL_OFFSET,
+            2,
+            level,
+        )
 
 
 def trace_stock_startup(module, main_path: Path, image: bytes) -> dict:
@@ -103,6 +118,7 @@ def run_vector(module, main_path: Path, image: bytes, active: bool) -> dict:
         cpu.step()
     else:
         raise ValueError("callback did not reach external-audio ingress")
+    install_sample_levels(bus)
 
     reads = Counter()
     writes = Counter()
@@ -137,6 +153,7 @@ def run_vector(module, main_path: Path, image: bytes, active: bool) -> dict:
     audio_events = [event for event in bus.edma_events if event["ch"] in (31, 32)]
     return {
         "input": "repeated 0x10000000 words" if active else "zero",
+        "sample_level": f"0x{ACTIVE_SAMPLE_LEVEL:04X}",
         "instructions": cpu.steps - start,
         "table_reads": [reads[address] for address in TABLE_DESTINATIONS],
         "table_writes": [writes[address] for address in TABLE_DESTINATIONS],
@@ -175,7 +192,7 @@ def probe(main_path: Path, emulator_path: Path) -> dict:
     if (
         active["output_nonzero_words"] != 248
         or active["output_zero_indices"] != list(range(0, 256, 32))
-        or active["output_sha256"] != "a68c35c729fd164ee082c314beb70eecd951adf54ebbc1d4b405bb5898e96430"
+        or active["output_sha256"] != "c48151676a4c06fc65db773dc947d38718e0d357a6f32a74bbaa1dc6205fc6e9"
     ):
         raise ValueError(f"unexpected active external-input response: {active}")
 
@@ -194,12 +211,22 @@ def probe(main_path: Path, emulator_path: Path) -> dict:
             ],
         },
         "stock_startup_provenance": startup,
+        "explicit_level_precondition": {
+            "load_site": "0x401186CC",
+            "field": "signed word 0x0E(A1)",
+            "runtime_record_base": f"0x{RUNTIME_RECORD_BASE:08X}",
+            "runtime_record_bytes": RUNTIME_RECORD_BYTES,
+            "physical_voice_records": list(PHYSICAL_VOICE_RECORDS),
+            "seeded_level": f"0x{ACTIVE_SAMPLE_LEVEL:04X}",
+            "timing": "after callback frame builder and before external ingress",
+        },
         "vectors": [zero, active],
         "conclusion": (
             "The three 0x400-byte regions previously called source planes are immutable "
             "DSP tables copied byte-exactly from MAIN during startup. The actual signal "
             "dependency enters from external window 0x4F9372E0 through alternating eDMA "
-            "channels 31/32. With the stock tables installed, zero external input yields "
+            "channels 31/32. With the stock tables installed and an explicit nonzero "
+            "sample-level word seeded after the callback frame builder, zero external input yields "
             "zero output, while a repeated nonzero input produces 248 nonzero words in "
             "an 8-by-32 layout at 0x800067F8. This corrects the earlier interpretation "
             "and establishes 0x800067F8 as a strong post-conversion Filter 2 candidate."

@@ -24,7 +24,9 @@ from filter2_unity_kernel_probe import (
     MIXER,
     OUTPUT_PLANE,
     CAVE,
+    INGRESS,
     install_input,
+    install_sample_levels,
     install_tables,
     lane_words,
     words_hash,
@@ -181,6 +183,8 @@ def run_callback_block(bus, cpu, active: bool, prior_state: tuple[int, int]) -> 
     for _ in range(100_000):
         if cpu.pc == MIXER:
             break
+        if cpu.pc == INGRESS:
+            install_sample_levels(bus)
         if cpu.pc == CAVE + 6:
             before = lane_words(bus)
         if cpu.pc == COMMON_RESTORE:

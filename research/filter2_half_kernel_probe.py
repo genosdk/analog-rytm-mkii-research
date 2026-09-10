@@ -29,7 +29,9 @@ from filter2_unity_kernel_probe import (
     MIXER,
     OUTPUT_PLANE,
     CAVE,
+    INGRESS,
     install_input,
+    install_sample_levels,
     install_tables,
     lane_words,
     prepared_machine,
@@ -181,6 +183,8 @@ def trace_callback(module, image_path: Path, stock: bytes, active: bool) -> dict
         for _ in range(100_000):
             if cpu.pc == MIXER:
                 break
+            if cpu.pc == INGRESS:
+                install_sample_levels(bus)
             if CAVE <= cpu.pc < CAVE + len(HALF_KERNEL_BODY):
                 visits[cpu.pc] += 1
             if cpu.pc == CAVE + 6:

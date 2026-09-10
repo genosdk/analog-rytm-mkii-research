@@ -35,10 +35,11 @@
     "maximum_s16": 14440
   },
   "evidence_correction": {
-    "status": "OPEN_REVALIDATION_REQUIRED",
+    "status": "RESOLVED_EXPLICIT_SAMPLE_LEVEL_PRECONDITION",
     "finding": "The prior compact active external-ingress vector becomes zero at both ingress and output under the corrected EMAC decoder.",
     "interpretation": "The old active-vector differential depended on stale interpreter behavior or omitted a stock precondition; it is not retained as proof of live external ingress.",
-    "next_gate": "Recover the missing external-ingress fixture precondition under corrected EMAC semantics, without FPGA pin hunting or hardware capture."
+    "resolution": "Seed signed sample level 0x4000 at 0x0E(A1) for physical voice records 1,5,2,6,9,7,11,3 after the callback frame builder and before 0x40117F00.",
+    "completed_gate": "research/AR172_POST_VOICE_INGRESS_PROBE.json"
   },
   "controller": {
     "monitor_boundary": "selected stock mixer output lane",

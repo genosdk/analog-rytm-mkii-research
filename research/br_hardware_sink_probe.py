@@ -108,26 +108,27 @@ def probe(main_path: Path, emulator_path: Path) -> dict:
     module = load_emulator(emulator_path)
     zero = run_vector(module, main_path, 0)
     high = run_vector(module, main_path, 0x7F000000)
-    if zero["case_3_br"] != "0x0000" or high["case_3_br"] != "0x7B31":
+    if zero["case_3_br"] != "0x0000" or high["case_3_br"] != "0x0000":
         raise ValueError("unexpected natural case-3 BR vectors")
-    if zero["packed_control"] != "0x00180FFF" or high["packed_control"] != "0x001FD285":
+    if zero["packed_control"] != "0x00180FFF" or high["packed_control"] != "0x00180FFF":
         raise ValueError("unexpected natural packed-control vectors")
     differences = [
         index for index, (left, right) in enumerate(zip(zero["payload"], high["payload"]))
         if left != right
     ]
-    if not {0x30F, 0x312, 0x313}.issubset(differences):
-        raise ValueError(f"packed BR bytes did not reach DMA payload: {differences}")
+    if differences != [0xBA, 0xBB, 0xBE, 0xBF]:
+        raise ValueError(f"unexpected raw-source DMA differences: {differences}")
     for vector in (zero, high):
         del vector["payload"]
 
     return {
-        "result": "PASS",
+        "result": "PASS_DMA_SINK_BR_PATH_RETRACTED",
         "main": {"path": str(main_path), "sha256": digest},
         "emac_correction": {
             "normal_loads_ignore_mask": True,
+            "load_form_is_single_accumulate": True,
             "mask_addressing_modifier": "MACL/MSACL extension MAM bit 5",
-            "effect": "authentic BR remains live through natural renderer case 3",
+            "effect": "the earlier natural case-3 BR result is no longer reproducible",
         },
         "control_path": {
             "voice_control_word": f"0x{VOICE_CONTROL_WORD:08X}",
@@ -140,16 +141,22 @@ def probe(main_path: Path, emulator_path: Path) -> dict:
         },
         "vectors": [zero, high],
         "payload_difference_offsets": [f"0x{x:03X}" for x in differences],
+        "retracted_claim": {
+            "claim": "TRACK_BR_SOURCE reaches natural case-3 packed-control words",
+            "reason": (
+                "The previous 0x7B31/0x001FD285 result required the stale dual-EMAC "
+                "decoder. Correct load-form semantics leave case-3 BR at zero."
+            ),
+        },
         "conclusion": (
-            "Natural case-3 BR is serialized as two tagged 0x8001xxxx packet words and "
-            "transferred by eDMA channel 15 in a 2,040-byte frame to peripheral FIFO "
-            "0xFC03C034. The CPU source planes remain unchanged, so this is a physical "
-            "control sink rather than evidence of CPU-side PCM quantization."
+            "The stock packetizer and eDMA channel 15 still transfer a 2,040-byte control "
+            "frame to peripheral FIFO 0xFC03C034. The current high TRACK_BR_SOURCE fixture "
+            "changes four earlier payload bytes but does not alter the natural case-3 BR "
+            "word under corrected EMAC semantics, so that propagation claim is retracted."
         ),
         "next_target": (
-            "Identify the peripheral behind 0xFC03C034 and whether its control frame is "
-            "consumed by the FPGA image. For Filter 2, separately test the CPU audio ingress "
-            "after the hardware voice return; LFO2 can continue targeting control fields."
+            "Recover the correct stock BR publication source and repeat the packet "
+            "differential; channel-15 transport geometry itself remains proven."
         ),
         "safety": "Emulation and RAM/MMIO modeling only; firmware bytes were not modified.",
     }
