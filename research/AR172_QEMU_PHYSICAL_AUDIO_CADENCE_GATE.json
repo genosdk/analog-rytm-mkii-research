@@ -2,26 +2,29 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_PHYSICAL_AUDIO_CADENCE_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PASS_GEOMETRY_DERIVED_CADENCE_HOST_PCM_UI_RESPONSIVE",
+  "status": "PASS_NATIVE_SSI1_EDMA54_CHAIN_HOST_PCM_UI_RESPONSIVE",
   "cadence_basis": {
+    "reference": "NXP MCF54418 Reference Manual, SSI registers and DMA request behavior",
+    "reference_url": "https://www.nxp.com/docs/en/reference-manual/MCF54418RM.pdf",
     "sample_rate_hz": 48000,
     "frames_per_renderer_block": 32,
     "derived_period_ns": 666667,
     "derivation": "32 / 48000 seconds",
-    "confidence": "Strong renderer-geometry inference; the exact physical source-63 clock path remains to be confirmed from hardware or a definitive clock register."
+    "confidence": "The service period follows the proven 32-frame / 48 kHz geometry. SSI1 ownership and the complete interrupt chain are proven; the bootloader-established SSI1 input frequency/divider remains open."
   },
-  "implementation": "A dedicated virtual audio timer requests one backpressured source-63 service every 666667 ns. Type-8 control traffic remains on its independent 10 ms timer.",
+  "implementation": "A dedicated virtual timer models SSI1 TX FIFO demand every 666667 ns and services eDMA54. The stock channel-54 ISR acknowledges that DMA completion and software-forces source 63; QEMU no longer directly forces source 63 in continuous mode. Type-8 remains independent.",
   "runtime_proof": {
-    "completed_vector_191_services": 8909,
+    "edma_channel_54_completions": 8736,
+    "completed_vector_191_services": 8732,
     "pad_trigger": "PASS",
     "nonzero_stock_renderer_to_host_tap": "PASS",
     "later_smp_page_transition": "PASS",
     "fatal_library_error": false
   },
-  "decision": "The emulator can sustain the candidate 32-frame / 48 kHz cadence in virtual time while producing nonzero host PCM and accepting later UI input. Keep the clock opt-in until its physical provenance is confirmed.",
+  "decision": "The emulator sustains the native SSI1/eDMA54/firmware-force chain at the candidate 32-frame / 48 kHz cadence while producing nonzero host PCM and accepting later UI input. Keep the clock opt-in until the inherited SSI1 clock input is recovered.",
   "next_gate": {
-    "name": "AR172_QEMU_AUDIO_CLOCK_PROVENANCE_GATE",
-    "objective": "Locate the definitive FPGA/clock register or obtain hardware timing evidence that proves the source-63 period and phase relationship."
+    "name": "AR172_QEMU_SSI1_CLOCK_INPUT_GATE",
+    "objective": "Recover the bootloader-established CCM CDRH SSI1 divider and SSI_CLKIN/PLL frequency so the 48 kHz frame rate is register-derived rather than geometry-derived."
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

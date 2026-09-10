@@ -133,6 +133,8 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("c->audio_service_completed", source)
         self.assertIn("AR_AUDIO_BLOCK_PERIOD_NS 666667LL", source)
         self.assertIn("ar_audio_service_tick(c, true)", source)
+        self.assertIn("AR_EDMA_SSI1_TX_CHANNEL 54u", source)
+        self.assertIn("ar_edma_pump_channel(&c->edma, AR_EDMA_SSI1_TX_CHANNEL)", source)
         self.assertIn("c->audio_service_pending = true", source)
         self.assertIn("completed vector 191 service count=%u", source)
         self.assertIn("c->intc[1].ifr & (1ULL << 63)", source)

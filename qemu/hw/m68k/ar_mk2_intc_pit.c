@@ -35,6 +35,7 @@
 #define AR_EDMA_TCD_SIZE 0x20u
 #define AR_EDMA_CHANNELS 64u
 #define AR_EDMA_DSPI1_TX_CHANNEL 15u
+#define AR_EDMA_SSI1_TX_CHANNEL 54u
 #define AR_TYPE8_RECORD 0xF8u
 #define AR_TYPE8_START_NS 5000000000LL
 #define AR_TYPE8_PERIOD_NS 10000000LL
@@ -286,6 +287,10 @@ static void ar_intc_write(void *opaque, hwaddr addr,
             qemu_log_mask(LOG_UNIMP,
                           "AR-MK2 TYPE8: firmware forced INTC0 source 57 "
                           "(vector 121)\n");
+        }
+        if (s->index == 1 && (value & (1u << 31)) &&
+            s->core->mock_audio_service) {
+            s->core->audio_service_pending = true;
         }
         s->ifr = (s->ifr & 0xffffffffULL) | ((uint64_t)(uint32_t)value << 32);
         break;
@@ -1115,9 +1120,17 @@ static void ar_audio_service_tick(ARCoreState *c, bool continuous)
     if (!continuous && c->audio_service_delay) {
         c->audio_service_delay--;
     }
+    if (continuous) {
+        /* SSI1 TX FIFO demand drives eDMA54.  Its stock completion ISR at
+         * 0x40118AF2 acknowledges channel 54 and software-forces source 63. */
+        if (!c->audio_service_pending && !c->audio_service_entered &&
+            !(c->edma.intr & (1ULL << AR_EDMA_SSI1_TX_CHANNEL))) {
+            ar_edma_pump_channel(&c->edma, AR_EDMA_SSI1_TX_CHANNEL);
+        }
+        return;
+    }
     if (!c->audio_service_pending && !c->audio_service_entered &&
-        (continuous ||
-         (c->audio_service_budget && !c->audio_service_delay)) &&
+        c->audio_service_budget && !c->audio_service_delay &&
         c->intc[1].icr[63]) {
         ar_edma_pump_dspi1_tx(&c->edma);
         ar_edma_pump_channel(&c->edma, 42);
@@ -1125,7 +1138,7 @@ static void ar_audio_service_tick(ARCoreState *c, bool continuous)
         c->intc[1].ifr |= 1ULL << 63;
         ar_intc_update(c);
         c->audio_service_pending = true;
-        if (!continuous && c->audio_service_budget) {
+        if (c->audio_service_budget) {
             c->audio_service_budget--;
         }
         if (!c->audio_service_seen) {

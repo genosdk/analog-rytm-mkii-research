@@ -40,8 +40,8 @@
     "interrupt_safety": "A trigger request waits 10 Type-8 ticks for native trigger state, then remains pending until firmware clears IFR63; completion requires CPU IPL below 5 before another request is issued. The verified desktop budget is eight blocks."
   },
   "next_gate": {
-    "name": "AR172_QEMU_AUDIO_CLOCK_PROVENANCE_GATE",
-    "objective": "The geometry-derived 666.667 microsecond cadence now passes with nonzero host PCM and responsive UI. Prove the exact physical clock provenance."
+    "name": "AR172_QEMU_SSI1_CLOCK_INPUT_GATE",
+    "objective": "The native SSI1/eDMA54 chain now passes with nonzero host PCM and responsive UI. Recover the inherited SSI1 input clock and CCM divider."
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

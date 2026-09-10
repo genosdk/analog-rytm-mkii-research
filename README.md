@@ -94,8 +94,9 @@ and reproducible tooling.
   services. Re-arming DSPI1's channel-15 transmit request at each external
   audio event prevents the firmware's EOQ wait from stalling repeated blocks.
 - The opt-in continuous research clock now applies interrupt backpressure at
-  the geometry-derived 32-frame / 48 kHz period. It sustained 8,909 completed
-  native services, streamed nonzero host PCM, and accepted later UI input.
+  the geometry-derived 32-frame / 48 kHz period. SSI1 FIFO demand now completes
+  eDMA54 and lets the stock ISR force source 63; 8,732 native services streamed
+  nonzero host PCM while later UI input remained responsive.
 - A BR-low/high test with deterministic nonzero CPU render planes produces identical
   CPU PCM/combined output while the hardware control word diverges.
 

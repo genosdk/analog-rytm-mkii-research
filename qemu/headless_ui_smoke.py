@@ -284,6 +284,9 @@ def main() -> None:
                     "info registers",
                     "x/24i $pc-24",
                     "x/32wx $sp",
+                    "xp/8wx 0xfc0456c0",
+                    "xp/8wx 0xfc044008",
+                    "xp/4bx 0xfc040034",
                 ):
                     snapshots.append(f"## {command}\n")
                     snapshots.append(hmp_command(monitor_port, command))

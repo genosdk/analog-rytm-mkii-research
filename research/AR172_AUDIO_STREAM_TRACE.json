@@ -1,7 +1,7 @@
 {
   "result": "PASS",
   "main": {
-    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "path": "/workspace/scratch/7d356cdd962f/ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
     "size": 2903032,
     "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
     "base_address": "0x40000400"
@@ -22,6 +22,22 @@
       "0x40108944",
       "0x40105188"
     ]
+  },
+  "audio_clock_provenance": {
+    "peripheral": "SSI1",
+    "ssi1_tx_register": "0xFC0C8000",
+    "ssi1_mode": "synchronous network audio",
+    "ssi1_dma_enable_word": "0x00500000",
+    "edma_channel": 54,
+    "source_base": "0x80000920",
+    "minor_loop_bytes": 32,
+    "major_loop_iterations": 64,
+    "major_loop_bytes": 2048,
+    "major_interrupt": true,
+    "completion_isr": "0x40118AF2",
+    "software_forced_source": 63,
+    "renderer_vector": 191,
+    "ownership": "SSI1 TX FIFO demand clocks eDMA54; its stock ISR forces the renderer service."
   },
   "generic_stream_descriptors": {
     "setup": "0x401177D2",

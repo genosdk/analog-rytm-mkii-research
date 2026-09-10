@@ -51,6 +51,26 @@ def trace(path: Path) -> dict:
     if digest != EXPECTED_MAIN_SHA256:
         raise ValueError(f"unexpected MAIN SHA-256: {digest}")
 
+    # SSI1 is the hardware-facing audio clock owner. It is configured for
+    # synchronous network mode, 16 slots per frame, 24-bit words, and both
+    # receive/transmit DMA. Channel 54 drains one 2048-byte output block to
+    # SSI1_TX0 and raises its major-loop interrupt.
+    at(image, 0x4000567E, bytes.fromhex("7038"), "SSI1 control seed")
+    at(image, 0x40005680, bytes.fromhex("223c0000008b"), "SSI1 transmit configuration")
+    at(image, 0x40005686, bytes.fromhex("23c0fc0c8010"), "SSI1 control write")
+    at(image, 0x400056D4, bytes.fromhex("23c1fc0c8018"), "SSI1 DMA enable")
+    at(image, 0x400057A4, bytes.fromhex("203cfc0c8000"), "eDMA54 SSI1_TX0 destination")
+    at(image, 0x400057AA, bytes.fromhex("223c80000920"), "eDMA54 SRAM source")
+    at(image, 0x400057C4, bytes.fromhex("303c6a02"), "eDMA54 transfer attributes")
+    at(image, 0x400057D0, bytes.fromhex("33c0fc0456c4"), "eDMA54 attributes write")
+    at(image, 0x400057D6, bytes.fromhex("203c80000020"), "eDMA54 32-byte minor loop")
+    at(image, 0x400057EA, bytes.fromhex("7040"), "eDMA54 64 iterations")
+    at(image, 0x400057EC, bytes.fromhex("33c1fc0456d6"), "eDMA54 fixed destination")
+    at(image, 0x400057FC, bytes.fromhex("33c0fc0456dc"), "eDMA54 major count")
+    at(image, 0x40005802, bytes.fromhex("33c1fc0456de"), "eDMA54 major interrupt")
+    at(image, 0x40005812, bytes.fromhex("13c1fc044018"), "eDMA54 request enable")
+    at(image, 0x40005822, bytes.fromhex("13c1fc04c06e"), "eDMA54 interrupt priority")
+
     # eDMA interrupt handler: sample DTIM2, acknowledge interrupt source 54.
     at(image, 0x40118AF2, bytes.fromhex("4feffff448d70103"), "audio ISR prologue")
     at(image, 0x40118B00, bytes.fromhex("2239fc07800c"), "DTIM2 counter read")
@@ -115,6 +135,22 @@ def trace(path: Path) -> dict:
             "callback": "0x4011B3AE",
             "observed_tcd_addresses": ["0xFC0456C0", "0xFC045690"],
             "render_sequence": ["0x40117F00", "0x4010A2E0", "0x40108944", "0x40105188"],
+        },
+        "audio_clock_provenance": {
+            "peripheral": "SSI1",
+            "ssi1_tx_register": "0xFC0C8000",
+            "ssi1_mode": "synchronous network audio",
+            "ssi1_dma_enable_word": "0x00500000",
+            "edma_channel": 54,
+            "source_base": "0x80000920",
+            "minor_loop_bytes": 32,
+            "major_loop_iterations": 64,
+            "major_loop_bytes": 2048,
+            "major_interrupt": True,
+            "completion_isr": "0x40118AF2",
+            "software_forced_source": 63,
+            "renderer_vector": 191,
+            "ownership": "SSI1 TX FIFO demand clocks eDMA54; its stock ISR forces the renderer service.",
         },
         "generic_stream_descriptors": {
             "setup": "0x401177D2", "reset": "0x401178BA",
