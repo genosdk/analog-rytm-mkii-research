@@ -582,6 +582,11 @@ New state must use a versioned extension or verified-unused storage; existing
   fields that are explicit destinations of stock absolute `MOVE.W` operations.
   Its instruction inventory is
   `research/AR172_CONTROL_FRAME_STATIC_MOVE_WRITER_PROBE.json`.
+- `research/control_frame_computed_record_writer_probe.py` closes the remaining
+  structural gap. Its report,
+  `research/AR172_CONTROL_FRAME_COMPUTED_RECORD_WRITER_PROBE.json`, derives the
+  computed 56-by-8-byte record-member writer and the initialized
+  80-by-4-byte paired-slot array directly from locked stock instructions.
 - `recovered_library/minicoldfire_audio.py` now queues PIT0 when the modeled timer
   fires and implements the ColdFire EMAC transfers/multiply-accumulate subset,
   `SATS`, classic word multiply, correct fractional-product scaling, and the
@@ -727,6 +732,21 @@ from consideration. Seventy-six fields survive this specific static screen,
 with 13 adjacent pairs; the deterministic next pair is words 281/282 at
 `0x800065F0/0x800065F2`. This is not yet a spare-field claim because immediate,
 byte/long, base-relative and computed writer forms still require classification.
+
+The computed-address gate rejects that next pair without another 2,720-callback
+locality sweep. Stock MAIN first zeroes the complete 492-halfword packet source,
+then its loop at `0x4011CD20..0x4011CD40` clears member `+4` in 56 eight-byte
+records using
+`0x800063C0 + 8 * (21 + counter) + 4`. Words 281/282 are in record 70;
+the entire apparent 281..308 hole is seven records from this same array. Across
+all remaining fields, 37 intersect fifteen of these records. The final 39
+isolated fields are each the companion halfword of an 80-entry four-byte slot
+array rooted at `0x80006658`; the constructor at
+`0x4011A886..0x4011AA60` explicitly initializes the other halfword of every
+slot. Conservatively quarantining stock-managed structures leaves zero spare
+field candidates and zero adjacent pairs. This closes the spare-pair search:
+future work must use named stock destinations or an explicit versioned
+transport extension, not words 281/282.
 
 ## External format cross-checks
 

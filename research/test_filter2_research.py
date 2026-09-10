@@ -47,6 +47,9 @@ from control_frame_eight_lane_two_word_locality_probe import (
 from control_frame_static_move_writer_probe import (
     probe as probe_control_frame_static_move_writer,
 )
+from control_frame_computed_record_writer_probe import (
+    probe as probe_control_frame_computed_record_writer,
+)
 from sample_br_renderer_probe import probe as probe_sample_br_renderer
 from sample_state_probe import probe as probe_sample_state
 from synth_pitch_encoding_probe import probe as probe_synth_pitch_encoding
@@ -679,6 +682,28 @@ class ControlFrameStaticMoveWriterProbeTests(StockProbeTest):
         self.assertEqual(result["remaining"]["field_count"], 76)
         self.assertEqual(result["remaining"]["adjacent_pair_count"], 13)
         self.assertEqual(result["remaining"]["ranked_winner"]["words"], [281, 282])
+
+
+class ControlFrameComputedRecordWriterProbeTests(StockProbeTest):
+    def test_computed_record_array_exhausts_adjacent_pairs(self):
+        report = HERE / "AR172_CONTROL_FRAME_STATIC_MOVE_WRITER_PROBE.json"
+        result = probe_control_frame_computed_record_writer(STOCK, report)
+        self.assertEqual(result["result"], "PASS")
+        writer = result["computed_record_writer"]
+        self.assertEqual(writer["record_count"], 56)
+        self.assertEqual(writer["candidate_intersecting_record_count"], 15)
+        self.assertEqual(writer["candidate_fields_quarantined"], 37)
+        quarantined = {
+            word
+            for row in writer["candidate_ranges_quarantined"]
+            for word in range(row["first_word"], row["last_word"] + 1)
+        }
+        self.assertTrue({281, 282}.issubset(quarantined))
+        slots = result["paired_slot_initializer"]
+        self.assertEqual(slots["slot_count"], 80)
+        self.assertEqual(slots["candidate_companion_fields_quarantined"], 39)
+        self.assertEqual(result["remaining"]["field_count"], 0)
+        self.assertEqual(result["remaining"]["adjacent_pair_count"], 0)
 
 
 

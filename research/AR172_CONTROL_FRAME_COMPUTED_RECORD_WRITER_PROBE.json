@@ -1,0 +1,1084 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "input": {
+    "post_absolute_move_candidate_fields": 76,
+    "report": "research/AR172_CONTROL_FRAME_STATIC_MOVE_WRITER_PROBE.json"
+  },
+  "packet_source_initialization": {
+    "routine": "0x4011A3AA",
+    "base": "0x800063C0",
+    "zeroed_bytes": 984,
+    "zeroed_halfwords": 492
+  },
+  "computed_record_writer": {
+    "loop": "0x4011CD20..0x4011CD40",
+    "store_instruction": "0x4011CD38",
+    "store": "MOVE.B D2,4(A0,D1.L)",
+    "address_equation": "0x800063C0 + 8 * (21 + counter) + 4, counter = 0..55",
+    "record_bytes": 8,
+    "member_offset": 4,
+    "record_count": 56,
+    "candidate_intersecting_record_count": 15,
+    "candidate_fields_quarantined": 37,
+    "candidate_ranges_quarantined": [
+      {
+        "first_word": 150,
+        "last_word": 150,
+        "first_address": "0x800064EA",
+        "last_address": "0x800064EA"
+      },
+      {
+        "first_word": 152,
+        "last_word": 152,
+        "first_address": "0x800064EE",
+        "last_address": "0x800064EE"
+      },
+      {
+        "first_word": 154,
+        "last_word": 154,
+        "first_address": "0x800064F2",
+        "last_address": "0x800064F2"
+      },
+      {
+        "first_word": 156,
+        "last_word": 156,
+        "first_address": "0x800064F6",
+        "last_address": "0x800064F6"
+      },
+      {
+        "first_word": 158,
+        "last_word": 158,
+        "first_address": "0x800064FA",
+        "last_address": "0x800064FA"
+      },
+      {
+        "first_word": 160,
+        "last_word": 160,
+        "first_address": "0x800064FE",
+        "last_address": "0x800064FE"
+      },
+      {
+        "first_word": 162,
+        "last_word": 162,
+        "first_address": "0x80006502",
+        "last_address": "0x80006502"
+      },
+      {
+        "first_word": 164,
+        "last_word": 164,
+        "first_address": "0x80006506",
+        "last_address": "0x80006506"
+      },
+      {
+        "first_word": 166,
+        "last_word": 166,
+        "first_address": "0x8000650A",
+        "last_address": "0x8000650A"
+      },
+      {
+        "first_word": 168,
+        "last_word": 168,
+        "first_address": "0x8000650E",
+        "last_address": "0x8000650E"
+      },
+      {
+        "first_word": 170,
+        "last_word": 170,
+        "first_address": "0x80006512",
+        "last_address": "0x80006512"
+      },
+      {
+        "first_word": 172,
+        "last_word": 172,
+        "first_address": "0x80006516",
+        "last_address": "0x80006516"
+      },
+      {
+        "first_word": 174,
+        "last_word": 174,
+        "first_address": "0x8000651A",
+        "last_address": "0x8000651A"
+      },
+      {
+        "first_word": 176,
+        "last_word": 176,
+        "first_address": "0x8000651E",
+        "last_address": "0x8000651E"
+      },
+      {
+        "first_word": 178,
+        "last_word": 178,
+        "first_address": "0x80006522",
+        "last_address": "0x80006522"
+      },
+      {
+        "first_word": 180,
+        "last_word": 180,
+        "first_address": "0x80006526",
+        "last_address": "0x80006526"
+      },
+      {
+        "first_word": 281,
+        "last_word": 282,
+        "first_address": "0x800065F0",
+        "last_address": "0x800065F2"
+      },
+      {
+        "first_word": 284,
+        "last_word": 286,
+        "first_address": "0x800065F6",
+        "last_address": "0x800065FA"
+      },
+      {
+        "first_word": 288,
+        "last_word": 290,
+        "first_address": "0x800065FE",
+        "last_address": "0x80006602"
+      },
+      {
+        "first_word": 292,
+        "last_word": 294,
+        "first_address": "0x80006606",
+        "last_address": "0x8000660A"
+      },
+      {
+        "first_word": 296,
+        "last_word": 298,
+        "first_address": "0x8000660E",
+        "last_address": "0x80006612"
+      },
+      {
+        "first_word": 300,
+        "last_word": 302,
+        "first_address": "0x80006616",
+        "last_address": "0x8000661A"
+      },
+      {
+        "first_word": 304,
+        "last_word": 306,
+        "first_address": "0x8000661E",
+        "last_address": "0x80006622"
+      },
+      {
+        "first_word": 308,
+        "last_word": 308,
+        "first_address": "0x80006626",
+        "last_address": "0x80006626"
+      }
+    ],
+    "records": [
+      {
+        "loop_counter": 16,
+        "record_index": 37,
+        "record_start": "0x800064E8",
+        "record_end": "0x800064EF",
+        "computed_member_address": "0x800064EC",
+        "candidate_words_quarantined": [
+          150,
+          152
+        ]
+      },
+      {
+        "loop_counter": 17,
+        "record_index": 38,
+        "record_start": "0x800064F0",
+        "record_end": "0x800064F7",
+        "computed_member_address": "0x800064F4",
+        "candidate_words_quarantined": [
+          154,
+          156
+        ]
+      },
+      {
+        "loop_counter": 18,
+        "record_index": 39,
+        "record_start": "0x800064F8",
+        "record_end": "0x800064FF",
+        "computed_member_address": "0x800064FC",
+        "candidate_words_quarantined": [
+          158,
+          160
+        ]
+      },
+      {
+        "loop_counter": 19,
+        "record_index": 40,
+        "record_start": "0x80006500",
+        "record_end": "0x80006507",
+        "computed_member_address": "0x80006504",
+        "candidate_words_quarantined": [
+          162,
+          164
+        ]
+      },
+      {
+        "loop_counter": 20,
+        "record_index": 41,
+        "record_start": "0x80006508",
+        "record_end": "0x8000650F",
+        "computed_member_address": "0x8000650C",
+        "candidate_words_quarantined": [
+          166,
+          168
+        ]
+      },
+      {
+        "loop_counter": 21,
+        "record_index": 42,
+        "record_start": "0x80006510",
+        "record_end": "0x80006517",
+        "computed_member_address": "0x80006514",
+        "candidate_words_quarantined": [
+          170,
+          172
+        ]
+      },
+      {
+        "loop_counter": 22,
+        "record_index": 43,
+        "record_start": "0x80006518",
+        "record_end": "0x8000651F",
+        "computed_member_address": "0x8000651C",
+        "candidate_words_quarantined": [
+          174,
+          176
+        ]
+      },
+      {
+        "loop_counter": 23,
+        "record_index": 44,
+        "record_start": "0x80006520",
+        "record_end": "0x80006527",
+        "computed_member_address": "0x80006524",
+        "candidate_words_quarantined": [
+          178,
+          180
+        ]
+      },
+      {
+        "loop_counter": 49,
+        "record_index": 70,
+        "record_start": "0x800065F0",
+        "record_end": "0x800065F7",
+        "computed_member_address": "0x800065F4",
+        "candidate_words_quarantined": [
+          281,
+          282,
+          284
+        ]
+      },
+      {
+        "loop_counter": 50,
+        "record_index": 71,
+        "record_start": "0x800065F8",
+        "record_end": "0x800065FF",
+        "computed_member_address": "0x800065FC",
+        "candidate_words_quarantined": [
+          285,
+          286,
+          288
+        ]
+      },
+      {
+        "loop_counter": 51,
+        "record_index": 72,
+        "record_start": "0x80006600",
+        "record_end": "0x80006607",
+        "computed_member_address": "0x80006604",
+        "candidate_words_quarantined": [
+          289,
+          290,
+          292
+        ]
+      },
+      {
+        "loop_counter": 52,
+        "record_index": 73,
+        "record_start": "0x80006608",
+        "record_end": "0x8000660F",
+        "computed_member_address": "0x8000660C",
+        "candidate_words_quarantined": [
+          293,
+          294,
+          296
+        ]
+      },
+      {
+        "loop_counter": 53,
+        "record_index": 74,
+        "record_start": "0x80006610",
+        "record_end": "0x80006617",
+        "computed_member_address": "0x80006614",
+        "candidate_words_quarantined": [
+          297,
+          298,
+          300
+        ]
+      },
+      {
+        "loop_counter": 54,
+        "record_index": 75,
+        "record_start": "0x80006618",
+        "record_end": "0x8000661F",
+        "computed_member_address": "0x8000661C",
+        "candidate_words_quarantined": [
+          301,
+          302,
+          304
+        ]
+      },
+      {
+        "loop_counter": 55,
+        "record_index": 76,
+        "record_start": "0x80006620",
+        "record_end": "0x80006627",
+        "computed_member_address": "0x80006624",
+        "candidate_words_quarantined": [
+          305,
+          306,
+          308
+        ]
+      }
+    ]
+  },
+  "paired_slot_initializer": {
+    "base_load": "0x4011A3C2",
+    "initializer": "0x4011A886..0x4011AA60",
+    "slot_bytes": 4,
+    "slot_count": 80,
+    "initialized_member_offset": 0,
+    "companion_member_offset": 2,
+    "candidate_companion_fields_quarantined": 39,
+    "candidate_ranges_quarantined": [
+      {
+        "first_word": 334,
+        "last_word": 334,
+        "first_address": "0x8000665A",
+        "last_address": "0x8000665A"
+      },
+      {
+        "first_word": 336,
+        "last_word": 336,
+        "first_address": "0x8000665E",
+        "last_address": "0x8000665E"
+      },
+      {
+        "first_word": 338,
+        "last_word": 338,
+        "first_address": "0x80006662",
+        "last_address": "0x80006662"
+      },
+      {
+        "first_word": 340,
+        "last_word": 340,
+        "first_address": "0x80006666",
+        "last_address": "0x80006666"
+      },
+      {
+        "first_word": 342,
+        "last_word": 342,
+        "first_address": "0x8000666A",
+        "last_address": "0x8000666A"
+      },
+      {
+        "first_word": 344,
+        "last_word": 344,
+        "first_address": "0x8000666E",
+        "last_address": "0x8000666E"
+      },
+      {
+        "first_word": 346,
+        "last_word": 346,
+        "first_address": "0x80006672",
+        "last_address": "0x80006672"
+      },
+      {
+        "first_word": 348,
+        "last_word": 348,
+        "first_address": "0x80006676",
+        "last_address": "0x80006676"
+      },
+      {
+        "first_word": 350,
+        "last_word": 350,
+        "first_address": "0x8000667A",
+        "last_address": "0x8000667A"
+      },
+      {
+        "first_word": 352,
+        "last_word": 352,
+        "first_address": "0x8000667E",
+        "last_address": "0x8000667E"
+      },
+      {
+        "first_word": 354,
+        "last_word": 354,
+        "first_address": "0x80006682",
+        "last_address": "0x80006682"
+      },
+      {
+        "first_word": 356,
+        "last_word": 356,
+        "first_address": "0x80006686",
+        "last_address": "0x80006686"
+      },
+      {
+        "first_word": 358,
+        "last_word": 358,
+        "first_address": "0x8000668A",
+        "last_address": "0x8000668A"
+      },
+      {
+        "first_word": 360,
+        "last_word": 360,
+        "first_address": "0x8000668E",
+        "last_address": "0x8000668E"
+      },
+      {
+        "first_word": 362,
+        "last_word": 362,
+        "first_address": "0x80006692",
+        "last_address": "0x80006692"
+      },
+      {
+        "first_word": 364,
+        "last_word": 364,
+        "first_address": "0x80006696",
+        "last_address": "0x80006696"
+      },
+      {
+        "first_word": 366,
+        "last_word": 366,
+        "first_address": "0x8000669A",
+        "last_address": "0x8000669A"
+      },
+      {
+        "first_word": 368,
+        "last_word": 368,
+        "first_address": "0x8000669E",
+        "last_address": "0x8000669E"
+      },
+      {
+        "first_word": 370,
+        "last_word": 370,
+        "first_address": "0x800066A2",
+        "last_address": "0x800066A2"
+      },
+      {
+        "first_word": 372,
+        "last_word": 372,
+        "first_address": "0x800066A6",
+        "last_address": "0x800066A6"
+      },
+      {
+        "first_word": 374,
+        "last_word": 374,
+        "first_address": "0x800066AA",
+        "last_address": "0x800066AA"
+      },
+      {
+        "first_word": 376,
+        "last_word": 376,
+        "first_address": "0x800066AE",
+        "last_address": "0x800066AE"
+      },
+      {
+        "first_word": 378,
+        "last_word": 378,
+        "first_address": "0x800066B2",
+        "last_address": "0x800066B2"
+      },
+      {
+        "first_word": 380,
+        "last_word": 380,
+        "first_address": "0x800066B6",
+        "last_address": "0x800066B6"
+      },
+      {
+        "first_word": 382,
+        "last_word": 382,
+        "first_address": "0x800066BA",
+        "last_address": "0x800066BA"
+      },
+      {
+        "first_word": 384,
+        "last_word": 384,
+        "first_address": "0x800066BE",
+        "last_address": "0x800066BE"
+      },
+      {
+        "first_word": 386,
+        "last_word": 386,
+        "first_address": "0x800066C2",
+        "last_address": "0x800066C2"
+      },
+      {
+        "first_word": 388,
+        "last_word": 388,
+        "first_address": "0x800066C6",
+        "last_address": "0x800066C6"
+      },
+      {
+        "first_word": 390,
+        "last_word": 390,
+        "first_address": "0x800066CA",
+        "last_address": "0x800066CA"
+      },
+      {
+        "first_word": 448,
+        "last_word": 448,
+        "first_address": "0x8000673E",
+        "last_address": "0x8000673E"
+      },
+      {
+        "first_word": 450,
+        "last_word": 450,
+        "first_address": "0x80006742",
+        "last_address": "0x80006742"
+      },
+      {
+        "first_word": 452,
+        "last_word": 452,
+        "first_address": "0x80006746",
+        "last_address": "0x80006746"
+      },
+      {
+        "first_word": 454,
+        "last_word": 454,
+        "first_address": "0x8000674A",
+        "last_address": "0x8000674A"
+      },
+      {
+        "first_word": 456,
+        "last_word": 456,
+        "first_address": "0x8000674E",
+        "last_address": "0x8000674E"
+      },
+      {
+        "first_word": 458,
+        "last_word": 458,
+        "first_address": "0x80006752",
+        "last_address": "0x80006752"
+      },
+      {
+        "first_word": 460,
+        "last_word": 460,
+        "first_address": "0x80006756",
+        "last_address": "0x80006756"
+      },
+      {
+        "first_word": 462,
+        "last_word": 462,
+        "first_address": "0x8000675A",
+        "last_address": "0x8000675A"
+      },
+      {
+        "first_word": 464,
+        "last_word": 464,
+        "first_address": "0x8000675E",
+        "last_address": "0x8000675E"
+      },
+      {
+        "first_word": 476,
+        "last_word": 476,
+        "first_address": "0x80006776",
+        "last_address": "0x80006776"
+      }
+    ],
+    "slot_writers": [
+      {
+        "slot_index": 0,
+        "instruction": "0x4011A886",
+        "initialized_halfword": "0x80006658",
+        "companion_halfword": "0x8000665A"
+      },
+      {
+        "slot_index": 1,
+        "instruction": "0x4011A88A",
+        "initialized_halfword": "0x8000665C",
+        "companion_halfword": "0x8000665E"
+      },
+      {
+        "slot_index": 2,
+        "instruction": "0x4011A890",
+        "initialized_halfword": "0x80006660",
+        "companion_halfword": "0x80006662"
+      },
+      {
+        "slot_index": 3,
+        "instruction": "0x4011A896",
+        "initialized_halfword": "0x80006664",
+        "companion_halfword": "0x80006666"
+      },
+      {
+        "slot_index": 4,
+        "instruction": "0x4011A89C",
+        "initialized_halfword": "0x80006668",
+        "companion_halfword": "0x8000666A"
+      },
+      {
+        "slot_index": 5,
+        "instruction": "0x4011A8A2",
+        "initialized_halfword": "0x8000666C",
+        "companion_halfword": "0x8000666E"
+      },
+      {
+        "slot_index": 6,
+        "instruction": "0x4011A8A8",
+        "initialized_halfword": "0x80006670",
+        "companion_halfword": "0x80006672"
+      },
+      {
+        "slot_index": 7,
+        "instruction": "0x4011A8AE",
+        "initialized_halfword": "0x80006674",
+        "companion_halfword": "0x80006676"
+      },
+      {
+        "slot_index": 8,
+        "instruction": "0x4011A8B4",
+        "initialized_halfword": "0x80006678",
+        "companion_halfword": "0x8000667A"
+      },
+      {
+        "slot_index": 9,
+        "instruction": "0x4011A8BA",
+        "initialized_halfword": "0x8000667C",
+        "companion_halfword": "0x8000667E"
+      },
+      {
+        "slot_index": 10,
+        "instruction": "0x4011A8C0",
+        "initialized_halfword": "0x80006680",
+        "companion_halfword": "0x80006682"
+      },
+      {
+        "slot_index": 11,
+        "instruction": "0x4011A8C6",
+        "initialized_halfword": "0x80006684",
+        "companion_halfword": "0x80006686"
+      },
+      {
+        "slot_index": 12,
+        "instruction": "0x4011A8CC",
+        "initialized_halfword": "0x80006688",
+        "companion_halfword": "0x8000668A"
+      },
+      {
+        "slot_index": 13,
+        "instruction": "0x4011A8D2",
+        "initialized_halfword": "0x8000668C",
+        "companion_halfword": "0x8000668E"
+      },
+      {
+        "slot_index": 14,
+        "instruction": "0x4011A8D8",
+        "initialized_halfword": "0x80006690",
+        "companion_halfword": "0x80006692"
+      },
+      {
+        "slot_index": 15,
+        "instruction": "0x4011A8DE",
+        "initialized_halfword": "0x80006694",
+        "companion_halfword": "0x80006696"
+      },
+      {
+        "slot_index": 16,
+        "instruction": "0x4011A8E4",
+        "initialized_halfword": "0x80006698",
+        "companion_halfword": "0x8000669A"
+      },
+      {
+        "slot_index": 17,
+        "instruction": "0x4011A8EA",
+        "initialized_halfword": "0x8000669C",
+        "companion_halfword": "0x8000669E"
+      },
+      {
+        "slot_index": 18,
+        "instruction": "0x4011A8F0",
+        "initialized_halfword": "0x800066A0",
+        "companion_halfword": "0x800066A2"
+      },
+      {
+        "slot_index": 19,
+        "instruction": "0x4011A8F6",
+        "initialized_halfword": "0x800066A4",
+        "companion_halfword": "0x800066A6"
+      },
+      {
+        "slot_index": 20,
+        "instruction": "0x4011A8FC",
+        "initialized_halfword": "0x800066A8",
+        "companion_halfword": "0x800066AA"
+      },
+      {
+        "slot_index": 21,
+        "instruction": "0x4011A902",
+        "initialized_halfword": "0x800066AC",
+        "companion_halfword": "0x800066AE"
+      },
+      {
+        "slot_index": 22,
+        "instruction": "0x4011A908",
+        "initialized_halfword": "0x800066B0",
+        "companion_halfword": "0x800066B2"
+      },
+      {
+        "slot_index": 23,
+        "instruction": "0x4011A90E",
+        "initialized_halfword": "0x800066B4",
+        "companion_halfword": "0x800066B6"
+      },
+      {
+        "slot_index": 24,
+        "instruction": "0x4011A914",
+        "initialized_halfword": "0x800066B8",
+        "companion_halfword": "0x800066BA"
+      },
+      {
+        "slot_index": 25,
+        "instruction": "0x4011A91A",
+        "initialized_halfword": "0x800066BC",
+        "companion_halfword": "0x800066BE"
+      },
+      {
+        "slot_index": 26,
+        "instruction": "0x4011A920",
+        "initialized_halfword": "0x800066C0",
+        "companion_halfword": "0x800066C2"
+      },
+      {
+        "slot_index": 27,
+        "instruction": "0x4011A926",
+        "initialized_halfword": "0x800066C4",
+        "companion_halfword": "0x800066C6"
+      },
+      {
+        "slot_index": 28,
+        "instruction": "0x4011A92C",
+        "initialized_halfword": "0x800066C8",
+        "companion_halfword": "0x800066CA"
+      },
+      {
+        "slot_index": 29,
+        "instruction": "0x4011A932",
+        "initialized_halfword": "0x800066CC",
+        "companion_halfword": "0x800066CE"
+      },
+      {
+        "slot_index": 30,
+        "instruction": "0x4011A938",
+        "initialized_halfword": "0x800066D0",
+        "companion_halfword": "0x800066D2"
+      },
+      {
+        "slot_index": 31,
+        "instruction": "0x4011A93E",
+        "initialized_halfword": "0x800066D4",
+        "companion_halfword": "0x800066D6"
+      },
+      {
+        "slot_index": 32,
+        "instruction": "0x4011A944",
+        "initialized_halfword": "0x800066D8",
+        "companion_halfword": "0x800066DA"
+      },
+      {
+        "slot_index": 33,
+        "instruction": "0x4011A94A",
+        "initialized_halfword": "0x800066DC",
+        "companion_halfword": "0x800066DE"
+      },
+      {
+        "slot_index": 34,
+        "instruction": "0x4011A950",
+        "initialized_halfword": "0x800066E0",
+        "companion_halfword": "0x800066E2"
+      },
+      {
+        "slot_index": 35,
+        "instruction": "0x4011A956",
+        "initialized_halfword": "0x800066E4",
+        "companion_halfword": "0x800066E6"
+      },
+      {
+        "slot_index": 36,
+        "instruction": "0x4011A95C",
+        "initialized_halfword": "0x800066E8",
+        "companion_halfword": "0x800066EA"
+      },
+      {
+        "slot_index": 37,
+        "instruction": "0x4011A962",
+        "initialized_halfword": "0x800066EC",
+        "companion_halfword": "0x800066EE"
+      },
+      {
+        "slot_index": 38,
+        "instruction": "0x4011A968",
+        "initialized_halfword": "0x800066F0",
+        "companion_halfword": "0x800066F2"
+      },
+      {
+        "slot_index": 39,
+        "instruction": "0x4011A96E",
+        "initialized_halfword": "0x800066F4",
+        "companion_halfword": "0x800066F6"
+      },
+      {
+        "slot_index": 40,
+        "instruction": "0x4011A974",
+        "initialized_halfword": "0x800066F8",
+        "companion_halfword": "0x800066FA"
+      },
+      {
+        "slot_index": 41,
+        "instruction": "0x4011A97A",
+        "initialized_halfword": "0x800066FC",
+        "companion_halfword": "0x800066FE"
+      },
+      {
+        "slot_index": 42,
+        "instruction": "0x4011A980",
+        "initialized_halfword": "0x80006700",
+        "companion_halfword": "0x80006702"
+      },
+      {
+        "slot_index": 43,
+        "instruction": "0x4011A986",
+        "initialized_halfword": "0x80006704",
+        "companion_halfword": "0x80006706"
+      },
+      {
+        "slot_index": 44,
+        "instruction": "0x4011A98C",
+        "initialized_halfword": "0x80006708",
+        "companion_halfword": "0x8000670A"
+      },
+      {
+        "slot_index": 45,
+        "instruction": "0x4011A992",
+        "initialized_halfword": "0x8000670C",
+        "companion_halfword": "0x8000670E"
+      },
+      {
+        "slot_index": 46,
+        "instruction": "0x4011A998",
+        "initialized_halfword": "0x80006710",
+        "companion_halfword": "0x80006712"
+      },
+      {
+        "slot_index": 47,
+        "instruction": "0x4011A99E",
+        "initialized_halfword": "0x80006714",
+        "companion_halfword": "0x80006716"
+      },
+      {
+        "slot_index": 48,
+        "instruction": "0x4011A9A4",
+        "initialized_halfword": "0x80006718",
+        "companion_halfword": "0x8000671A"
+      },
+      {
+        "slot_index": 49,
+        "instruction": "0x4011A9AA",
+        "initialized_halfword": "0x8000671C",
+        "companion_halfword": "0x8000671E"
+      },
+      {
+        "slot_index": 50,
+        "instruction": "0x4011A9B0",
+        "initialized_halfword": "0x80006720",
+        "companion_halfword": "0x80006722"
+      },
+      {
+        "slot_index": 51,
+        "instruction": "0x4011A9B6",
+        "initialized_halfword": "0x80006724",
+        "companion_halfword": "0x80006726"
+      },
+      {
+        "slot_index": 52,
+        "instruction": "0x4011A9BC",
+        "initialized_halfword": "0x80006728",
+        "companion_halfword": "0x8000672A"
+      },
+      {
+        "slot_index": 53,
+        "instruction": "0x4011A9C2",
+        "initialized_halfword": "0x8000672C",
+        "companion_halfword": "0x8000672E"
+      },
+      {
+        "slot_index": 54,
+        "instruction": "0x4011A9C8",
+        "initialized_halfword": "0x80006730",
+        "companion_halfword": "0x80006732"
+      },
+      {
+        "slot_index": 55,
+        "instruction": "0x4011A9CE",
+        "initialized_halfword": "0x80006734",
+        "companion_halfword": "0x80006736"
+      },
+      {
+        "slot_index": 56,
+        "instruction": "0x4011A9D4",
+        "initialized_halfword": "0x80006738",
+        "companion_halfword": "0x8000673A"
+      },
+      {
+        "slot_index": 57,
+        "instruction": "0x4011A9DA",
+        "initialized_halfword": "0x8000673C",
+        "companion_halfword": "0x8000673E"
+      },
+      {
+        "slot_index": 58,
+        "instruction": "0x4011A9E0",
+        "initialized_halfword": "0x80006740",
+        "companion_halfword": "0x80006742"
+      },
+      {
+        "slot_index": 59,
+        "instruction": "0x4011A9E6",
+        "initialized_halfword": "0x80006744",
+        "companion_halfword": "0x80006746"
+      },
+      {
+        "slot_index": 60,
+        "instruction": "0x4011A9EC",
+        "initialized_halfword": "0x80006748",
+        "companion_halfword": "0x8000674A"
+      },
+      {
+        "slot_index": 61,
+        "instruction": "0x4011A9F2",
+        "initialized_halfword": "0x8000674C",
+        "companion_halfword": "0x8000674E"
+      },
+      {
+        "slot_index": 62,
+        "instruction": "0x4011A9F8",
+        "initialized_halfword": "0x80006750",
+        "companion_halfword": "0x80006752"
+      },
+      {
+        "slot_index": 63,
+        "instruction": "0x4011A9FE",
+        "initialized_halfword": "0x80006754",
+        "companion_halfword": "0x80006756"
+      },
+      {
+        "slot_index": 64,
+        "instruction": "0x4011AA04",
+        "initialized_halfword": "0x80006758",
+        "companion_halfword": "0x8000675A"
+      },
+      {
+        "slot_index": 65,
+        "instruction": "0x4011AA0A",
+        "initialized_halfword": "0x8000675C",
+        "companion_halfword": "0x8000675E"
+      },
+      {
+        "slot_index": 66,
+        "instruction": "0x4011AA10",
+        "initialized_halfword": "0x80006760",
+        "companion_halfword": "0x80006762"
+      },
+      {
+        "slot_index": 67,
+        "instruction": "0x4011AA16",
+        "initialized_halfword": "0x80006764",
+        "companion_halfword": "0x80006766"
+      },
+      {
+        "slot_index": 68,
+        "instruction": "0x4011AA1E",
+        "initialized_halfword": "0x80006768",
+        "companion_halfword": "0x8000676A"
+      },
+      {
+        "slot_index": 69,
+        "instruction": "0x4011AA24",
+        "initialized_halfword": "0x8000676C",
+        "companion_halfword": "0x8000676E"
+      },
+      {
+        "slot_index": 70,
+        "instruction": "0x4011AA2A",
+        "initialized_halfword": "0x80006770",
+        "companion_halfword": "0x80006772"
+      },
+      {
+        "slot_index": 71,
+        "instruction": "0x4011AA30",
+        "initialized_halfword": "0x80006774",
+        "companion_halfword": "0x80006776"
+      },
+      {
+        "slot_index": 72,
+        "instruction": "0x4011AA36",
+        "initialized_halfword": "0x80006778",
+        "companion_halfword": "0x8000677A"
+      },
+      {
+        "slot_index": 73,
+        "instruction": "0x4011AA3C",
+        "initialized_halfword": "0x8000677C",
+        "companion_halfword": "0x8000677E"
+      },
+      {
+        "slot_index": 74,
+        "instruction": "0x4011AA42",
+        "initialized_halfword": "0x80006780",
+        "companion_halfword": "0x80006782"
+      },
+      {
+        "slot_index": 75,
+        "instruction": "0x4011AA48",
+        "initialized_halfword": "0x80006784",
+        "companion_halfword": "0x80006786"
+      },
+      {
+        "slot_index": 76,
+        "instruction": "0x4011AA4E",
+        "initialized_halfword": "0x80006788",
+        "companion_halfword": "0x8000678A"
+      },
+      {
+        "slot_index": 77,
+        "instruction": "0x4011AA54",
+        "initialized_halfword": "0x8000678C",
+        "companion_halfword": "0x8000678E"
+      },
+      {
+        "slot_index": 78,
+        "instruction": "0x4011AA5A",
+        "initialized_halfword": "0x80006790",
+        "companion_halfword": "0x80006792"
+      },
+      {
+        "slot_index": 79,
+        "instruction": "0x4011AA60",
+        "initialized_halfword": "0x80006794",
+        "companion_halfword": "0x80006796"
+      }
+    ]
+  },
+  "remaining": {
+    "field_count": 0,
+    "ranges": [],
+    "adjacent_pair_count": 0,
+    "pairs": []
+  },
+  "conclusion": "The apparent 281..308 gap is seven members of a stock-managed 56-by-8-byte record array, not an unstructured payload hole. Together with sixteen earlier candidates in the same array, 37 fields are conservatively quarantined. The last 39 isolated candidates are companion halfwords in a separate stock-initialized 80-by-4-byte slot array. Under the conservative structure rule, no candidate field survives.",
+  "next_target": "Do not spend another locality sweep on words 281/282 and do not claim a spare adjacent pair. Continue through named stock control destinations or an explicit versioned transport extension instead.",
+  "safety": "Static read-only stock MAIN analysis; no firmware was modified."
+}

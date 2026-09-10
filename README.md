@@ -122,7 +122,11 @@ and reproducible tooling.
   1,360 stock and 1,360 seeded executions, those are the only packet words that
   change in every eight-lane machine/state comparison. Static structure then
   rejects them: 48 of the 124 fields have 123 explicit absolute `MOVE.W`
-  writers. Seventy-six survive that opcode screen; words 281/282 rank next.
+  writers. The 76 fields left by that opcode screen are all contained in two
+  additional stock-managed structures: 37 intersect a 56-by-8-byte array with
+  a computed indexed byte writer, and the other 39 are companion halfwords in
+  an explicitly initialized 80-by-4-byte slot array. Under the conservative
+  structure rule, no spare-field candidate—and no adjacent pair—survives.
 - The opt-in continuous research clock now applies interrupt backpressure and
   has sustained 2,303 completed native services while accepting later UI input.
   Its provisional 10 ms period is not yet a claim of physical-device cadence.
