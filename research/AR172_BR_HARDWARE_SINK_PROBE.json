@@ -1,0 +1,81 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "emac_correction": {
+    "normal_loads_ignore_mask": true,
+    "mask_addressing_modifier": "MACL/MSACL extension MAM bit 5",
+    "effect": "authentic BR remains live through natural renderer case 3"
+  },
+  "control_path": {
+    "voice_control_word": "0x80006544",
+    "packetizer": "0x40077D14",
+    "dma_initializer": "0x40077C54",
+    "dma_starter": "0x40077DA2",
+    "ping_pong_base": "0x80004800",
+    "ping_pong_stride": "0x810",
+    "fifo": "0xFC03C034"
+  },
+  "vectors": [
+    {
+      "source_br": "0x00000000",
+      "case_3_br": "0x0000",
+      "packed_control": "0x00180FFF",
+      "packet": {
+        "selector": 1,
+        "base": "0x80005010",
+        "wire_high_address": "0x80005328",
+        "wire_high": "0x8001B018",
+        "wire_low_address": "0x8000532C",
+        "wire_low": "0x80010FFF"
+      },
+      "dma": {
+        "channel": 15,
+        "source": "0x8000501C",
+        "destination": "0xFC03C034",
+        "minor_bytes": 4,
+        "iterations": 510,
+        "transferred_bytes": 2040,
+        "payload_sha256": "80c76429b2a05e471e025f405750a7f2d8ecb83296d26a081f94c1f8c5afd3f2",
+        "payload_hex_near_voice_control": "800100808001b01880010fff80010000"
+      }
+    },
+    {
+      "source_br": "0x7F000000",
+      "case_3_br": "0x7B31",
+      "packed_control": "0x001FD285",
+      "packet": {
+        "selector": 1,
+        "base": "0x80005010",
+        "wire_high_address": "0x80005328",
+        "wire_high": "0x8001B01F",
+        "wire_low_address": "0x8000532C",
+        "wire_low": "0x8001D285"
+      },
+      "dma": {
+        "channel": 15,
+        "source": "0x8000501C",
+        "destination": "0xFC03C034",
+        "minor_bytes": 4,
+        "iterations": 510,
+        "transferred_bytes": 2040,
+        "payload_sha256": "451880b0227125dee2c28027f8ef1035bf7df21541b13dba7982d4b529c799b2",
+        "payload_hex_near_voice_control": "800100808001b01f8001d28580010000"
+      }
+    }
+  ],
+  "payload_difference_offsets": [
+    "0x0BA",
+    "0x0BB",
+    "0x0BE",
+    "0x0BF",
+    "0x30F",
+    "0x312",
+    "0x313"
+  ],
+  "conclusion": "Natural case-3 BR is serialized as two tagged 0x8001xxxx packet words and transferred by eDMA channel 15 in a 2,040-byte frame to peripheral FIFO 0xFC03C034. The CPU source planes remain unchanged, so this is a physical control sink rather than evidence of CPU-side PCM quantization.",
+  "next_target": "Identify the peripheral behind 0xFC03C034 and whether its control frame is consumed by the FPGA image. For Filter 2, separately test the CPU audio ingress after the hardware voice return; LFO2 can continue targeting control fields.",
+  "safety": "Emulation and RAM/MMIO modeling only; firmware bytes were not modified."
+}

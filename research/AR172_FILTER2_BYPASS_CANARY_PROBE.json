@@ -1,0 +1,241 @@
+{
+  "result": "PASS",
+  "stock": {
+    "path": "extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "candidate": {
+    "path": "../AR172_FILTER2_BYPASS_CANARY_MAIN_DO_NOT_FLASH.bin",
+    "sha256": "59cfeddb3364f26332ff093a2c6904797c6a94ed18fbb3a5edfa50ee3ea18a6b",
+    "call_site": "0x4011CACC",
+    "original_call": "4eb940117f00",
+    "replacement_call": "4eb9402b4340",
+    "cave": "0x402B4340",
+    "cave_body": "4eb940117f004e75",
+    "changed_bytes": 10,
+    "changed_ranges": [
+      {
+        "address": "0x4011CACC",
+        "bytes": 6
+      },
+      {
+        "address": "0x402B4340",
+        "bytes": 8
+      }
+    ],
+    "stock_cave_references": {
+      "aligned_literals": [],
+      "absolute_jmp_jsr": [],
+      "relative_branches": []
+    }
+  },
+  "comparisons": [
+    {
+      "input": "zero",
+      "stock": {
+        "image": "stock",
+        "input": "zero",
+        "landmarks": [
+          "0x40117F00",
+          "0x4011CAD2",
+          "0x4010A2E0"
+        ],
+        "mixer_entry_registers": {
+          "d": [
+            "0x80000800",
+            "0x00000000",
+            "0x00000008",
+            "0x0000000B",
+            "0x00000020",
+            "0x00000000",
+            "0x00000000",
+            "0x8000EA18"
+          ],
+          "a": [
+            "0x00000000",
+            "0x8000F872",
+            "0x419B0B84",
+            "0x40278A44",
+            "0x80006388",
+            "0x419B0B84",
+            "0x47FFEFD8",
+            "0x47FFEF14"
+          ],
+          "sr": "0x2708",
+          "macsr": "0x00000024",
+          "mask": "0xFFFFFFFF",
+          "accumulators": [
+            "0x0000000000000000",
+            "0x0000000000000000",
+            "0x0000000000000000",
+            "0x0000000000000000"
+          ]
+        },
+        "mixer_input_sha256": "9c3a23610cbe1a6c739eb0c734761208641c970d6adfcfaf2ea599163434e704",
+        "ingress_output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "mixer_instructions": 3227,
+        "mixer_output_writes": 256,
+        "mixer_output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+      },
+      "candidate": {
+        "image": "candidate",
+        "input": "zero",
+        "landmarks": [
+          "0x402B4340",
+          "0x40117F00",
+          "0x4011CAD2",
+          "0x4010A2E0"
+        ],
+        "mixer_entry_registers": {
+          "d": [
+            "0x80000800",
+            "0x00000000",
+            "0x00000008",
+            "0x0000000B",
+            "0x00000020",
+            "0x00000000",
+            "0x00000000",
+            "0x8000EA18"
+          ],
+          "a": [
+            "0x00000000",
+            "0x8000F872",
+            "0x419B0B84",
+            "0x40278A44",
+            "0x80006388",
+            "0x419B0B84",
+            "0x47FFEFD8",
+            "0x47FFEF14"
+          ],
+          "sr": "0x2708",
+          "macsr": "0x00000024",
+          "mask": "0xFFFFFFFF",
+          "accumulators": [
+            "0x0000000000000000",
+            "0x0000000000000000",
+            "0x0000000000000000",
+            "0x0000000000000000"
+          ]
+        },
+        "mixer_input_sha256": "9c3a23610cbe1a6c739eb0c734761208641c970d6adfcfaf2ea599163434e704",
+        "ingress_output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "mixer_instructions": 3227,
+        "mixer_output_writes": 256,
+        "mixer_output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+      },
+      "bit_identical": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    },
+    {
+      "input": "active",
+      "stock": {
+        "image": "stock",
+        "input": "active",
+        "landmarks": [
+          "0x40117F00",
+          "0x4011CAD2",
+          "0x4010A2E0"
+        ],
+        "mixer_entry_registers": {
+          "d": [
+            "0x80000800",
+            "0x50E0CC22",
+            "0x00000008",
+            "0x0000000B",
+            "0x00000020",
+            "0x00000000",
+            "0x00000000",
+            "0x8000EA18"
+          ],
+          "a": [
+            "0x00000000",
+            "0x8000F872",
+            "0x419B0B84",
+            "0x40278A44",
+            "0x80006388",
+            "0x419B0B84",
+            "0x47FFEFD8",
+            "0x47FFEF14"
+          ],
+          "sr": "0x2708",
+          "macsr": "0x00000028",
+          "mask": "0xFFFFFFFF",
+          "accumulators": [
+            "0x0000000000000000",
+            "0x0000000000000000",
+            "0x0000000000000000",
+            "0x0000000000000000"
+          ]
+        },
+        "mixer_input_sha256": "011bbd5f0afba4131859dc348039bcc024dfbd46507a3de06773a37fffd2387e",
+        "ingress_output_sha256": "aad2b2a2e26d75672c240e0b4517847bda5f1a398f89ed5d3c53d7834cb10c90",
+        "mixer_instructions": 3227,
+        "mixer_output_writes": 256,
+        "mixer_output_sha256": "03a70fe25e7227f48da1a806cbad00ae1d1f14c29af38164cc1f6f5ca943174f"
+      },
+      "candidate": {
+        "image": "candidate",
+        "input": "active",
+        "landmarks": [
+          "0x402B4340",
+          "0x40117F00",
+          "0x4011CAD2",
+          "0x4010A2E0"
+        ],
+        "mixer_entry_registers": {
+          "d": [
+            "0x80000800",
+            "0x50E0CC22",
+            "0x00000008",
+            "0x0000000B",
+            "0x00000020",
+            "0x00000000",
+            "0x00000000",
+            "0x8000EA18"
+          ],
+          "a": [
+            "0x00000000",
+            "0x8000F872",
+            "0x419B0B84",
+            "0x40278A44",
+            "0x80006388",
+            "0x419B0B84",
+            "0x47FFEFD8",
+            "0x47FFEF14"
+          ],
+          "sr": "0x2708",
+          "macsr": "0x00000028",
+          "mask": "0xFFFFFFFF",
+          "accumulators": [
+            "0x0000000000000000",
+            "0x0000000000000000",
+            "0x0000000000000000",
+            "0x0000000000000000"
+          ]
+        },
+        "mixer_input_sha256": "011bbd5f0afba4131859dc348039bcc024dfbd46507a3de06773a37fffd2387e",
+        "ingress_output_sha256": "aad2b2a2e26d75672c240e0b4517847bda5f1a398f89ed5d3c53d7834cb10c90",
+        "mixer_instructions": 3227,
+        "mixer_output_writes": 256,
+        "mixer_output_sha256": "03a70fe25e7227f48da1a806cbad00ae1d1f14c29af38164cc1f6f5ca943174f"
+      },
+      "bit_identical": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    }
+  ],
+  "conclusion": "The inert cave detour calls the untouched external-audio ingress and returns with mixer-entry registers and all relevant input bytes identical to stock. The next function, stock combiner 0x4010A2E0, then executes 3,227 instructions, performs 256 writes, and produces a bit-identical output for zero and active external-input vectors. The control-flow hook is viable under emulation.",
+  "safety": "Decompressed MAIN lab image only. No ELE3 container or SysEx was built; the candidate is not flashable.",
+  "next_target": "Measure cycle headroom and establish the 0x800067F8 numeric/saturation contract before adding one disabled-by-default Filter 2 state structure."
+}

@@ -1,0 +1,86 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "stock_output_loop": {
+    "signature_address": "0x40118778",
+    "signature": "7010a1c1e5a1a3c6e5a6a0da1817de85ac1a6817de85a0430800ac830800a5c82cc8a7c82cc8538066d8",
+    "extract_acc2": "0x40118796",
+    "store_acc2": "0x40118798",
+    "extract_acc3": "0x4011879A",
+    "store_acc3": "0x4011879C",
+    "instructions": 17132,
+    "loop": {
+      "inner_iterations": 128,
+      "pairs_per_inner_iteration": 1,
+      "outer_lanes": 8,
+      "words_per_lane": 32,
+      "extract_instruction_counts": {
+        "0x40118796": 128,
+        "0x4011879A": 128
+      },
+      "observed_macsr": {
+        "0x00000028": 240,
+        "0x00000029": 16
+      },
+      "saturation_enable_bit_seen": false,
+      "sequential_longword_writes": 256,
+      "first": "0x800067F8",
+      "last": "0x80006BF4"
+    },
+    "active_vector": {
+      "input_word": "0x10000000",
+      "signed_min": -934412021,
+      "signed_max": 2095212933,
+      "negative_words": 32,
+      "positive_words": 216,
+      "zero_words": 8,
+      "sha256": "aad2b2a2e26d75672c240e0b4517847bda5f1a398f89ed5d3c53d7834cb10c90"
+    }
+  },
+  "controlled_boundary_cases": [
+    {
+      "case": "positive_limit",
+      "accumulator_48_bit_fractional": "0x007FFFFFFF00",
+      "stored_word": "0x7FFFFFFF"
+    },
+    {
+      "case": "negative_limit",
+      "accumulator_48_bit_fractional": "0xFF8000000000",
+      "stored_word": "0x80000000"
+    },
+    {
+      "case": "positive_overflow_wrap",
+      "accumulator_48_bit_fractional": "0x008000000000",
+      "stored_word": "0x80000000"
+    },
+    {
+      "case": "negative_overflow_wrap",
+      "accumulator_48_bit_fractional": "0xFF7FFFFFFF00",
+      "stored_word": "0x7FFFFFFF"
+    }
+  ],
+  "inert_detour_overhead": {
+    "measurement": [
+      {
+        "input": "zero",
+        "stock_instructions_to_mixer": 35362,
+        "candidate_instructions_to_mixer": 35364,
+        "added_semantic_instructions": 2
+      },
+      {
+        "input": "active",
+        "stock_instructions_to_mixer": 35362,
+        "candidate_instructions_to_mixer": 35364,
+        "added_semantic_instructions": 2
+      }
+    ],
+    "scope": "Semantic instructions in MiniColdFire, not processor cycles. Cache, SDRAM, DMA contention, and interrupt timing require measurement on hardware."
+  },
+  "numeric_contract": "The 0x800067F8 plane contains signed 32-bit fractional results extracted from 48-bit EMAC accumulators (Q1.31-domain words). The stock loop does not enable EMAC saturation; values outside the signed 32-bit fractional range wrap at extraction rather than clamp. A Filter 2 must therefore preserve this word format and choose explicit internal headroom/saturation behavior.",
+  "cycle_contract": "The inert detour costs exactly two additional modeled instructions before the stock mixer for both vectors. This proves structural overhead only; available real-time cycle margin remains a hardware-timer measurement gate.",
+  "next_target": "Audit a larger zero-filled writable-SDRAM cave span for references and runtime liveness, then place a versioned disabled-by-default Filter 2/LFO2 state header.",
+  "safety": "Emulation and read-only stock analysis; no flashable firmware was built."
+}

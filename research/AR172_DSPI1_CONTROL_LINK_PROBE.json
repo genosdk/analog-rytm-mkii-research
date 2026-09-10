@@ -1,0 +1,802 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "hardware_identity": {
+    "base": "0xFC03C000",
+    "peripheral": "MCF5441x DSPI1",
+    "status_register": "0xFC03C02C (DSPI1_SR)",
+    "transmit_fifo": "0xFC03C034 (DSPI1_PUSHR)",
+    "edma_request": "channel 15 = DSPI1_SR[TFFF] transmit FIFO fill"
+  },
+  "stock_configuration": {
+    "setup_address": "0x4011D7F6",
+    "mcr_final": "0x80030C00",
+    "ctar": [
+      {
+        "raw": "0x7E000001",
+        "frame_bits": 16,
+        "cpol": 1,
+        "cpha": 1,
+        "lsb_first": false,
+        "baud_prescaler": 2,
+        "baud_scaler": 4,
+        "sck_divider": 8
+      },
+      {
+        "raw": "0x7E000000",
+        "frame_bits": 16,
+        "cpol": 1,
+        "cpha": 1,
+        "lsb_first": false,
+        "baud_prescaler": 2,
+        "baud_scaler": 2,
+        "sck_divider": 4
+      },
+      {
+        "raw": "0x7E000335",
+        "frame_bits": 16,
+        "cpol": 1,
+        "cpha": 1,
+        "lsb_first": false,
+        "baud_prescaler": 2,
+        "baud_scaler": 32,
+        "sck_divider": 64
+      },
+      {
+        "raw": "0x3E001064",
+        "frame_bits": 8,
+        "cpol": 1,
+        "cpha": 1,
+        "lsb_first": false,
+        "baud_prescaler": 2,
+        "baud_scaler": 16,
+        "sck_divider": 32
+      }
+    ],
+    "rser_initial": "0x00000000",
+    "ctar0_wire_mode": "16-bit, CPOL=1, CPHA=1, MSB-first",
+    "ctar0_sck": "internal bus clock / 8",
+    "pin_mux": {
+      "register": "PAR_SDHCL at 0xEC094055",
+      "route": "SDHC alternate-function group to DSPI1",
+      "pcs0": "PF2 / ball B13 / SDHC_DAT3",
+      "sout": "PG7 / ball B12 / SDHC_DAT0",
+      "sin": "PG6 / ball C11 / SDHC_CMD",
+      "sck": "PG5 / ball A10 / SDHC_CLK",
+      "slew_control": "SRCR_SDHC = 2 at 0xEC09406E"
+    },
+    "reference": "NXP MCF5441x Reference Manual, DSPI and pin-mux chapters"
+  },
+  "vectors": [
+    {
+      "source_br": "0x00000000",
+      "case_3_br": "0x0000",
+      "dspi1_registers_after_start": {
+        "mcr": "0x00000C00",
+        "ctar0": "0x00000000",
+        "sr": "0x10000000",
+        "rser": "0x03000000"
+      },
+      "stock_dspi1_accesses": [
+        {
+          "kind": "read",
+          "pc": "0x40077CC8",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000000"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077CD2",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000001"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077CDE",
+          "address": "0xFC03C030",
+          "size": 4,
+          "value": "0x03000000"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077CE4",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000001"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077CF0",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C01"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077CF6",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C01"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077CFE",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C00"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077D96",
+          "address": "0xFC03C02C",
+          "size": 4,
+          "value": "0x10000000"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077DD0",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C00"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077DD6",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C00"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077DDE",
+          "address": "0xFC03C02C",
+          "size": 4,
+          "value": "0x10000000"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077DE4",
+          "address": "0xFC03C02C",
+          "size": 4,
+          "value": "0x10000000"
+        }
+      ],
+      "packet": {
+        "base": "0x80005010",
+        "source": "0x8000501C",
+        "pushr_words": 510,
+        "command_shapes": [
+          {
+            "count": 16,
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00"
+          },
+          {
+            "count": 1,
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": true,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00"
+          },
+          {
+            "count": 1,
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00"
+          },
+          {
+            "count": 491,
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x01"
+          },
+          {
+            "count": 1,
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": true,
+            "pcs_mask": "0x01"
+          }
+        ],
+        "special_words": [
+          {
+            "index": 0,
+            "raw": "0x8000AAAA",
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0xAAAA"
+          },
+          {
+            "index": 1,
+            "raw": "0x84010000",
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": true,
+            "pcs_mask": "0x01",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 493,
+            "raw": "0x08005555",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": true,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x5555"
+          },
+          {
+            "index": 494,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 495,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 496,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 497,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 498,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 499,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 500,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 501,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 502,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 503,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 504,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 505,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 506,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 507,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 508,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 509,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          }
+        ],
+        "first": {
+          "raw": "0x8000AAAA",
+          "continuous_chip_select": true,
+          "ctar": 0,
+          "end_of_queue": false,
+          "clear_transfer_counter": false,
+          "pcs_mask": "0x00",
+          "tx_data": "0xAAAA"
+        },
+        "last": {
+          "raw": "0x00000000",
+          "continuous_chip_select": false,
+          "ctar": 0,
+          "end_of_queue": false,
+          "clear_transfer_counter": false,
+          "pcs_mask": "0x00",
+          "tx_data": "0x0000"
+        }
+      },
+      "dma": {
+        "channel": 15,
+        "source": "0x8000501C",
+        "destination": "0xFC03C034",
+        "minor_bytes": 4,
+        "iterations": 510,
+        "transferred_bytes": 2040,
+        "request_source": "DSPI1_SR[TFFF]"
+      }
+    },
+    {
+      "source_br": "0x7F000000",
+      "case_3_br": "0x7D2D",
+      "dspi1_registers_after_start": {
+        "mcr": "0x00000C00",
+        "ctar0": "0x00000000",
+        "sr": "0x10000000",
+        "rser": "0x03000000"
+      },
+      "stock_dspi1_accesses": [
+        {
+          "kind": "read",
+          "pc": "0x40077CC8",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000000"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077CD2",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000001"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077CDE",
+          "address": "0xFC03C030",
+          "size": 4,
+          "value": "0x03000000"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077CE4",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000001"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077CF0",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C01"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077CF6",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C01"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077CFE",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C00"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077D96",
+          "address": "0xFC03C02C",
+          "size": 4,
+          "value": "0x10000000"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077DD0",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C00"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077DD6",
+          "address": "0xFC03C000",
+          "size": 4,
+          "value": "0x00000C00"
+        },
+        {
+          "kind": "read",
+          "pc": "0x40077DDE",
+          "address": "0xFC03C02C",
+          "size": 4,
+          "value": "0x10000000"
+        },
+        {
+          "kind": "write",
+          "pc": "0x40077DE4",
+          "address": "0xFC03C02C",
+          "size": 4,
+          "value": "0x10000000"
+        }
+      ],
+      "packet": {
+        "base": "0x80005010",
+        "source": "0x8000501C",
+        "pushr_words": 510,
+        "command_shapes": [
+          {
+            "count": 16,
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00"
+          },
+          {
+            "count": 1,
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": true,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00"
+          },
+          {
+            "count": 1,
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00"
+          },
+          {
+            "count": 491,
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x01"
+          },
+          {
+            "count": 1,
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": true,
+            "pcs_mask": "0x01"
+          }
+        ],
+        "special_words": [
+          {
+            "index": 0,
+            "raw": "0x8000AAAA",
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0xAAAA"
+          },
+          {
+            "index": 1,
+            "raw": "0x84010000",
+            "continuous_chip_select": true,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": true,
+            "pcs_mask": "0x01",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 493,
+            "raw": "0x08005555",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": true,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x5555"
+          },
+          {
+            "index": 494,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 495,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 496,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 497,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 498,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 499,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 500,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 501,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 502,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 503,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 504,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 505,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 506,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 507,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 508,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          },
+          {
+            "index": 509,
+            "raw": "0x00000000",
+            "continuous_chip_select": false,
+            "ctar": 0,
+            "end_of_queue": false,
+            "clear_transfer_counter": false,
+            "pcs_mask": "0x00",
+            "tx_data": "0x0000"
+          }
+        ],
+        "first": {
+          "raw": "0x8000AAAA",
+          "continuous_chip_select": true,
+          "ctar": 0,
+          "end_of_queue": false,
+          "clear_transfer_counter": false,
+          "pcs_mask": "0x00",
+          "tx_data": "0xAAAA"
+        },
+        "last": {
+          "raw": "0x00000000",
+          "continuous_chip_select": false,
+          "ctar": 0,
+          "end_of_queue": false,
+          "clear_transfer_counter": false,
+          "pcs_mask": "0x00",
+          "tx_data": "0x0000"
+        }
+      },
+      "dma": {
+        "channel": 15,
+        "source": "0x8000501C",
+        "destination": "0xFC03C034",
+        "minor_bytes": 4,
+        "iterations": 510,
+        "transferred_bytes": 2040,
+        "request_source": "DSPI1_SR[TFFF]"
+      }
+    }
+  ],
+  "conclusion": "The BR-bearing DMA image is a 510-entry DSPI1 queue. Every eDMA longword is a DSPI1_PUSHR command. The frame contains 492 continuous CTAR0/PCS0 entries (one also clears the transfer counter), plus a 0xAAAA synchronizer, a 0x5555 end-of-queue marker, and 16 trailing padding entries. The off-chip PCS0 device is therefore the immediate control consumer; the MCF5441x manual alone cannot identify that board-level device.",
+  "next_target": "Identify the board-level DSPI1 PCS0 destination and map the 492 payload positions to analog control fields; independently trace the producers of the three 0x40117F00 input planes for the Filter 2 boundary.",
+  "safety": "Emulation and MMIO observation only; firmware bytes were not modified."
+}

@@ -1,0 +1,112 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "emulator": {
+    "path": "recovered_library/minicoldfire.py"
+  },
+  "board_preconditions": {
+    "audio_ready_word": {
+      "address": "0xFC03C02C",
+      "value": "0x10000000"
+    },
+    "stock_audio_dma_initializer": "0x401178FA",
+    "channel_32_tcd_pointer_seed": {
+      "address": "0x80005820",
+      "value": "0xFC045400"
+    },
+    "channel_31_tcd_pointer_seed": {
+      "address": "0x80005824",
+      "value": "0xFC0453E0"
+    }
+  },
+  "callback_execution": {
+    "machine_table_initializer": "0x4009BB0A",
+    "machine_table_initializer_instructions": 395,
+    "audio_dma_initializer": "0x401178FA",
+    "audio_dma_initializer_instructions": 1457,
+    "callback": "0x4011B3AE",
+    "stop": "0x4011CB00",
+    "callback_instructions": 40512,
+    "landmarks": {
+      "0x4011C542": 1,
+      "0x4011C69E": 1,
+      "0x4011C722": 1,
+      "0x40117F00": 1,
+      "0x4010A2E0": 1,
+      "0x40108944": 1,
+      "0x40105188": 1,
+      "0x4011CB00": 1
+    },
+    "edma_major_loops_by_channel": {
+      "30": 1,
+      "31": 8,
+      "32": 8
+    },
+    "channel_30_audio_transfer": {
+      "source": "0x4B7FFFF0",
+      "destination": "0x8000DDD0",
+      "minor_bytes": 16,
+      "major_iterations": 17,
+      "transferred_bytes": 272,
+      "scatter_gather_tcd": "0x8000E1A0",
+      "next_destination": "0x8000DEE0",
+      "source_modulo_bytes": 4194304,
+      "source_offset_per_minor_loop": 16
+    },
+    "channels_31_32_external_ingress": {
+      "31": {
+        "major_loops": 8,
+        "source": "0x4F9372E0",
+        "minor_bytes": 16,
+        "major_iterations": 9,
+        "bytes_per_major_loop": 144,
+        "destination_starts": [
+          "0x80005880",
+          "0x800059E0"
+        ]
+      },
+      "32": {
+        "major_loops": 8,
+        "source": "0x4F9372E0",
+        "minor_bytes": 16,
+        "major_iterations": 9,
+        "bytes_per_major_loop": 144,
+        "destination_starts": [
+          "0x80005910",
+          "0x80005A70"
+        ]
+      }
+    },
+    "sample_br_accesses": [
+      {
+        "pc": "0x4011C6C6",
+        "address": "0x8000F7BC",
+        "size": 4,
+        "value": "0x00000000"
+      }
+    ],
+    "interpretation": "MAIN touches track-0 sample BR only in the control smoother during this storage-free callback; no later direct CPU read is observed. Channel 30 is a 17-by-16-byte modulo-window snapshot, while channels 31/32 ingest 9-by-16-byte external blocks."
+  },
+  "control_frame_builder": {
+    "target_array_base": "0x8000E57C",
+    "target_longword_index": 18,
+    "target_longword_address": "0x8000E5C4",
+    "frame_longword_index": 18,
+    "frame_longword_address": "0x8000F7BC",
+    "contained_frame_words": [
+      36,
+      37
+    ],
+    "sample_br_word": 37,
+    "sample_br_address": "0x8000F7BE",
+    "injected_target": "0x7F000000",
+    "frame_before": "0x00000000",
+    "frame_after": "0x01E8FE18",
+    "proven_mapping": "frame longword 18 is built from target longword 18"
+  },
+  "next_target": "Reject section ID 2 as the audio engine, then activate one stock sample voice and trace the BR-dependent render state inside MAIN.",
+  "safety": "Emulation and RAM observation only; firmware bytes were not modified."
+}

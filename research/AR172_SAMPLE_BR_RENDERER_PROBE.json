@@ -1,0 +1,132 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "machine_dispatch": {
+    "renderer_table": "0x40277FE8",
+    "machine_0_renderer": "0x4010CBA8",
+    "physical_voice": 0,
+    "logical_track": 0
+  },
+  "bounded_gate": {
+    "state_address": "0x8000FEF8",
+    "jump_table_cases": {
+      "0": "0x4010CFD2",
+      "1": "0x4010D028",
+      "2": "0x4010D102",
+      "3": "0x4010D164",
+      "4": "0x4010D204"
+    },
+    "selected_case": 3,
+    "reason": "case 3 is the sole case that reads the renderer's cached BR word"
+  },
+  "br_control_path": {
+    "frame_read_instruction": "0x4010CC58",
+    "frame_address": "0x8000F7BE",
+    "cache_read_instruction": "0x4010D16E",
+    "packed_state_address": "0x80006544",
+    "fixed_divide_wrapper": "0x4011A0B6"
+  },
+  "vectors": [
+    {
+      "injected_target": "0x00000000",
+      "callback_instructions": 42159,
+      "br_frame_word": "0x0000",
+      "packed_voice_control": "0xB3180FFF",
+      "fixed_divide_wrapper_calls": 1,
+      "events": [
+        {
+          "kind": "read",
+          "instruction": "0x4010CC58",
+          "bus_reported_pc": "0x4010CC5C",
+          "address": "0x8000F7BE",
+          "size": 2,
+          "value": "0x0000"
+        },
+        {
+          "kind": "read",
+          "instruction": "0x4010D16E",
+          "bus_reported_pc": "0x4010D172",
+          "address": "0x47FFEF06",
+          "size": 2,
+          "value": "0x0000"
+        },
+        {
+          "kind": "write",
+          "instruction": "0x4010D1E8",
+          "bus_reported_pc": "0x4010D1EC",
+          "address": "0x80006544",
+          "size": 4,
+          "value": "0xB3180FFF"
+        }
+      ]
+    },
+    {
+      "injected_target": "0x7F000000",
+      "callback_instructions": 42136,
+      "br_frame_word": "0x7F00",
+      "packed_voice_control": "0xB31FFFFF",
+      "fixed_divide_wrapper_calls": 1,
+      "events": [
+        {
+          "kind": "read",
+          "instruction": "0x4010CC58",
+          "bus_reported_pc": "0x4010CC5C",
+          "address": "0x8000F7BE",
+          "size": 2,
+          "value": "0x7F00"
+        },
+        {
+          "kind": "read",
+          "instruction": "0x4010D16E",
+          "bus_reported_pc": "0x4010D172",
+          "address": "0x47FFEF06",
+          "size": 2,
+          "value": "0x7F00"
+        },
+        {
+          "kind": "write",
+          "instruction": "0x4010D1E8",
+          "bus_reported_pc": "0x4010D1EC",
+          "address": "0x80006544",
+          "size": 4,
+          "value": "0xB31FFFFF"
+        }
+      ]
+    }
+  ],
+  "case_one_followup": {
+    "vectors": [
+      {
+        "seed": "0xB3180FFF",
+        "read_instruction": "0x4010D08A",
+        "read_value_after_case_header": "0xF0180FFF",
+        "final_value": "0xF0100000",
+        "region_sha256": {
+          "source_plane_a": "5eebf4d5a9061c19c2ff04fa54c5bab61039354420847de2548a93fea74c458c",
+          "source_plane_b": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+          "source_plane_c": "1cfc9251644a358213d808b8088517b87a9f024bdf46198a3ed692b98b7373a7",
+          "combined_output": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
+        }
+      },
+      {
+        "seed": "0xB31FFFFF",
+        "read_instruction": "0x4010D08A",
+        "read_value_after_case_header": "0xF01FFFFF",
+        "final_value": "0xF0100000",
+        "region_sha256": {
+          "source_plane_a": "5eebf4d5a9061c19c2ff04fa54c5bab61039354420847de2548a93fea74c458c",
+          "source_plane_b": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+          "source_plane_c": "1cfc9251644a358213d808b8088517b87a9f024bdf46198a3ed692b98b7373a7",
+          "combined_output": "e5a00aa9991ac8a5ee3109844d84a55583bd20572ad3ffcd42792f3c36b183ad"
+        }
+      }
+    ],
+    "interpretation": "Instruction 0x4010D08A reads the packed word, but case 1 masks both synthetic vectors to 0xF0100000 and produces identical inactive render planes."
+  },
+  "conclusion": "Stock machine renderer 0 directly consumes the track-0 sample-BR frame and encodes it into a per-voice control word. This isolates the downstream BR control encoder; natural frame construction and hardware serialization are proved by the trigger-queue and hardware-sink probes.",
+  "next_target": "Replace the synthetic event case with genuine trigger/sample metadata, then trace where case-3's BR-dependent coefficient reaches sample data or a render plane.",
+  "safety": "Emulation and synthetic RAM state only; firmware bytes were not modified."
+}

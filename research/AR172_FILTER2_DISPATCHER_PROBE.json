@@ -1,0 +1,236 @@
+{
+  "result": "PASS",
+  "stock": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "disabled_candidate": {
+    "path": "ar172_workspace/AR172_FILTER2_DISPATCHER_CANARY_MAIN_DO_NOT_FLASH.bin",
+    "sha256": "0f8351bcb4821f603265bafdfb1ba071b8c61c148a1ba84d1f11481b3378ba5a",
+    "state": {
+      "bypass": {
+        "call_site": "0x4011CACC",
+        "original_call": "4eb940117f00",
+        "replacement_call": "4eb9402b4340",
+        "cave": "0x402B4340",
+        "cave_body": "4eb940117f004e75",
+        "changed_bytes": 10,
+        "changed_ranges": [
+          {
+            "address": "0x4011CACC",
+            "bytes": 6
+          },
+          {
+            "address": "0x402B4340",
+            "bytes": 8
+          }
+        ],
+        "stock_cave_references": {
+          "aligned_literals": [],
+          "absolute_jmp_jsr": [],
+          "relative_branches": []
+        }
+      },
+      "state_base": "0x402B4400",
+      "state_end_exclusive": "0x402B45F0",
+      "state_bytes_reserved": 496,
+      "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+      "stock_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "dispatcher_address": "0x402B4340",
+    "dispatcher_body": "4eb940117f004ab9402b4408670c08390000402b440d67024e714e75",
+    "flags": 0,
+    "filter2_lane_mask": 0,
+    "changed_byte_positions": 38
+  },
+  "armed_emulation_probe": {
+    "sha256": "e53c90c4549a8173b0660c6f8e667f21dbe5f373d4b7c5a0aa6e740c61cba32b",
+    "state": {
+      "bypass": {
+        "call_site": "0x4011CACC",
+        "original_call": "4eb940117f00",
+        "replacement_call": "4eb9402b4340",
+        "cave": "0x402B4340",
+        "cave_body": "4eb940117f004e75",
+        "changed_bytes": 10,
+        "changed_ranges": [
+          {
+            "address": "0x4011CACC",
+            "bytes": 6
+          },
+          {
+            "address": "0x402B4340",
+            "bytes": 8
+          }
+        ],
+        "stock_cave_references": {
+          "aligned_literals": [],
+          "absolute_jmp_jsr": [],
+          "relative_branches": []
+        }
+      },
+      "state_base": "0x402B4400",
+      "state_end_exclusive": "0x402B45F0",
+      "state_bytes_reserved": 496,
+      "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+      "stock_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "dispatcher_address": "0x402B4340",
+    "dispatcher_body": "4eb940117f004ab9402b4408670c08390000402b440d67024e714e75",
+    "flags": 1,
+    "filter2_lane_mask": 1,
+    "changed_byte_positions": 40,
+    "artifact_retained": false
+  },
+  "dispatch_traces": {
+    "disabled": [
+      {
+        "input": "zero",
+        "instructions_to_mixer": 35366,
+        "cave_pcs": [
+          "0x402B4340",
+          "0x402B4346",
+          "0x402B434C",
+          "0x402B435A"
+        ],
+        "enabled_placeholder_executed": false,
+        "state_reads": [
+          {
+            "instruction_next_pc": "0x402B434C",
+            "address": "0x402B4408",
+            "size": 4,
+            "value": "0x00000000"
+          }
+        ]
+      },
+      {
+        "input": "active",
+        "instructions_to_mixer": 35366,
+        "cave_pcs": [
+          "0x402B4340",
+          "0x402B4346",
+          "0x402B434C",
+          "0x402B435A"
+        ],
+        "enabled_placeholder_executed": false,
+        "state_reads": [
+          {
+            "instruction_next_pc": "0x402B434C",
+            "address": "0x402B4408",
+            "size": 4,
+            "value": "0x00000000"
+          }
+        ]
+      }
+    ],
+    "armed_probe": [
+      {
+        "input": "zero",
+        "instructions_to_mixer": 35369,
+        "cave_pcs": [
+          "0x402B4340",
+          "0x402B4346",
+          "0x402B434C",
+          "0x402B434E",
+          "0x402B4356",
+          "0x402B4358",
+          "0x402B435A"
+        ],
+        "enabled_placeholder_executed": true,
+        "state_reads": [
+          {
+            "instruction_next_pc": "0x402B434C",
+            "address": "0x402B4408",
+            "size": 4,
+            "value": "0x00000001"
+          },
+          {
+            "instruction_next_pc": "0x402B4356",
+            "address": "0x402B440D",
+            "size": 1,
+            "value": "0x01"
+          }
+        ]
+      },
+      {
+        "input": "active",
+        "instructions_to_mixer": 35369,
+        "cave_pcs": [
+          "0x402B4340",
+          "0x402B4346",
+          "0x402B434C",
+          "0x402B434E",
+          "0x402B4356",
+          "0x402B4358",
+          "0x402B435A"
+        ],
+        "enabled_placeholder_executed": true,
+        "state_reads": [
+          {
+            "instruction_next_pc": "0x402B434C",
+            "address": "0x402B4408",
+            "size": 4,
+            "value": "0x00000001"
+          },
+          {
+            "instruction_next_pc": "0x402B4356",
+            "address": "0x402B440D",
+            "size": 1,
+            "value": "0x01"
+          }
+        ]
+      }
+    ]
+  },
+  "stock_equivalence": [
+    {
+      "input": "zero",
+      "disabled_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      },
+      "armed_placeholder_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    },
+    {
+      "input": "active",
+      "disabled_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      },
+      "armed_placeholder_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    }
+  ],
+  "conclusion": "The cave now performs stock ingress, reads the versioned state flags, and returns immediately when Filter 2 is disabled. An emulation-only armed image also reads lane mask bit 0 and reaches the dedicated placeholder NOP. Both paths remain bit-identical to stock through the next combiner, proving the control dispatcher before any filter arithmetic is introduced.",
+  "next_target": "Replace the lane-0 placeholder with one explicitly saturating 2-pole Q1.31 reference kernel, initially with unity/bypass coefficients, and compare all 256 output words before trying an audible cutoff.",
+  "safety": "Only the default-disabled decompressed MAIN candidate is retained. The armed probe was temporary; no ELE3 container or SysEx was built."
+}

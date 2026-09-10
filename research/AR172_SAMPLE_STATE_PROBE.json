@@ -1,0 +1,261 @@
+{
+  "result": "PASS",
+  "main": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "trigger_interpolation_contract": {
+    "record": "0x42AC4038",
+    "record_bytes": 56,
+    "interpolation_publish_flag": "0x20",
+    "voice_reset_flag": "0x80",
+    "tested_combined_flags": "0xA0",
+    "field_map": {
+      "+0x08": "0x80006388 (pitch/control word)",
+      "+0x0C": "0x8000E4A0",
+      "+0x10": "0x8000E46C",
+      "+0x20": "0x8000FC24 (countdown)"
+    },
+    "interpolation_publish_instructions": [
+      "0x4011C616",
+      "0x4011C61E"
+    ]
+  },
+  "progression": {
+    "phase_address": "0x80005E78",
+    "phase_step_per_callback": "0x00007080",
+    "duration_step_per_callback": "-0x00003840",
+    "interpolation_limit_address": "0x80005E10",
+    "derived_rate_term_address": "0x80005E44",
+    "stepped_coefficient_address": "0x8000E438",
+    "stepped_coefficients": [
+      "0x00000000",
+      "0x00074822",
+      "0x000E9044"
+    ]
+  },
+  "vectors": [
+    {
+      "flags": "0x80",
+      "watched_reads": [],
+      "callbacks": [
+        {
+          "callback": 1,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000FC7C0"
+        },
+        {
+          "callback": 2,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000F8F80"
+        },
+        {
+          "callback": 3,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000F5740"
+        },
+        {
+          "callback": 4,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000F1F00"
+        },
+        {
+          "callback": 5,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000EE6C0"
+        },
+        {
+          "callback": 6,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000EAE80"
+        },
+        {
+          "callback": 7,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000E7640"
+        },
+        {
+          "callback": 8,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000E3E00"
+        },
+        {
+          "callback": 9,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000E05C0"
+        },
+        {
+          "callback": 10,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000DCD80"
+        },
+        {
+          "callback": 11,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000D9540"
+        },
+        {
+          "callback": 12,
+          "interpolation_phase": "0x00000000",
+          "interpolation_limit": "0x00000000",
+          "interpolation_rate_term": "0x00000000",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000D5D00"
+        }
+      ],
+      "nonzero_source_plane_writes": []
+    },
+    {
+      "flags": "0xA0",
+      "watched_reads": [
+        {
+          "callback": 1,
+          "instruction": "0x4011C616",
+          "address": "0x8000E4A0",
+          "value": "0x00000100"
+        },
+        {
+          "callback": 1,
+          "instruction": "0x4011C61E",
+          "address": "0x8000E46C",
+          "value": "0x00010000"
+        }
+      ],
+      "callbacks": [
+        {
+          "callback": 1,
+          "interpolation_phase": "0x00007080",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000FC7C0"
+        },
+        {
+          "callback": 2,
+          "interpolation_phase": "0x0000E100",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000F8F80"
+        },
+        {
+          "callback": 3,
+          "interpolation_phase": "0x00015180",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x00000000",
+          "duration_countdown": "0x000F5740"
+        },
+        {
+          "callback": 4,
+          "interpolation_phase": "0x0001C200",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x00074822",
+          "duration_countdown": "0x000F1F00"
+        },
+        {
+          "callback": 5,
+          "interpolation_phase": "0x00023280",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x00074822",
+          "duration_countdown": "0x000EE6C0"
+        },
+        {
+          "callback": 6,
+          "interpolation_phase": "0x0002A300",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x000E9044",
+          "duration_countdown": "0x000EAE80"
+        },
+        {
+          "callback": 7,
+          "interpolation_phase": "0x00031380",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x000E9044",
+          "duration_countdown": "0x000E7640"
+        },
+        {
+          "callback": 8,
+          "interpolation_phase": "0x00038400",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x0015D866",
+          "duration_countdown": "0x000E3E00"
+        },
+        {
+          "callback": 9,
+          "interpolation_phase": "0x0003F480",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x0015D866",
+          "duration_countdown": "0x000E05C0"
+        },
+        {
+          "callback": 10,
+          "interpolation_phase": "0x00046500",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x0015D866",
+          "duration_countdown": "0x000DCD80"
+        },
+        {
+          "callback": 11,
+          "interpolation_phase": "0x0004D580",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x001D2088",
+          "duration_countdown": "0x000D9540"
+        },
+        {
+          "callback": 12,
+          "interpolation_phase": "0x00054600",
+          "interpolation_limit": "0x00010000",
+          "interpolation_rate_term": "0x00232800",
+          "interpolation_coefficient": "0x001D2088",
+          "duration_countdown": "0x000D5D00"
+        }
+      ],
+      "nonzero_source_plane_writes": []
+    }
+  ],
+  "conclusion": "Trigger flag bit 5 gates control-frame interpolation state. With flags 0xA0, MAIN consumes fields +0x0C/+0x10 once, advances a stable numeric phase/countdown state, and emits a stepped per-track coefficient at 0x8000E438. No nonzero CPU source-plane write appears in the storage-free fixture. The 13-by-21-longword builder consumes this coefficient while constructing the hardware control frame; it is not a sample cursor, CPU PCM pointer, or Filter 2 insertion boundary.",
+  "next_target": "Identify the consumer behind peripheral FIFO 0xFC03C034. For Filter 2, separately trace the CPU audio ingress after the hardware voice return.",
+  "safety": "Emulation and synthetic RAM state only; firmware bytes were not modified."
+}

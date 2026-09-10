@@ -1,0 +1,290 @@
+{
+  "result": "PASS",
+  "stock": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "disabled_candidate": {
+    "path": "temporary execution image",
+    "sha256": "45ba0ca490e7dfa030e20d529c8ca356ea9990ce11818b477150fc4b25c1725c",
+    "state": {
+      "bypass": {
+        "call_site": "0x4011CACC",
+        "original_call": "4eb940117f00",
+        "replacement_call": "4eb9402b4340",
+        "cave": "0x402B4340",
+        "cave_body": "4eb940117f004e75",
+        "changed_bytes": 10,
+        "changed_ranges": [
+          {
+            "address": "0x4011CACC",
+            "bytes": 6
+          },
+          {
+            "address": "0x402B4340",
+            "bytes": 8
+          }
+        ],
+        "stock_cave_references": {
+          "aligned_literals": [],
+          "absolute_jmp_jsr": [],
+          "relative_branches": []
+        }
+      },
+      "state_base": "0x402B4400",
+      "state_end_exclusive": "0x402B45F0",
+      "state_bytes_reserved": 496,
+      "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+      "stock_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "kernel_address": "0x402B4340",
+    "kernel_end_exclusive": "0x402B439E",
+    "kernel_bytes": 94,
+    "kernel_body": "4eb940117f0040e74ab9402b4408674a08390000402b440d674048e7f0c041f9800067f843f9402b442070202210241192824c81e281d4814c82228226290004220292834c81e281d6814c832343000420c3538066d64cdf030f46df4e75",
+    "flags": 0,
+    "filter2_lane_mask": 0,
+    "changed_byte_positions": 101
+  },
+  "armed_emulation_probe": {
+    "sha256": "c5dc5255d3a446a7a3088ae88f897c4de4e9212100100f599931403b45e42861",
+    "state": {
+      "bypass": {
+        "call_site": "0x4011CACC",
+        "original_call": "4eb940117f00",
+        "replacement_call": "4eb9402b4340",
+        "cave": "0x402B4340",
+        "cave_body": "4eb940117f004e75",
+        "changed_bytes": 10,
+        "changed_ranges": [
+          {
+            "address": "0x4011CACC",
+            "bytes": 6
+          },
+          {
+            "address": "0x402B4340",
+            "bytes": 8
+          }
+        ],
+        "stock_cave_references": {
+          "aligned_literals": [],
+          "absolute_jmp_jsr": [],
+          "relative_branches": []
+        }
+      },
+      "state_base": "0x402B4400",
+      "state_end_exclusive": "0x402B45F0",
+      "state_bytes_reserved": 496,
+      "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+      "stock_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "kernel_address": "0x402B4340",
+    "kernel_end_exclusive": "0x402B439E",
+    "kernel_bytes": 94,
+    "kernel_body": "4eb940117f0040e74ab9402b4408674a08390000402b440d674048e7f0c041f9800067f843f9402b442070202210241192824c81e281d4814c82228226290004220292834c81e281d6814c832343000420c3538066d64cdf030f46df4e75",
+    "flags": 1,
+    "filter2_lane_mask": 1,
+    "changed_byte_positions": 103,
+    "artifact_retained": false
+  },
+  "kernel_contract": {
+    "lane": 0,
+    "samples_per_callback": 32,
+    "input_format": "signed Q1.31-domain longwords",
+    "stage_equation": "state=sat32(state + (sat32(input-state) >> 1))",
+    "cascade_stages": 2,
+    "fixed_step_coefficient": "1/2 (exact arithmetic shift)",
+    "response": "non-unity two-pole smoothing/low-pass"
+  },
+  "direct_oracle_vectors": {
+    "impulse": {
+      "instructions": 615,
+      "input_sha256": "914f7e6257731dfee91fa828dd2cb905fe1a06c104c5bec6453bb850943fcedf",
+      "output_sha256": "8108f8dfc6a331081dd46cca6fad95ebcec82e66c5fb39994d81f8bb823d45e5",
+      "first_four_output": [
+        "0x10000000",
+        "0x10000000",
+        "0x0C000000",
+        "0x08000000"
+      ],
+      "final_state": [
+        "0x00000000",
+        "0x00000003"
+      ],
+      "oracle_match": true
+    },
+    "positive_dc": {
+      "instructions": 615,
+      "input_sha256": "491f6b2c225088be1165f2b2aef8c54aa887a04601d09d44f8a7c1ccf14ccc60",
+      "output_sha256": "b980279ac1462c7c23597bb875165c3e97ea007c8ae2ae3423def9a13d0d9e89",
+      "first_four_output": [
+        "0x08000000",
+        "0x10000000",
+        "0x16000000",
+        "0x1A000000"
+      ],
+      "final_state": [
+        "0x1FFFFFFF",
+        "0x1FFFFFFD"
+      ],
+      "oracle_match": true
+    },
+    "negative_dc": {
+      "instructions": 615,
+      "input_sha256": "0a5790792f578974ff35ac650115919eeae96e1199a9868bea3cf1fd6ecb1e8f",
+      "output_sha256": "a8f7d83c40721f0feab3c71ba7a34691a1d35162b18847077f7dd5021f55487f",
+      "first_four_output": [
+        "0xF8000000",
+        "0xF0000000",
+        "0xEA000000",
+        "0xE6000000"
+      ],
+      "final_state": [
+        "0xE0000000",
+        "0xE0000001"
+      ],
+      "oracle_match": true
+    },
+    "alternating_limits": {
+      "instructions": 615,
+      "input_sha256": "716701fed3640dc0a869e8f1ea099a3cbebd331ee4b64702fc2515b1f8b3bb73",
+      "output_sha256": "9a15880005e54f2e06e6a7b6b417702280a8b02a4cd2e68d607f70946a6b1f89",
+      "first_four_output": [
+        "0x1FFFFFFF",
+        "0x0FFFFFFF",
+        "0x27FFFFFE",
+        "0x13FFFFFE"
+      ],
+      "final_state": [
+        "0xFFFFFFF0",
+        "0x15555545"
+      ],
+      "oracle_match": true
+    }
+  },
+  "callback_traces": {
+    "disabled": [
+      {
+        "input": "zero",
+        "instructions_to_mixer": 35368,
+        "kernel_entered": false,
+        "loop_iterations": 0,
+        "sats_executions": 0,
+        "lane0_writes": 0,
+        "state_writes": 0,
+        "input_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "oracle_match": true,
+        "output_differs_from_input": false,
+        "final_state": [
+          "0x00000000",
+          "0x00000000"
+        ]
+      },
+      {
+        "input": "active",
+        "instructions_to_mixer": 35368,
+        "kernel_entered": false,
+        "loop_iterations": 0,
+        "sats_executions": 0,
+        "lane0_writes": 0,
+        "state_writes": 0,
+        "input_sha256": "2e8b8655d85f64698439d06b33d320256172173ea47208c6dc5e93bf4bce9924",
+        "output_sha256": "2e8b8655d85f64698439d06b33d320256172173ea47208c6dc5e93bf4bce9924",
+        "oracle_match": true,
+        "output_differs_from_input": false,
+        "final_state": [
+          "0x00000000",
+          "0x00000000"
+        ]
+      }
+    ],
+    "armed_half": [
+      {
+        "input": "zero",
+        "instructions_to_mixer": 35983,
+        "kernel_entered": true,
+        "loop_iterations": 32,
+        "sats_executions": 128,
+        "lane0_writes": 32,
+        "state_writes": 64,
+        "input_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "oracle_match": true,
+        "output_differs_from_input": false,
+        "final_state": [
+          "0x00000000",
+          "0x00000000"
+        ]
+      },
+      {
+        "input": "active",
+        "instructions_to_mixer": 35983,
+        "kernel_entered": true,
+        "loop_iterations": 32,
+        "sats_executions": 128,
+        "lane0_writes": 32,
+        "state_writes": 64,
+        "input_sha256": "2e8b8655d85f64698439d06b33d320256172173ea47208c6dc5e93bf4bce9924",
+        "output_sha256": "b5591a80529d97c0a6487ef3f4ece3280fdd4b49e41c69ded68068c9124d3cb9",
+        "oracle_match": true,
+        "output_differs_from_input": true,
+        "final_state": [
+          "0xFD2C7332",
+          "0xFDAF5093"
+        ]
+      }
+    ]
+  },
+  "stock_comparisons": [
+    {
+      "input": "zero",
+      "disabled_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      },
+      "armed_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    },
+    {
+      "input": "active",
+      "disabled_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      },
+      "armed_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": false,
+        "ingress_output_sha256": false,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    }
+  ],
+  "conclusion": "The first non-unity target-side Filter 2 executes over lane 0 and matches the host signed-saturating oracle for impulse, positive DC, negative DC, alternating-limit, zero-callback, and active-callback vectors. Its active response changes the mixer input as intended while preserving register/SR state and normal mixer execution. The retained image remains disabled.",
+  "scope_limit": "The step coefficient is fixed at exactly one half via arithmetic shift. Programmable cutoff still requires a general fixed-point multiply, and real processor-cycle margin remains a hardware measurement gate.",
+  "next_target": "Replace the fixed half-step with a coefficient loaded from the Filter 2 state slot and a verified 32x32-to-Q1.31 multiply, then sweep coefficient endpoints and state continuity across consecutive callbacks.",
+  "safety": "Only the default-disabled decompressed MAIN candidate is retained. The armed audible kernel existed only temporarily; no ELE3 container or SysEx was built."
+}

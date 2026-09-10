@@ -1,0 +1,226 @@
+{
+  "result": "PASS",
+  "controller": {
+    "filter2_lanes": 8,
+    "control_domain": [
+      0,
+      127
+    ],
+    "mouse_drag": true,
+    "mouse_wheel": true,
+    "keyboard_adjustment": true,
+    "qwerty_note_keys": {
+      "a": 48,
+      "w": 49,
+      "s": 50,
+      "e": 51,
+      "d": 52,
+      "f": 53,
+      "t": 54,
+      "g": 55,
+      "y": 56,
+      "h": 57,
+      "u": 58,
+      "j": 59,
+      "k": 60
+    }
+  },
+  "publications": [
+    {
+      "sequence": 9,
+      "time": 1789022485.623358,
+      "type": "filter2",
+      "source": "mouse",
+      "lane": 0,
+      "value": 0,
+      "virtual_index": "0x7FF8",
+      "q31": "0x00000000",
+      "target_address": "0x402B442C",
+      "instructions": 20,
+      "single_aligned_store": true
+    },
+    {
+      "sequence": 10,
+      "time": 1789022485.6234546,
+      "type": "filter2",
+      "source": "mouse",
+      "lane": 1,
+      "value": 16,
+      "virtual_index": "0x7FF9",
+      "q31": "0x10204081",
+      "target_address": "0x402B444C",
+      "instructions": 20,
+      "single_aligned_store": true
+    },
+    {
+      "sequence": 11,
+      "time": 1789022485.623547,
+      "type": "filter2",
+      "source": "mouse",
+      "lane": 2,
+      "value": 32,
+      "virtual_index": "0x7FFA",
+      "q31": "0x20408102",
+      "target_address": "0x402B446C",
+      "instructions": 20,
+      "single_aligned_store": true
+    },
+    {
+      "sequence": 12,
+      "time": 1789022485.6236398,
+      "type": "filter2",
+      "source": "mouse",
+      "lane": 3,
+      "value": 48,
+      "virtual_index": "0x7FFB",
+      "q31": "0x3060C183",
+      "target_address": "0x402B448C",
+      "instructions": 20,
+      "single_aligned_store": true
+    },
+    {
+      "sequence": 13,
+      "time": 1789022485.6237314,
+      "type": "filter2",
+      "source": "mouse",
+      "lane": 4,
+      "value": 64,
+      "virtual_index": "0x7FFC",
+      "q31": "0x40810204",
+      "target_address": "0x402B44AC",
+      "instructions": 20,
+      "single_aligned_store": true
+    },
+    {
+      "sequence": 14,
+      "time": 1789022485.623825,
+      "type": "filter2",
+      "source": "mouse",
+      "lane": 5,
+      "value": 80,
+      "virtual_index": "0x7FFD",
+      "q31": "0x50A14284",
+      "target_address": "0x402B44CC",
+      "instructions": 20,
+      "single_aligned_store": true
+    },
+    {
+      "sequence": 15,
+      "time": 1789022485.623928,
+      "type": "filter2",
+      "source": "mouse",
+      "lane": 6,
+      "value": 96,
+      "virtual_index": "0x7FFE",
+      "q31": "0x60C18305",
+      "target_address": "0x402B44EC",
+      "instructions": 20,
+      "single_aligned_store": true
+    },
+    {
+      "sequence": 16,
+      "time": 1789022485.6240206,
+      "type": "filter2",
+      "source": "mouse",
+      "lane": 7,
+      "value": 127,
+      "virtual_index": "0x7FFF",
+      "q31": "0x7FFFFFFF",
+      "target_address": "0x402B450C",
+      "instructions": 20,
+      "single_aligned_store": true
+    }
+  ],
+  "note_events": [
+    {
+      "sequence": 17,
+      "time": 1789022486.0613089,
+      "type": "note",
+      "source": "qwerty",
+      "key": "a",
+      "action": "on",
+      "note": 48,
+      "velocity": 100,
+      "firmware_transport": "emulated_stock_trigger",
+      "stock_trigger": {
+        "note": 48,
+        "encoded_pitch": "0x00300000",
+        "live_pitch": "0x00300000",
+        "constructor_instructions": 108,
+        "callback_cases": [
+          0
+        ],
+        "pitch_consumer": {
+          "chromatic_mode": "synth",
+          "source_gate": "0x01",
+          "live_gate": "0x01",
+          "reads": [
+            {
+              "pc": "0x4011CA7E",
+              "value": "0x00300000"
+            }
+          ],
+          "renderer_input_proven": true
+        },
+        "one_shot_cleared": true,
+        "queued_command": {
+          "pointer": "0x419B0C1C",
+          "code": 31,
+          "track_mask": "0x00000001",
+          "queue_count": 1
+        }
+      }
+    },
+    {
+      "sequence": 18,
+      "time": 1789022486.4153273,
+      "type": "note",
+      "source": "qwerty",
+      "key": "a",
+      "action": "off",
+      "note": 48,
+      "velocity": 0,
+      "firmware_transport": "emulated_stock_release",
+      "stock_release": {
+        "note": 48,
+        "constructor_instructions": 38,
+        "accepted": true,
+        "held_source_mask_before": "0x00000001",
+        "held_source_mask_after": "0x00000000",
+        "callback_cases": [
+          1
+        ],
+        "one_shot_cleared": true,
+        "queue_count": 1
+      }
+    }
+  ],
+  "assets": {
+    "index.html": {
+      "exists": true,
+      "bytes": 2206
+    },
+    "styles.css": {
+      "exists": true,
+      "bytes": 5763
+    },
+    "app.js": {
+      "exists": true,
+      "bytes": 8356
+    }
+  },
+  "checks": {
+    "eight_real_publications": true,
+    "all_single_aligned_store": true,
+    "virtual_index_range_exact": true,
+    "final_controls_exact": true,
+    "note_path_did_not_mutate_filter2": true,
+    "note_on_off_exact": true,
+    "firmware_keydown_transport_exact": true,
+    "firmware_keyup_transport_exact": true,
+    "all_static_assets_present": true,
+    "no_flashable_image_created": true
+  },
+  "scope_limit": "QWERTY key-down and key-up use the stock constructor; Sound Chromatic Mode Synth selects live pitch at the renderer input. Physical MIDI/USB ingress remains untraced.",
+  "safety": "Runtime emulator arming only; no ELE3, SysEx, or flashable image was created."
+}

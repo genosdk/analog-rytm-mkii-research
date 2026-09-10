@@ -1,0 +1,249 @@
+{
+  "result": "PASS",
+  "stock": {
+    "path": "ar172_workspace/research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "disabled_candidate": {
+    "path": "ar172_workspace/AR172_FILTER2_UNITY_KERNEL_CANARY_MAIN_DO_NOT_FLASH.bin",
+    "sha256": "ffb560ab0e3b1ababfa175e185976b3fc816d6cacaf2ee250aa5571c60ea5abb",
+    "state": {
+      "bypass": {
+        "call_site": "0x4011CACC",
+        "original_call": "4eb940117f00",
+        "replacement_call": "4eb9402b4340",
+        "cave": "0x402B4340",
+        "cave_body": "4eb940117f004e75",
+        "changed_bytes": 10,
+        "changed_ranges": [
+          {
+            "address": "0x4011CACC",
+            "bytes": 6
+          },
+          {
+            "address": "0x402B4340",
+            "bytes": 8
+          }
+        ],
+        "stock_cave_references": {
+          "aligned_literals": [],
+          "absolute_jmp_jsr": [],
+          "relative_branches": []
+        }
+      },
+      "state_base": "0x402B4400",
+      "state_end_exclusive": "0x402B45F0",
+      "state_bytes_reserved": 496,
+      "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+      "stock_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "kernel_address": "0x402B4340",
+    "kernel_end_exclusive": "0x402B4392",
+    "kernel_bytes": 82,
+    "kernel_body": "4eb940117f0040e74ab9402b4408673e08390000402b440d673448e7f0c041f9800067f843f9402b442070207600221022812411d4834c822342000422290004d2834c8120c1538066e44cdf030f46df4e75",
+    "flags": 0,
+    "filter2_lane_mask": 0,
+    "changed_byte_positions": 88
+  },
+  "armed_emulation_probe": {
+    "sha256": "bb01f46087762b6040877f19ca5b4e2765f7da3f582e9a01bdaef8589ebd7525",
+    "state": {
+      "bypass": {
+        "call_site": "0x4011CACC",
+        "original_call": "4eb940117f00",
+        "replacement_call": "4eb9402b4340",
+        "cave": "0x402B4340",
+        "cave_body": "4eb940117f004e75",
+        "changed_bytes": 10,
+        "changed_ranges": [
+          {
+            "address": "0x4011CACC",
+            "bytes": 6
+          },
+          {
+            "address": "0x402B4340",
+            "bytes": 8
+          }
+        ],
+        "stock_cave_references": {
+          "aligned_literals": [],
+          "absolute_jmp_jsr": [],
+          "relative_branches": []
+        }
+      },
+      "state_base": "0x402B4400",
+      "state_end_exclusive": "0x402B45F0",
+      "state_bytes_reserved": 496,
+      "header_hex": "46324c3200010020000000000000000000080020000d00100000000000000000",
+      "stock_references": {
+        "aligned_literals": [],
+        "absolute_jmp_jsr": [],
+        "relative_branches": []
+      }
+    },
+    "kernel_address": "0x402B4340",
+    "kernel_end_exclusive": "0x402B4392",
+    "kernel_bytes": 82,
+    "kernel_body": "4eb940117f0040e74ab9402b4408673e08390000402b440d673448e7f0c041f9800067f843f9402b442070207600221022812411d4834c822342000422290004d2834c8120c1538066e44cdf030f46df4e75",
+    "flags": 1,
+    "filter2_lane_mask": 1,
+    "changed_byte_positions": 90,
+    "artifact_retained": false
+  },
+  "kernel_contract": {
+    "input_format": "signed Q1.31-domain longwords",
+    "lane": 0,
+    "samples_per_callback": 32,
+    "stage_equations": [
+      "s1=sat32(x+0)",
+      "s2=sat32(s1+0)",
+      "y=s2"
+    ],
+    "unity_transfer": true,
+    "state_words_used": 2
+  },
+  "saturation_boundary_cases": [
+    {
+      "case": "positive_overflow",
+      "input": "0x7FFFFFFF",
+      "residual": "0x00000001",
+      "saturated": "0x7FFFFFFF"
+    },
+    {
+      "case": "negative_overflow",
+      "input": "0x80000000",
+      "residual": "0xFFFFFFFF",
+      "saturated": "0x80000000"
+    }
+  ],
+  "execution_traces": {
+    "disabled": [
+      {
+        "input": "zero",
+        "instructions_to_mixer": 35368,
+        "kernel_entered": false,
+        "lane0_words": 32,
+        "lane0_before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "lane0_after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "lane0_bit_identical": true,
+        "loop_iterations": 0,
+        "stage1_sats_executions": 0,
+        "stage2_sats_executions": 0,
+        "lane0_writes": 0,
+        "state_writes": 0,
+        "final_state": [
+          "0x00000000",
+          "0x00000000"
+        ],
+        "final_input_word": "0x00000000"
+      },
+      {
+        "input": "active",
+        "instructions_to_mixer": 35368,
+        "kernel_entered": false,
+        "lane0_words": 32,
+        "lane0_before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+        "lane0_after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+        "lane0_bit_identical": true,
+        "loop_iterations": 0,
+        "stage1_sats_executions": 0,
+        "stage2_sats_executions": 0,
+        "lane0_writes": 0,
+        "state_writes": 0,
+        "final_state": [
+          "0x00000000",
+          "0x00000000"
+        ],
+        "final_input_word": "0x2D356A25"
+      }
+    ],
+    "armed_unity": [
+      {
+        "input": "zero",
+        "instructions_to_mixer": 35760,
+        "kernel_entered": true,
+        "lane0_words": 32,
+        "lane0_before_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "lane0_after_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
+        "lane0_bit_identical": true,
+        "loop_iterations": 32,
+        "stage1_sats_executions": 32,
+        "stage2_sats_executions": 32,
+        "lane0_writes": 32,
+        "state_writes": 64,
+        "final_state": [
+          "0x00000000",
+          "0x00000000"
+        ],
+        "final_input_word": "0x00000000"
+      },
+      {
+        "input": "active",
+        "instructions_to_mixer": 35760,
+        "kernel_entered": true,
+        "lane0_words": 32,
+        "lane0_before_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+        "lane0_after_sha256": "6fc5f81f327dbfc87b97722539c786942567ed9ce85ad277b47960096b078e9d",
+        "lane0_bit_identical": true,
+        "loop_iterations": 32,
+        "stage1_sats_executions": 32,
+        "stage2_sats_executions": 32,
+        "lane0_writes": 32,
+        "state_writes": 64,
+        "final_state": [
+          "0x2D356A25",
+          "0x2D356A25"
+        ],
+        "final_input_word": "0x2D356A25"
+      }
+    ]
+  },
+  "stock_equivalence": [
+    {
+      "input": "zero",
+      "disabled_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      },
+      "armed_unity_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    },
+    {
+      "input": "active",
+      "disabled_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      },
+      "armed_unity_equals_stock": {
+        "mixer_entry_registers": true,
+        "mixer_input_sha256": true,
+        "ingress_output_sha256": true,
+        "mixer_instructions": true,
+        "mixer_output_writes": true,
+        "mixer_output_sha256": true
+      }
+    }
+  ],
+  "conclusion": "The armed research path executes a two-stage signed-saturating unity kernel over all 32 lane-0 words, performs 64 SATS operations, updates two state words, preserves registers and SR, and remains bit-identical to stock through the next mixer. The retained candidate is disabled by default.",
+  "scope_limit": "Unity uses zero residuals and therefore validates control flow, addressing, state, saturation instructions, and preservation\u2014not coefficient multiply or audible filter response. Real processor-cycle margin remains unmeasured.",
+  "next_target": "Implement the first non-unity Q1.31 coefficient multiply for the same lane-0 two-state cascade, validate impulse/DC responses against a host fixed-point oracle, and keep the retained image disabled by default.",
+  "safety": "Only the default-disabled decompressed MAIN candidate is retained. The armed kernel existed only in a temporary file; no ELE3 container or SysEx was built."
+}
