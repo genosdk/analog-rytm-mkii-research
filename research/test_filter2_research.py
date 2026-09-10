@@ -2,6 +2,7 @@
 
 """Executable regression coverage for the recovered Filter 2/controller chain."""
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -552,6 +553,24 @@ class RendererFieldInventoryProbeTests(StockProbeTest):
         self.assertEqual(ownership[46]["machine_count"], 21)
         self.assertEqual(ownership[47]["machine_count"], 21)
         self.assertEqual(ownership[58]["machine_ids"], [5])
+
+
+class WholeCallbackControlOwnershipReportTests(unittest.TestCase):
+    def test_full_callback_rejects_renderer_only_candidates(self):
+        report = json.loads(
+            (HERE / "AR172_WHOLE_CALLBACK_CONTROL_OWNERSHIP_PROBE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(report["result"], "PASS")
+        self.assertEqual(report["transmitted_source"]["halfwords"], 492)
+        summary = report["ownership_summary"]
+        self.assertEqual(summary["renderer_owned_fields"], 117)
+        self.assertEqual(summary["renderer_unobserved_candidates"], 375)
+        self.assertEqual(summary["candidate_fields_written_outside_renderer"], 210)
+        self.assertEqual(summary["whole_callback_owned_fields"], 327)
+        self.assertEqual(summary["whole_callback_unobserved_fields"], 165)
+        self.assertEqual(report["non_renderer_ownership"]["writer_family_count"], 46)
 
 
 

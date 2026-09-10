@@ -613,11 +613,15 @@ only one channel, while other renderer families emit symmetric or differently
 scaled note-dependent values into the same DSPI1 words 46/47. These words are
 therefore shared physical-voice control slots with machine-dependent pitch and
 channel topology, not two fixed-function globally calibrated rails. The public
-renderer inventory now excludes 96 of 510 DSPI1 payload positions from any
-shared Filter 2 transport: all 96 are machine-specific, and none is written by
-every public renderer. The next offline target is subtracting common callback
-and packetizer writes from the remaining 414 positions, then exercising
-non-note renderer states to distinguish stable fields from fixture zeros. The
+renderer/state inventory now excludes 117 of the 492 transmitted DSPI1 payload
+positions across 34 machines and five forced renderer states. A whole-callback
+matrix rejects another 210 of the 375 renderer-unobserved positions because
+stock code outside renderer scope writes them. In total, 327 fields have an
+observed stock writer and 165 remain unobserved in these 170 contexts. All 492
+are nevertheless serialized to PCS0, so none is proven safe merely by lacking
+an observed writer. Queue index 493 is not a candidate: stock overwrites it
+with the fixed `0x5555` end marker. The next offline target is initialization
+and project-load ownership of the remaining 165 fields. The
 public Sound-format machine byte maps directly to renderer-table
 indices 0..33: the exact calibration pair belongs to BD Hard and BD Classic.
 Entries 34..52 have no public Sound-format names and remain explicitly labeled

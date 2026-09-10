@@ -129,6 +129,12 @@ and reproducible tooling.
 - Renderer-scoped execution across all 34 public machines identifies 96 of the
   510 DSPI1 payload positions as machine-specific ownership. Those positions
   are now excluded from any shared Filter 2 transport candidate.
+- Extending ownership to five forced renderer states and the entire callback
+  identifies 327 stock-written fields among the 492 transmitted PCS0 payload
+  words. Of the 375 fields missed by renderer-only tracing, 210 have generic
+  callback writers; 165 remain unobserved but are still serialized and are not
+  proven spare. Queue index 493 is the fixed `0x5555` end marker, not a payload
+  candidate.
 - The opt-in continuous research clock now applies interrupt backpressure and
   has sustained 2,303 completed native services while accepting later UI input.
   Its provisional 10 ms period is not yet a claim of physical-device cadence.
