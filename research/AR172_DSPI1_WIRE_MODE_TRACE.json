@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "result": "PASS_DSPI1_BR_WIRE_MODE_IDENTIFIED",
+  "main": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+  },
+  "setup_address": "0x4011D7F6",
+  "ctar": [
+    {
+      "raw": "0x7E000001",
+      "frame_bits": 16,
+      "cpol": 1,
+      "cpha": 1,
+      "lsb_first": false,
+      "baud_prescaler": 2,
+      "baud_scaler": 4,
+      "sck_divider": 8
+    },
+    {
+      "raw": "0x7E000000",
+      "frame_bits": 16,
+      "cpol": 1,
+      "cpha": 1,
+      "lsb_first": false,
+      "baud_prescaler": 2,
+      "baud_scaler": 2,
+      "sck_divider": 4
+    },
+    {
+      "raw": "0x7E000335",
+      "frame_bits": 16,
+      "cpol": 1,
+      "cpha": 1,
+      "lsb_first": false,
+      "baud_prescaler": 2,
+      "baud_scaler": 32,
+      "sck_divider": 64
+    },
+    {
+      "raw": "0x3E001064",
+      "frame_bits": 8,
+      "cpol": 1,
+      "cpha": 1,
+      "lsb_first": false,
+      "baud_prescaler": 2,
+      "baud_scaler": 16,
+      "sck_divider": 32
+    }
+  ],
+  "br_packet_ctar": 0,
+  "wire_mode": {
+    "word_bits": 16,
+    "spi_mode": 3,
+    "clock_idle": "high",
+    "data_change_edge": "falling",
+    "data_sample_edge": "rising",
+    "bit_order": "MSB-first",
+    "sck": "internal bus clock / 8"
+  },
+  "basis": "BR PUSHR words select CTAR0. CTAR0=0x7E000001 has FMSZ=15, CPOL=1, CPHA=1, LSBFE=0, PBR=2, and BR=4.",
+  "safety": "Static read-only analysis; no firmware bytes are modified."
+}

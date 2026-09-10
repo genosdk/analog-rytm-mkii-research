@@ -76,6 +76,13 @@ vector 191, the shim unmasks it and raises its self-clearing force bit on the
 existing 10 ms Type-8 cadence. The untouched ISR clears that bit on entry and
 reaches the stock audio routine at `0x40117A28`.
 
+For the bounded trigger gate, a pad edge is delayed by 10 Type-8 ticks so the
+native trigger state is visible before source 63 is raised. The shim observes
+the native IFR63 clear on entry and CPU interrupt level returning below 5 on
+completion. The verified desktop budget remains one 32-frame block per pad
+edge; a second block currently stalls in the stock library/self path and is the
+next research gate.
+
 This option is currently for tracing, not realtime audio. The stock per-voice
 DSP loop is slow under the present ColdFire TCG model, and the physical device
 cadence has not yet been measured. Without the option, emulator behavior is

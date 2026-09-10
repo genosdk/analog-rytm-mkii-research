@@ -1,0 +1,59 @@
+{
+  "result": "PASS_DSPI1_BR_TRANSPORT_TX_ONLY_IN_SOFTWARE",
+  "main": {
+    "kind": "locally extracted stock OS 1.72 MAIN; not committed",
+    "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+    "base": "0x40000400"
+  },
+  "transmit_path": {
+    "edma_channel": 15,
+    "tcd_daddr": "0xFC0451F0",
+    "destination": "0xFC03C034",
+    "signature": "0x40077C5E"
+  },
+  "receive_reads": {
+    "register": "0xFC03C038",
+    "literal_reference_count": 8,
+    "literal_addresses": [
+      "0x40005516",
+      "0x4000551C",
+      "0x40005522",
+      "0x40005528",
+      "0x40005578",
+      "0x4000557E",
+      "0x40005584",
+      "0x40077DF8"
+    ],
+    "destinations": [
+      "D0",
+      "D0",
+      "D0",
+      "D0",
+      "D0",
+      "D0",
+      "D0",
+      "D0"
+    ],
+    "drain_idioms": [
+      {
+        "address": "0x40005514",
+        "words": 4,
+        "terminator": "RTS"
+      },
+      {
+        "address": "0x40005576",
+        "words": 3,
+        "terminator": "RTS"
+      },
+      {
+        "address": "0x40077DF4",
+        "words": 16,
+        "loop": "MOVEQ #16,D1; MOVE.L POPR,D0; SUBQ.L #1,D1; BNE"
+      }
+    ],
+    "classification": "FIFO draining only: every literal POPR access loads D0; the values are overwritten, discarded, or left as the final drain value."
+  },
+  "conclusion": "The BR/control data path proves three required MCU-to-FPGA wires: PCS0, SCK, and SOUT. DSPI1 SIN may still be physically bonded, but no received value is consumed by the proven BR transport, so a live FPGA-to-MCU return is not a requirement for identifying the ingress cluster.",
+  "next_target": "Rank and continue-route bonded three-input clusters without requiring a colocated FPGA output; retain SIN only as an optional board-continuity question.",
+  "safety": "Static read-only analysis; no firmware or FPGA bytes are modified."
+}

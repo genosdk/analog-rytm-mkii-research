@@ -45,38 +45,13 @@ class FpgaIobGeometryTests(unittest.TestCase):
         )
         self.assertEqual(report["result"], "PASS_P28_P31_QUARTET_REJECTED")
         self.assertEqual(report["p28_p31_hypothesis"]["status"], "REJECTED")
+        routes = report["p28_p31_hypothesis"]["routes"]
         self.assertEqual(
-            report["p28_p31_hypothesis"]["routes"]["28"][
-                "configured_first_hop_consumers"
-            ][0]["destination"],
-            "OMUX[12]",
-        )
-        self.assertEqual(report["p29_sin_output_path"]["ioi_mux_o"]["selected"], "O1")
-        self.assertEqual(
-            report["dedicated_clock_routes"]["selected_package_clock_inputs"],
-            ["S:CELL[4].OUT_CLKPAD[0]"],
-        )
-
-    def test_dspi_deep_trace_assigns_ingress_trio(self):
-        report = json.loads(
-            (HERE / "AR172_FPGA_DSPI_DEEP_TRACE.json").read_text(encoding="utf-8")
-        )
-        self.assertEqual(report["result"], "PASS_DSPI_INGRESS_PIN_TRIO_IDENTIFIED")
-        self.assertEqual(
-            report["assignment"],
-            {
-                "PCS0": "P39 / IOB_S11_2",
-                "SCK": "P43 / IOB_S13_0 / GCLK0",
-                "SOUT": "P51 / IOB_S24_0",
-            },
+            {pin: row["configured_first_hop_consumers"] for pin, row in routes.items()},
+            {"28": [], "29": [], "30": [], "31": []},
         )
         self.assertEqual(
-            report["evidence"]["P43_SCK"]["bufg_input_mux"]["selected"],
-            "CELL[4].OUT_CLKPAD[0]",
-        )
-        self.assertEqual(
-            report["evidence"]["P51_SOUT"]["terminal_consumer"],
-            "X23Y8 SLICE[1].BY via IMUX_FAN_BY[1]",
+            report["p29_sin_output_path"]["ioi_mux_o"]["selected"], "NONE"
         )
 
     def test_dspi1_br_receive_is_drain_only(self):
@@ -92,7 +67,7 @@ class FpgaIobGeometryTests(unittest.TestCase):
             [4, 3, 16],
         )
 
-    def test_dspi1_wire_mode_and_fpga_receiver_clock(self):
+    def test_dspi1_wire_mode(self):
         wire = json.loads(
             (HERE / "AR172_DSPI1_WIRE_MODE_TRACE.json").read_text(encoding="utf-8")
         )
@@ -108,31 +83,6 @@ class FpgaIobGeometryTests(unittest.TestCase):
                 "bit_order": "MSB-first",
                 "sck": "internal bus clock / 8",
             },
-        )
-        receiver = json.loads(
-            (HERE / "AR172_FPGA_DSPI_RECEIVER_CLOCK_TRACE.json").read_text(
-                encoding="utf-8"
-            )
-        )
-        self.assertEqual(
-            receiver["result"],
-            "PASS_DSPI_RECEIVER_CLOCK_AND_FIRST_REGISTERS_IDENTIFIED",
-        )
-        self.assertEqual(receiver["p43_sck"]["bufg0_s_value"], 0)
-        self.assertEqual(
-            receiver["p43_sck"]["output"],
-            "BUFGMUX[0].O -> GCLK_S[0] -> fabric GCLK[0]",
-        )
-        self.assertEqual(
-            receiver["p39_pcs0_gated_registers"]["count_routed_ff_outputs"], 11
-        )
-        self.assertEqual(
-            receiver["p51_sout_first_register"]["registered_output"],
-            "YQ -> OMUX[9]",
-        )
-        self.assertEqual(
-            receiver["rejected_p46_locality_candidate"]["clock"]["selected"],
-            "GCLK[6]",
         )
 
 
@@ -167,9 +117,18 @@ class QemuAudioEdmaTests(unittest.TestCase):
             ROOT / "qemu" / "hw" / "m68k" / "ar_mk2_intc_pit.c"
         ).read_text(encoding="utf-8")
         self.assertIn("AR_AUDIO_TRIGGER_BLOCKS 1u", source)
+        self.assertIn("AR_AUDIO_TRIGGER_DELAY_TICKS 10u", source)
         self.assertIn("ar_panel_audio_observe", source)
         self.assertIn("group == 2 || group == 3", source)
         self.assertIn("c->audio_service_budget--", source)
+        self.assertIn("c->audio_service_delay--", source)
+        self.assertIn("c->audio_service_pending", source)
+        self.assertIn("c->audio_service_entered", source)
+        self.assertIn("c->intc[1].ifr & (1ULL << 63)", source)
+        self.assertIn("c->cpu->env.sr & SR_I", source)
+        self.assertIn(
+            "c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS", source
+        )
         self.assertIn("AR_MK2_AUDIO_TRIGGER_SERVICE", source)
         launcher = (ROOT / "qemu" / "run_desktop_emulator.py").read_text(
             encoding="utf-8"

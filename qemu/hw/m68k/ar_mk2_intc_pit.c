@@ -39,6 +39,7 @@
 #define AR_TYPE8_PERIOD_NS 10000000LL
 #define AR_AUDIO_TIMELINE_ADDR 0x8000FE54u
 #define AR_AUDIO_TRIGGER_BLOCKS 1u
+#define AR_AUDIO_TRIGGER_DELAY_TICKS 10u
 #define AR_ACTIVE_PROFILE_ADDR 0x412FF99Fu
 #define AR_PROFILE_STATE_BASE 0x413001DBu
 #define AR_PROFILE_STATE_STRIDE 228u
@@ -143,6 +144,9 @@ struct ARCoreState {
     bool mock_audio_service;
     bool trigger_audio_service;
     unsigned audio_service_budget;
+    unsigned audio_service_delay;
+    bool audio_service_pending;
+    bool audio_service_entered;
     uint8_t panel_pending_command;
     uint8_t panel_button_groups[16];
     bool audio_service_seen;
@@ -519,6 +523,7 @@ static void ar_panel_audio_observe(ARCoreState *c, uint8_t value)
             if (c->trigger_audio_service && (group == 2 || group == 3) &&
                 rising) {
                 c->audio_service_budget = AR_AUDIO_TRIGGER_BLOCKS;
+                c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS;
                 qemu_log_mask(LOG_UNIMP,
                               "AR-MK2 AUDIO: pad edge group=%u mask=%02x; "
                               "scheduled %u renderer blocks\n",
@@ -1087,7 +1092,22 @@ static void ar_type8_feed(void *opaque)
      * audio clock as a periodic forced event rather than a persistent level.
      * Reusing the observed Type-8 10 ms cadence keeps this research shim
      * narrow until physical hardware timing is measured. */
-    if ((c->mock_audio_service || c->audio_service_budget) &&
+    if (c->trigger_audio_service && c->audio_service_pending &&
+        !(c->intc[1].ifr & (1ULL << 63))) {
+        c->audio_service_pending = false;
+        c->audio_service_entered = true;
+    }
+    if (c->trigger_audio_service && c->audio_service_entered &&
+        ((c->cpu->env.sr & SR_I) >> SR_I_SHIFT) < 5) {
+        c->audio_service_entered = false;
+        c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS;
+    }
+    if (!c->mock_audio_service && c->audio_service_delay) {
+        c->audio_service_delay--;
+    }
+    if ((c->mock_audio_service ||
+         (c->audio_service_budget && !c->audio_service_delay &&
+          !c->audio_service_pending && !c->audio_service_entered)) &&
         c->intc[1].icr[63]) {
         /* The external audio interface requests both linked eDMA streams
          * before raising the block-service interrupt.  Finish the prior
@@ -1099,6 +1119,7 @@ static void ar_type8_feed(void *opaque)
         ar_intc_update(c);
         if (!c->mock_audio_service && c->audio_service_budget) {
             c->audio_service_budget--;
+            c->audio_service_pending = true;
         }
         if (!c->audio_service_seen) {
             c->audio_service_seen = true;
