@@ -1,0 +1,30 @@
+{
+  "firmware": "Analog Rytm MKII OS 1.72 MAIN (user-supplied; not redistributed)",
+  "status": "PASS_DOUBLE_CLICK_AUDIO_DEFAULT",
+  "launcher": {
+    "default_audio": true,
+    "disable_option": "--no-audio",
+    "enabled_environment": [
+      "AR_MK2_AUDIO_TAP=1",
+      "AR_MK2_AUDIO_TRIGGER_SERVICE=1",
+      "AR_MK2_MOCK_PROJECT_SAMPLE=1"
+    ],
+    "disabled_environment": [
+      "AR_MK2_AUDIO_TAP unset",
+      "AR_MK2_AUDIO_TRIGGER_SERVICE unset",
+      "AR_MK2_MOCK_PROJECT_SAMPLE unset"
+    ]
+  },
+  "scope": {
+    "native_assignment": "LOAD TEST retains the proven four Encoder D +8 SMP frames",
+    "native_trigger": "QWERTY retains validated panel press/release frames",
+    "service": "eight bounded stock vector-191 passes per rising pad edge",
+    "failure_mode": "QEMU audio-device initialization reports failure and returns without terminating the machine"
+  },
+  "acceptance": [
+    "no command-line option is required for the packaged app audio path",
+    "--no-audio disables the tap, bounded service, and generated provider together",
+    "the continuous research audio clock remains opt-in",
+    "no proprietary firmware or captured PCM is stored"
+  ]
+}

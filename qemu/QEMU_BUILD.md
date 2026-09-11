@@ -119,15 +119,16 @@ QEMU's host-audio backend:
 ```bash
 python qemu/run_desktop_emulator.py \
   --qemu /path/to/qemu-system-m68k \
-  --firmware /path/to/Analog-Rytm_MKII_OS1.72.syx \
-  --audio
+  --firmware /path/to/Analog-Rytm_MKII_OS1.72.syx
 ```
 
-`--audio` enables the passive tap, the guarded generated `QEMU TEST` provider,
-and a bounded trigger service. Click **LOAD TEST** after boot to assign slot 1
-through four native SMP encoder frames. Each rising Trig/pad edge received
+Audio is enabled by default so the same path works when the packaged macOS app
+is opened by double-clicking. It includes the passive tap, the guarded generated
+`QEMU TEST` provider, and a bounded trigger service. Click **LOAD TEST** after
+boot to assign slot 1 through four native SMP encoder frames. Each rising Trig/pad edge received
 through UART8 schedules eight stock audio interrupts; the continuous research
-clock remains disabled. QEMU builds need a platform output driver (for example
+clock remains disabled. Pass `--no-audio` to disable all three audio/demo
+features. QEMU builds need a platform output driver (for example
 CoreAudio, PipeWire, PulseAudio, SDL, or OSS). For a deterministic capture,
 QEMU can instead be launched with its WAV default audio driver while
 `AR_MK2_AUDIO_TAP=1` is set.

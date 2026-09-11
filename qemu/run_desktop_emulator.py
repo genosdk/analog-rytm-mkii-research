@@ -114,7 +114,7 @@ def hmp_continue(path: Path, timeout: float = 5.0) -> None:
     raise TimeoutError(f"could not continue QEMU through monitor: {last_error}")
 
 
-def main() -> None:
+def build_argument_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser()
     ap.add_argument("--qemu", type=Path,
                     help="custom qemu-system-m68k; defaults to bundled sibling")
@@ -143,11 +143,12 @@ def main() -> None:
     )
     ap.add_argument(
         "--audio",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
+        default=True,
         help=(
-            "enable the 48 kHz stereo renderer tap and eight bounded stock audio "
-            "service passes per rising pad/QWERTY edge; also expose the guarded "
-            "QEMU TEST sample loader"
+            "enable the 48 kHz stereo renderer tap, eight bounded stock audio "
+            "service passes per rising pad/QWERTY edge, and the guarded QEMU "
+            "TEST sample loader (default: enabled)"
         ),
     )
     ap.add_argument(
@@ -160,7 +161,11 @@ def main() -> None:
     )
     ap.add_argument("--self-test", action="store_true",
                     help="verify the bundled QEMU backend and exit")
-    args = ap.parse_args()
+    return ap
+
+
+def main() -> None:
+    args = build_argument_parser().parse_args()
 
     qemu = resolve_qemu(args.qemu)
     if args.self_test:
@@ -225,6 +230,7 @@ def main() -> None:
     else:
         env.pop("AR_MK2_AUDIO_TAP", None)
         env.pop("AR_MK2_AUDIO_TRIGGER_SERVICE", None)
+        env.pop("AR_MK2_MOCK_PROJECT_SAMPLE", None)
 
     qemu_cmd = [
         str(qemu),

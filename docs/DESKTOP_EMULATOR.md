@@ -43,12 +43,14 @@ fields. Encoder I is displayed separately as Level and follows the firmware's
 Trig presses 1–12 select native track indices 0–11, so mouse and QWERTY
 triggering also move the Level readback to the corresponding track.
 
-Launch with `--audio` to enable bounded native renderer service and the guarded
-emulator-generated `QEMU TEST` provider. After the normal UI appears, select a
-track and click **LOAD TEST**. The desktop opens SMP and sends the proven four
+Audio and the guarded emulator-generated `QEMU TEST` provider are enabled by
+default, including when the macOS app is opened by double-clicking. After the
+normal UI appears, select a track and click **LOAD TEST**. The desktop opens SMP
+and sends the proven four
 `Encoder D +8` frames; the untouched stock setter assigns Sample Slot 1. Hold
 the matching QWERTY trigger through the first service (roughly 100 ms) to hear
-the generated sample through the host audio tap.
+the generated sample through the host audio tap. Launch with `--no-audio` to
+disable the host tap, bounded trigger service, and test-sample provider.
 
 ## Display
 
@@ -74,14 +76,15 @@ This is an experimental research emulator, not an Elektron product. Persistent d
 
 ## Experimental audio-service trace
 
-`--audio` enables a passive host-paced stereo tap at the proven stock renderer
-boundary. It follows the firmware's four-block selector at `0x42F78044`, waits
+The default desktop mode enables a passive host-paced stereo tap at the proven
+stock renderer boundary. It follows the firmware's four-block selector at
+`0x42F78044`, waits
 until the selected 2 KiB block is stable, sums the eight physical-voice lanes,
 converts the signed renderer words to little-endian 16-bit PCM, and hands the
 result to QEMU at 48 kHz. The same mono mix is currently sent to left and right;
 the hardware pan/return mapping is not yet proven.
 
-The tap itself remains passive. In desktop mode, `--audio` also enables a
+The tap itself remains passive. The default desktop mode also enables a
 bounded service gate: each rising Trig/pad edge schedules eight stock
 vector-191 renderer passes and exposes the explicit **LOAD TEST** action. This
 proves repeated QWERTY-to-host-PCM operation without enabling the unbounded

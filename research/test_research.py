@@ -367,6 +367,18 @@ class DesktopPanelInputTests(unittest.TestCase):
             report["native_assignment"]["frames"], ["33 08"] * 4
         )
         self.assertTrue(report["qwerty_audio"]["nonzero_host_audio"])
+        app_default = json.loads(
+            (HERE / "AR172_QEMU_APP_AUDIO_DEFAULT_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            app_default["status"], "PASS_DOUBLE_CLICK_AUDIO_DEFAULT"
+        )
+        self.assertTrue(app_default["launcher"]["default_audio"])
+        self.assertEqual(
+            app_default["launcher"]["disable_option"], "--no-audio"
+        )
         launcher = (ROOT / "qemu" / "run_desktop_emulator.py").read_text(
             encoding="utf-8"
         )
@@ -377,6 +389,9 @@ class DesktopPanelInputTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn('env["AR_MK2_MOCK_PROJECT_SAMPLE"] = "1"', launcher)
+        self.assertIn("action=argparse.BooleanOptionalAction", launcher)
+        self.assertIn("default=True", launcher)
+        self.assertIn('env.pop("AR_MK2_MOCK_PROJECT_SAMPLE", None)', launcher)
         self.assertIn('text="LOAD TEST"', panel)
         self.assertIn('self.encoder("D", 8)', panel)
         self.assertIn("--exercise-demo-sample", smoke)
