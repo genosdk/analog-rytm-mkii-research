@@ -35,6 +35,18 @@ def read_frame(path: Path) -> bytes | None:
     return data[:FRAME_BYTES] if len(data) >= FRAME_BYTES else None
 
 
+def wait_blob(path: Path, size: int, deadline: float) -> bytes:
+    while time.monotonic() < deadline:
+        try:
+            data = path.read_bytes()
+        except FileNotFoundError:
+            data = b""
+        if len(data) == size:
+            return data
+        time.sleep(0.03)
+    raise TimeoutError(f"expected {size} bytes at {path}, found {len(data)}")
+
+
 def wait_frame(path: Path, deadline: float, different_from: bytes | None = None) -> bytes:
     candidate: bytes | None = None
     unchanged_since = time.monotonic()
@@ -82,6 +94,21 @@ def wait_native_release_count(path: Path, deadline: float) -> int:
             return int(match.group(1))
         time.sleep(0.03)
     raise TimeoutError("native pad release marker was not observed")
+
+
+def wait_release_tail_count(path: Path, deadline: float) -> int:
+    pattern = re.compile(r"AR-MK2 AUDIO: release tail complete count=(\d+)")
+    while time.monotonic() < deadline:
+        try:
+            matches = pattern.findall(
+                path.read_text(encoding="utf-8", errors="replace")
+            )
+        except FileNotFoundError:
+            matches = []
+        if matches:
+            return int(matches[-1])
+        time.sleep(0.03)
+    raise TimeoutError("native release-tail completion was not observed")
 
 
 def metrics(data: bytes) -> dict[str, int | str]:
@@ -257,6 +284,17 @@ def main() -> None:
         help="services required before releasing Trig 1 in held-audio mode",
     )
     parser.add_argument(
+        "--held-seconds",
+        type=float,
+        default=0.0,
+        help="quiet performance mode: hold Trig 1 for this wall-clock duration",
+    )
+    parser.add_argument(
+        "--demo-sample-frames",
+        type=int,
+        help="generated test-sample length (1..48000; held default: 4096)",
+    )
+    parser.add_argument(
         "--trigger-count",
         type=int,
         default=1,
@@ -294,15 +332,24 @@ def main() -> None:
         parser.error("--minimum-audio-services cannot be negative")
     if args.held_services <= args.services_per_trigger:
         parser.error("--held-services must exceed --services-per-trigger")
+    if args.held_seconds < 0:
+        parser.error("--held-seconds cannot be negative")
+    if args.held_seconds and not args.exercise_held_audio:
+        parser.error("--held-seconds requires --exercise-held-audio")
+    if args.demo_sample_frames is not None and not (
+        1 <= args.demo_sample_frames <= 48000
+    ):
+        parser.error("--demo-sample-frames must be in 1..48000")
     if args.exercise_held_audio:
         args.exercise_demo_sample = True
-    if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
+    if (args.exercise_trigger_audio and not args.held_seconds and
+            "unimp" not in args.qemu_debug.split(",")):
         args.qemu_debug = f"unimp,{args.qemu_debug}"
     if args.exercise_demo_sample:
         args.exercise_trigger_audio = True
         args.require_nonzero_audio = True
         args.minimum_audio_services = max(args.minimum_audio_services, 8)
-        if "unimp" not in args.qemu_debug.split(","):
+        if not args.held_seconds and "unimp" not in args.qemu_debug.split(","):
             args.qemu_debug = f"unimp,{args.qemu_debug}"
 
     qemu = args.qemu.expanduser().resolve()
@@ -320,6 +367,7 @@ def main() -> None:
     track_levels = runtime / "track-level-state.bin"
     parameters = runtime / "parameter-state.bin"
     log = runtime / "qemu.log"
+    audio_block = runtime / "first-audio-block.bin"
     monitor_port = unused_local_port()
     diagnostics = runtime / "monitor.txt"
     env = os.environ.copy()
@@ -330,8 +378,11 @@ def main() -> None:
         env["AR_MK2_TRACK_LEVEL_STATE_OUT"] = str(track_levels)
     if args.exercise_demo_sample:
         env["AR_MK2_MOCK_PROJECT_SAMPLE"] = "1"
-        if args.exercise_held_audio:
-            env["AR_MK2_MOCK_PROJECT_SAMPLE_FRAMES"] = "4096"
+        sample_frames = args.demo_sample_frames
+        if sample_frames is None and args.exercise_held_audio:
+            sample_frames = 4096
+        if sample_frames is not None:
+            env["AR_MK2_MOCK_PROJECT_SAMPLE_FRAMES"] = str(sample_frames)
         env["AR_MK2_PARAMETER_STATE_OUT"] = str(parameters)
         env["AR_MK2_AUDIO_TRIGGER_SERVICE"] = "1"
     if args.mock_audio_service:
@@ -340,6 +391,7 @@ def main() -> None:
         env.pop("AR_MK2_MOCK_AUDIO_SERVICE", None)
     if args.require_nonzero_audio:
         env["AR_MK2_AUDIO_TAP"] = "1"
+        env["AR_MK2_AUDIO_BLOCK_OUT"] = str(audio_block)
     command = [
         str(qemu), "-M", "elektron-ar-mk2", "-m", "256M",
         "-bios", str(main_image), "-display", "none",
@@ -464,12 +516,15 @@ def main() -> None:
             if args.exercise_held_audio:
                 hold_started = time.monotonic()
                 panel_writer.write(bytes.fromhex("23 01"))
-                wait_log_count(
-                    log,
-                    "AR-MK2 AUDIO: completed vector 191 service",
-                    args.held_services,
-                    deadline,
-                )
+                if args.held_seconds:
+                    time.sleep(args.held_seconds)
+                else:
+                    wait_log_count(
+                        log,
+                        "AR-MK2 AUDIO: completed vector 191 service",
+                        args.held_services,
+                        deadline,
+                    )
                 hold_elapsed = time.monotonic() - hold_started
                 release_started = time.monotonic()
                 panel_writer.write(bytes.fromhex("23 00"))
@@ -479,19 +534,29 @@ def main() -> None:
                 expected_audio_services = (
                     services_at_native_release + args.services_per_trigger
                 )
-                wait_log_count(
-                    log,
-                    "AR-MK2 AUDIO: completed vector 191 service",
-                    expected_audio_services,
-                    deadline,
-                )
+                if args.held_seconds:
+                    tail_count = wait_release_tail_count(log, deadline)
+                    if tail_count != expected_audio_services:
+                        raise AssertionError(
+                            "unexpected quiet release-tail count: "
+                            f"{tail_count} != {expected_audio_services}"
+                        )
+                else:
+                    wait_log_count(
+                        log,
+                        "AR-MK2 AUDIO: completed vector 191 service",
+                        expected_audio_services,
+                        deadline,
+                    )
                 release_elapsed = time.monotonic() - release_started
-                stopped_count = log_count(
-                    log, "AR-MK2 AUDIO: completed vector 191 service"
+                stopped_count = (
+                    expected_audio_services if args.held_seconds else
+                    log_count(log, "AR-MK2 AUDIO: completed vector 191 service")
                 )
                 time.sleep(1.0)
-                final_count = log_count(
-                    log, "AR-MK2 AUDIO: completed vector 191 service"
+                final_count = (
+                    expected_audio_services if args.held_seconds else
+                    log_count(log, "AR-MK2 AUDIO: completed vector 191 service")
                 )
                 if final_count != stopped_count:
                     raise AssertionError(
@@ -499,14 +564,22 @@ def main() -> None:
                         f"{stopped_count} -> {final_count}"
                     )
                 held_audio_result = {
-                    "minimum_services_before_host_release": args.held_services,
+                    "minimum_services_before_host_release": (
+                        None if args.held_seconds else args.held_services
+                    ),
                     "services_at_native_release": services_at_native_release,
                     "release_tail_services": args.services_per_trigger,
                     "services_after_stop_check": final_count,
                     "stopped_after_release": True,
                     "held_service_wall_seconds": round(hold_elapsed, 3),
                     "held_service_rate_hz": round(
-                        args.held_services / hold_elapsed, 3
+                        (services_at_native_release if args.held_seconds else
+                         args.held_services) / hold_elapsed,
+                        3,
+                    ),
+                    "quiet_performance_mode": bool(args.held_seconds),
+                    "hold_target_wall_seconds": (
+                        args.held_seconds if args.held_seconds else None
                     ),
                     "release_tail_wall_seconds": round(release_elapsed, 3),
                 }
@@ -548,7 +621,7 @@ def main() -> None:
                 expected_audio_services = (
                     args.trigger_count * args.services_per_trigger
                 )
-        if args.minimum_audio_services:
+        if args.minimum_audio_services and not args.held_seconds:
             wait_log_count(
                 log,
                 "AR-MK2 AUDIO: completed vector 191 service",
@@ -562,6 +635,9 @@ def main() -> None:
                 1,
                 deadline,
             )
+            first_audio_block = wait_blob(audio_block, 2048, deadline)
+        else:
+            first_audio_block = None
         time.sleep(1.0)
         panel_writer.write(bytes.fromhex("25 10"))
         time.sleep(0.08)
@@ -581,6 +657,9 @@ def main() -> None:
                 expected_audio_services,
             ),
             "nonzero_host_audio": args.require_nonzero_audio,
+            "first_audio_block": (
+                metrics(first_audio_block) if first_audio_block else None
+            ),
             "startup_modal": metrics(before),
             "normal_ui": metrics(normal_ui),
             "encoder_frame": metrics(encoder_frame) if encoder_frame else None,

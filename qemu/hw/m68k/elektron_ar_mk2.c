@@ -172,6 +172,7 @@ typedef struct ARBoardState {
     size_t audio_pcm_len;
     bool audio_tap;
     bool audio_nonzero_seen;
+    char *audio_block_out;
     char *frame_out;
     uint8_t frame_candidate[AR_FB_BYTES];
     uint8_t frame_published[AR_FB_BYTES];
@@ -276,8 +277,15 @@ static bool ar_capture_renderer_block(ARBoardState *s)
 
     ar_mix_renderer_block(s, block);
     if (!s->audio_nonzero_seen) {
+        if (s->audio_block_out &&
+            !g_file_set_contents(s->audio_block_out, (const char *)block,
+                                 AR_RENDER_BLOCK_BYTES, NULL)) {
+            qemu_log_mask(LOG_GUEST_ERROR,
+                          "AR-MK2: failed to write first audio block %s\n",
+                          s->audio_block_out);
+        }
         s->audio_nonzero_seen = true;
-        qemu_log_mask(LOG_UNIMP,
+        qemu_log_mask(LOG_GUEST_ERROR,
                       "AR-MK2 AUDIO: streaming stock renderer ring %u\n",
                       ring);
     }
@@ -673,7 +681,7 @@ static void ar_inject_project_sample(void *opaque)
     physical_memory_write(AR_SAMPLE_NAMES + AR_SYNTH_SAMPLE_SLOT * 4,
                           word, sizeof(word));
 
-    qemu_log_mask(LOG_UNIMP,
+    qemu_log_mask(LOG_GUEST_ERROR,
                   "AR-MK2: injected generated 16-bit test sample in slot %u "
                   "frames=%u\n",
                   AR_SYNTH_SAMPLE_SLOT, s->mock_project_sample_frames);
@@ -769,6 +777,12 @@ static void elektron_ar_mk2_init(MachineState *machine)
     {
         const char *tap = g_getenv("AR_MK2_AUDIO_TAP");
         s->audio_tap = tap && *tap && strcmp(tap, "0") != 0;
+    }
+    {
+        const char *out = g_getenv("AR_MK2_AUDIO_BLOCK_OUT");
+        if (out && *out) {
+            s->audio_block_out = g_strdup(out);
+        }
     }
     s->cpu = M68K_CPU(cpu_create(machine->cpu_type));
     env = &s->cpu->env;

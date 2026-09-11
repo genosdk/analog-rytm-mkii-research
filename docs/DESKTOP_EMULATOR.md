@@ -101,6 +101,29 @@ and retained responsive SMP-page rendering. Real-time 48 kHz needs 1,500
 32-frame services/s, so this is a control-semantics result, not a real-time
 playback claim; ColdFire TCG is still about 10.4 times short in this run.
 
+A separate quiet performance mode now matches the packaged desktop's
+`guest_errors` logging level instead of enabling per-transfer `unimp` traces.
+With a 48,000-frame generated sample held for 10 seconds, the unmodified
+ColdFire translation path completed 1,711 services (171.09 services/s), still
+8.77 times short of the 1,500-service/s real-time requirement. Short one-second
+runs varied from 147.72 to 166.83 services/s on the shared runner, so the
+10-second result is the characterization value rather than a hard platform
+benchmark.
+
+The quiet gate can also save the first stable nonzero 2 KiB renderer block to a
+temporary local file. That capture verifies the native path remains nonzero,
+but its hash is not a universal output oracle: two timing-dependent first-block
+states were observed while the sample envelope was starting. No PCM capture is
+stored in this repository.
+
+Inlining the fractional multiply helper and two forms of instruction-level MAC
+fusion were tested locally against this gate. None produced a material gain;
+one fusion changed the captured output and was rejected, while the
+output-preserving versions remained within measurement noise. The target-side
+experiments were reverted. A useful real-time accelerator therefore needs a
+larger, differentially validated kernel or ISR boundary, not another individual
+MAC helper rewrite.
+
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at
 vector 191, the shim models SSI1 transmit-FIFO demand every 666.667

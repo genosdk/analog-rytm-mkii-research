@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_QUIET_AUDIO_THROUGHPUT_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_NATIVE_OUTPUT_PRESERVED_NO_MICRO_FUSION_GAIN",
+  "target": {
+    "range": "0x401184C4..0x401187FF",
+    "character": "64-iteration fractional-MAC kernel reached eight times per vector-191 service",
+    "exact_isr_top_100_share_lower_bound_percent": 34.51
+  },
+  "quiet_runtime_acceptance": {
+    "log_mask": "guest_errors",
+    "active_test_sample_frames": 48000,
+    "hold_wall_seconds": 10.001,
+    "services_at_native_release": 1711,
+    "release_tail_services": 8,
+    "services_after_release_tail": 1719,
+    "service_rate_hz": 171.09,
+    "required_realtime_service_rate_hz": 1500,
+    "realtime_shortfall_factor": 8.767,
+    "service_count_stable_after_one_second": true,
+    "nonzero_stock_renderer_reached_host_tap": true,
+    "later_smp_framebuffer_responsive": true
+  },
+  "short_run_variability": {
+    "duration_seconds": 1,
+    "observed_service_rates_hz": [147.717, 162.969, 166.83],
+    "interpretation": "Shared-runner wall scheduling makes one-second results unsuitable as a hard platform benchmark."
+  },
+  "first_nonzero_block_diagnostic": {
+    "bytes": 2048,
+    "observed_nonzero_bytes": 57,
+    "observed_hashes": [
+      "787a7cdf82a19ab37dbc0b73181b5b74bcb2b10d163fd2e8fed7b0a548fdca1d",
+      "85bf6d5d3c0e18f6412a6e6e5613bb81f9bdc796f0cc02b73849fb4fcf6e4efa"
+    ],
+    "interpretation": "The capture proves a native nonzero block reached the host boundary. Envelope-start scheduling can select either observed first stable block, so its hash is not a universal golden oracle."
+  },
+  "rejected_micro_optimizations": [
+    {
+      "experiment": "inline fractional multiply in TCG",
+      "result": "output preserved; throughput remained within logged-run noise"
+    },
+    {
+      "experiment": "single environment-mutating multiply-accumulate-saturate helper",
+      "result": "first-block output changed; rejected"
+    },
+    {
+      "experiment": "packed-result helper with explicit TCG inputs and outputs",
+      "result": "output preserved; quiet throughput remained approximately 171 services/s"
+    }
+  ],
+  "conclusion": "Instruction-level helper fusion does not materially close the real-time gap. The next acceleration design must operate at a larger kernel or ISR boundary and be differentially validated against native renderer blocks.",
+  "reproduction": {
+    "command": "qemu/headless_ui_smoke.py --exercise-held-audio --held-seconds 10 --demo-sample-frames 48000 --timeout 70",
+    "firmware_embedded": false
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Official stock firmware and captured PCM remained in local temporary storage. No firmware, project data, factory sample names, PCM, or experimental QEMU target patch is included."
+}

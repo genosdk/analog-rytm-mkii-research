@@ -559,7 +559,7 @@ static void ar_panel_audio_observe(ARCoreState *c, uint8_t value)
                                      c->audio_service_entered;
 
                 c->audio_service_budget = AR_AUDIO_TRIGGER_BLOCKS - in_flight;
-                qemu_log_mask(LOG_UNIMP,
+                qemu_log_mask(LOG_GUEST_ERROR,
                               "AR-MK2 AUDIO: final pad release group=%u "
                               "mask=%02x completed=%u; bounded %u-block "
                               "release tail\n",
@@ -1145,6 +1145,12 @@ static void ar_audio_service_tick(ARCoreState *c, bool continuous)
         qemu_log_mask(LOG_UNIMP,
                       "AR-MK2 AUDIO: completed vector 191 service count=%u\n",
                       c->audio_service_completed);
+        if (!continuous && !c->audio_pad_held &&
+            !c->audio_service_budget) {
+            qemu_log_mask(LOG_GUEST_ERROR,
+                          "AR-MK2 AUDIO: release tail complete count=%u\n",
+                          c->audio_service_completed);
+        }
         if (!continuous && c->audio_pad_held &&
             !c->audio_service_budget) {
             /* Keep one request in reserve only while a real panel bitmap bit

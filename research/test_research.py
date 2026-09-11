@@ -407,9 +407,11 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertIn("--exercise-demo-sample", smoke)
         self.assertIn("--exercise-held-audio", smoke)
         self.assertIn("--qemu-plugin", smoke)
-        self.assertIn(
-            'env["AR_MK2_MOCK_PROJECT_SAMPLE_FRAMES"] = "4096"', smoke
-        )
+        self.assertIn("AR_MK2_AUDIO_BLOCK_OUT", smoke)
+        self.assertIn("first_audio_block", smoke)
+        self.assertIn("--held-seconds", smoke)
+        self.assertIn("--demo-sample-frames", smoke)
+        self.assertIn("sample_frames = 4096", smoke)
         self.assertIn("audio service continued after the release tail", smoke)
 
         held = json.loads(
@@ -441,6 +443,22 @@ class DesktopPanelInputTests(unittest.TestCase):
                 "share_of_exact_isr_percent"
             ],
             1,
+        )
+        throughput = json.loads(
+            (HERE / "AR172_QEMU_QUIET_AUDIO_THROUGHPUT_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            throughput["status"],
+            "PASS_NATIVE_OUTPUT_PRESERVED_NO_MICRO_FUSION_GAIN",
+        )
+        self.assertGreater(
+            throughput["quiet_runtime_acceptance"]["service_rate_hz"], 150
+        )
+        self.assertGreater(
+            throughput["quiet_runtime_acceptance"]["realtime_shortfall_factor"],
+            8,
         )
         plugin = (ROOT / "qemu" / "plugins" / "ar_audio_window.c").read_text(
             encoding="utf-8"

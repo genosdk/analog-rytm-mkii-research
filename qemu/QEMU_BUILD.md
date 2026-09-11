@@ -115,6 +115,25 @@ services, verify the count remains stopped for one second, and then check the
 SMP page remains responsive. This is a lifecycle/throughput measurement; it
 does not require real-time host cadence.
 
+For a lower-noise throughput characterization matching the desktop launcher's
+default log mask, hold the pad for a fixed wall-time interval:
+
+```bash
+python qemu/headless_ui_smoke.py \
+  --qemu /path/to/qemu-system-m68k \
+  --main /path/to/decompressed-main.bin \
+  --exercise-held-audio --held-seconds 10 \
+  --demo-sample-frames 48000 --timeout 70
+```
+
+This mode does not enable `unimp` logging. It uses final release and release-tail
+markers carried by `guest_errors`, verifies the exact eight-service tail, checks
+that service remains stopped, and reports the first stable nonzero renderer
+block's metrics. The block is written only inside the smoke runner's temporary
+directory and is deleted with it. Its hash can depend on which envelope-start
+block first becomes stable, so use it as a nonzero-path diagnostic rather than
+a cross-run golden value.
+
 For a renderer-window translation-block profile, build the repository's
 read-only QEMU plugin against the same pinned QEMU tree and pass it through the
 smoke runner:
