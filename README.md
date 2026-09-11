@@ -96,6 +96,8 @@ and reproducible tooling.
 - A live active-retrigger gate seeds lane-0 phase, modulation and random state,
   sends the ordinary desktop Trig 1 edge with its retrigger mask enabled, and
   observes all three words cleared before the eight renderer services begin.
+- The eight-lane follow-up maps Trigs 1–8 selectively: each edge clears its
+  target triplet while preserving all 21 state words owned by the other lanes.
 - The packaged macOS shell now uses a hardware-proportional native panel with
   persistent page/trigger LEDs and keyboard-accessible A-I encoders. Its
   **FILTER 2** drawer publishes eight absolute runtime controls through an

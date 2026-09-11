@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_LFO2_RETRIGGER_MATRIX_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_TRIG1_TO_TRIG8_SELECTIVE_NATIVE_RETRIGGER",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "runtime": {
+    "qemu_version": "11.1.50",
+    "firmware": "caller-supplied official OS 1.72 MAIN",
+    "candidate": "temporary non-flashable Filter2/LFO2 runtime image",
+    "candidate_sha256": "ba92042551d7bc4796ce63f2db7cf6ffc71d7004eb4237081dca7d9bee779d04",
+    "firmware_embedded": false,
+    "paid_ci_used": false
+  },
+  "precondition": {
+    "desktop_control_transition": "all_lanes_random_hold",
+    "lanes": 8,
+    "enable_mask": "0x00FF",
+    "retrigger_mask": "0x00FF",
+    "waveform": "random",
+    "mode": "hold",
+    "filter2_target_lane0": "0x7FFFFFFF",
+    "increment_lane0": "0x11111111",
+    "depth_lane0": "0x20408102"
+  },
+  "sentinel_scheme": {
+    "phase": "0x12000001 + lane at 0x402B4520 + 16*lane",
+    "last_modulation": "0x23000001 + lane at 0x402B452C + 16*lane",
+    "random_index": "0x34000001 + lane at 0x402B4438 + 32*lane",
+    "candidate_bytes_modified": false,
+    "write_method": "QEMU local GDB stub while VM stopped",
+    "read_method": "single stop/read-24/resume HMP transaction per Trig edge"
+  },
+  "selectivity_matrix": [
+    {"trig": 1, "panel_press": "23 01", "target_lane": 0, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"trig": 2, "panel_press": "23 02", "target_lane": 1, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"trig": 3, "panel_press": "23 04", "target_lane": 2, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"trig": 4, "panel_press": "23 08", "target_lane": 3, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"trig": 5, "panel_press": "23 10", "target_lane": 4, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"trig": 6, "panel_press": "23 20", "target_lane": 5, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"trig": 7, "panel_press": "23 40", "target_lane": 6, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"trig": 8, "panel_press": "23 80", "target_lane": 7, "target_words_cleared": 3, "non_target_words_preserved": 21}
+  ],
+  "aggregate": {
+    "trigger_edges": 8,
+    "state_words_checked_per_edge": 24,
+    "exact_state_comparisons": 192,
+    "target_zero_comparisons": 24,
+    "non_target_sentinel_comparisons": 168,
+    "wrong_lane_resets": 0
+  },
+  "bounded_audio": {
+    "scheduled_vector": 191,
+    "services_per_trigger": 8,
+    "completed_services": 64,
+    "continuous_service_clock": false,
+    "wav_channels": 2,
+    "wav_sample_width_bytes": 2,
+    "wav_backend_rate_hz": 44100,
+    "wav_frames_observed": 2318452,
+    "wav_pcm_bytes_observed": 9273808,
+    "wav_nonzero_pcm_bytes_observed": 5682,
+    "wav_contains_nonzero_pcm": true,
+    "wav_pcm_sha256": "747d71dbf5aa2631deeda12288fbe343e83a33a54b12d204e70223701c37d49c",
+    "fixture": "emulator-generated QEMU TEST sample; no proprietary PCM"
+  },
+  "framebuffer": {
+    "startup_modal_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
+    "normal_ui_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+    "smp_page_sha256": "cfe4a66a98f9f92bf7fcea175aaa47c10a725b49df4fb2b8ce81e9c306e2622d",
+    "later_ui_responsive": true
+  },
+  "reproducer": "qemu/headless_ui_smoke.py --exercise-runtime-controls --exercise-retrigger-matrix --exercise-trigger-audio --capture-audio-wav",
+  "scope_limit": "This proves live selective note-on retrigger behavior for the eight audio lanes under QEMU. It is not a physical timing or hardware-output claim.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

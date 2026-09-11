@@ -125,6 +125,14 @@ and nonzero generated-sample WAV still pass. This instrumentation changes no
 candidate bytes and is recorded in
 `research/AR172_QEMU_LFO2_ACTIVE_RETRIGGER_GATE.json`.
 
+The subsequent selectivity matrix repeats the same causal test for Trigs 1–8.
+Each edge clears exactly its corresponding lane's three words while all 21
+words belonging to the other seven lanes retain distinct sentinels. Across the
+eight edges, all 192 expected values match, 64 bounded renderer services
+complete, generated-sample PCM remains nonzero, and the later SMP page remains
+responsive. The matrix is recorded in
+`research/AR172_QEMU_LFO2_RETRIGGER_MATRIX_GATE.json`.
+
 This option remains a research clock rather than a physical realtime claim.
 The backpressured 10 ms model has sustained 2,303 completed services while the
 UI remained responsive, but the physical device cadence has not yet been

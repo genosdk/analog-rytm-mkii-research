@@ -689,6 +689,12 @@ hook clears all three words before the delayed first renderer service; eight
 services, nonzero generated-sample PCM and the later SMP page then complete.
 This closes the live reset-taking branch and is recorded in
 `research/AR172_QEMU_LFO2_ACTIVE_RETRIGGER_GATE.json`.
+The eight-lane selectivity follow-up then seeds all 24 state words before each
+of Trigs 1–8. Every edge clears only its corresponding lane's phase,
+last-modulation and random-index words while preserving all 21 non-target
+sentinels. All 192 comparisons, 64 bounded renderer services, nonzero PCM and
+the later SMP page pass. This is recorded in
+`research/AR172_QEMU_LFO2_RETRIGGER_MATRIX_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

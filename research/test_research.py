@@ -210,6 +210,8 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("native_retrigger_reset", source)
         self.assertIn("gdb_write_memory", source)
         self.assertIn('"phase": (0x402B4520, 0x12345678)', source)
+        self.assertIn("--exercise-retrigger-matrix", source)
+        self.assertIn("non_target_words_preserved", source)
         self.assertIn('emit_event(events_file, "trig", "1", "press")', source)
         self.assertIn("wait_snapshot(controls_file, first.encode(), deadline)", source)
         self.assertIn("wait_hmp_value", source)
