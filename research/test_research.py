@@ -136,7 +136,7 @@ class MacosPackagingTests(unittest.TestCase):
         self.assertIn("working-directory: research", workflow)
         self.assertIn('--paths "$GITHUB_WORKSPACE/research/research"', workflow)
         self.assertIn("--hidden-import audio_callback_probe", workflow)
-        self.assertIn("--hidden-import filter2_publication_shim_probe", workflow)
+        self.assertIn("--hidden-import lfo2_extended_waveform_probe", workflow)
 
 
 class QemuAudioEdmaTests(unittest.TestCase):
@@ -249,6 +249,43 @@ class DesktopPanelInputTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), bytes(controls))
             self.assertFalse(path.with_suffix(".bin.tmp").exists())
 
+    def test_runtime_controls_publish_complete_exact_lfo2_state(self):
+        from qemu.panel_event_bridge import (
+            RUNTIME_SNAPSHOT_SIZE,
+            RuntimeControls,
+            control_to_q31,
+            publish_runtime_controls,
+            rate_to_increment,
+        )
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "filter2-controls.bin"
+            controls = RuntimeControls()
+            controls.filter2[2] = 127
+            controls.waveform[2] = 6
+            controls.mode[2] = 3
+            controls.rate[2] = 127
+            controls.depth[2] = 32
+            controls.enable_mask = 1 << 2
+            controls.trigger_mask = 1 << 2
+            controls.reset_generation[2] = 1
+            publish_runtime_controls(path, controls)
+            snapshot = path.read_bytes()
+            self.assertEqual(len(snapshot), RUNTIME_SNAPSHOT_SIZE)
+            self.assertEqual(snapshot[:8], b"F2L2\x01\x00\x00\x00")
+            self.assertEqual(snapshot[10], 127)
+            self.assertEqual(snapshot[18], 6)
+            self.assertEqual(snapshot[26], 3)
+            self.assertEqual(int.from_bytes(snapshot[40:44], "big"), rate_to_increment(127))
+            self.assertEqual(int.from_bytes(snapshot[72:76], "big"), control_to_q31(32))
+            self.assertEqual(snapshot[96:100], b"\x00\x04\x00\x04")
+            self.assertEqual(snapshot[102], 1)
+            restored = RuntimeControls.decode(snapshot)
+            self.assertEqual(restored.rate[2], 127)
+            self.assertEqual(restored.depth[2], 32)
+            self.assertEqual(restored.enable_mask, 1 << 2)
+            self.assertFalse(path.with_suffix(".bin.tmp").exists())
+
     def test_qemu_machine_imports_live_filter2_targets(self):
         source = (
             ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
@@ -256,6 +293,9 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertIn("AR_MK2_FILTER2_CONTROL_IN", source)
         self.assertIn("ar_import_filter2_controls", source)
         self.assertIn("AR_FILTER2_STATE0", source)
+        self.assertIn("AR_LFO2_STATE0", source)
+        self.assertIn("AR_RUNTIME_CONTROL_SIZE 108u", source)
+        self.assertIn('memcmp(contents, "F2L2\\x01", 5)', source)
         self.assertIn("physical_memory_write(target, word, sizeof(word))", source)
 
 

@@ -57,14 +57,18 @@ through the native `0x3n` encoder packet.
 
 ## Filter 2 runtime drawer
 
-The standalone shell includes a separate **FILTER 2** drawer with one absolute
-0–127 knob for each audio lane. These are explicitly emulator-extension
-controls, not claimed physical-panel mappings. Changes flow through the event
-follower into one atomically replaced eight-byte snapshot; the QEMU machine
-maps changed bytes to Q1.31 and writes the corresponding target coefficient
-cells. The runtime MAIN candidate is generated locally from verified OS 1.72
-and deleted when the app exits.
+The standalone shell includes a separate **FILTER 2 + LFO2** drawer with one
+absolute 0–127 Filter 2 knob for each audio lane. A compact lane selector opens
+the proven LFO2 rate, depth, seven-waveform, four-mode, enable, note-retrigger,
+and phase-reset controls for that lane. These are explicitly emulator-extension
+controls, not claimed physical-panel mappings.
 
-The next native-GUI target is folding the proved LFO2 controls and bounded
-audition transport into this drawer. Physical MIDI/USB transport for Filter 2
-and LFO2 remains untraced.
+Changes flow through the event follower into one atomically replaced,
+versioned 108-byte snapshot. QEMU maps the absolute Filter 2 and LFO2 values to
+their proven shadow-state cells without partially observing a multi-control
+update. With `--audio`, **AUDITION · 8 BLOCKS** produces the same bounded Trig 1
+press/release used by the panel and the established renderer-service gate; it
+does not enable the unbounded research clock. The runtime MAIN candidate is
+generated locally from verified OS 1.72 and deleted when the app exits.
+
+Physical MIDI/USB transport for Filter 2 and LFO2 remains untraced.

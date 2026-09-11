@@ -19,6 +19,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import struct
 import threading
 import time
 
@@ -35,6 +36,85 @@ BUTTONS = {
     "AMP": (5, 6),
     "LFO": (5, 7),
 }
+RUNTIME_MAGIC = b"F2L2"
+RUNTIME_VERSION = 1
+RUNTIME_LANES = 8
+RUNTIME_SNAPSHOT_SIZE = 108
+
+
+def control_to_q31(control: int) -> int:
+    control = max(0, min(127, int(control)))
+    return (control * 0x7FFFFFFF + 63) // 127
+
+
+def rate_to_increment(control: int) -> int:
+    control = max(0, min(127, int(control)))
+    frequency = 0.01 * ((100.0 / 0.01) ** (control / 127.0))
+    return min(0xFFFFFFFF, round(frequency * (1 << 32) / 1500.0))
+
+
+class RuntimeControls:
+    """Complete atomic host-to-QEMU Filter2/LFO2 control state."""
+
+    def __init__(self) -> None:
+        self.filter2 = [64] * RUNTIME_LANES
+        self.waveform = [0] * RUNTIME_LANES
+        self.mode = [0] * RUNTIME_LANES
+        self.rate = [64] * RUNTIME_LANES
+        self.depth = [64] * RUNTIME_LANES
+        self.enable_mask = 0
+        self.trigger_mask = 0
+        self.reset_generation = [0] * RUNTIME_LANES
+
+    def encode(self) -> bytes:
+        snapshot = struct.pack(
+            ">4sBBH8B8B8B8I8IHH8B",
+            RUNTIME_MAGIC,
+            RUNTIME_VERSION,
+            0,
+            0,
+            *self.filter2,
+            *self.waveform,
+            *self.mode,
+            *(rate_to_increment(value) for value in self.rate),
+            *(control_to_q31(value) for value in self.depth),
+            self.enable_mask,
+            self.trigger_mask,
+            *self.reset_generation,
+        )
+        if len(snapshot) != RUNTIME_SNAPSHOT_SIZE:
+            raise AssertionError("runtime control snapshot layout changed")
+        return snapshot
+
+    @classmethod
+    def decode(cls, snapshot: bytes) -> "RuntimeControls":
+        if len(snapshot) != RUNTIME_SNAPSHOT_SIZE:
+            raise ValueError("wrong runtime control snapshot size")
+        values = struct.unpack(">4sBBH8B8B8B8I8IHH8B", snapshot)
+        if values[:2] != (RUNTIME_MAGIC, RUNTIME_VERSION):
+            raise ValueError("unsupported runtime control snapshot")
+        state = cls()
+        state.filter2 = list(values[4:12])
+        state.waveform = list(values[12:20])
+        state.mode = list(values[20:28])
+        state.rate = [
+            min(
+                range(128),
+                key=lambda control: abs(rate_to_increment(control) - raw),
+            )
+            for raw in values[28:36]
+        ]
+        state.depth = [
+            min(
+                range(128),
+                key=lambda control: abs(control_to_q31(control) - raw),
+            )
+            for raw in values[36:44]
+        ]
+        state.enable_mask = values[44]
+        state.trigger_mask = values[45]
+        state.reset_generation = list(values[46:54])
+        return state
 
 
 class PanelLink:
@@ -122,15 +202,27 @@ def publish_filter2_controls(path: Path, controls: bytearray) -> None:
     os.replace(temporary, path)
 
 
+def publish_runtime_controls(path: Path, controls: RuntimeControls) -> None:
+    """Atomically publish one complete, versioned Filter2/LFO2 snapshot."""
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_bytes(controls.encode())
+    os.replace(temporary, path)
+
+
 def follow_events(path: Path, link: PanelLink, start_at_end: bool,
                   filter2_control_file: Path | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.touch(exist_ok=True)
-    filter2_controls = bytearray([64] * 8)
+    runtime_controls = RuntimeControls()
     if filter2_control_file is not None and filter2_control_file.is_file():
         existing = filter2_control_file.read_bytes()
         if len(existing) == 8:
-            filter2_controls[:] = existing
+            runtime_controls.filter2[:] = existing
+        elif len(existing) == RUNTIME_SNAPSHOT_SIZE:
+            try:
+                runtime_controls = RuntimeControls.decode(existing)
+            except ValueError:
+                pass
     with path.open("r", encoding="utf-8") as f:
         if start_at_end:
             f.seek(0, os.SEEK_END)
@@ -181,9 +273,41 @@ def follow_events(path: Path, link: PanelLink, start_at_end: bool,
                     control = max(0, min(127, int(value)))
                 except (TypeError, ValueError):
                     continue
-                if 0 <= lane < len(filter2_controls):
-                    filter2_controls[lane] = control
-                    publish_filter2_controls(filter2_control_file, filter2_controls)
+                if 0 <= lane < RUNTIME_LANES:
+                    runtime_controls.filter2[lane] = control
+                    publish_runtime_controls(filter2_control_file, runtime_controls)
+                continue
+
+            if kind == "lfo2" and filter2_control_file is not None:
+                try:
+                    lane_text, parameter = name.split(":", 1)
+                    lane = int(lane_text)
+                    control = int(value)
+                except (TypeError, ValueError):
+                    continue
+                if not 0 <= lane < RUNTIME_LANES:
+                    continue
+                if parameter in {"rate", "depth"}:
+                    getattr(runtime_controls, parameter)[lane] = max(
+                        0, min(127, control)
+                    )
+                elif parameter == "waveform":
+                    runtime_controls.waveform[lane] = max(0, min(6, control))
+                elif parameter == "mode":
+                    runtime_controls.mode[lane] = max(0, min(3, control))
+                elif parameter in {"enable", "trigger"}:
+                    attribute = f"{parameter}_mask"
+                    mask = getattr(runtime_controls, attribute)
+                    bit = 1 << lane
+                    setattr(runtime_controls, attribute,
+                            (mask | bit) if control else (mask & ~bit))
+                elif parameter == "reset":
+                    runtime_controls.reset_generation[lane] = (
+                        runtime_controls.reset_generation[lane] + 1
+                    ) & 0xFF
+                else:
+                    continue
+                publish_runtime_controls(filter2_control_file, runtime_controls)
                 continue
 
             print(f"unmapped panel event: {event}", flush=True)

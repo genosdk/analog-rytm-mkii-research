@@ -69,6 +69,21 @@
 #define AR_FILTER2_STATE0      0x402B4420u
 #define AR_FILTER2_STATE_STRIDE 32u
 #define AR_FILTER2_TARGET_OFFSET 12u
+#define AR_FILTER2_CONFIG_OFFSET 20u
+#define AR_FILTER2_RANDOM_OFFSET 24u
+#define AR_LFO2_MASK_ADDR       0x402B440Eu
+#define AR_LFO2_TRIGGER_ADDR    0x402B4418u
+#define AR_LFO2_STATE0          0x402B4520u
+#define AR_LFO2_STATE_STRIDE    16u
+#define AR_RUNTIME_CONTROL_SIZE 108u
+#define AR_RUNTIME_FILTER_OFF   8u
+#define AR_RUNTIME_WAVE_OFF     16u
+#define AR_RUNTIME_MODE_OFF     24u
+#define AR_RUNTIME_RATE_OFF     32u
+#define AR_RUNTIME_DEPTH_OFF    64u
+#define AR_RUNTIME_ENABLE_OFF   96u
+#define AR_RUNTIME_TRIGGER_OFF  98u
+#define AR_RUNTIME_RESET_OFF    100u
 
 void ar_mk2_intc_pit_init(MemoryRegion *sysmem, M68kCPU *cpu);
 void ar_mk2_dspi_init(MemoryRegion *sysmem);
@@ -170,8 +185,8 @@ typedef struct ARBoardState {
     bool audio_nonzero_seen;
     char *frame_out;
     char *filter2_control_in;
-    uint8_t filter2_values[AR_FILTER2_LANES];
-    bool filter2_values_valid;
+    uint8_t runtime_controls[AR_RUNTIME_CONTROL_SIZE];
+    bool runtime_controls_valid;
     uint8_t frame_candidate[AR_FB_BYTES];
     uint8_t frame_published[AR_FB_BYTES];
     uint32_t frame_candidate_ptr;
@@ -543,29 +558,78 @@ static void ar_import_filter2_controls(void *opaque)
 
     if (s->filter2_control_in &&
         g_file_get_contents(s->filter2_control_in, &contents, &length, NULL) &&
-        length == AR_FILTER2_LANES) {
+        length == AR_RUNTIME_CONTROL_SIZE &&
+        memcmp(contents, "F2L2\x01", 5) == 0) {
         for (lane = 0; lane < AR_FILTER2_LANES; lane++) {
-            uint8_t control = MIN((uint8_t)contents[lane], 127);
+            const uint8_t *snapshot = (const uint8_t *)contents;
+            uint8_t control = MIN(snapshot[AR_RUNTIME_FILTER_OFF + lane], 127);
             uint8_t current_word[4];
             uint32_t q31 = ((uint64_t)control * 0x7FFFFFFFu + 63u) / 127u;
             hwaddr target = AR_FILTER2_STATE0 +
                 lane * AR_FILTER2_STATE_STRIDE + AR_FILTER2_TARGET_OFFSET;
 
             physical_memory_read(target, current_word, sizeof(current_word));
-            if (!s->filter2_values_valid ||
-                s->filter2_values[lane] != control ||
-                ldl_be_p(current_word) != q31) {
+            if (ldl_be_p(current_word) != q31) {
                 uint8_t word[4];
 
                 stl_be_p(word, q31);
                 physical_memory_write(target, word, sizeof(word));
-                s->filter2_values[lane] = control;
                 qemu_log_mask(LOG_UNIMP,
                               "AR-MK2 FILTER2: lane=%u control=%u q31=%08x\n",
                               lane, control, q31);
             }
+
+            target = AR_LFO2_STATE0 + lane * AR_LFO2_STATE_STRIDE + 4u;
+            physical_memory_read(target, current_word, sizeof(current_word));
+            if (ldl_be_p(current_word) !=
+                ldl_be_p(snapshot + AR_RUNTIME_RATE_OFF + lane * 4u)) {
+                physical_memory_write(target,
+                    snapshot + AR_RUNTIME_RATE_OFF + lane * 4u, 4);
+            }
+            target += 4u;
+            physical_memory_read(target, current_word, sizeof(current_word));
+            if (ldl_be_p(current_word) !=
+                ldl_be_p(snapshot + AR_RUNTIME_DEPTH_OFF + lane * 4u)) {
+                physical_memory_write(target,
+                    snapshot + AR_RUNTIME_DEPTH_OFF + lane * 4u, 4);
+            }
+
+            target = AR_FILTER2_STATE0 + lane * AR_FILTER2_STATE_STRIDE +
+                AR_FILTER2_CONFIG_OFFSET;
+            physical_memory_read(target, current_word, sizeof(current_word));
+            q31 = (ldl_be_p(current_word) & ~0x1Fu) |
+                (MIN(snapshot[AR_RUNTIME_WAVE_OFF + lane], 6) & 0x07u) |
+                ((MIN(snapshot[AR_RUNTIME_MODE_OFF + lane], 3) & 0x03u) << 3);
+            if (ldl_be_p(current_word) != q31) {
+                uint8_t word[4];
+                stl_be_p(word, q31);
+                physical_memory_write(target, word, sizeof(word));
+            }
+
+            if (s->runtime_controls_valid &&
+                snapshot[AR_RUNTIME_RESET_OFF + lane] !=
+                s->runtime_controls[AR_RUNTIME_RESET_OFF + lane]) {
+                uint8_t zero[4] = { 0 };
+                physical_memory_write(
+                    AR_LFO2_STATE0 + lane * AR_LFO2_STATE_STRIDE, zero, 4);
+                physical_memory_write(
+                    AR_LFO2_STATE0 + lane * AR_LFO2_STATE_STRIDE + 12u, zero, 4);
+                physical_memory_write(
+                    AR_FILTER2_STATE0 + lane * AR_FILTER2_STATE_STRIDE +
+                    AR_FILTER2_RANDOM_OFFSET, zero, 4);
+            }
         }
-        s->filter2_values_valid = true;
+        {
+            uint8_t mask[2];
+            stw_be_p(mask, lduw_be_p((const uint8_t *)contents +
+                                     AR_RUNTIME_ENABLE_OFF) & 0x00FFu);
+            physical_memory_write(AR_LFO2_MASK_ADDR, mask, sizeof(mask));
+            stw_be_p(mask, lduw_be_p((const uint8_t *)contents +
+                                     AR_RUNTIME_TRIGGER_OFF) & 0x00FFu);
+            physical_memory_write(AR_LFO2_TRIGGER_ADDR, mask, sizeof(mask));
+        }
+        memcpy(s->runtime_controls, contents, sizeof(s->runtime_controls));
+        s->runtime_controls_valid = true;
     }
     g_free(contents);
     timer_mod(s->filter2_timer,

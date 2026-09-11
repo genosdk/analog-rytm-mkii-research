@@ -27,9 +27,15 @@ if not getattr(sys, "frozen", False):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "research"))
 
 from audio_callback_probe import EXPECTED_MAIN_SHA256
-from filter2_publication_shim_probe import build_candidate as build_filter2_candidate
+from lfo2_extended_waveform_probe import build_candidate as build_filter2_candidate
 from firmware_loader import extract_main
-from panel_event_bridge import PanelLink, connect_unix, follow_events
+from panel_event_bridge import (
+    PanelLink,
+    RuntimeControls,
+    connect_unix,
+    follow_events,
+    publish_runtime_controls,
+)
 from desktop_panel import PanelApp
 
 
@@ -216,7 +222,7 @@ def main() -> None:
         candidate, _ = build_filter2_candidate(stock, True)
         main_image = runtime / "main-filter2-runtime.bin"
         main_image.write_bytes(candidate)
-        filter2_controls.write_bytes(bytes([64] * 8))
+        publish_runtime_controls(filter2_controls, RuntimeControls())
 
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
@@ -283,7 +289,7 @@ def main() -> None:
         hmp_continue(monitor)
 
         root = tk.Tk()
-        PanelApp(root, frame, events, args.scale, filter2_enabled)
+        PanelApp(root, frame, events, args.scale, filter2_enabled, args.audio)
         root.mainloop()
 
         if qemu_proc.poll() is not None and qemu_proc.returncode:

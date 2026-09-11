@@ -59,11 +59,13 @@ The standalone application contains:
 
 The application starts QEMU paused, connects the emulated front-panel UART first, and only then releases the guest CPU. This prevents the initial panel identity query from being lost during host startup.
 
-By default, the launcher derives a temporary, non-flashable Filter 2 runtime
-candidate from the caller-supplied, hash-verified OS 1.72 MAIN. Eight absolute
-control bytes are atomically published to QEMU, mapped to proven Q1.31 targets,
-and consumed by the eight-lane kernel. The candidate and control snapshot live
-only in the temporary runtime directory and are removed when the app exits.
+By default, the launcher derives a temporary, non-flashable Filter 2 + LFO2
+runtime candidate from the caller-supplied, hash-verified OS 1.72 MAIN. One
+versioned 108-byte snapshot atomically publishes eight lanes of Filter 2,
+LFO2 rate/depth, waveform/mode, enable/retrigger masks, and phase-reset
+generations to their proven shadow-state cells. The candidate and control
+snapshot live only in the temporary runtime directory and are removed when the
+app exits.
 
 ## Firmware flow already validated
 
@@ -92,6 +94,10 @@ bounded service gate: each rising Trig/pad edge schedules eight stock
 vector-191 renderer passes. This proves repeated QWERTY-to-host-PCM operation
 without enabling the unbounded research clock. Longer realtime playback is
 still blocked on ColdFire TCG throughput.
+
+The Filter 2 + LFO2 drawer exposes the same bounded path as **AUDITION · 8
+BLOCKS** when `--audio` is active. It is disabled otherwise, making the audio
+backend requirement visible rather than silently changing launch behavior.
 
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at

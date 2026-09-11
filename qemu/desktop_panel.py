@@ -36,6 +36,8 @@ QWERTY_TRIGS = {
     for trig, key in enumerate("qwertyuiasdfghjk", start=1)
 }
 TRIG_KEYS = {trig: key.upper() for key, trig in QWERTY_TRIGS.items()}
+LFO2_WAVEFORMS = ("TRI", "SQR", "SAW", "RAMP", "SINE", "EXP", "RAND")
+LFO2_MODES = ("LOOP", "ONE", "HALF", "HOLD")
 
 
 def clamp_panel_value(value: int) -> int:
@@ -248,7 +250,8 @@ class VirtualKnob(tk.Canvas):
 
 class PanelApp:
     def __init__(self, root: tk.Tk, frame_file: Path, event_file: Path,
-                 scale: int = 6, filter2_enabled: bool = False) -> None:
+                 scale: int = 6, filter2_enabled: bool = False,
+                 audio_enabled: bool = False) -> None:
         self.root = root
         self.frame_file = frame_file
         self.event_file = event_file
@@ -261,8 +264,24 @@ class PanelApp:
         self.trig_widgets: dict[int, TrigPad] = {}
         self.active_page: str | None = None
         self.filter2_enabled = filter2_enabled
+        self.audio_enabled = audio_enabled
         self.filter2_values = [64] * 8
+        self.lfo2_rate_values = [64] * 8
+        self.lfo2_depth_values = [64] * 8
+        self.lfo2_waveforms = [0] * 8
+        self.lfo2_modes = [0] * 8
+        self.lfo2_enabled = [False] * 8
+        self.lfo2_triggered = [False] * 8
+        self.lfo2_lane = 0
         self.filter2_window: tk.Toplevel | None = None
+        self.lfo2_lane_buttons: list[tk.Button] = []
+        self.lfo2_rate_knob: VirtualKnob | None = None
+        self.lfo2_depth_knob: VirtualKnob | None = None
+        self.lfo2_wave_button: tk.Button | None = None
+        self.lfo2_mode_button: tk.Button | None = None
+        self.lfo2_enable_button: tk.Button | None = None
+        self.lfo2_trigger_button: tk.Button | None = None
+        self.lfo2_audition_button: tk.Button | None = None
 
         root.title("Analog Rytm MKII — Firmware Emulator")
         root.configure(bg="#0b0c0c")
@@ -432,13 +451,13 @@ class PanelApp:
 
         window = tk.Toplevel(self.root)
         self.filter2_window = window
-        window.title("Filter 2 — Eight-Lane Emulator Extension")
+        window.title("Filter 2 + LFO2 — Eight-Lane Emulator Extension")
         window.configure(bg=PANEL_BG)
         window.resizable(False, False)
         window.protocol("WM_DELETE_WINDOW", self.toggle_filter2)
         title = tk.Frame(window, bg=PANEL_BG)
         title.pack(fill="x", padx=12, pady=(10, 4))
-        tk.Label(title, text="FILTER 2", fg=TEXT, bg=PANEL_BG,
+        tk.Label(title, text="FILTER 2  +  LFO2", fg=TEXT, bg=PANEL_BG,
                  font=("TkDefaultFont", 13, "bold")).pack(side="left")
         tk.Label(title, text="LIVE QEMU  /  LANES 1–8", fg=LED_ORANGE,
                  bg=PANEL_BG, font=("TkFixedFont", 8, "bold")).pack(
@@ -450,25 +469,172 @@ class PanelApp:
                 knobs,
                 str(lane + 1),
                 lambda _name, delta, value, lane=lane:
-                    self.filter2(lane, delta, value),
+                    self.filter2(lane, delta, value, True),
                 self.filter2_values[lane],
             ).grid(row=0, column=lane, padx=1)
+
+        lane_bar = tk.Frame(window, bg=PANEL_BG)
+        lane_bar.pack(fill="x", padx=12, pady=(2, 5))
+        tk.Label(lane_bar, text="EDIT LFO2 LANE", fg=MUTED, bg=PANEL_BG,
+                 font=("TkFixedFont", 8, "bold")).pack(side="left", padx=(2, 8))
+        self.lfo2_lane_buttons = []
+        for lane in range(8):
+            button = tk.Button(
+                lane_bar, text=str(lane + 1),
+                command=lambda lane=lane: self.select_lfo2_lane(lane),
+                width=3, relief="flat", fg=TEXT, bg=CONTROL_FACE,
+                activeforeground=TEXT, activebackground="#353936",
+                font=("TkDefaultFont", 8, "bold"),
+            )
+            button.pack(side="left", padx=1)
+            self.lfo2_lane_buttons.append(button)
+
+        editor = tk.Frame(window, bg=PANEL_INSET, padx=10, pady=8)
+        editor.pack(fill="x", padx=12, pady=(0, 6))
+        self.lfo2_rate_knob = VirtualKnob(
+            editor, "RATE",
+            lambda _name, delta, value: self.lfo2_knob("rate", delta, value),
+        )
+        self.lfo2_rate_knob.grid(row=0, column=0, rowspan=2, padx=(0, 8))
+        self.lfo2_depth_knob = VirtualKnob(
+            editor, "DEPTH",
+            lambda _name, delta, value: self.lfo2_knob("depth", delta, value),
+        )
+        self.lfo2_depth_knob.grid(row=0, column=1, rowspan=2, padx=(0, 12))
+        self.lfo2_wave_button = self.drawer_button(
+            editor, "WAVE", lambda: self.cycle_lfo2("waveform"), 12
+        )
+        self.lfo2_wave_button.grid(row=0, column=2, padx=2, pady=2)
+        self.lfo2_mode_button = self.drawer_button(
+            editor, "MODE", lambda: self.cycle_lfo2("mode"), 12
+        )
+        self.lfo2_mode_button.grid(row=1, column=2, padx=2, pady=2)
+        self.lfo2_enable_button = self.drawer_button(
+            editor, "LFO OFF", lambda: self.toggle_lfo2_flag("enable"), 11
+        )
+        self.lfo2_enable_button.grid(row=0, column=3, padx=2, pady=2)
+        self.lfo2_trigger_button = self.drawer_button(
+            editor, "FREE RUN", lambda: self.toggle_lfo2_flag("trigger"), 11
+        )
+        self.lfo2_trigger_button.grid(row=1, column=3, padx=2, pady=2)
+        self.drawer_button(editor, "RESET PHASE", self.reset_lfo2, 12).grid(
+            row=0, column=4, padx=(10, 2), pady=2
+        )
+        self.lfo2_audition_button = self.drawer_button(
+            editor, "AUDITION · 8 BLOCKS", self.audition_lfo2, 18
+        )
+        self.lfo2_audition_button.configure(
+            state="normal" if self.audio_enabled else "disabled"
+        )
+        self.lfo2_audition_button.grid(row=1, column=4, padx=(10, 2), pady=2)
+        self.select_lfo2_lane(self.lfo2_lane)
         tk.Label(
             window,
-            text="Per-lane Q1.31 coefficient  •  default 064  •  runtime only",
+            text=("Per-lane runtime state  •  selectors cycle on click  •  "
+                  + ("audition uses selected Trig"
+                     if self.audio_enabled else "start with --audio to audition")),
             fg=MUTED,
             bg=PANEL_BG,
             font=("TkFixedFont", 8),
         ).pack(anchor="w", padx=14, pady=(0, 10))
 
-    def filter2(self, lane: int, delta: int, value: int | None) -> None:
+    @staticmethod
+    def drawer_button(parent, text: str, command, width: int) -> tk.Button:
+        return tk.Button(
+            parent, text=text, command=command, width=width, relief="flat",
+            fg=TEXT, bg=CONTROL_FACE, activeforeground=TEXT,
+            activebackground="#353936", disabledforeground="#5d625e",
+            font=("TkDefaultFont", 8, "bold"), padx=4, pady=5,
+        )
+
+    def filter2(self, lane: int, delta: int, value: int | None,
+                select: bool = False) -> None:
         if value is None:
             return
         self.filter2_values[lane] = value
+        if select:
+            self.select_lfo2_lane(lane)
         self.emit("filter2", str(lane), value)
         self.status.set(
             f"FILTER 2  /  LANE {lane + 1}  /  VALUE {value:03d}  /  {delta:+d}"
         )
+
+    def select_lfo2_lane(self, lane: int) -> None:
+        self.lfo2_lane = max(0, min(7, lane))
+        for index, button in enumerate(self.lfo2_lane_buttons):
+            selected = index == self.lfo2_lane
+            button.configure(bg="#5a3022" if selected else CONTROL_FACE,
+                             fg=LED_ORANGE if selected else TEXT)
+        for knob, values in (
+            (self.lfo2_rate_knob, self.lfo2_rate_values),
+            (self.lfo2_depth_knob, self.lfo2_depth_values),
+        ):
+            if knob is not None:
+                knob.value = values[self.lfo2_lane]
+                knob.redraw()
+        if self.lfo2_wave_button is not None:
+            self.lfo2_wave_button.configure(
+                text=f"WAVE · {LFO2_WAVEFORMS[self.lfo2_waveforms[self.lfo2_lane]]}"
+            )
+        if self.lfo2_mode_button is not None:
+            self.lfo2_mode_button.configure(
+                text=f"MODE · {LFO2_MODES[self.lfo2_modes[self.lfo2_lane]]}"
+            )
+        if self.lfo2_enable_button is not None:
+            enabled = self.lfo2_enabled[self.lfo2_lane]
+            self.lfo2_enable_button.configure(
+                text="LFO ON" if enabled else "LFO OFF",
+                fg=LED_ORANGE if enabled else TEXT,
+            )
+        if self.lfo2_trigger_button is not None:
+            triggered = self.lfo2_triggered[self.lfo2_lane]
+            self.lfo2_trigger_button.configure(
+                text="NOTE RETRIG" if triggered else "FREE RUN",
+                fg=LED_ORANGE if triggered else TEXT,
+            )
+        if self.lfo2_audition_button is not None:
+            self.lfo2_audition_button.configure(
+                text=f"AUDITION TRIG {self.lfo2_lane + 1} · 8 BLOCKS"
+            )
+
+    def emit_lfo2(self, parameter: str, value: int) -> None:
+        self.emit("lfo2", f"{self.lfo2_lane}:{parameter}", value)
+        self.status.set(
+            f"LFO2  /  LANE {self.lfo2_lane + 1}  /  {parameter.upper()} {value}"
+        )
+
+    def lfo2_knob(self, parameter: str, delta: int, value: int) -> None:
+        values = (self.lfo2_rate_values if parameter == "rate"
+                  else self.lfo2_depth_values)
+        values[self.lfo2_lane] = value
+        self.emit_lfo2(parameter, value)
+
+    def cycle_lfo2(self, parameter: str) -> None:
+        values, count = (
+            (self.lfo2_waveforms, len(LFO2_WAVEFORMS))
+            if parameter == "waveform"
+            else (self.lfo2_modes, len(LFO2_MODES))
+        )
+        values[self.lfo2_lane] = (values[self.lfo2_lane] + 1) % count
+        self.emit_lfo2(parameter, values[self.lfo2_lane])
+        self.select_lfo2_lane(self.lfo2_lane)
+
+    def toggle_lfo2_flag(self, parameter: str) -> None:
+        values = (self.lfo2_enabled if parameter == "enable"
+                  else self.lfo2_triggered)
+        values[self.lfo2_lane] = not values[self.lfo2_lane]
+        self.emit_lfo2(parameter, int(values[self.lfo2_lane]))
+        self.select_lfo2_lane(self.lfo2_lane)
+
+    def reset_lfo2(self) -> None:
+        self.emit_lfo2("reset", 1)
+
+    def audition_lfo2(self) -> None:
+        if not self.audio_enabled:
+            return
+        trig = self.lfo2_lane + 1
+        self.trig(trig, True, "audition")
+        self.root.after(35, lambda: self.trig(trig, False, "audition"))
 
     def key_press(self, event) -> str | None:
         key = event.keysym.lower()
@@ -587,7 +753,7 @@ def main() -> None:
     ap.add_argument("--filter2", action="store_true")
     args = ap.parse_args()
     root = tk.Tk()
-    PanelApp(root, args.frame, args.events, args.scale, args.filter2)
+    PanelApp(root, args.frame, args.events, args.scale, args.filter2, False)
     root.mainloop()
 
 
