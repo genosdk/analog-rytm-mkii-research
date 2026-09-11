@@ -426,10 +426,22 @@ class DesktopPanelInputTests(unittest.TestCase):
             )
         )
         self.assertEqual(
-            profile["status"], "PASS_NATIVE_RENDERER_WINDOW_PROFILED"
+            profile["status"],
+            "PASS_NATIVE_AUDIO_ISR_AND_SAMPLE_ROUTINE_PROFILED",
         )
-        self.assertEqual(profile["window"]["renderer_calls"], 100)
-        self.assertGreater(profile["window"]["guest_instructions"], 40_000_000)
+        self.assertEqual(
+            profile["exact_vector_191_window"]["completed_services"], 100
+        )
+        self.assertGreater(
+            profile["exact_vector_191_window"]["guest_instructions"],
+            25_000_000,
+        )
+        self.assertLess(
+            profile["nested_sample_routine_window"][
+                "share_of_exact_isr_percent"
+            ],
+            1,
+        )
         plugin = (ROOT / "qemu" / "plugins" / "ar_audio_window.c").read_text(
             encoding="utf-8"
         )

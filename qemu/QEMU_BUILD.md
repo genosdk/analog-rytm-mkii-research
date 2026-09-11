@@ -127,12 +127,15 @@ python qemu/headless_ui_smoke.py \
   --qemu /path/to/qemu-system-m68k \
   --main /path/to/decompressed-main.bin \
   --exercise-held-audio --held-services 100 --qemu-debug unimp,plugin \
-  --qemu-plugin /tmp/ar_audio_window.so,start=0x40117a28,services=100
+  --qemu-plugin /tmp/ar_audio_window.so,start=0x4011b3ae,stop=0x4011cf0a,services=100
 ```
 
-The plugin begins counting at the first stock renderer entry and reports the
-100 hottest translated blocks when the following entry closes the window. It
-records addresses and counts only; it never reads guest memory.
+The defaults span the exact vector-191 handler from entry through the final
+restore block containing `RTE`, excluding scheduler time between calls. The
+plugin reports the 100 hottest translated blocks after 100 completed
+entry/stop windows. Override `start` and `stop` to measure a nested routine;
+set `stop=0` to let the following entry close a continuous window. It records
+addresses and counts only; it never reads guest memory.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

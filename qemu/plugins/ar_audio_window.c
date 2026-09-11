@@ -17,9 +17,11 @@ typedef struct {
 } Block;
 
 static GHashTable *blocks;
-static uint64_t start_pc = 0x40117a28;
+static uint64_t start_pc = 0x4011b3ae;
+static uint64_t stop_pc = 0x4011cf0a;
 static uint64_t service_limit = 100;
 static uint64_t services;
+static uint64_t completed;
 static uint64_t total_insns;
 static bool active;
 static bool reported;
@@ -43,8 +45,9 @@ static void report(void)
     values = g_list_sort(values, compare_blocks);
     g_string_append_printf(out,
                            "audio-window services=%" PRIu64
-                           " counted=%" PRIu64 " instructions=%" PRIu64 "\n",
-                           services, service_limit, total_insns);
+                           " completed=%" PRIu64 " counted=%" PRIu64
+                           " instructions=%" PRIu64 "\n",
+                           services, completed, service_limit, total_insns);
     for (GList *it = values; it && n < 100; it = it->next, n++) {
         Block *block = it->data;
 
@@ -67,10 +70,18 @@ static void execute(unsigned int cpu_index, void *userdata)
     Block *block = userdata;
 
     (void)cpu_index;
+    if (stop_pc && block->pc == stop_pc && active) {
+        active = false;
+        completed++;
+        if (completed == service_limit && !reported) {
+            report();
+        }
+        return;
+    }
     if (block->pc == start_pc) {
         services++;
         active = services <= service_limit;
-        if (!active && !reported) {
+        if (!stop_pc && !active && !reported) {
             report();
         }
     }
@@ -113,6 +124,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
     for (int i = 0; i < argc; i++) {
         if (g_str_has_prefix(argv[i], "start=")) {
             start_pc = g_ascii_strtoull(argv[i] + 6, NULL, 0);
+        } else if (g_str_has_prefix(argv[i], "stop=")) {
+            stop_pc = g_ascii_strtoull(argv[i] + 5, NULL, 0);
         } else if (g_str_has_prefix(argv[i], "services=")) {
             service_limit = g_ascii_strtoull(argv[i] + 9, NULL, 0);
         } else {

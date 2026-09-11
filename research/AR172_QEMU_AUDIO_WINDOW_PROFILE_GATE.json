@@ -2,52 +2,57 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_AUDIO_WINDOW_PROFILE_GATE",
   "recorded_at_utc": "2026-09-11",
-  "status": "PASS_NATIVE_RENDERER_WINDOW_PROFILED",
-  "window": {
+  "status": "PASS_NATIVE_AUDIO_ISR_AND_SAMPLE_ROUTINE_PROFILED",
+  "service_to_service_window": {
     "entry_pc": "0x40117A28",
     "renderer_calls": 100,
     "guest_instructions": 44489056,
     "guest_instructions_per_call": 444890.56,
-    "instrumented_wall_seconds": 0.733,
-    "instrumented_service_rate_hz": 136.503
+    "idle_self_branch_pc": "0x400FCE88",
+    "idle_self_branch_instructions": 9464380,
+    "idle_share_percent": 21.273
   },
-  "highest_instruction_contributors": [
-    {
-      "pc": "0x400FCE88",
-      "instruction": "BRA.S self",
-      "guest_instructions": 9464380,
-      "share_percent": 21.273,
-      "interpretation": "interruptible stock idle spin between work; not sufficient to explain or close the realtime gap"
-    },
-    {
-      "pc": "0x401184C4",
-      "block_instructions": 16,
-      "executions": 51200,
-      "guest_instructions": 819200
-    },
-    {
-      "pc": "0x401184C6",
-      "block_instructions": 15,
-      "executions": 51200,
-      "guest_instructions": 768000
-    },
-    {
-      "pc": "0x401A42CA",
-      "block_instructions": 11,
-      "executions": 60918,
-      "guest_instructions": 670098
-    },
-    {
-      "pc": "0x4011C56E",
-      "block_instructions": 15,
-      "executions": 28600,
-      "guest_instructions": 429000
-    }
-  ],
-  "conclusion": "The held-audio shortfall is not dominated by another missing peripheral-ready transition. Removing the largest idle spin entirely would save only about 21 percent of guest instructions. The next gate must profile and accelerate stock renderer kernels while preserving the native control, interrupt, sample, and release paths.",
+  "exact_vector_191_window": {
+    "entry_pc": "0x4011B3AE",
+    "final_restore_block_pc": "0x4011CF0A",
+    "completed_services": 100,
+    "guest_instructions": 25778146,
+    "guest_instructions_per_service": 257781.46,
+    "largest_kernel_families": [
+      {
+        "range": "0x401184C4..0x401187FF",
+        "guest_instructions_in_top_100_blocks": 8896000,
+        "isr_share_lower_bound_percent": 34.51
+      },
+      {
+        "range": "0x40109F00..0x4010A6FF",
+        "guest_instructions_in_top_100_blocks": 3382400,
+        "isr_share_lower_bound_percent": 13.121
+      },
+      {
+        "range": "0x4011C500..0x4011C8FF",
+        "guest_instructions_in_top_100_blocks": 3103900,
+        "isr_share_lower_bound_percent": 12.041
+      }
+    ]
+  },
+  "nested_sample_routine_window": {
+    "entry_pc": "0x40117A28",
+    "return_block_pc": "0x4011C982",
+    "completed_calls": 100,
+    "guest_instructions": 138898,
+    "guest_instructions_per_call": 1388.98,
+    "share_of_exact_isr_percent": 0.539
+  },
+  "throughput_baseline": {
+    "unprofiled_active_sample_rate_hz": 144.183,
+    "required_realtime_rate_hz": 1500,
+    "shortfall_factor": 10.403
+  },
+  "conclusion": "The shortfall is inside the full stock vector-191 workload, not the already-proven sample consumer or another peripheral-ready transition. The first acceleration target is the 0x401184C4..0x401187FF kernel family; accelerating 0x40117A28 alone cannot materially improve throughput.",
   "reproduction": {
     "plugin_source": "qemu/plugins/ar_audio_window.c",
-    "smoke_option": "--qemu-plugin /path/to/ar_audio_window.so,start=0x40117a28,services=100",
+    "smoke_option": "--qemu-plugin /path/to/ar_audio_window.so,start=0x4011b3ae,stop=0x4011cf0a,services=100",
     "firmware_embedded": false
   },
   "railway": {
