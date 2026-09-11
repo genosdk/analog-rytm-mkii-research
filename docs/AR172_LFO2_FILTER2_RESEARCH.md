@@ -701,6 +701,17 @@ words; each lane is then changed to retrigger mode and its accepted note-off
 again preserves all 24. This yields 384 exact preservation comparisons with no
 false reset, followed by 64 bounded services, nonzero PCM and the SMP page.
 Evidence is in `research/AR172_QEMU_LFO2_RETRIGGER_NEGATIVE_GATE.json`.
+The explicit desktop reset path is now closed independently of note events.
+For each lane, the harness seeds all 24 phase/modulation/random words, emits the
+real `lane:reset` JSONL control, observes its reset generation in the atomic
+snapshot, and proves only the selected triplet clears. An unrelated lane-8
+depth publication with unchanged generations preserves all 24 words; advancing
+lane 1 from generation 1 to 2 clears it again. The eight first edges plus both
+generation controls total 240 exact comparisons with no false reset. Cleanup
+generations clear the sentinels before the later SMP-page check. Renderer audio
+is retained as a separate fresh-runtime health control on the same candidate,
+because nonzero PCM is not an invariant of this free-mode reset scenario.
+Evidence is in `research/AR172_QEMU_LFO2_EXPLICIT_RESET_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

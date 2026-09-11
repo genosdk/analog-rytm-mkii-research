@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_LFO2_EXPLICIT_RESET_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_ALL_LANES_SELECTIVE_AND_GENERATION_IDEMPOTENT",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "runtime": {
+    "qemu_version": "11.1.50",
+    "firmware": "caller-supplied official OS 1.72 MAIN",
+    "candidate": "temporary non-flashable Filter2/LFO2 runtime image",
+    "candidate_sha256": "ba92042551d7bc4796ce63f2db7cf6ffc71d7004eb4237081dca7d9bee779d04",
+    "firmware_embedded": false,
+    "paid_ci_used": false
+  },
+  "precondition": {
+    "desktop_control_transition": "all_lanes_explicit_reset_hold",
+    "enable_mask": "0x00FF",
+    "retrigger_mask": "0x0000",
+    "waveform": "random",
+    "mode": "hold"
+  },
+  "instrumentation": {
+    "state_words_per_trial": 24,
+    "words_per_lane": [
+      "phase",
+      "last_modulation",
+      "random_index"
+    ],
+    "write_method": "QEMU local GDB stub while VM stopped",
+    "read_method": "one stopped HMP snapshot containing all 24 LFO2 state words",
+    "control_method": "desktop JSONL lfo2 lane:reset event and atomic 108-byte RuntimeControls publication",
+    "candidate_bytes_modified": false
+  },
+  "first_generation_matrix": [
+    {"lane": 0, "generation": 1, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"lane": 1, "generation": 1, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"lane": 2, "generation": 1, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"lane": 3, "generation": 1, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"lane": 4, "generation": 1, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"lane": 5, "generation": 1, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"lane": 6, "generation": 1, "target_words_cleared": 3, "non_target_words_preserved": 21},
+    {"lane": 7, "generation": 1, "target_words_cleared": 3, "non_target_words_preserved": 21}
+  ],
+  "unchanged_generation_control": {
+    "published_generations": [1, 1, 1, 1, 1, 1, 1, 1],
+    "unrelated_change": "lane 7 depth 32 -> 33",
+    "live_depth_q31": "0x2142850A",
+    "state_words_preserved": 24,
+    "unexpected_resets": 0
+  },
+  "second_generation_control": {
+    "lane": 0,
+    "generation": 2,
+    "target_words_cleared": 3,
+    "non_target_words_preserved": 21
+  },
+  "cleanup_transition": {
+    "purpose": "clear instrumentation sentinels before the later UI event",
+    "published_generations": [3, 2, 2, 2, 2, 2, 2, 2],
+    "enable_mask": "0x0000",
+    "retrigger_mask": "0x0000"
+  },
+  "aggregate": {
+    "first_generation_resets": 8,
+    "first_generation_comparisons": 192,
+    "unchanged_generation_comparisons": 24,
+    "second_generation_comparisons": 24,
+    "total_exact_state_comparisons": 240,
+    "unexpected_resets": 0
+  },
+  "framebuffer": {
+    "startup_modal_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
+    "normal_ui_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+    "smp_page_sha256": "592a43e29c1f63cca43fa15d899abd671743761ad00f805f78b01a78575a6030",
+    "later_ui_responsive": true
+  },
+  "fresh_runtime_audio_control": {
+    "gate": "AR172_QEMU_LFO2_RETRIGGER_NEGATIVE_GATE",
+    "same_candidate_sha256": true,
+    "completed_services": 64,
+    "wav_frames_observed": 3448654,
+    "wav_pcm_bytes_observed": 13794616,
+    "wav_nonzero_pcm_bytes_observed": 5790,
+    "wav_contains_nonzero_pcm": true,
+    "wav_pcm_sha256": "7b3e6a0a34dc080c8913b0e8d6f54c4000fe4807e81283dd3eb91da158f51540",
+    "reason_separate": "renderer productivity is a companion health control, not an invariant of the free-mode explicit-reset scenario"
+  },
+  "reproducer": "qemu/headless_ui_smoke.py --exercise-runtime-controls --exercise-explicit-reset-matrix",
+  "scope_limit": "This proves the desktop reset-generation handshake and native per-lane state effects under QEMU. It is not a physical timing or hardware-output claim.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

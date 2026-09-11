@@ -23,6 +23,7 @@ try:
     from .panel_event_bridge import (
         PanelLink,
         RuntimeControls,
+        control_to_q31,
         follow_events,
         publish_runtime_controls,
     )
@@ -30,6 +31,7 @@ except ImportError:
     from panel_event_bridge import (
         PanelLink,
         RuntimeControls,
+        control_to_q31,
         follow_events,
         publish_runtime_controls,
     )
@@ -429,6 +431,11 @@ def main() -> None:
         help="prove free-mode note-on and trigger-mode note-off preserve LFO2 state",
     )
     parser.add_argument(
+        "--exercise-explicit-reset-matrix",
+        action="store_true",
+        help="prove desktop reset generations selectively clear native LFO2 state",
+    )
+    parser.add_argument(
         "--capture-audio-wav",
         action="store_true",
         help="capture the bounded renderer tap through QEMU's WAV backend",
@@ -492,6 +499,17 @@ def main() -> None:
             and (args.exercise_retrigger_matrix
                  or args.exercise_active_retrigger)):
         parser.error("select only one retrigger gate")
+    if (args.exercise_explicit_reset_matrix
+            and not args.exercise_runtime_controls):
+        parser.error(
+            "--exercise-explicit-reset-matrix requires "
+            "--exercise-runtime-controls"
+        )
+    if (args.exercise_explicit_reset_matrix
+            and (args.exercise_retrigger_matrix
+                 or args.exercise_retrigger_negative_controls
+                 or args.exercise_active_retrigger)):
+        parser.error("select only one LFO2 state-reset gate")
     if args.capture_audio_wav and args.services_per_trigger < 8:
         parser.error("--capture-audio-wav requires at least 8 services per trigger")
     if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
@@ -593,7 +611,8 @@ def main() -> None:
         if args.exercise_runtime_controls:
             first = RuntimeControls()
             all_lanes_gate = (args.exercise_retrigger_matrix or
-                              args.exercise_retrigger_negative_controls)
+                              args.exercise_retrigger_negative_controls or
+                              args.exercise_explicit_reset_matrix)
             configured_lanes = range(8) if all_lanes_gate else range(1)
             for lane in configured_lanes:
                 first.filter2[lane] = 127
@@ -602,12 +621,14 @@ def main() -> None:
                 first.rate[lane] = 127
                 first.depth[lane] = 32
                 first.enable_mask |= 1 << lane
-                if not args.exercise_retrigger_negative_controls:
+                if not (args.exercise_retrigger_negative_controls or
+                        args.exercise_explicit_reset_matrix):
                     first.trigger_mask |= 1 << lane
                 for parameter, value in (
                     ("filter2", 127), ("waveform", 6), ("mode", 3),
                     ("rate", 127), ("depth", 32), ("enable", 1),
-                    ("trigger", 0 if args.exercise_retrigger_negative_controls
+                    ("trigger", 0 if (args.exercise_retrigger_negative_controls
+                                      or args.exercise_explicit_reset_matrix)
                      else 1),
                 ):
                     if parameter == "filter2":
@@ -618,7 +639,8 @@ def main() -> None:
                         )
             wait_snapshot(controls_file, first.encode(), deadline)
             active_mask = 0x00FF if all_lanes_gate else 0x0001
-            retrigger_mask = (0x0000 if args.exercise_retrigger_negative_controls
+            retrigger_mask = (0x0000 if (args.exercise_retrigger_negative_controls
+                                         or args.exercise_explicit_reset_matrix)
                               else active_mask)
             first_memory = {
                 "filter2_target": wait_hmp_value(
@@ -636,6 +658,8 @@ def main() -> None:
             }
             runtime_transitions.append({
                 "name": (
+                    "all_lanes_explicit_reset_hold"
+                    if args.exercise_explicit_reset_matrix else
                     "all_lanes_free_random_hold"
                     if args.exercise_retrigger_negative_controls else
                     "all_lanes_random_hold" if args.exercise_retrigger_matrix
@@ -737,7 +761,66 @@ def main() -> None:
                         "note_off": note_off,
                     })
 
+            if args.exercise_explicit_reset_matrix:
+                for lane in range(8):
+                    sentinels = seed_lfo2_retrigger_matrix(
+                        monitor_port, gdb_port, deadline
+                    )
+                    emit_event(events_file, "lfo2", f"{lane}:reset", 1)
+                    first.reset_generation[lane] = 1
+                    wait_snapshot(controls_file, first.encode(), deadline)
+                    selective = wait_lfo2_selective_reset(
+                        monitor_port, lane, sentinels, deadline
+                    )
+                    events.append({
+                        "control": f"LFO2 RESET {lane + 1}",
+                        "reset_generation": 1,
+                        "selective_explicit_reset": selective,
+                    })
+
+                preserved_sentinels = seed_lfo2_retrigger_matrix(
+                    monitor_port, gdb_port, deadline
+                )
+                emit_event(events_file, "lfo2", "7:depth", 33)
+                first.depth[7] = 33
+                wait_snapshot(controls_file, first.encode(), deadline)
+                wait_hmp_value(
+                    monitor_port, 0x402B4598, "w",
+                    control_to_q31(33), deadline
+                )
+                unchanged_generation = wait_lfo2_matrix_preserved(
+                    monitor_port, preserved_sentinels, deadline
+                )
+                events.append({
+                    "control": "LFO2 DEPTH 8",
+                    "value": 33,
+                    "unchanged_reset_generations": list(
+                        first.reset_generation
+                    ),
+                    "state_after_unrelated_publication": unchanged_generation,
+                })
+
+                second_sentinels = seed_lfo2_retrigger_matrix(
+                    monitor_port, gdb_port, deadline
+                )
+                emit_event(events_file, "lfo2", "0:reset", 1)
+                first.reset_generation[0] = 2
+                wait_snapshot(controls_file, first.encode(), deadline)
+                second_reset = wait_lfo2_selective_reset(
+                    monitor_port, 0, second_sentinels, deadline
+                )
+                events.append({
+                    "control": "LFO2 RESET 1",
+                    "reset_generation": 2,
+                    "selective_explicit_reset": second_reset,
+                })
+
             second = RuntimeControls()
+            if args.exercise_explicit_reset_matrix:
+                second.reset_generation = [
+                    (generation + 1) & 0xFF
+                    for generation in first.reset_generation
+                ]
             second.filter2[0] = 0
             second.waveform[0] = 4
             second.mode[0] = 2
@@ -759,6 +842,8 @@ def main() -> None:
                         emit_event(
                             events_file, "lfo2", f"{lane}:{parameter}", value
                         )
+                if args.exercise_explicit_reset_matrix:
+                    emit_event(events_file, "lfo2", f"{lane}:reset", 1)
             wait_snapshot(controls_file, second.encode(), deadline)
             second_memory = {
                 "filter2_target": wait_hmp_value(
@@ -774,7 +859,12 @@ def main() -> None:
                 "retrigger_mask": wait_hmp_value(
                     monitor_port, 0x402B4418, "h", 0x0000, deadline),
             }
-            runtime_transitions.append({"name": "sine_half_minimum", **second_memory})
+            runtime_transitions.append({
+                "name": "sine_half_minimum",
+                **second_memory,
+                **({"reset_generations": second.reset_generation}
+                   if args.exercise_explicit_reset_matrix else {}),
+            })
         if (args.exercise_trigger_audio and not args.exercise_active_retrigger
                 and not args.exercise_retrigger_matrix
                 and not args.exercise_retrigger_negative_controls):

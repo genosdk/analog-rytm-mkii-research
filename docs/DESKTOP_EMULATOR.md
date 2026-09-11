@@ -141,6 +141,18 @@ words. All 384 preservation comparisons pass, followed by 64 bounded services,
 nonzero generated PCM and the SMP page. Evidence is in
 `research/AR172_QEMU_LFO2_RETRIGGER_NEGATIVE_GATE.json`.
 
+The explicit desktop-reset matrix drives the drawer's real `lane:reset` JSONL
+event and versioned reset-generation byte for every lane. Each first-generation
+edge clears exactly the selected phase, last-modulation and random-index triplet
+while preserving the other 21 seeded words. Republishing an unrelated lane-8
+depth change with all generations unchanged preserves all 24 words, and a
+second lane-1 generation clears its triplet again. This yields 240 exact state
+comparisons with no false reset; cleanup generations remove the diagnostic
+sentinels and the later SMP page remains responsive. A separate fresh-runtime
+control on the same candidate completes 64 renderer services with nonzero
+generated PCM. Evidence is in
+`research/AR172_QEMU_LFO2_EXPLICIT_RESET_GATE.json`.
+
 This option remains a research clock rather than a physical realtime claim.
 The backpressured 10 ms model has sustained 2,303 completed services while the
 UI remained responsive, but the physical device cadence has not yet been

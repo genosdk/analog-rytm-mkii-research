@@ -100,6 +100,9 @@ and reproducible tooling.
   target triplet while preserving all 21 state words owned by the other lanes.
 - The matching negative matrix proves accepted free-mode note-ons and
   trigger-mode note-offs preserve all 24 LFO2 state words across all lanes.
+- The desktop reset-generation matrix proves eight selective first-generation
+  resets, unchanged-generation idempotence during an unrelated depth update,
+  and a second lane-1 reset: 240 exact state comparisons with no false reset.
 - The packaged macOS shell now uses a hardware-proportional native panel with
   persistent page/trigger LEDs and keyboard-accessible A-I encoders. Its
   **FILTER 2** drawer publishes eight absolute runtime controls through an
