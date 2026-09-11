@@ -347,6 +347,11 @@ class DesktopPanelInputTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("AR_MK2_TRACK_LEVEL_STATE_OUT", source)
         self.assertIn("AR_MK2_TRIG_STATE_OUT", source)
+        smoke_source = (ROOT / "qemu" / "headless_ui_smoke.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("--exercise-track-level", smoke_source)
+        self.assertIn('changed != [2]', smoke_source)
 
 
 @unittest.skipUnless(

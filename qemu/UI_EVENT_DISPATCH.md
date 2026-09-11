@@ -78,6 +78,8 @@ The selection/readback link is causal: Trigs 1–12 selected indices 0–11.
 After Trig 3 selected index 2, an encoder-I burst changed only bank word 2 from
 `0x6400` to `0x7F00`; the other 12 Level words were unchanged. Trig 13 left
 index 11 unchanged, consistent with FX selection being a separate control.
+The opt-in `headless_ui_smoke.py --exercise-track-level` path repeats these
+assertions and then verifies that a later SMP-page render is still responsive.
 
 ## Current target
 

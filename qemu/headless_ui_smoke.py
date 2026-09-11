@@ -143,6 +143,32 @@ def changed_words(before: bytes, after: bytes, base: int) -> list[dict[str, str]
     return changes
 
 
+def read_track_level_state(path: Path) -> tuple[int, list[int]] | None:
+    try:
+        data = path.read_bytes()
+    except FileNotFoundError:
+        return None
+    if len(data) != 30:
+        return None
+    selected = int.from_bytes(data[:4], "big")
+    levels = [
+        int.from_bytes(data[offset:offset + 2], "big")
+        for offset in range(4, 30, 2)
+    ]
+    if selected >= len(levels):
+        return None
+    return selected, levels
+
+
+def wait_track_level_state(path: Path, deadline: float, predicate):
+    while time.monotonic() < deadline:
+        state = read_track_level_state(path)
+        if state is not None and predicate(state):
+            return state
+        time.sleep(0.03)
+    raise TimeoutError("track-level state did not reach the expected value")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--qemu", type=Path, required=True)
@@ -165,6 +191,11 @@ def main() -> None:
         "--exercise-encoder",
         action="store_true",
         help="send signed encoder-A probe vectors and require a framebuffer change",
+    )
+    parser.add_argument(
+        "--exercise-track-level",
+        action="store_true",
+        help="select Trig 3 and prove encoder I mutates only track-3 Level",
     )
     parser.add_argument(
         "--trigger-count",
@@ -217,6 +248,7 @@ def main() -> None:
     os.mkfifo(panel_in)
     os.mkfifo(panel_out)
     frame = runtime / "framebuffer.bin"
+    track_levels = runtime / "track-level-state.bin"
     log = runtime / "qemu.log"
     monitor_port = unused_local_port()
     diagnostics = runtime / "monitor.txt"
@@ -224,6 +256,8 @@ def main() -> None:
     env["AR_MK2_MOCK_CALIBRATION"] = "1"
     env["AR_MK2_MOCK_FACTORY_STATE"] = "1"
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
+    if args.exercise_track_level:
+        env["AR_MK2_TRACK_LEVEL_STATE_OUT"] = str(track_levels)
     if args.mock_audio_service:
         env["AR_MK2_MOCK_AUDIO_SERVICE"] = "1"
     else:
@@ -262,6 +296,45 @@ def main() -> None:
         ]
         encoder_frame = None
         encoder_state_changes = None
+        track_level_result = None
+        if args.exercise_track_level:
+            initial_index, initial_levels = wait_track_level_state(
+                track_levels, deadline, lambda state: state[0] < 13
+            )
+            panel_writer.write(bytes.fromhex("23 04"))
+            time.sleep(0.08)
+            panel_writer.write(bytes.fromhex("23 00"))
+            selected_index, selected_levels = wait_track_level_state(
+                track_levels, deadline, lambda state: state[0] == 2
+            )
+            for _ in range(6):
+                panel_writer.write(bytes.fromhex("38 7f"))
+                time.sleep(0.1)
+            final_index, final_levels = wait_track_level_state(
+                track_levels,
+                deadline,
+                lambda state: state[0] == 2 and state[1][2] != selected_levels[2],
+            )
+            changed = [
+                index for index, (old, new) in enumerate(
+                    zip(selected_levels, final_levels)
+                ) if old != new
+            ]
+            if changed != [2]:
+                raise AssertionError(f"unexpected Level mutations: {changed}")
+            track_level_result = {
+                "initial_index": initial_index,
+                "selected_index": selected_index,
+                "final_index": final_index,
+                "changed_words": changed,
+                "before": f"0x{selected_levels[2]:04X}",
+                "after": f"0x{final_levels[2]:04X}",
+            }
+            events.append({
+                "control": "TRIG 3 + ENCODER I",
+                "selection": "23 04 / 23 00",
+                "encoder_frames": 6,
+            })
         if args.exercise_encoder:
             state_base = 0x80005F00
             state_size = 0x8800
@@ -341,6 +414,7 @@ def main() -> None:
             "normal_ui": metrics(normal_ui),
             "encoder_frame": metrics(encoder_frame) if encoder_frame else None,
             "encoder_state_changes": encoder_state_changes,
+            "track_level": track_level_result,
             "smp_page": metrics(smp_page),
             "firmware_embedded": False,
         }, indent=2))

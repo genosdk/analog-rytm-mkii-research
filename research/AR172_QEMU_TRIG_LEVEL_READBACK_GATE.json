@@ -21,6 +21,16 @@
     "causal_probe": "Trig 3 selected index 2, then encoder I changed only level-bank word 2",
     "causal_mutation": "word 2: 0x6400 -> 0x7F00; all other 12 words unchanged"
   },
+  "regression": {
+    "harness": "qemu/headless_ui_smoke.py --exercise-track-level",
+    "result": "PASS",
+    "assertions": [
+      "Trig 3 changes selected index from 0 to 2",
+      "six native encoder-I frames change Level word 2 from 0x6400 to 0x7F00",
+      "the other 12 Level words remain unchanged",
+      "the later SMP-page framebuffer remains responsive"
+    ]
+  },
   "trig": {
     "parameter_ids_A_through_H": [29, 30, 31, 38, 34, 35, 36, 37],
     "generic_dispatch": "0x400A64C2",
