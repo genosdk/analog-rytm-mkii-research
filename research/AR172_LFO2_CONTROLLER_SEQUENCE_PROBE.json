@@ -4,7 +4,7 @@
     "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
     "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
   },
-  "controller_candidate_sha256": "ec0970716103880c60d87b24afaf0eb6a06a45e42248d5c4761143f2383413d5",
+  "controller_candidate_sha256": "b5413b833c37f5007f8cb2230f40d48ea80b8afddfffc8d4318e60f78a729e0c",
   "sequence": {
     "callbacks": [
       {

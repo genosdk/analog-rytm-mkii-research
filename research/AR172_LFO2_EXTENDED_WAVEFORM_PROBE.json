@@ -6,7 +6,7 @@
   },
   "disabled_candidate": {
     "path": "temporary execution image",
-    "sha256": "ec0970716103880c60d87b24afaf0eb6a06a45e42248d5c4761143f2383413d5",
+    "sha256": "b5413b833c37f5007f8cb2230f40d48ea80b8afddfffc8d4318e60f78a729e0c",
     "inherited": {
       "note_trigger_reset": {
         "publication": {
@@ -184,18 +184,18 @@
         },
         "epilogue_patch": "0x40118AE6",
         "original": "46c14cd7041c",
-        "replacement": "4eb9402b2f5c",
+        "replacement": "4ef9402b2f5c",
         "hook": [
           "0x402B2F5C",
-          "0x402B2FB4"
+          "0x402B2FB6"
         ],
-        "hook_bytes": 88,
+        "hook_bytes": 90,
         "symbols": {
           "entry": "0x402B2F5C",
-          "epilogue": "0x402B2FA8"
+          "epilogue": "0x402B2FAA"
         },
         "armed": false,
-        "changed_byte_positions": 2125
+        "changed_byte_positions": 2127
       },
       "control_shim": [
         "0x402B2ECC",
@@ -219,7 +219,7 @@
         "3": "hold"
       },
       "armed": false,
-      "changed_byte_positions": 2338
+      "changed_byte_positions": 2340
     },
     "wave_shim": [
       "0x402B2ECC",
@@ -246,11 +246,11 @@
       "5": "exponential",
       "6": "deterministic random"
     },
-    "changed_byte_positions": 4458,
+    "changed_byte_positions": 4460,
     "armed": false
   },
   "armed_emulation_probe": {
-    "sha256": "d603d2ff3da50ebc71f87ca571f5b371d27996a62eed67d7d5ffdac0704d1bcf",
+    "sha256": "ba92042551d7bc4796ce63f2db7cf6ffc71d7004eb4237081dca7d9bee779d04",
     "inherited": {
       "note_trigger_reset": {
         "publication": {
@@ -428,18 +428,18 @@
         },
         "epilogue_patch": "0x40118AE6",
         "original": "46c14cd7041c",
-        "replacement": "4eb9402b2f5c",
+        "replacement": "4ef9402b2f5c",
         "hook": [
           "0x402B2F5C",
-          "0x402B2FB4"
+          "0x402B2FB6"
         ],
-        "hook_bytes": 88,
+        "hook_bytes": 90,
         "symbols": {
           "entry": "0x402B2F5C",
-          "epilogue": "0x402B2FA8"
+          "epilogue": "0x402B2FAA"
         },
         "armed": true,
-        "changed_byte_positions": 2127
+        "changed_byte_positions": 2129
       },
       "control_shim": [
         "0x402B2ECC",
@@ -463,7 +463,7 @@
         "3": "hold"
       },
       "armed": true,
-      "changed_byte_positions": 2340
+      "changed_byte_positions": 2342
     },
     "wave_shim": [
       "0x402B2ECC",
@@ -490,7 +490,7 @@
       "5": "exponential",
       "6": "deterministic random"
     },
-    "changed_byte_positions": 4460,
+    "changed_byte_positions": 4462,
     "armed": true,
     "artifact_retained": false
   },

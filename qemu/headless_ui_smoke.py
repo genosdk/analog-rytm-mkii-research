@@ -17,9 +17,36 @@ import subprocess
 import tempfile
 import threading
 import time
+import wave
+
+try:
+    from .panel_event_bridge import (
+        PanelLink,
+        RuntimeControls,
+        follow_events,
+        publish_runtime_controls,
+    )
+except ImportError:
+    from panel_event_bridge import (
+        PanelLink,
+        RuntimeControls,
+        follow_events,
+        publish_runtime_controls,
+    )
 
 FRAME_BYTES = 1024
 IDENTITY_REPLY = bytes.fromhex("70 07 05 05 00")
+
+
+class PipeWriterSocket:
+    """Small sendall adapter so the desktop PanelLink can drive a QEMU pipe."""
+
+    def __init__(self, writer) -> None:
+        self.writer = writer
+
+    def sendall(self, data: bytes) -> None:
+        self.writer.write(data)
+        self.writer.flush()
 
 
 def digest(data: bytes) -> str:
@@ -97,7 +124,10 @@ def hmp_command(port: int, command: str, timeout: float = 2.0) -> str:
             sock.sendall(command.encode("ascii") + b"\n")
             while True:
                 try:
-                    chunks.append(sock.recv(4096))
+                    chunk = sock.recv(4096)
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
                 except TimeoutError:
                     break
             return b"".join(chunks).decode("utf-8", errors="replace")
@@ -106,6 +136,77 @@ def hmp_command(port: int, command: str, timeout: float = 2.0) -> str:
         finally:
             sock.close()
     raise TimeoutError(f"monitor socket unavailable on port {port}")
+
+
+def emit_event(path: Path, kind: str, name: str, value) -> None:
+    record = {"t": time.time(), "kind": kind, "name": name, "value": value}
+    with path.open("a", encoding="utf-8") as stream:
+        stream.write(json.dumps(record, separators=(",", ":")) + "\n")
+
+
+def capture_pipe(reader_path: Path, output_path: Path) -> None:
+    """Drain UART8 without backpressure while retaining failure diagnostics."""
+    with (reader_path.open("rb", buffering=0) as reader,
+          output_path.open("wb") as output):
+        while chunk := reader.read(4096):
+            output.write(chunk)
+
+
+def wait_snapshot(path: Path, expected: bytes, deadline: float) -> None:
+    while time.monotonic() < deadline:
+        try:
+            if path.read_bytes() == expected:
+                return
+        except FileNotFoundError:
+            pass
+        time.sleep(0.03)
+    raise TimeoutError("desktop event follower did not publish expected snapshot")
+
+
+def wait_hmp_value(port: int, address: int, width: str,
+                   expected: int, deadline: float) -> str:
+    digits = 4 if width == "h" else 8
+    marker = f"0x{expected:0{digits}x}"
+    command = f"xp /1{width}x 0x{address:08x}"
+    last = ""
+    while time.monotonic() < deadline:
+        last = hmp_command(port, command)
+        if marker in last.lower():
+            return marker
+        time.sleep(0.03)
+    raise TimeoutError(f"{command} did not reach {marker}: {last!r}")
+
+
+def wav_metrics(path: Path) -> dict[str, int | str | bool]:
+    header_repaired = False
+    with path.open("r+b") as stream:
+        header = stream.read(44)
+        data_bytes = path.stat().st_size - 44
+        if (header[:4] == b"RIFF" and header[8:12] == b"WAVE" and
+                header[36:40] == b"data" and
+                header[4:8] == bytes(4) and header[40:44] == bytes(4) and
+                0 <= data_bytes <= 0xFFFFFFFF - 36):
+            # QEMU's WAV backend leaves placeholder sizes behind when the
+            # monitor quits the process.  The PCM payload is complete, so
+            # close the container deterministically before parsing it.
+            stream.seek(4)
+            stream.write((data_bytes + 36).to_bytes(4, "little"))
+            stream.seek(40)
+            stream.write(data_bytes.to_bytes(4, "little"))
+            header_repaired = True
+    with wave.open(str(path), "rb") as stream:
+        frames = stream.readframes(stream.getnframes())
+        return {
+            "header_repaired": header_repaired,
+            "channels": stream.getnchannels(),
+            "sample_width_bytes": stream.getsampwidth(),
+            "sample_rate_hz": stream.getframerate(),
+            "frames": stream.getnframes(),
+            "pcm_bytes": len(frames),
+            "nonzero_pcm_bytes": sum(value != 0 for value in frames),
+            "contains_nonzero_pcm": any(frames),
+            "sha256": digest(frames),
+        }
 
 
 def main() -> None:
@@ -125,6 +226,16 @@ def main() -> None:
         "--exercise-trigger-audio",
         action="store_true",
         help="press and release Trig 1 before the SMP-page responsiveness check",
+    )
+    parser.add_argument(
+        "--exercise-runtime-controls",
+        action="store_true",
+        help="exercise desktop Filter2/LFO2 events against a full runtime candidate",
+    )
+    parser.add_argument(
+        "--capture-audio-wav",
+        action="store_true",
+        help="capture the bounded renderer tap through QEMU's WAV backend",
     )
     parser.add_argument(
         "--trigger-count",
@@ -157,6 +268,10 @@ def main() -> None:
         parser.error("--services-per-trigger must be at least 1")
     if args.minimum_audio_services < 0:
         parser.error("--minimum-audio-services cannot be negative")
+    if args.capture_audio_wav and not args.exercise_trigger_audio:
+        parser.error("--capture-audio-wav requires --exercise-trigger-audio")
+    if args.capture_audio_wav and args.services_per_trigger < 8:
+        parser.error("--capture-audio-wav requires at least 8 services per trigger")
     if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
         args.qemu_debug = f"unimp,{args.qemu_debug}"
 
@@ -169,9 +284,14 @@ def main() -> None:
     panel_base = runtime / "panel"
     panel_in = runtime / "panel.in"
     panel_out = runtime / "panel.out"
+    panel_capture = runtime / "panel-uart8.bin"
     os.mkfifo(panel_in)
     os.mkfifo(panel_out)
     frame = runtime / "framebuffer.bin"
+    events_file = runtime / "panel-events.jsonl"
+    events_file.touch()
+    controls_file = runtime / "runtime-controls.bin"
+    audio_wav = runtime / "bounded-renderer.wav"
     log = runtime / "qemu.log"
     monitor_port = unused_local_port()
     diagnostics = runtime / "monitor.txt"
@@ -179,6 +299,21 @@ def main() -> None:
     env["AR_MK2_MOCK_CALIBRATION"] = "1"
     env["AR_MK2_MOCK_FACTORY_STATE"] = "1"
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
+    if args.exercise_runtime_controls:
+        publish_runtime_controls(controls_file, RuntimeControls())
+        env["AR_MK2_FILTER2_CONTROL_IN"] = str(controls_file)
+    else:
+        env.pop("AR_MK2_FILTER2_CONTROL_IN", None)
+    if args.exercise_trigger_audio:
+        env["AR_MK2_AUDIO_TRIGGER_SERVICE"] = "1"
+    else:
+        env.pop("AR_MK2_AUDIO_TRIGGER_SERVICE", None)
+    if args.capture_audio_wav:
+        env["AR_MK2_AUDIO_TAP"] = "1"
+        env["AR_MK2_MOCK_PROJECT_SAMPLE"] = "1"
+    else:
+        env.pop("AR_MK2_AUDIO_TAP", None)
+        env.pop("AR_MK2_MOCK_PROJECT_SAMPLE", None)
     if args.mock_audio_service:
         env["AR_MK2_MOCK_AUDIO_SERVICE"] = "1"
     else:
@@ -190,6 +325,8 @@ def main() -> None:
         "-monitor", f"tcp:127.0.0.1:{monitor_port},server=on,wait=off",
         "-d", args.qemu_debug, "-D", str(log),
     ]
+    if args.capture_audio_wav:
+        command.extend(("-audio", f"wav,path={audio_wav}"))
 
     proc: subprocess.Popen | None = None
     panel_writer = None
@@ -198,26 +335,104 @@ def main() -> None:
         deadline = started + args.timeout
         proc = subprocess.Popen(command, env=env)
         threading.Thread(
-            target=lambda: panel_out.open("rb", buffering=0).read(),
+            target=capture_pipe,
+            args=(panel_out, panel_capture),
             daemon=True,
         ).start()
         panel_writer = panel_in.open("wb", buffering=0)
         panel_writer.write(IDENTITY_REPLY)
+        panel_link = PanelLink(PipeWriterSocket(panel_writer), verbose=False)
+        threading.Thread(
+            target=follow_events,
+            args=(
+                events_file,
+                panel_link,
+                True,
+                controls_file if args.exercise_runtime_controls else None,
+            ),
+            daemon=True,
+        ).start()
+        time.sleep(0.1)
         time.sleep(args.boot_seconds)
         before = wait_frame(frame, deadline)
-        panel_writer.write(bytes.fromhex("24 01"))
+        emit_event(events_file, "button", "NO", "press")
         time.sleep(0.08)
-        panel_writer.write(bytes.fromhex("24 00"))
+        emit_event(events_file, "button", "NO", "release")
         time.sleep(args.event_settle_seconds)
         normal_ui = wait_frame(frame, deadline, different_from=before)
         events = [
             {"control": "NO", "press": "24 01", "release": "24 00"},
         ]
+        runtime_transitions = []
+        if args.exercise_runtime_controls:
+            first = RuntimeControls()
+            first.filter2[0] = 127
+            first.waveform[0] = 6
+            first.mode[0] = 3
+            first.rate[0] = 127
+            first.depth[0] = 32
+            first.enable_mask = 1
+            first.trigger_mask = 1
+            for parameter, value in (
+                ("filter2", 127), ("waveform", 6), ("mode", 3),
+                ("rate", 127), ("depth", 32), ("enable", 1), ("trigger", 1),
+            ):
+                if parameter == "filter2":
+                    emit_event(events_file, "filter2", "0", value)
+                else:
+                    emit_event(events_file, "lfo2", f"0:{parameter}", value)
+            wait_snapshot(controls_file, first.encode(), deadline)
+            first_memory = {
+                "filter2_target": wait_hmp_value(
+                    monitor_port, 0x402B442C, "w", 0x7FFFFFFF, deadline),
+                "config": wait_hmp_value(
+                    monitor_port, 0x402B4434, "w", 0x0000001E, deadline),
+                "increment": wait_hmp_value(
+                    monitor_port, 0x402B4524, "w", 0x11111111, deadline),
+                "depth": wait_hmp_value(
+                    monitor_port, 0x402B4528, "w", 0x20408102, deadline),
+                "enable_mask": wait_hmp_value(
+                    monitor_port, 0x402B440E, "h", 0x0001, deadline),
+                "retrigger_mask": wait_hmp_value(
+                    monitor_port, 0x402B4418, "h", 0x0001, deadline),
+            }
+            runtime_transitions.append({"name": "maximum_random_hold", **first_memory})
+
+            second = RuntimeControls()
+            second.filter2[0] = 0
+            second.waveform[0] = 4
+            second.mode[0] = 2
+            second.rate[0] = 0
+            second.depth[0] = 127
+            for parameter, value in (
+                ("filter2", 0), ("waveform", 4), ("mode", 2),
+                ("rate", 0), ("depth", 127), ("enable", 0), ("trigger", 0),
+            ):
+                if parameter == "filter2":
+                    emit_event(events_file, "filter2", "0", value)
+                else:
+                    emit_event(events_file, "lfo2", f"0:{parameter}", value)
+            wait_snapshot(controls_file, second.encode(), deadline)
+            second_memory = {
+                "filter2_target": wait_hmp_value(
+                    monitor_port, 0x402B442C, "w", 0x00000000, deadline),
+                "config": wait_hmp_value(
+                    monitor_port, 0x402B4434, "w", 0x00000014, deadline),
+                "increment": wait_hmp_value(
+                    monitor_port, 0x402B4524, "w", 0x00006FD9, deadline),
+                "depth": wait_hmp_value(
+                    monitor_port, 0x402B4528, "w", 0x7FFFFFFF, deadline),
+                "enable_mask": wait_hmp_value(
+                    monitor_port, 0x402B440E, "h", 0x0000, deadline),
+                "retrigger_mask": wait_hmp_value(
+                    monitor_port, 0x402B4418, "h", 0x0000, deadline),
+            }
+            runtime_transitions.append({"name": "sine_half_minimum", **second_memory})
         if args.exercise_trigger_audio:
             for index in range(args.trigger_count):
-                panel_writer.write(bytes.fromhex("23 01"))
+                emit_event(events_file, "trig", "1", "press")
                 time.sleep(0.08)
-                panel_writer.write(bytes.fromhex("23 00"))
+                emit_event(events_file, "trig", "1", "release")
                 wait_log_count(
                     log,
                     "AR-MK2 AUDIO: completed vector 191 service",
@@ -240,14 +455,21 @@ def main() -> None:
                 deadline,
             )
         time.sleep(1.0)
-        panel_writer.write(bytes.fromhex("25 10"))
+        emit_event(events_file, "button", "SMP", "press")
         time.sleep(0.08)
-        panel_writer.write(bytes.fromhex("25 00"))
+        emit_event(events_file, "button", "SMP", "release")
         time.sleep(args.event_settle_seconds)
         smp_page = wait_frame(frame, deadline, different_from=normal_ui)
         events.append(
             {"control": "SMP", "press": "25 10", "release": "25 00"}
         )
+        audio_metrics = None
+        if args.capture_audio_wav:
+            hmp_command(monitor_port, "quit")
+            proc.wait(3.0)
+            audio_metrics = wav_metrics(audio_wav)
+            if not audio_metrics["contains_nonzero_pcm"]:
+                raise RuntimeError("bounded renderer WAV contains no nonzero PCM")
         print(json.dumps({
             "result": "PASS",
             "events": events,
@@ -256,6 +478,8 @@ def main() -> None:
                 args.trigger_count * args.services_per_trigger
                 if args.exercise_trigger_audio else 0,
             ),
+            "runtime_control_transitions": runtime_transitions,
+            "audio_wav": audio_metrics,
             "startup_modal": metrics(before),
             "normal_ui": metrics(normal_ui),
             "smp_page": metrics(smp_page),

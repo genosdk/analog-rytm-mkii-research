@@ -6,7 +6,7 @@
   },
   "disabled_candidate": {
     "path": "temporary execution image",
-    "sha256": "16b6395c3328815f1c37f73d011fe0758638472d4bfc588d6a65c8dac24b359e",
+    "sha256": "b8f741bab4dbad465571f4c6bd963bf2f0f96c061472e24c6bbdfef13f057465",
     "publication": {
       "binding": {
         "publication": {
@@ -182,21 +182,21 @@
     },
     "epilogue_patch": "0x40118AE6",
     "original": "46c14cd7041c",
-    "replacement": "4eb9402b2f5c",
+    "replacement": "4ef9402b2f5c",
     "hook": [
       "0x402B2F5C",
-      "0x402B2FB4"
+      "0x402B2FB6"
     ],
-    "hook_bytes": 88,
+    "hook_bytes": 90,
     "symbols": {
       "entry": "0x402B2F5C",
-      "epilogue": "0x402B2FA8"
+      "epilogue": "0x402B2FAA"
     },
     "armed": false,
-    "changed_byte_positions": 2125
+    "changed_byte_positions": 2127
   },
   "armed_emulation_probe": {
-    "sha256": "7f7cab6a9e2df0e049b6902ea6fdbae0fb07e8743a61e2b09fc32f592120c7e3",
+    "sha256": "49f426af7ab2d223c888b022a041ec72911fa367bae7aceb21d894d9e60516be",
     "publication": {
       "binding": {
         "publication": {
@@ -372,25 +372,25 @@
     },
     "epilogue_patch": "0x40118AE6",
     "original": "46c14cd7041c",
-    "replacement": "4eb9402b2f5c",
+    "replacement": "4ef9402b2f5c",
     "hook": [
       "0x402B2F5C",
-      "0x402B2FB4"
+      "0x402B2FB6"
     ],
-    "hook_bytes": 88,
+    "hook_bytes": 90,
     "symbols": {
       "entry": "0x402B2F5C",
-      "epilogue": "0x402B2FA8"
+      "epilogue": "0x402B2FAA"
     },
     "armed": true,
-    "changed_byte_positions": 2127,
+    "changed_byte_positions": 2129,
     "artifact_retained": false
   },
   "note_on_mode_matrix": [
     {
       "track": 0,
       "mode": "trigger",
-      "constructor_instructions": 130,
+      "constructor_instructions": 131,
       "phase_after": "0x00000000",
       "last_after": "0x00000000",
       "random_index_after": 0,
@@ -399,7 +399,7 @@
     {
       "track": 1,
       "mode": "free",
-      "constructor_instructions": 120,
+      "constructor_instructions": 121,
       "phase_after": "0xA0000001",
       "last_after": "0xB0000001",
       "random_index_after": 97,
@@ -408,7 +408,7 @@
     {
       "track": 2,
       "mode": "trigger",
-      "constructor_instructions": 130,
+      "constructor_instructions": 131,
       "phase_after": "0x00000000",
       "last_after": "0x00000000",
       "random_index_after": 0,
@@ -417,7 +417,7 @@
     {
       "track": 3,
       "mode": "free",
-      "constructor_instructions": 120,
+      "constructor_instructions": 121,
       "phase_after": "0xA0000003",
       "last_after": "0xB0000003",
       "random_index_after": 99,
@@ -426,7 +426,7 @@
     {
       "track": 4,
       "mode": "trigger",
-      "constructor_instructions": 130,
+      "constructor_instructions": 131,
       "phase_after": "0x00000000",
       "last_after": "0x00000000",
       "random_index_after": 0,
@@ -435,7 +435,7 @@
     {
       "track": 5,
       "mode": "free",
-      "constructor_instructions": 120,
+      "constructor_instructions": 121,
       "phase_after": "0xA0000005",
       "last_after": "0xB0000005",
       "random_index_after": 101,
@@ -444,7 +444,7 @@
     {
       "track": 6,
       "mode": "trigger",
-      "constructor_instructions": 130,
+      "constructor_instructions": 131,
       "phase_after": "0x00000000",
       "last_after": "0x00000000",
       "random_index_after": 0,
@@ -453,7 +453,7 @@
     {
       "track": 7,
       "mode": "free",
-      "constructor_instructions": 120,
+      "constructor_instructions": 121,
       "phase_after": "0xA0000007",
       "last_after": "0xB0000007",
       "random_index_after": 103,
@@ -479,7 +479,7 @@
         "a": true,
         "sr": true
       },
-      "added_instructions": 5
+      "added_instructions": 4
     },
     {
       "event": "note_off",
@@ -489,7 +489,7 @@
         "a": true,
         "sr": true
       },
-      "added_instructions": 5
+      "added_instructions": 4
     }
   ],
   "conclusion": "The authentic stock note constructor now detours only at its shared epilogue. Note-on resets phase and last modulation for each trigger-mode audio lane, free-mode note-on preserves them, and note-off never resets. The hook then executes the displaced stock epilogue exactly.",

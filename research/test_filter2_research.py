@@ -769,6 +769,12 @@ class Lfo2CpuIntegrationProbeTests(StockProbeTest):
         self.assertTrue(result["published_control_to_audio"]["oracle_match"])
 
     def test_note_trigger_reset_and_four_base_waveforms(self):
+        from lfo2_note_trigger_reset_probe import CALLSITE_PATCH, NOTE_HOOK_BODY
+
+        self.assertEqual(CALLSITE_PATCH[:2], bytes.fromhex("4ef9"))
+        self.assertIn(bytes.fromhex("2628000c0c8300000001"), NOTE_HOOK_BODY)
+        self.assertIn(bytes.fromhex("3639402b44180503"), NOTE_HOOK_BODY)
+        self.assertNotIn(bytes.fromhex("0ca800000001000c"), NOTE_HOOK_BODY)
         note = probe_lfo2_note_trigger_reset(STOCK, EMULATOR)
         self.assertEqual(note["result"], "PASS")
         self.assertEqual(len(note["note_on_mode_matrix"]), 8)

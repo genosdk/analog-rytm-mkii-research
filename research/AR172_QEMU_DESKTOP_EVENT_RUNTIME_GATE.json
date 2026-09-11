@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_DESKTOP_EVENT_RUNTIME_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_DESKTOP_EVENTS_ATOMIC_CONTROLS_BOUNDED_AUDIO_UI_RESPONSIVE",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "runtime": {
+    "qemu_version": "11.1.50",
+    "firmware": "caller-supplied official OS 1.72 MAIN",
+    "candidate": "temporary non-flashable Filter2/LFO2 runtime image",
+    "candidate_sha256": "ba92042551d7bc4796ce63f2db7cf6ffc71d7004eb4237081dca7d9bee779d04",
+    "firmware_embedded": false,
+    "paid_ci_used": false
+  },
+  "desktop_path": {
+    "transport": "desktop JSONL -> panel_event_bridge.follow_events -> UART8 pipe",
+    "events": ["NO press/release", "Filter2/LFO2 controls", "Trig 1 press/release", "SMP press/release"],
+    "framebuffer_states": ["startup modal", "normal UI", "SMP page"],
+    "later_ui_responsive": true
+  },
+  "atomic_control_transitions": [
+    {
+      "name": "maximum_random_hold",
+      "filter2_target": "0x7FFFFFFF",
+      "config": "0x0000001E",
+      "increment": "0x11111111",
+      "depth": "0x20408102",
+      "enable_mask": "0x0001",
+      "retrigger_mask": "0x0001"
+    },
+    {
+      "name": "sine_half_minimum",
+      "filter2_target": "0x00000000",
+      "config": "0x00000014",
+      "increment": "0x00006FD9",
+      "depth": "0x7FFFFFFF",
+      "enable_mask": "0x0000",
+      "retrigger_mask": "0x0000"
+    }
+  ],
+  "bounded_audio": {
+    "trigger_source": "Trig 1 rising edge",
+    "scheduled_vector": 191,
+    "completed_services": 8,
+    "continuous_service_clock": false,
+    "wav_channels": 2,
+    "wav_sample_width_bytes": 2,
+    "tap_requested_rate_hz": 48000,
+    "wav_backend_rate_hz": 44100,
+    "wav_frames_observed": 745227,
+    "wav_pcm_bytes_observed": 2980908,
+    "wav_nonzero_pcm_bytes_observed": 642,
+    "wav_contains_nonzero_pcm": true,
+    "wav_pcm_sha256": "12ed07c9a2585f4984c4c2d5e5552af595d4d3f397bd218a0e26c54a78d255d3",
+    "fixture": "emulator-generated QEMU TEST sample; no proprietary PCM"
+  },
+  "fault_found_and_fixed": {
+    "symptom": "Trig 1 caused an IPL7 UART8 fault-report flood and vector 191 could not enter.",
+    "fault_pc": "0x402B2F66",
+    "cause": "The note hook used a memory-destination CMPI.L form accepted by MiniColdFire but unsupported by the live ColdFire core path.",
+    "correction": "Use a stack-neutral absolute JMP detour, MOVE.L 12(A0),D3 plus CMPI.L #1,D3, and MOVE.W mask,D3 plus BTST D2,D3."
+  },
+  "reproducer": "qemu/headless_ui_smoke.py --exercise-runtime-controls --exercise-trigger-audio --capture-audio-wav",
+  "scope_limit": "This proves desktop transport, live shadow-state ingestion, bounded renderer interrupt lifecycle, nonzero generated-sample WAV transport, and subsequent UI responsiveness. It does not prove physical hardware timing or sustained realtime playback.",
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "safety": "No firmware, project data, factory sample names, extracted MAIN, or proprietary PCM is committed."
+}

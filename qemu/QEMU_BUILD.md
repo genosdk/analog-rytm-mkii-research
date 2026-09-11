@@ -108,6 +108,14 @@ Add `--exercise-trigger-audio` with `AR_MK2_AUDIO_TRIGGER_SERVICE=1` to verify
 that a finite Trig-1 audio-service budget drains and the UI still accepts the
 following SMP-page event.
 
+For a full runtime-candidate gate, add `--exercise-runtime-controls` and
+`--capture-audio-wav`. The harness drives the same JSON event follower as the
+desktop GUI, verifies two exact 108-byte control snapshots in live guest
+memory, drains all eight trigger-scheduled renderer services, and closes a WAV
+capture. The capture mode enables the non-proprietary generated `QEMU TEST`
+fixture and requires nonzero PCM; it rejects budgets below the verified eight
+services per trigger.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

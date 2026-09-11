@@ -118,8 +118,9 @@ class RuntimeControls:
 
 
 class PanelLink:
-    def __init__(self, sock: socket.socket) -> None:
+    def __init__(self, sock: socket.socket, verbose: bool = True) -> None:
         self.sock = sock
+        self.verbose = verbose
         self.lock = threading.Lock()
         self.rx = bytearray()
         self.identity_replied = False
@@ -128,7 +129,8 @@ class PanelLink:
     def send(self, data: bytes, label: str = "host -> firmware") -> None:
         with self.lock:
             self.sock.sendall(data)
-        print(f"{label}: {data.hex(' ')}", flush=True)
+        if self.verbose:
+            print(f"{label}: {data.hex(' ')}", flush=True)
 
     def reader(self) -> None:
         self.sock.settimeout(0.1)
@@ -141,7 +143,8 @@ class PanelLink:
                 return
             if not data:
                 return
-            print(f"firmware -> panel: {data.hex(' ')}", flush=True)
+            if self.verbose:
+                print(f"firmware -> panel: {data.hex(' ')}", flush=True)
             self.rx.extend(data)
             if not self.identity_replied and IDENTITY_QUERY in self.rx:
                 self.send(IDENTITY_REPLY, "panel identity -> firmware")

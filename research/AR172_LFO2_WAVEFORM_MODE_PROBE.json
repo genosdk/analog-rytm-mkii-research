@@ -6,7 +6,7 @@
   },
   "disabled_candidate": {
     "path": "temporary execution image",
-    "sha256": "2e44e4a66d053171b79b6fed1b0dd00d30589eeaf6a186c6a354c43e044ac392",
+    "sha256": "9b8646acefde4c4e517d5b73eedc6b32f375124ca273f1e060670b084bc5515f",
     "note_trigger_reset": {
       "publication": {
         "binding": {
@@ -183,18 +183,18 @@
       },
       "epilogue_patch": "0x40118AE6",
       "original": "46c14cd7041c",
-      "replacement": "4eb9402b2f5c",
+      "replacement": "4ef9402b2f5c",
       "hook": [
         "0x402B2F5C",
-        "0x402B2FB4"
+        "0x402B2FB6"
       ],
-      "hook_bytes": 88,
+      "hook_bytes": 90,
       "symbols": {
         "entry": "0x402B2F5C",
-        "epilogue": "0x402B2FA8"
+        "epilogue": "0x402B2FAA"
       },
       "armed": false,
-      "changed_byte_positions": 2125
+      "changed_byte_positions": 2127
     },
     "control_shim": [
       "0x402B2ECC",
@@ -218,10 +218,10 @@
       "3": "hold"
     },
     "armed": false,
-    "changed_byte_positions": 2338
+    "changed_byte_positions": 2340
   },
   "armed_emulation_probe": {
-    "sha256": "e6bf7aab380d7a8a2294c5eb5dc83017d73ae71b77d808ce6a8667449affdd72",
+    "sha256": "6c484008844b36c45ae68aea72c8a3283975be3359a3f12ab0cb665bc041a1e1",
     "note_trigger_reset": {
       "publication": {
         "binding": {
@@ -398,18 +398,18 @@
       },
       "epilogue_patch": "0x40118AE6",
       "original": "46c14cd7041c",
-      "replacement": "4eb9402b2f5c",
+      "replacement": "4ef9402b2f5c",
       "hook": [
         "0x402B2F5C",
-        "0x402B2FB4"
+        "0x402B2FB6"
       ],
-      "hook_bytes": 88,
+      "hook_bytes": 90,
       "symbols": {
         "entry": "0x402B2F5C",
-        "epilogue": "0x402B2FA8"
+        "epilogue": "0x402B2FAA"
       },
       "armed": true,
-      "changed_byte_positions": 2127
+      "changed_byte_positions": 2129
     },
     "control_shim": [
       "0x402B2ECC",
@@ -433,7 +433,7 @@
       "3": "hold"
     },
     "armed": true,
-    "changed_byte_positions": 2340,
+    "changed_byte_positions": 2342,
     "artifact_retained": false
   },
   "waveform_mode_matrix": {

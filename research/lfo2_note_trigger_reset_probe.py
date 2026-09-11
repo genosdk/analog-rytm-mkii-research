@@ -36,21 +36,22 @@ EPILOGUE_PATCH = 0x40118AE6
 EPILOGUE_CONTINUE = 0x40118AEC
 EPILOGUE_ORIGINAL = bytes.fromhex("46c14cd7041c")
 NOTE_HOOK_BASE = 0x402B2F5C
-CALLSITE_PATCH = bytes.fromhex(f"4eb9{NOTE_HOOK_BASE:08x}")
+CALLSITE_PATCH = bytes.fromhex(f"4ef9{NOTE_HOOK_BASE:08x}")
 
 
 def assemble_note_hook() -> tuple[bytes, dict[str, int]]:
     b = Builder(NOTE_HOOK_BASE)
     b.label("entry")
-    b.emit("241f")                          # discard JSR return into restored D2
     b.emit(f"4ab9{FLAGS_ADDRESS:08x}")
     b.branch_word(0x6700, "epilogue")
-    b.emit("0ca800000001000c")              # CMPI.L #NOTE_ON,12(A0)
+    b.emit("2628000c")                      # MOVE.L 12(A0),D3 event type
+    b.emit("0c8300000001")                  # CMPI.L #NOTE_ON,D3
     b.branch_word(0x6600, "epilogue")
     b.emit("2410")                          # MOVE.L event track,D2
     b.emit("0c8200000007")
     b.branch_word(0x6200, "epilogue")       # only eight audio lanes
-    b.emit(f"0539{TRIGGER_MASK_ADDRESS + 1:08x}")  # BTST D2,trigger mask
+    b.emit(f"3639{TRIGGER_MASK_ADDRESS:08x}")  # MOVE.W trigger mask,D3
+    b.emit("0503")                              # BTST D2,D3 (ColdFire-safe)
     b.branch_word(0x6700, "epilogue")
     b.emit("2602")                          # preserve lane for Filter2 stride
     b.emit("e98a")                          # lane * 16

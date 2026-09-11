@@ -200,6 +200,37 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("AR_MK2_AUDIO_TAP", source)
         self.assertNotIn("ar_mk2_audio_service_request", source)
 
+    def test_headless_gate_uses_desktop_events_and_bounded_audio(self):
+        source = (ROOT / "qemu" / "headless_ui_smoke.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("follow_events", source)
+        self.assertIn('env["AR_MK2_AUDIO_TRIGGER_SERVICE"] = "1"', source)
+        self.assertIn('emit_event(events_file, "trig", "1", "press")', source)
+        self.assertIn("wait_snapshot(controls_file, first.encode(), deadline)", source)
+        self.assertIn("wait_hmp_value", source)
+        self.assertIn('f"wav,path={audio_wav}"', source)
+        self.assertIn('hmp_command(monitor_port, "quit")', source)
+        self.assertIn('header[4:8] == bytes(4)', source)
+        self.assertIn("requires at least 8 services per trigger", source)
+        self.assertIn('audio_metrics["contains_nonzero_pcm"]', source)
+
+    def test_headless_wav_metrics_closes_qemu_placeholder_header(self):
+        from qemu.headless_ui_smoke import wav_metrics
+
+        header = bytes.fromhex(
+            "524946460000000057415645666d74201000000001000200"
+            "44ac000010b10200040010006461746100000000"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            capture = Path(directory) / "capture.wav"
+            capture.write_bytes(header + bytes.fromhex("01000200fdff0400"))
+            result = wav_metrics(capture)
+            self.assertTrue(result["header_repaired"])
+            self.assertEqual(result["frames"], 2)
+            self.assertEqual(result["pcm_bytes"], 8)
+            self.assertTrue(result["contains_nonzero_pcm"])
+
 
 class DesktopPanelInputTests(unittest.TestCase):
     def test_qwerty_layout_and_knob_clamp(self):

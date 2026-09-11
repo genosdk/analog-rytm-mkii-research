@@ -671,6 +671,17 @@ seven waveform selectors preloaded reaches the firmware idle loop after a
 forced audio interrupt with no illegal instruction in candidate code. Exact
 audio/state values remain covered separately by the MiniColdFire oracle suite;
 this gate is not a hardware timing claim.
+
+A later native panel-event gate exposed an instruction not exercised by that
+preloaded-state check. Trig 1 reached the note-constructor hook, where the
+offline interpreter accepted memory-form `CMPI.L` but the ColdFire core raised
+an exception at `0x402B2F66` and entered the UART8 fault reporter. The live
+hook now uses a stack-neutral absolute `JMP`, loads the event type before a
+register compare, and tests the trigger mask through a register. The corrected
+candidate consumes desktop JSON events, applies two exact atomic control
+snapshots, completes all eight vector-191 services, and remains responsive to
+the following SMP event. This is recorded in
+`research/AR172_QEMU_DESKTOP_EVENT_RUNTIME_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic
