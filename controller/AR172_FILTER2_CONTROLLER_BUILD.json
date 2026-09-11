@@ -378,7 +378,7 @@
     "callbacks": [
       {
         "index": 1,
-        "instructions": 45202,
+        "instructions": 245762,
         "multiply_calls": 513,
         "ingress_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
         "output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
@@ -406,7 +406,7 @@
       },
       {
         "index": 2,
-        "instructions": 45202,
+        "instructions": 245763,
         "multiply_calls": 513,
         "ingress_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
         "output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
@@ -443,7 +443,7 @@
     "started_callback_count": 2,
     "last_callback": {
       "index": 4,
-      "instructions": 45202,
+      "instructions": 245763,
       "multiply_calls": 513,
       "ingress_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
       "output_sha256": "5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
