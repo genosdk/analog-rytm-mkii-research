@@ -92,6 +92,7 @@ jobs:
             --name 'AR MKII Emulator' \
             --osx-bundle-identifier 'org.photonos.armk2emulator' \
             --paths "$GITHUB_WORKSPACE/research/research" \
+            --add-data "$GITHUB_WORKSPACE/research/qemu/assets/photon_panel_neutral.png:qemu/assets" \
             --hidden-import audio_callback_probe \
             --hidden-import lfo2_extended_waveform_probe \
             qemu/run_desktop_emulator.py

@@ -247,11 +247,19 @@ class QemuAudioEdmaTests(unittest.TestCase):
 class DesktopPanelInputTests(unittest.TestCase):
     def test_qwerty_layout_and_knob_clamp(self):
         from qemu.desktop_panel import (
+            BUTTON_RECTS,
+            KNOB_CENTERS,
+            OLED_RECT,
             PAGE_BUTTONS,
             PANEL_ASPECT,
             QWERTY_TRIGS,
+            SKIN_H,
+            SKIN_W,
+            STATUS_H,
+            TRIG_RECTS,
             clamp_panel_value,
             panel_window_size,
+            skin_asset_path,
         )
 
         self.assertEqual(
@@ -265,6 +273,13 @@ class DesktopPanelInputTests(unittest.TestCase):
         window_w, window_h = panel_window_size(6)
         self.assertAlmostEqual(window_w / window_h, PANEL_ASPECT, places=2)
         self.assertEqual(panel_window_size(6), panel_window_size(6))
+        self.assertEqual((window_w, window_h), (SKIN_W, SKIN_H + STATUS_H))
+        self.assertEqual(set(KNOB_CENTERS), set("ABCDEFGHI"))
+        self.assertEqual(set(BUTTON_RECTS), set(PAGE_BUTTONS + ("YES", "NO")))
+        self.assertEqual(set(TRIG_RECTS), set(range(1, 17)))
+        self.assertGreater(OLED_RECT[2] - OLED_RECT[0], 200)
+        self.assertGreater(OLED_RECT[3] - OLED_RECT[1], 100)
+        self.assertTrue(skin_asset_path().is_file())
 
     def test_knob_delta_uses_validated_signed_encoder_frame(self):
         from qemu.panel_event_bridge import PanelLink

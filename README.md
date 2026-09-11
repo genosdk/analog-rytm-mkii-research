@@ -103,10 +103,12 @@ and reproducible tooling.
 - The desktop reset-generation matrix proves eight selective first-generation
   resets, unchanged-generation idempotence during an unrelated depth update,
   and a second lane-1 reset: 240 exact state comparisons with no false reset.
-- The packaged macOS shell now uses a hardware-proportional native panel with
-  persistent page/trigger LEDs and keyboard-accessible A-I encoders. Its
-  **FILTER 2** drawer publishes eight absolute runtime controls through an
-  atomic snapshot consumed by the custom QEMU machine.
+- The packaged macOS shell now uses a pixel-registered photographic Photon OS
+  faceplate with a live firmware OLED, independent page/trigger illumination,
+  invisible hardware hit regions, and keyboard-accessible A-I encoders. Its
+  **FILTER 2** drawer remains in a separate host strip and publishes eight
+  absolute runtime controls through an atomic snapshot consumed by the custom
+  QEMU machine.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to

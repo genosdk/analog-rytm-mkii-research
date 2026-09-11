@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
 import time
 import tkinter as tk
 from collections.abc import Callable
@@ -19,7 +20,10 @@ RAW_W, RAW_H = 64, 128
 FRAME_BYTES = 1024
 PROVEN_BUTTONS = ("TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO", "YES", "NO")
 PAGE_BUTTONS = PROVEN_BUTTONS[:6]
-PANEL_ASPECT = 385 / 225
+SKIN_DESIGN_W, SKIN_DESIGN_H = 1508, 864
+SKIN_W, SKIN_H = 1400, 802
+STATUS_H = 34
+PANEL_ASPECT = SKIN_W / (SKIN_H + STATUS_H)
 PANEL_BG = "#989da1"
 PANEL_INSET = "#8f9498"
 PANEL_EDGE = "#707579"
@@ -41,15 +45,77 @@ LFO2_WAVEFORMS = ("TRI", "SQR", "SAW", "RAMP", "SINE", "EXP", "RAND")
 LFO2_MODES = ("LOOP", "ONE", "HALF", "HOLD")
 
 
+def skin_point(x: int, y: int) -> tuple[int, int]:
+    """Project approved-source coordinates onto the checked-in skin raster."""
+    return round(x * SKIN_W / SKIN_DESIGN_W), round(y * SKIN_H / SKIN_DESIGN_H)
+
+
+def skin_rect(x1: int, y1: int, x2: int, y2: int) -> tuple[int, int, int, int]:
+    left, top = skin_point(x1, y1)
+    right, bottom = skin_point(x2, y2)
+    return left, top, right, bottom
+
+
+OLED_RECT = skin_rect(716, 131, 993, 269)
+KNOB_CENTERS = {
+    "A": skin_point(1084, 146), "B": skin_point(1193, 146),
+    "C": skin_point(1300, 146), "D": skin_point(1403, 146),
+    "E": skin_point(1084, 257), "F": skin_point(1193, 257),
+    "G": skin_point(1300, 257), "H": skin_point(1403, 257),
+    "I": skin_point(636, 121),
+}
+BUTTON_RECTS = {
+    "TRIG": skin_rect(1058, 349, 1109, 397),
+    "SYN": skin_rect(1124, 349, 1177, 397),
+    "SMP": skin_rect(1187, 349, 1240, 397),
+    "FLTR": skin_rect(1251, 349, 1304, 397),
+    "AMP": skin_rect(1316, 349, 1368, 397),
+    "LFO": skin_rect(1381, 349, 1433, 397),
+    "YES": skin_rect(752, 349, 803, 397),
+    "NO": skin_rect(752, 416, 803, 464),
+}
+_TRIG_CENTERS = (103, 183, 265, 346, 427, 508, 589, 671,
+                 752, 833, 915, 996, 1078, 1160, 1240, 1322)
+TRIG_RECTS = {
+    trig: skin_rect(center - 35, 702, center + 35, 772)
+    for trig, center in enumerate(_TRIG_CENTERS, start=1)
+}
+
+
+def skin_asset_path() -> Path:
+    """Resolve the faceplate both in source trees and frozen PyInstaller apps."""
+    candidates = [Path(__file__).resolve().parent / "assets" / "photon_panel_neutral.png"]
+    bundle = getattr(sys, "_MEIPASS", None)
+    if bundle:
+        candidates.insert(0, Path(bundle) / "qemu" / "assets" /
+                          "photon_panel_neutral.png")
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    raise FileNotFoundError("photographic panel skin is missing")
+
+
 def clamp_panel_value(value: int) -> int:
     return max(0, min(127, value))
 
 
 def panel_window_size(scale: int) -> tuple[int, int]:
-    """Return one fixed hardware-proportional window size for a display scale."""
-    width = max(1220, W * max(1, scale) + 500)
-    width = int(round(width / 10) * 10)
-    return width, int(round(width / PANEL_ASPECT))
+    """Return the fixed pixel-registered photographic panel window size."""
+    del scale
+    return SKIN_W, SKIN_H + STATUS_H
+
+
+class SkinState:
+    """Compatibility state object used by existing page/Trig dispatch logic."""
+
+    def __init__(self, redraw: Callable[[], None]):
+        self.active = False
+        self.redraw = redraw
+
+    def set_active(self, active: bool) -> None:
+        if self.active != active:
+            self.active = active
+            self.redraw()
 
 
 class PanelButton(tk.Canvas):
@@ -264,8 +330,8 @@ class PanelApp:
         self.photo = None
         self.held_trigs: dict[int, set[str]] = {}
         self.pending_key_releases: dict[str, str] = {}
-        self.page_widgets: dict[str, PanelButton] = {}
-        self.trig_widgets: dict[int, TrigPad] = {}
+        self.page_widgets: dict[str, PanelButton | SkinState] = {}
+        self.trig_widgets: dict[int, TrigPad | SkinState] = {}
         self.active_page: str | None = None
         self.filter2_enabled = filter2_enabled
         self.audio_enabled = audio_enabled
@@ -286,141 +352,67 @@ class PanelApp:
         self.lfo2_enable_button: tk.Button | None = None
         self.lfo2_trigger_button: tk.Button | None = None
         self.lfo2_audition_button: tk.Button | None = None
+        self.encoder_values = {name: 64 for name in KNOB_CENTERS}
+        self.focused_encoder: str | None = None
+        self.button_held: set[str] = set()
+        self.mouse_control: tuple[str, str | int] | None = None
+        self.drag_y = 0
+        self.drag_value = 64
 
         root.title("Analog Rytm MKII — Firmware Emulator")
-        root.configure(bg="#74797d")
+        root.configure(bg="#d2d3d1")
         window_w, window_h = panel_window_size(scale)
         root.geometry(f"{window_w}x{window_h}")
         root.resizable(False, False)
-
-        shell = tk.Frame(
-            root,
-            bg=PANEL_BG,
-            width=window_w - 24,
-            height=window_h - 24,
-            highlightthickness=2,
-            highlightbackground=PANEL_EDGE,
-        )
-        shell.pack(padx=12, pady=12, fill="both", expand=True)
-        shell.pack_propagate(False)
-
-        header = tk.Frame(shell, bg=PANEL_BG, height=42)
-        header.pack(fill="x", padx=28, pady=(10, 2))
-        header.pack_propagate(False)
-        brand = tk.Frame(header, bg=PANEL_BG)
-        brand.pack(side="left")
-        tk.Label(brand, text="PHOTON", fg=TEXT, bg=PANEL_BG,
-                 font=("Helvetica", 17, "bold italic")).pack(side="left")
-        tk.Label(brand, text="OS", fg=MUTED, bg=PANEL_BG,
-                 font=("Helvetica", 17)).pack(side="left", padx=(4, 0))
-        tk.Label(header, text="ANALOG RYTM MKII  /  OS 1.72", fg=MUTED,
-                 bg=PANEL_BG, font=("Helvetica", 8, "bold")).pack(
-                     side="left", padx=(18, 0), pady=(7, 0))
-        self.frame_status = tk.StringVar(value="WAITING FOR FIRMWARE OLED")
-        tk.Label(header, textvariable=self.frame_status, fg=MUTED, bg=PANEL_BG,
-                 font=("TkFixedFont", 8)).pack(side="right", pady=(5, 0))
-        self.filter2_button = tk.Button(
-            header,
-            text="FILTER 2",
-            command=self.toggle_filter2,
-            state="normal" if filter2_enabled else "disabled",
-            fg=LIGHT_TEXT,
-            bg=CONTROL_FACE,
-            activeforeground=LIGHT_TEXT,
-            activebackground="#353936",
-            disabledforeground="#5d625e",
-            relief="flat",
-            font=("TkDefaultFont", 8, "bold"),
-            padx=10,
-            pady=2,
-        )
-        self.filter2_button.pack(side="right", padx=(0, 12), pady=(1, 0))
-
-        work = tk.Frame(shell, bg=PANEL_BG)
-        work.pack(fill="x", padx=28)
-
-        screen_panel = tk.Frame(
-            work,
-            bg="#171918",
-            padx=12,
-            pady=10,
-            highlightthickness=2,
-            highlightbackground="#4a4e4b",
-        )
-        screen_panel.pack(side="left", anchor="n")
-        tk.Label(
-            screen_panel,
-            text="8 VOICE ANALOG DRUM COMPUTER & SAMPLER",
-            fg="#d9ddda",
-            bg="#171918",
-            font=("Helvetica", 8),
-        ).pack(pady=(0, 7))
-        self.canvas = tk.Canvas(
-            screen_panel,
-            width=W * scale,
-            height=H * scale,
-            bg="black",
-            highlightthickness=0,
-        )
+        self.canvas = tk.Canvas(root, width=SKIN_W, height=SKIN_H,
+                                bg="#d2d3d1", highlightthickness=0,
+                                cursor="hand2", takefocus=True)
         self.canvas.pack()
-        self.image_id = self.canvas.create_image(0, 0, anchor="nw")
+        self.skin_photo = tk.PhotoImage(file=str(skin_asset_path()))
+        self.canvas.create_image(0, 0, anchor="nw", image=self.skin_photo,
+                                 tags="skin")
+        ox1, oy1, ox2, oy2 = OLED_RECT
+        self.canvas.create_rectangle(ox1, oy1, ox2, oy2, fill="black",
+                                     outline="", tags="oled-background")
+        self.image_id = self.canvas.create_image(ox1, oy1, anchor="nw",
+                                                 tags="oled")
         self.draw_photon_splash()
-        screen_brand = tk.Frame(screen_panel, bg="#171918", height=28)
-        screen_brand.pack(fill="x", pady=(7, 0))
-        screen_brand.pack_propagate(False)
-        tk.Label(screen_brand, text="PHOTON", fg="#f0f2ef", bg="#171918",
-                 font=("Helvetica", 12, "bold italic")).pack(side="left")
-        tk.Label(screen_brand, text="OS", fg="#c7cbc8", bg="#171918",
-                 font=("Helvetica", 12)).pack(side="left", padx=(3, 0))
-        tk.Label(screen_brand, text="AR MKII", fg="#777d79", bg="#171918",
-                 font=("Helvetica", 8, "bold")).pack(side="right", pady=(5, 0))
+        for name in PROVEN_BUTTONS:
+            self.page_widgets[name] = SkinState(self.redraw_skin_overlays)
+        for trig in range(1, 17):
+            self.trig_widgets[trig] = SkinState(self.redraw_skin_overlays)
 
-        controls = tk.Frame(work, bg=PANEL_INSET, padx=7, pady=5,
-                            highlightthickness=1,
-                            highlightbackground="#aeb2b4")
-        controls.pack(side="right", fill="both", expand=True, padx=(14, 0))
-
-        enc_frame = tk.Frame(controls, bg=PANEL_INSET)
-        enc_frame.pack()
-        for index, name in enumerate("ABCDEFGH"):
-            VirtualKnob(enc_frame, name, self.encoder).grid(
-                row=index // 4, column=index % 4, padx=0, pady=0)
-
-        lower_controls = tk.Frame(controls, bg=PANEL_INSET)
-        lower_controls.pack(pady=(4, 0))
-        VirtualKnob(lower_controls, "I", self.encoder).grid(
-            row=0, column=0, rowspan=3, padx=(0, 5))
-        for index, name in enumerate(PROVEN_BUTTONS):
-            widget = PanelButton(lower_controls, name, self.panel_button)
-            widget.grid(row=index // 3, column=(index % 3) + 1, padx=1, pady=1)
-            self.page_widgets[name] = widget
+        self.canvas.bind("<ButtonPress-1>", self.skin_press)
+        self.canvas.bind("<ButtonRelease-1>", self.skin_release)
+        self.canvas.bind("<B1-Motion>", self.skin_drag)
+        self.canvas.bind("<Double-Button-1>", self.skin_double_click)
+        self.canvas.bind("<Leave>", self.skin_release)
+        self.canvas.bind("<MouseWheel>", self.skin_wheel)
+        self.canvas.bind("<Button-4>", lambda event: self.skin_wheel(event, 1))
+        self.canvas.bind("<Button-5>", lambda event: self.skin_wheel(event, -1))
 
         self.status = tk.StringVar(value="STARTING FIRMWARE…")
-        status_bar = tk.Frame(shell, bg="#181a19", height=28)
-        status_bar.pack(fill="x", padx=28, pady=(7, 3))
+        self.frame_status = tk.StringVar(value="WAITING FOR FIRMWARE OLED")
+        status_bar = tk.Frame(root, bg="#181a19", height=STATUS_H)
+        status_bar.pack(fill="x")
         status_bar.pack_propagate(False)
         tk.Label(status_bar, textvariable=self.status, fg=LIGHT_TEXT, bg="#181a19",
                  anchor="w", font=("TkFixedFont", 9)).pack(
                      side="left", fill="x", expand=True, padx=8)
+        tk.Label(status_bar, textvariable=self.frame_status, fg=MUTED,
+                 bg="#181a19", font=("TkFixedFont", 8)).pack(
+                     side="right", padx=(8, 10))
+        self.filter2_button = tk.Button(
+            status_bar, text="FILTER 2", command=self.toggle_filter2,
+            state="normal" if filter2_enabled else "disabled",
+            fg=LIGHT_TEXT, bg=CONTROL_FACE, activeforeground=LIGHT_TEXT,
+            activebackground="#353936", disabledforeground="#5d625e",
+            relief="flat", font=("TkDefaultFont", 8, "bold"), padx=10,
+        )
+        self.filter2_button.pack(side="right", padx=(4, 0), pady=4)
         tk.Label(status_bar, text="LIVE PANEL BRIDGE", fg=LED_ORANGE,
                  bg="#181a19", font=("TkFixedFont", 8, "bold")).pack(
-                     side="right", padx=8)
-
-        trig_frame = tk.Frame(shell, bg=PANEL_BG)
-        trig_frame.pack(padx=28, pady=(2, 0))
-        for trig in range(1, 17):
-            widget = TrigPad(trig_frame, trig, TRIG_KEYS[trig], self.trig)
-            widget.grid(row=0, column=trig - 1, padx=2)
-            self.trig_widgets[trig] = widget
-
-        tk.Label(
-            shell,
-            text=("QWERTYUI / ASDFGHJK  •  DRAG OR SCROLL ENCODERS  •  "
-                  "ARROWS ±1  •  PAGE ±8  •  HOME/END 0/127"),
-            fg="#284d5e",
-            bg=PANEL_BG,
-            font=("TkFixedFont", 8),
-        ).pack(anchor="w", padx=32, pady=(3, 0))
+                     side="right", padx=(8, 4))
 
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.bind_all("<KeyPress>", self.key_press, add="+")
@@ -428,25 +420,149 @@ class PanelApp:
         self.root.bind("<FocusOut>", self.focus_lost, add="+")
         self.poll()
 
+    @staticmethod
+    def point_in_rect(x: int, y: int,
+                      rect: tuple[int, int, int, int]) -> bool:
+        x1, y1, x2, y2 = rect
+        return x1 <= x <= x2 and y1 <= y <= y2
+
+    def knob_at(self, x: int, y: int) -> str | None:
+        radius = round(42 * SKIN_W / SKIN_DESIGN_W)
+        for name, (cx, cy) in KNOB_CENTERS.items():
+            if (x - cx) ** 2 + (y - cy) ** 2 <= radius ** 2:
+                return name
+        return None
+
+    def control_at(self, x: int, y: int) -> tuple[str, str | int] | None:
+        knob = self.knob_at(x, y)
+        if knob is not None:
+            return "encoder", knob
+        for name, rect in BUTTON_RECTS.items():
+            if self.point_in_rect(x, y, rect):
+                return "button", name
+        for trig, rect in TRIG_RECTS.items():
+            if self.point_in_rect(x, y, rect):
+                return "trig", trig
+        return None
+
+    def skin_press(self, event) -> str:
+        self.canvas.focus_set()
+        control = self.control_at(event.x, event.y)
+        self.mouse_control = control
+        if control is None:
+            return "break"
+        kind, value = control
+        if kind == "encoder":
+            name = str(value)
+            self.focused_encoder = name
+            self.drag_y = event.y_root
+            self.drag_value = self.encoder_values[name]
+            self.redraw_skin_overlays()
+        elif kind == "button":
+            name = str(value)
+            self.button_held.add(name)
+            self.redraw_skin_overlays()
+            self.panel_button(name, True)
+        else:
+            self.trig(int(value), True, "mouse")
+        return "break"
+
+    def skin_release(self, _event=None) -> str:
+        control = self.mouse_control
+        self.mouse_control = None
+        if control is None:
+            return "break"
+        kind, value = control
+        if kind == "button":
+            name = str(value)
+            self.button_held.discard(name)
+            self.panel_button(name, False)
+            self.redraw_skin_overlays()
+        elif kind == "trig":
+            self.trig(int(value), False, "mouse")
+        return "break"
+
+    def skin_drag(self, event) -> str:
+        if self.mouse_control is None or self.mouse_control[0] != "encoder":
+            return "break"
+        name = str(self.mouse_control[1])
+        self.set_skin_encoder(
+            name, self.drag_value + round((self.drag_y - event.y_root) / 2)
+        )
+        return "break"
+
+    def skin_wheel(self, event, direction: int | None = None) -> str:
+        name = self.knob_at(event.x, event.y)
+        if name is None:
+            return "break"
+        self.canvas.focus_set()
+        self.focused_encoder = name
+        if direction is None:
+            direction = 1 if event.delta > 0 else -1
+        self.set_skin_encoder(name, self.encoder_values[name] + direction)
+        return "break"
+
+    def skin_double_click(self, event) -> str:
+        name = self.knob_at(event.x, event.y)
+        if name is not None:
+            self.focused_encoder = name
+            self.set_skin_encoder(name, 64)
+        return "break"
+
+    def set_skin_encoder(self, name: str, value: int) -> None:
+        value = clamp_panel_value(value)
+        old = self.encoder_values[name]
+        if value == old:
+            return
+        self.encoder_values[name] = value
+        self.encoder(name, value - old, value)
+        self.redraw_skin_overlays()
+
+    def redraw_skin_overlays(self) -> None:
+        self.canvas.delete("control-overlay")
+        orange = LED_ORANGE
+        for name, state in self.page_widgets.items():
+            if state.active or name in self.button_held:
+                self.canvas.create_rectangle(
+                    *BUTTON_RECTS[name], outline=orange, width=2,
+                    tags="control-overlay",
+                )
+        for trig, state in self.trig_widgets.items():
+            if state.active:
+                self.canvas.create_rectangle(
+                    *TRIG_RECTS[trig], outline=orange, width=3,
+                    tags="control-overlay",
+                )
+        focused = getattr(self, "focused_encoder", None)
+        if focused in KNOB_CENTERS:
+            cx, cy = KNOB_CENTERS[focused]
+            radius = round(38 * SKIN_W / SKIN_DESIGN_W)
+            self.canvas.create_oval(
+                cx - radius, cy - radius, cx + radius, cy + radius,
+                outline=orange, width=2, tags="control-overlay",
+            )
+        self.canvas.tag_raise("control-overlay")
+
     def draw_photon_splash(self) -> None:
         """Show the supplied-reference identity until firmware owns the OLED."""
-        width, height = W * self.scale, H * self.scale
+        x1, y1, x2, y2 = OLED_RECT
+        width, height = x2 - x1, y2 - y1
         cyan = OLED_PIXEL
         self.canvas.create_text(
-            width // 2, height // 2 - 28,
+            x1 + width // 2, y1 + height // 2 - 13,
             text="PHOTON", fill=cyan, tags="splash",
-            font=("Courier", max(22, self.scale * 7), "bold"),
+            font=("Courier", 17, "bold"),
         )
         self.canvas.create_text(
-            width // 2, height // 2 + 20,
+            x1 + width // 2, y1 + height // 2 + 13,
             text="OS", fill=cyan, tags="splash",
-            font=("Courier", max(12, self.scale * 3), "bold"),
+            font=("Courier", 9, "bold"),
         )
-        line = max(40, self.scale * 15)
+        line = 42
         self.canvas.create_line(
-            width // 2 - line, height // 2 + 52,
-            width // 2 + line, height // 2 + 52,
-            fill=cyan, width=max(1, self.scale // 3), tags="splash",
+            x1 + width // 2 - line, y1 + height // 2 + 30,
+            x1 + width // 2 + line, y1 + height // 2 + 30,
+            fill=cyan, width=1, tags="splash",
         )
 
     def emit(self, kind: str, name: str, value) -> None:
@@ -686,6 +802,20 @@ class PanelApp:
 
     def key_press(self, event) -> str | None:
         key = event.keysym.lower()
+        focused = getattr(self, "focused_encoder", None)
+        if focused in self.encoder_values:
+            changes = {
+                "up": 1, "right": 1, "down": -1, "left": -1,
+                "prior": 8, "next": -8,
+            }
+            if key in changes:
+                self.set_skin_encoder(
+                    focused, self.encoder_values[focused] + changes[key]
+                )
+                return "break"
+            if key in {"home", "end"}:
+                self.set_skin_encoder(focused, 0 if key == "home" else 127)
+                return "break"
         trig = QWERTY_TRIGS.get(key)
         if trig is None:
             return None
@@ -753,21 +883,27 @@ class PanelApp:
     def draw(self, data: bytes) -> None:
         self.canvas.delete("splash")
         pix = self.decode_presented(data)
-        small = tk.PhotoImage(width=W, height=H)
+        x1, y1, x2, y2 = OLED_RECT
+        width, height = x2 - x1, y2 - y1
+        display = tk.PhotoImage(width=width, height=height)
+        display.put("#000000", to=(0, 0, width, height))
         for y, row in enumerate(pix):
             start = 0
             current = row[0]
             for x in range(1, W + 1):
                 value = row[x] if x < W else 1 - current
                 if value != current:
-                    small.put(
-                        OLED_PIXEL if current else "#000000",
-                        to=(start, y, x, y + 1),
-                    )
+                    if current:
+                        sx1 = round(start * width / W)
+                        sx2 = round(x * width / W)
+                        sy1 = round(y * height / H)
+                        sy2 = round((y + 1) * height / H)
+                        display.put(OLED_PIXEL, to=(sx1, sy1, sx2, sy2))
                     start = x
                     current = value
-        self.photo = small.zoom(self.scale, self.scale)
+        self.photo = display
         self.canvas.itemconfigure(self.image_id, image=self.photo)
+        self.canvas.tag_raise("control-overlay")
 
     def reload_frame(self) -> None:
         try:

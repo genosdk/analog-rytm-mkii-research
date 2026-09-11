@@ -34,10 +34,16 @@ The desktop bridge currently exposes only panel mappings verified directly again
 
 The page keys have been validated by causal changes in the firmware's presented OLED framebuffer.
 
+The main window uses a pixel-registered photographic Photon OS faceplate. Its
+OLED opening is replaced at runtime by the firmware's live framebuffer, while
+invisible hit regions preserve the validated nine encoders, eight page/action
+keys, and sixteen Trigs. Press, focus, and LED state are rendered as independent
+overlays rather than being baked into the neutral skin.
+
 The nine encoders are mouse-draggable 0–127 knobs; the wheel and keyboard also
 change their values. QWERTYUI/ASDFGHJK provide press/release control for Trigs
-1–16. The hardware-proportional shell gives page and trigger keys persistent
-visual state.
+1–16. A narrow host status strip beneath the hardware keeps the Filter 2
+extension visibly separate from the recovered physical panel.
 
 The **FILTER 2** button opens an eight-knob runtime drawer. Each knob controls
 one audio lane using drag, wheel, arrows, Page Up/Down, Home/End, and
