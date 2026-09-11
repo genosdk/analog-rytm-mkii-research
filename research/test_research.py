@@ -212,6 +212,9 @@ class DesktopPanelInputTests(unittest.TestCase):
             QWERTY_TRIGS,
             clamp_panel_value,
             decode_page_parameters,
+            decode_track_level_state,
+            decode_track_levels,
+            decode_trig_parameters,
         )
 
         self.assertEqual(
@@ -229,6 +232,18 @@ class DesktopPanelInputTests(unittest.TestCase):
             tuple(range(10, 18)),
         )
         self.assertIsNone(decode_page_parameters(bytes(state), "TRIG"))
+        self.assertEqual(
+            decode_track_levels(bytes.fromhex("6400 6e00") + bytes(22))[:2],
+            (100, 110),
+        )
+        level_state = bytes.fromhex("00000001 6400 6e00") + bytes(22)
+        self.assertEqual(decode_track_level_state(level_state)[0], 1)
+        self.assertEqual(decode_track_level_state(level_state)[1][:2], (100, 110))
+        trig = bytes.fromhex("3c 40 0e 07 80 10 00 02 00 64")
+        self.assertEqual(
+            decode_trig_parameters(trig),
+            (60, 64, 14, 100, 1, 1, 1, 1),
+        )
 
     def test_knob_delta_uses_signed_encoder_frames(self):
         from qemu.panel_event_bridge import PanelLink
@@ -313,6 +328,21 @@ class DesktopPanelInputTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("AR_PARAMETER_ADDR    0x8000E5B0u", source)
         self.assertIn("AR_MK2_PARAMETER_STATE_OUT", source)
+
+    def test_trig_and_level_readback_gate(self):
+        report = json.loads(
+            (HERE / "AR172_QEMU_TRIG_LEVEL_READBACK_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(report["status"], "PASS_SIX_PAGE_AND_LEVEL_READBACK")
+        self.assertEqual(report["level_data"]["live_word"], "0x4123C8E3")
+        self.assertEqual(report["trig"]["state_window"], "0x407C4B93..0x407C4B9C")
+        source = (
+            ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_MK2_TRACK_LEVEL_STATE_OUT", source)
+        self.assertIn("AR_MK2_TRIG_STATE_OUT", source)
 
 
 @unittest.skipUnless(

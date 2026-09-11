@@ -43,6 +43,12 @@
 #define AR_FB_BYTES          0x400u
 #define AR_PARAMETER_ADDR    0x8000E5B0u
 #define AR_PARAMETER_BYTES   0x54u
+#define AR_TRACK_LEVEL_ADDR  0x4123C8E3u
+#define AR_TRACK_LEVEL_BYTES 0x1Au
+#define AR_SELECTED_TRACK_ADDR 0x412FF96Fu
+#define AR_TRACK_LEVEL_STATE_BYTES (4u + AR_TRACK_LEVEL_BYTES)
+#define AR_TRIG_STATE_ADDR   0x407C4B93u
+#define AR_TRIG_STATE_BYTES  0x0Au
 #define AR_GPIO_MEDIA_INPUT  0xEC09401Au
 #define AR_GPIO_MEDIA_SET    0xEC09401Bu
 #define AR_GPIO_MEDIA_CLEAR  0xEC094027u
@@ -175,6 +181,12 @@ typedef struct ARBoardState {
     char *parameter_out;
     uint8_t parameter_published[AR_PARAMETER_BYTES];
     bool parameter_published_valid;
+    char *track_level_out;
+    uint8_t track_level_published[AR_TRACK_LEVEL_STATE_BYTES];
+    bool track_level_published_valid;
+    char *trig_state_out;
+    uint8_t trig_state_published[AR_TRIG_STATE_BYTES];
+    bool trig_state_published_valid;
     bool mock_factory_state;
     bool mock_project_sample;
     bool media_probe_high;
@@ -545,6 +557,45 @@ static void ar_export_framebuffer(void *opaque)
         }
     }
 
+    if (s->track_level_out) {
+        uint8_t levels[AR_TRACK_LEVEL_STATE_BYTES];
+
+        physical_memory_read(AR_SELECTED_TRACK_ADDR, levels, 4);
+        physical_memory_read(AR_TRACK_LEVEL_ADDR, levels + 4,
+                             AR_TRACK_LEVEL_BYTES);
+        if (!s->track_level_published_valid ||
+            memcmp(s->track_level_published, levels, sizeof(levels)) != 0) {
+            if (!g_file_set_contents(s->track_level_out,
+                                     (const char *)levels,
+                                     sizeof(levels), NULL)) {
+                qemu_log_mask(LOG_GUEST_ERROR,
+                              "AR-MK2: failed to write track-level file %s\n",
+                              s->track_level_out);
+            } else {
+                memcpy(s->track_level_published, levels, sizeof(levels));
+                s->track_level_published_valid = true;
+            }
+        }
+    }
+
+    if (s->trig_state_out) {
+        uint8_t trig[AR_TRIG_STATE_BYTES];
+
+        physical_memory_read(AR_TRIG_STATE_ADDR, trig, sizeof(trig));
+        if (!s->trig_state_published_valid ||
+            memcmp(s->trig_state_published, trig, sizeof(trig)) != 0) {
+            if (!g_file_set_contents(s->trig_state_out, (const char *)trig,
+                                     sizeof(trig), NULL)) {
+                qemu_log_mask(LOG_GUEST_ERROR,
+                              "AR-MK2: failed to write trig-state file %s\n",
+                              s->trig_state_out);
+            } else {
+                memcpy(s->trig_state_published, trig, sizeof(trig));
+                s->trig_state_published_valid = true;
+            }
+        }
+    }
+
     timer_mod(s->frame_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
 }
 
@@ -680,6 +731,18 @@ static void elektron_ar_mk2_init(MachineState *machine)
         }
     }
     {
+        const char *out = g_getenv("AR_MK2_TRACK_LEVEL_STATE_OUT");
+        if (out && *out) {
+            s->track_level_out = g_strdup(out);
+        }
+    }
+    {
+        const char *out = g_getenv("AR_MK2_TRIG_STATE_OUT");
+        if (out && *out) {
+            s->trig_state_out = g_strdup(out);
+        }
+    }
+    {
         const char *tap = g_getenv("AR_MK2_AUDIO_TAP");
         s->audio_tap = tap && *tap && strcmp(tap, "0") != 0;
     }
@@ -737,7 +800,8 @@ static void elektron_ar_mk2_init(MachineState *machine)
     env->aregs[7] = AR_BOOT_STACK;
     env->pc = AR_MAIN_ENTRY;
 
-    if (s->frame_out || s->parameter_out) {
+    if (s->frame_out || s->parameter_out || s->track_level_out ||
+        s->trig_state_out) {
         s->frame_timer = timer_new_ms(QEMU_CLOCK_VIRTUAL, ar_export_framebuffer, s);
         timer_mod(s->frame_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
     }

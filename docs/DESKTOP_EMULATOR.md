@@ -21,7 +21,7 @@ The desktop emulator runs the unmodified Analog Rytm MKII OS 1.72 MAIN image in 
 The desktop bridge currently exposes only panel mappings verified directly against OS 1.72:
 
 - Trig 1–16
-- Encoders A–I
+- Encoders A–H plus the separate Level/Data encoder I
 - TRIG
 - SYN
 - SMP
@@ -36,9 +36,10 @@ The page keys have been validated by causal changes in the firmware's presented 
 The computer keyboard maps `QWERTYUI` to Trigs 1–8 and `ASDFGHJK` to
 Trigs 9–16. Click and drag one of the eight A–H function knobs vertically, or
 use the mouse wheel, to send native relative encoder movement. The displayed
-0–127 values are initialized and refreshed from the firmware's live Q8 track
-bank on SYN, SMP, FLTR, AMP, and LFO pages. TRIG-page readback and the separate
-Level/Data encoder remain open.
+values are refreshed from native firmware storage on all six pages. SYN, SMP,
+FLTR, AMP, and LFO use the live Q8 track bank; TRIG uses its packed kit-record
+fields. Encoder I is displayed separately as Level and follows the firmware's
+32-bit selected-track index into the exported 13-track native Q8 level bank.
 
 ## Display
 

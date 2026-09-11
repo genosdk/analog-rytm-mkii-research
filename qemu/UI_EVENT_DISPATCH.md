@@ -60,14 +60,21 @@ movement uses native signed `0x3n` deltas. The previous `-127`/target endpoint
 guess has been removed: the stock acceleration gate can suppress or scale those
 two frames, so they do not establish an absolute value.
 
-QEMU instead exports the firmware's 42-word live track bank from `0x8000E5B0`.
+QEMU exports the firmware's 42-word live track bank from `0x8000E5B0`.
 The frontend selects the proven per-page A–H offsets and decodes each big-endian
-Q8 word's high byte as the authoritative 0–127 value. SYN, SMP, FLTR, AMP, and
-LFO are mapped. TRIG uses a different owner and remains readback-open. Native
-encoder index 8 is the separate Level/Data control, not a ninth page-function
-knob.
+Q8 word's high byte as the authoritative 0–127 value for SYN, SMP, FLTR, AMP,
+and LFO.
+
+TRIG uses a kit-record owner instead. Its A–H values are decoded from the
+10-byte window at `0x407C4B93`: A/B/C are bytes 0/1/2, D is byte 9, E is bit 7
+of byte 4, and F/G/H are bits 0/1/2 of byte 3. Encoder I is the separate
+Level/Data control. Its native handler addresses 13 consecutive
+big-endian Q8 words beginning at `0x4123C8E3`; the first word changed from
+`0x6400` to `0x6E00` under the accepted trace. The 32-bit selected-track index
+is read from `0x412FF96F`, and the desktop uses it to refresh the separate Level
+knob from the corresponding word.
 
 ## Current target
 
-Resolve the TRIG-page owner and separate Level/Data readback path without
-regressing the now-proven five-page Q8 export.
+Exercise track selection from the desktop and verify that the exported index
+and encoder-I Level word advance together.

@@ -18,6 +18,9 @@ W, H = 128, 64
 RAW_W, RAW_H = 64, 128
 FRAME_BYTES = 1024
 PARAMETER_BYTES = 0x54
+TRACK_LEVEL_BYTES = 13 * 2
+TRACK_LEVEL_STATE_BYTES = 4 + TRACK_LEVEL_BYTES
+TRIG_STATE_BYTES = 10
 PROVEN_BUTTONS = ("TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO", "YES", "NO")
 PAGE_PARAMETER_OFFSETS = {
     "SYN": (0x14, 0x1A, 0x1C, 0x16, 0x1E, 0x18, 0x20, 0x12),
@@ -43,6 +46,38 @@ def decode_page_parameters(data: bytes, page: str) -> tuple[int, ...] | None:
     return tuple(
         int.from_bytes(data[offset:offset + 2], "big") >> 8
         for offset in offsets
+    )
+
+
+def decode_track_levels(data: bytes) -> tuple[int, ...] | None:
+    if len(data) < TRACK_LEVEL_BYTES:
+        return None
+    return tuple(
+        int.from_bytes(data[offset:offset + 2], "big") >> 8
+        for offset in range(0, TRACK_LEVEL_BYTES, 2)
+    )
+
+
+def decode_track_level_state(data: bytes) -> tuple[int, tuple[int, ...]] | None:
+    if len(data) < TRACK_LEVEL_STATE_BYTES:
+        return None
+    selected = int.from_bytes(data[:4], "big")
+    levels = decode_track_levels(data[4:])
+    if levels is None or selected >= len(levels):
+        return None
+    return selected, levels
+
+
+def decode_trig_parameters(data: bytes) -> tuple[int, ...] | None:
+    if len(data) < TRIG_STATE_BYTES:
+        return None
+    flags = data[3]
+    return (
+        data[0], data[1], data[2], data[9],
+        1 if data[4] & 0x80 else 0,
+        1 if flags & 0x01 else 0,
+        1 if flags & 0x02 else 0,
+        1 if flags & 0x04 else 0,
     )
 
 
@@ -124,19 +159,26 @@ class VirtualKnob(tk.Canvas):
 
 class PanelApp:
     def __init__(self, root: tk.Tk, frame_file: Path, event_file: Path,
-                 scale: int = 6, parameter_file: Path | None = None) -> None:
+                 scale: int = 6, parameter_file: Path | None = None,
+                 track_level_file: Path | None = None,
+                 trig_state_file: Path | None = None) -> None:
         self.root = root
         self.frame_file = frame_file
         self.event_file = event_file
         self.parameter_file = parameter_file
+        self.track_level_file = track_level_file
+        self.trig_state_file = trig_state_file
         self.scale = scale
         self.last_mtime = 0
         self.last_parameter_mtime = 0
+        self.last_track_level_mtime = 0
+        self.last_trig_state_mtime = 0
         self.current_page = "SYN"
         self.photo = None
         self.held_trigs: dict[int, set[str]] = {}
         self.pending_key_releases: dict[str, str] = {}
         self.knobs: list[VirtualKnob] = []
+        self.level_knob: VirtualKnob | None = None
 
         root.title("Analog Rytm MKII — Firmware Emulator")
         root.configure(bg="#181818")
@@ -189,6 +231,8 @@ class PanelApp:
             knob = VirtualKnob(enc_frame, name, self.encoder)
             knob.grid(row=0, column=col, padx=1)
             self.knobs.append(knob)
+        self.level_knob = VirtualKnob(enc_frame, "I · LEVEL", self.encoder)
+        self.level_knob.grid(row=0, column=8, padx=1)
 
         tk.Label(
             shell,
@@ -332,6 +376,9 @@ class PanelApp:
         self.status.set(f"Firmware OLED — {nonzero} nonzero bytes")
 
     def reload_parameters(self, force: bool = False) -> None:
+        if self.current_page == "TRIG":
+            self.reload_trig_parameters(force)
+            return
         if self.parameter_file is None:
             return
         try:
@@ -348,9 +395,42 @@ class PanelApp:
             knob.set_readback(value)
         self.last_parameter_mtime = st.st_mtime_ns
 
+    def reload_trig_parameters(self, force: bool = False) -> None:
+        if self.trig_state_file is None:
+            return
+        try:
+            st = self.trig_state_file.stat()
+        except FileNotFoundError:
+            return
+        if not force and st.st_mtime_ns == self.last_trig_state_mtime:
+            return
+        values = decode_trig_parameters(self.trig_state_file.read_bytes())
+        if values is None:
+            return
+        for knob, value in zip(self.knobs, values):
+            knob.set_readback(value)
+        self.last_trig_state_mtime = st.st_mtime_ns
+
+    def reload_track_level(self) -> None:
+        if self.track_level_file is None or self.level_knob is None:
+            return
+        try:
+            st = self.track_level_file.stat()
+        except FileNotFoundError:
+            return
+        if st.st_mtime_ns == self.last_track_level_mtime:
+            return
+        state = decode_track_level_state(self.track_level_file.read_bytes())
+        if state is None:
+            return
+        selected, levels = state
+        self.level_knob.set_readback(levels[selected])
+        self.last_track_level_mtime = st.st_mtime_ns
+
     def poll(self) -> None:
         self.reload_frame()
         self.reload_parameters()
+        self.reload_track_level()
         self.root.after(33, self.poll)
 
     def close(self) -> None:
@@ -363,10 +443,15 @@ def main() -> None:
     ap.add_argument("--frame", type=Path, required=True)
     ap.add_argument("--events", type=Path, required=True)
     ap.add_argument("--parameters", type=Path)
+    ap.add_argument("--track-levels", type=Path)
+    ap.add_argument("--trig-state", type=Path)
     ap.add_argument("--scale", type=int, default=6)
     args = ap.parse_args()
     root = tk.Tk()
-    PanelApp(root, args.frame, args.events, args.scale, args.parameters)
+    PanelApp(
+        root, args.frame, args.events, args.scale,
+        args.parameters, args.track_levels, args.trig_state,
+    )
     root.mainloop()
 
 

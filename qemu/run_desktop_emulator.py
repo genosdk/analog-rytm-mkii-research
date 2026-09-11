@@ -171,6 +171,8 @@ def main() -> None:
     monitor = runtime / "monitor.sock"
     frame = runtime / "front-buffer.bin"
     parameters = runtime / "parameter-state.bin"
+    levels = runtime / "track-level-state.bin"
+    trig_state = runtime / "trig-state.bin"
     events = runtime / "panel-events.jsonl"
     log = runtime / "qemu.log"
 
@@ -195,6 +197,8 @@ def main() -> None:
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
     env["AR_MK2_PARAMETER_STATE_OUT"] = str(parameters)
+    env["AR_MK2_TRACK_LEVEL_STATE_OUT"] = str(levels)
+    env["AR_MK2_TRIG_STATE_OUT"] = str(trig_state)
     if args.no_mock_calibration:
         env.pop("AR_MK2_MOCK_CALIBRATION", None)
     else:
@@ -254,7 +258,7 @@ def main() -> None:
         hmp_continue(monitor)
 
         root = tk.Tk()
-        PanelApp(root, frame, events, args.scale, parameters)
+        PanelApp(root, frame, events, args.scale, parameters, levels, trig_state)
         root.mainloop()
 
         if qemu_proc.poll() is not None and qemu_proc.returncode:

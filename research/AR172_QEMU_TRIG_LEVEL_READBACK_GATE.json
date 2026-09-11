@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_TRIG_LEVEL_READBACK_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_SIX_PAGE_AND_LEVEL_READBACK",
+  "level_data": {
+    "subscriber_adapter": "0x400C578A",
+    "handler": "0x400C567A",
+    "controller_object": "0x41B55660",
+    "integrator_state_offset": "0x1D4",
+    "value_stack": ["0x400A31B8", "0x400A446E", "0x400A3172"],
+    "record_base": "0x4123C8D3",
+    "selected_track_index": "32-bit big-endian value at 0x412FF96F",
+    "live_word": "0x4123C8E3",
+    "bank": "13 consecutive big-endian Q8 words",
+    "mutation": "0x6400 -> 0x6E00"
+  },
+  "trig": {
+    "parameter_ids_A_through_H": [29, 30, 31, 38, 34, 35, 36, 37],
+    "generic_dispatch": "0x400A64C2",
+    "kit_record_base": "0x407C48D3",
+    "state_window": "0x407C4B93..0x407C4B9C",
+    "decode_A_through_H": [
+      "byte 0",
+      "byte 1",
+      "byte 2",
+      "byte 9",
+      "byte 4 bit 7",
+      "byte 3 bit 0",
+      "byte 3 bit 1",
+      "byte 3 bit 2"
+    ],
+    "mutations": {
+      "A": "0x3C -> 0x46 -> 0x50",
+      "B": "0x64 -> 0x6E -> 0x78",
+      "C": "0x0E -> 0x18 -> 0x22",
+      "D": "0x64 -> 0x5A -> 0x50",
+      "E": "byte 4 bit 7 cleared",
+      "F": "byte 3 bit 0 cleared",
+      "G": "byte 3 bit 1 cleared",
+      "H": "byte 3 bit 2 set"
+    }
+  },
+  "desktop": {
+    "page_function_readback": ["TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO"],
+    "level_data": "separate encoder-I Level knob follows the exported selected-track index into the 13-word bank",
+    "qemu_exports": [
+      "AR_MK2_PARAMETER_STATE_OUT",
+      "AR_MK2_TRIG_STATE_OUT",
+      "AR_MK2_TRACK_LEVEL_STATE_OUT"
+    ]
+  },
+  "railway": {"touched": false},
+  "safety": "Untouched stock firmware ran locally; proprietary firmware and runtime RAM captures were not committed."
+}
