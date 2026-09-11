@@ -115,6 +115,25 @@ services, verify the count remains stopped for one second, and then check the
 SMP page remains responsive. This is a lifecycle/throughput measurement; it
 does not require real-time host cadence.
 
+For a renderer-window translation-block profile, build the repository's
+read-only QEMU plugin against the same pinned QEMU tree and pass it through the
+smoke runner:
+
+```bash
+cc -fPIC -shared -O2 $(pkg-config --cflags glib-2.0) \
+  -I/path/to/qemu/include/plugins qemu/plugins/ar_audio_window.c \
+  -o /tmp/ar_audio_window.so $(pkg-config --libs glib-2.0)
+python qemu/headless_ui_smoke.py \
+  --qemu /path/to/qemu-system-m68k \
+  --main /path/to/decompressed-main.bin \
+  --exercise-held-audio --held-services 100 --qemu-debug unimp,plugin \
+  --qemu-plugin /tmp/ar_audio_window.so,start=0x40117a28,services=100
+```
+
+The plugin begins counting at the first stock renderer entry and reports the
+100 hottest translated blocks when the following entry closes the window. It
+records addresses and counts only; it never reads guest memory.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

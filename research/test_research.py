@@ -406,6 +406,7 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertIn('self.encoder("D", 8)', panel)
         self.assertIn("--exercise-demo-sample", smoke)
         self.assertIn("--exercise-held-audio", smoke)
+        self.assertIn("--qemu-plugin", smoke)
         self.assertIn(
             'env["AR_MK2_MOCK_PROJECT_SAMPLE_FRAMES"] = "4096"', smoke
         )
@@ -419,6 +420,21 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertEqual(
             held["status"], "PASS_HELD_KEY_SERVICE_AND_BOUNDED_RELEASE"
         )
+        profile = json.loads(
+            (HERE / "AR172_QEMU_AUDIO_WINDOW_PROFILE_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            profile["status"], "PASS_NATIVE_RENDERER_WINDOW_PROFILED"
+        )
+        self.assertEqual(profile["window"]["renderer_calls"], 100)
+        self.assertGreater(profile["window"]["guest_instructions"], 40_000_000)
+        plugin = (ROOT / "qemu" / "plugins" / "ar_audio_window.c").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("qemu_plugin_tb_vaddr", plugin)
+        self.assertNotIn("qemu_plugin_read_memory", plugin)
 
 
 @unittest.skipUnless(

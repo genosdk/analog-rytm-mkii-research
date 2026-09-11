@@ -219,6 +219,10 @@ def main() -> None:
         help="comma-separated QEMU -d log categories",
     )
     parser.add_argument(
+        "--qemu-plugin",
+        help="optional QEMU plugin specification for local profiling",
+    )
+    parser.add_argument(
         "--exercise-trigger-audio",
         action="store_true",
         help="press and release Trig 1 before the SMP-page responsiveness check",
@@ -343,6 +347,8 @@ def main() -> None:
         "-monitor", f"tcp:127.0.0.1:{monitor_port},server=on,wait=off",
         "-d", args.qemu_debug, "-D", str(log),
     ]
+    if args.qemu_plugin:
+        command.extend(("-plugin", args.qemu_plugin))
 
     proc: subprocess.Popen | None = None
     panel_writer = None
