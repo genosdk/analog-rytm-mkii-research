@@ -94,11 +94,9 @@ and reproducible tooling.
   services. Re-arming DSPI1's channel-15 transmit request at each external
   audio event prevents the firmware's EOQ wait from stalling repeated blocks.
 - QWERTY key-down/up drives the native Trig 1..16 panel frames, with repeat and
-  focus-loss protection. Mouse-grabbable knobs A..I now establish a real
-  target from 0..127 on first grab, then emit native signed-delta changes;
-  an A=64 runtime test changed the stock OLED and left later UI/audio service
-  responsive. Exact active-value readback remains open, so the pre-grab number
-  is not yet presented as firmware-authoritative.
+  focus-loss protection. Mouse-grabbable function knobs A..H emit native signed
+  encoder deltas and display authoritative 0..127 readback from the stock Q8
+  track bank on SYN, SMP, FLTR, AMP, and LFO pages.
 - The opt-in continuous research clock now applies interrupt backpressure at
   the register-derived 32-frame / 48 kHz period. Stock CCR `0x00056F00` and
   I2S-master framing require a 24.576 MHz bit clock and 98.304 MHz SSI clock.

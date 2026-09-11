@@ -41,6 +41,8 @@
 #define AR_BOOT_STACK        0x47FFFFE0u
 #define AR_FB_PTR_GLOBAL     0x4026F474u
 #define AR_FB_BYTES          0x400u
+#define AR_PARAMETER_ADDR    0x8000E5B0u
+#define AR_PARAMETER_BYTES   0x54u
 #define AR_GPIO_MEDIA_INPUT  0xEC09401Au
 #define AR_GPIO_MEDIA_SET    0xEC09401Bu
 #define AR_GPIO_MEDIA_CLEAR  0xEC094027u
@@ -170,6 +172,9 @@ typedef struct ARBoardState {
     unsigned frame_candidate_matches;
     bool frame_candidate_valid;
     bool frame_published_valid;
+    char *parameter_out;
+    uint8_t parameter_published[AR_PARAMETER_BYTES];
+    bool parameter_published_valid;
     bool mock_factory_state;
     bool mock_project_sample;
     bool media_probe_high;
@@ -479,15 +484,12 @@ static void ar_export_framebuffer(void *opaque)
     uint8_t frame[AR_FB_BYTES];
     uint32_t ptr;
 
-    if (!s->frame_out) {
-        return;
-    }
-
-    physical_memory_read(AR_FB_PTR_GLOBAL, pbuf, sizeof(pbuf));
-    ptr = ldl_be_p(pbuf);
-    if (ptr >= AR_SDRAM_BASE &&
-        (uint64_t)ptr + AR_FB_BYTES <= AR_SDRAM_BASE + AR_DEFAULT_RAM_SIZE) {
-        physical_memory_read(ptr, frame, sizeof(frame));
+    if (s->frame_out) {
+        physical_memory_read(AR_FB_PTR_GLOBAL, pbuf, sizeof(pbuf));
+        ptr = ldl_be_p(pbuf);
+        if (ptr >= AR_SDRAM_BASE &&
+            (uint64_t)ptr + AR_FB_BYTES <= AR_SDRAM_BASE + AR_DEFAULT_RAM_SIZE) {
+            physical_memory_read(ptr, frame, sizeof(frame));
 
         /*
          * Firmware redraws over multiple scheduler slices. Publishing every
@@ -495,30 +497,50 @@ static void ar_export_framebuffer(void *opaque)
          * Require the pointer and all 1024 bytes to match twice in succession,
          * then write only when the stable image differs from the last export.
          */
-        if (s->frame_candidate_valid &&
-            s->frame_candidate_ptr == ptr &&
-            memcmp(s->frame_candidate, frame, sizeof(frame)) == 0) {
-            if (s->frame_candidate_matches < UINT_MAX) {
-                s->frame_candidate_matches++;
-            }
-        } else {
-            memcpy(s->frame_candidate, frame, sizeof(frame));
-            s->frame_candidate_ptr = ptr;
-            s->frame_candidate_matches = 0;
-            s->frame_candidate_valid = true;
-        }
-
-        if (s->frame_candidate_matches >= 1 &&
-            (!s->frame_published_valid ||
-             memcmp(s->frame_published, frame, sizeof(frame)) != 0)) {
-            if (!g_file_set_contents(s->frame_out, (const char *)frame,
-                                     sizeof(frame), NULL)) {
-                qemu_log_mask(LOG_GUEST_ERROR,
-                              "AR-MK2: failed to write framebuffer file %s\n",
-                              s->frame_out);
+            if (s->frame_candidate_valid &&
+                s->frame_candidate_ptr == ptr &&
+                memcmp(s->frame_candidate, frame, sizeof(frame)) == 0) {
+                if (s->frame_candidate_matches < UINT_MAX) {
+                    s->frame_candidate_matches++;
+                }
             } else {
-                memcpy(s->frame_published, frame, sizeof(frame));
-                s->frame_published_valid = true;
+                memcpy(s->frame_candidate, frame, sizeof(frame));
+                s->frame_candidate_ptr = ptr;
+                s->frame_candidate_matches = 0;
+                s->frame_candidate_valid = true;
+            }
+
+            if (s->frame_candidate_matches >= 1 &&
+                (!s->frame_published_valid ||
+                 memcmp(s->frame_published, frame, sizeof(frame)) != 0)) {
+                if (!g_file_set_contents(s->frame_out, (const char *)frame,
+                                         sizeof(frame), NULL)) {
+                    qemu_log_mask(LOG_GUEST_ERROR,
+                                  "AR-MK2: failed to write framebuffer file %s\n",
+                                  s->frame_out);
+                } else {
+                    memcpy(s->frame_published, frame, sizeof(frame));
+                    s->frame_published_valid = true;
+                }
+            }
+        }
+    }
+
+    if (s->parameter_out) {
+        uint8_t parameters[AR_PARAMETER_BYTES];
+
+        physical_memory_read(AR_PARAMETER_ADDR, parameters, sizeof(parameters));
+        if (!s->parameter_published_valid ||
+            memcmp(s->parameter_published, parameters, sizeof(parameters)) != 0) {
+            if (!g_file_set_contents(s->parameter_out,
+                                     (const char *)parameters,
+                                     sizeof(parameters), NULL)) {
+                qemu_log_mask(LOG_GUEST_ERROR,
+                              "AR-MK2: failed to write parameter-state file %s\n",
+                              s->parameter_out);
+            } else {
+                memcpy(s->parameter_published, parameters, sizeof(parameters));
+                s->parameter_published_valid = true;
             }
         }
     }
@@ -652,6 +674,12 @@ static void elektron_ar_mk2_init(MachineState *machine)
         }
     }
     {
+        const char *out = g_getenv("AR_MK2_PARAMETER_STATE_OUT");
+        if (out && *out) {
+            s->parameter_out = g_strdup(out);
+        }
+    }
+    {
         const char *tap = g_getenv("AR_MK2_AUDIO_TAP");
         s->audio_tap = tap && *tap && strcmp(tap, "0") != 0;
     }
@@ -709,7 +737,7 @@ static void elektron_ar_mk2_init(MachineState *machine)
     env->aregs[7] = AR_BOOT_STACK;
     env->pc = AR_MAIN_ENTRY;
 
-    if (s->frame_out) {
+    if (s->frame_out || s->parameter_out) {
         s->frame_timer = timer_new_ms(QEMU_CLOCK_VIRTUAL, ar_export_framebuffer, s);
         timer_mod(s->frame_timer, qemu_clock_get_ms(QEMU_CLOCK_VIRTUAL) + 16);
     }

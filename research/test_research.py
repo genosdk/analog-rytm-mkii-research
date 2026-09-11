@@ -198,7 +198,7 @@ class DesktopPanelInputTests(unittest.TestCase):
             (HERE / "AR172_QEMU_DESKTOP_INPUT_GATE.json").read_text(encoding="utf-8")
         )
         self.assertEqual(
-            report["status"], "PARTIAL_QWERTY_PASS_MOUSE_ENCODER_CONSUMER_OPEN"
+            report["status"], "PASS_QWERTY_MOUSE_AND_FIVE_PAGE_READBACK"
         )
         self.assertTrue(report["runtime_proof"]["visible_firmware_change"])
         self.assertEqual(
@@ -207,7 +207,12 @@ class DesktopPanelInputTests(unittest.TestCase):
         )
 
     def test_qwerty_layout_and_knob_clamp(self):
-        from qemu.desktop_panel import QWERTY_TRIGS, clamp_panel_value
+        from qemu.desktop_panel import (
+            PAGE_PARAMETER_OFFSETS,
+            QWERTY_TRIGS,
+            clamp_panel_value,
+            decode_page_parameters,
+        )
 
         self.assertEqual(
             [QWERTY_TRIGS[key] for key in "qwertyuiasdfghjk"],
@@ -216,6 +221,14 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertEqual(clamp_panel_value(-1), 0)
         self.assertEqual(clamp_panel_value(64), 64)
         self.assertEqual(clamp_panel_value(128), 127)
+        state = bytearray(0x54)
+        for value, offset in enumerate(PAGE_PARAMETER_OFFSETS["SYN"], start=10):
+            state[offset:offset + 2] = (value << 8).to_bytes(2, "big")
+        self.assertEqual(
+            decode_page_parameters(bytes(state), "SYN"),
+            tuple(range(10, 18)),
+        )
+        self.assertIsNone(decode_page_parameters(bytes(state), "TRIG"))
 
     def test_knob_delta_uses_signed_encoder_frames(self):
         from qemu.panel_event_bridge import PanelLink
@@ -239,14 +252,7 @@ class DesktopPanelInputTests(unittest.TestCase):
                 bytes((0x38, 0xFF)),
             ],
         )
-        absolute_sock = SocketStub()
-        absolute = PanelLink(absolute_sock)
-        with redirect_stdout(io.StringIO()):
-            absolute.set_encoder_value("A", 2)
-        self.assertEqual(
-            absolute_sock.frames,
-            [bytes((0x30, 0x81)), bytes((0x30, 0x02))],
-        )
+        self.assertFalse(hasattr(link, "set_encoder_value"))
 
     def test_encoder_delta_gate(self):
         report = json.loads(
@@ -269,7 +275,7 @@ class DesktopPanelInputTests(unittest.TestCase):
         )
         self.assertEqual(
             report["status"],
-            "PARTIAL_NATIVE_EVENT_DISPATCH_PROVEN_BINDING_READBACK_OPEN",
+            "PASS_NATIVE_EVENT_DISPATCH_AND_Q8_READBACK",
         )
         self.assertEqual(
             report["native_consumer_trace"]["active_page_handler"],
@@ -281,13 +287,32 @@ class DesktopPanelInputTests(unittest.TestCase):
             report["native_consumer_trace"]["parameter_selection"],
         )
         self.assertIn(
-            "D0 is null", report["native_consumer_trace"]["value_resolution"]
+            "acceleration/debounce integrator",
+            report["native_consumer_trace"]["value_resolution"],
         )
         self.assertEqual(
             report["pad_pressure_alias_rejected"]["channel_table"],
             "twelve entries 0..11 at 0x4026D4D8",
         )
-        self.assertFalse(report["desktop_status"]["authoritative_readback"])
+        self.assertTrue(report["desktop_status"]["authoritative_readback"])
+
+    def test_encoder_binding_readback_gate(self):
+        report = json.loads(
+            (HERE / "AR172_QEMU_ENCODER_BINDING_READBACK_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(report["status"], "PASS_FIVE_PAGE_NATIVE_Q8_READBACK")
+        self.assertEqual(report["setter_proof"]["live_word"], "0x8000E5C4")
+        self.assertEqual(
+            report["parameter_ids_by_encoder_A_through_H"]["SYN"],
+            [100, 104, 105, 103, 106, 102, 107, 101],
+        )
+        source = (
+            ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_PARAMETER_ADDR    0x8000E5B0u", source)
+        self.assertIn("AR_MK2_PARAMETER_STATE_OUT", source)
 
 
 @unittest.skipUnless(

@@ -17,7 +17,15 @@ from collections.abc import Callable
 W, H = 128, 64
 RAW_W, RAW_H = 64, 128
 FRAME_BYTES = 1024
+PARAMETER_BYTES = 0x54
 PROVEN_BUTTONS = ("TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO", "YES", "NO")
+PAGE_PARAMETER_OFFSETS = {
+    "SYN": (0x14, 0x1A, 0x1C, 0x16, 0x1E, 0x18, 0x20, 0x12),
+    "SMP": (0x22, 0x24, 0x28, 0x26, 0x2A, 0x2C, 0x2E, 0x30),
+    "FLTR": (0x34, 0x36, 0x38, 0x3A, 0x3C, 0x3E, 0x40, 0x32),
+    "AMP": (0x42, 0x44, 0x46, 0x48, 0x50, 0x52, 0x4C, 0x4A),
+    "LFO": (0x0A, 0x02, 0x0C, 0x08, 0x04, 0x0E, 0x06, 0x10),
+}
 QWERTY_TRIGS = {
     key: trig
     for trig, key in enumerate("qwertyuiasdfghjk", start=1)
@@ -28,12 +36,21 @@ def clamp_panel_value(value: int) -> int:
     return max(0, min(127, value))
 
 
+def decode_page_parameters(data: bytes, page: str) -> tuple[int, ...] | None:
+    offsets = PAGE_PARAMETER_OFFSETS.get(page)
+    if offsets is None or len(data) < PARAMETER_BYTES:
+        return None
+    return tuple(
+        int.from_bytes(data[offset:offset + 2], "big") >> 8
+        for offset in offsets
+    )
+
+
 class VirtualKnob(tk.Canvas):
     """Mouse-draggable 0..127 control using signed encoder deltas."""
 
     def __init__(self, parent, name: str,
-                 callback: Callable[[str, int, int], None],
-                 sync_callback: Callable[[str, int], None]):
+                 callback: Callable[[str, int, int], None]):
         super().__init__(
             parent,
             width=58,
@@ -44,13 +61,13 @@ class VirtualKnob(tk.Canvas):
         )
         self.name = name
         self.callback = callback
-        self.sync_callback = sync_callback
         self.value = 64
-        self.synced = False
+        self.dragging = False
         self.drag_y = 0
         self.drag_value = self.value
         self.bind("<ButtonPress-1>", self.begin_drag)
         self.bind("<B1-Motion>", self.drag)
+        self.bind("<ButtonRelease-1>", self.end_drag)
         self.bind("<MouseWheel>", self.wheel)
         self.bind("<Button-4>", lambda _event: self.adjust(1))
         self.bind("<Button-5>", lambda _event: self.adjust(-1))
@@ -58,7 +75,7 @@ class VirtualKnob(tk.Canvas):
 
     def begin_drag(self, event) -> None:
         self.focus_set()
-        self.ensure_synced()
+        self.dragging = True
         self.drag_y = event.y_root
         self.drag_value = self.value
 
@@ -66,21 +83,22 @@ class VirtualKnob(tk.Canvas):
         self.set_value(self.drag_value + round((self.drag_y - event.y_root) / 2))
 
     def wheel(self, event) -> str:
-        self.ensure_synced()
         self.adjust(1 if event.delta > 0 else -1)
         return "break"
 
     def adjust(self, delta: int) -> None:
-        self.ensure_synced()
         self.set_value(self.value + delta)
 
-    def ensure_synced(self) -> None:
-        if not self.synced:
-            self.sync_callback(self.name, self.value)
-            self.synced = True
+    def end_drag(self, _event=None) -> None:
+        self.dragging = False
 
-    def invalidate(self) -> None:
-        self.synced = False
+    def set_readback(self, value: int) -> None:
+        if self.dragging:
+            return
+        value = clamp_panel_value(value)
+        if value != self.value:
+            self.value = value
+            self.redraw()
 
     def set_value(self, value: int) -> None:
         value = clamp_panel_value(value)
@@ -106,12 +124,15 @@ class VirtualKnob(tk.Canvas):
 
 class PanelApp:
     def __init__(self, root: tk.Tk, frame_file: Path, event_file: Path,
-                 scale: int = 6) -> None:
+                 scale: int = 6, parameter_file: Path | None = None) -> None:
         self.root = root
         self.frame_file = frame_file
         self.event_file = event_file
+        self.parameter_file = parameter_file
         self.scale = scale
         self.last_mtime = 0
+        self.last_parameter_mtime = 0
+        self.current_page = "SYN"
         self.photo = None
         self.held_trigs: dict[int, set[str]] = {}
         self.pending_key_releases: dict[str, str] = {}
@@ -164,8 +185,8 @@ class PanelApp:
 
         enc_frame = tk.Frame(shell, bg="#181818")
         enc_frame.grid(row=4, column=0, columnspan=9)
-        for col, name in enumerate("ABCDEFGHI"):
-            knob = VirtualKnob(enc_frame, name, self.encoder, self.sync_encoder)
+        for col, name in enumerate("ABCDEFGH"):
+            knob = VirtualKnob(enc_frame, name, self.encoder)
             knob.grid(row=0, column=col, padx=1)
             self.knobs.append(knob)
 
@@ -191,8 +212,8 @@ class PanelApp:
     def panel_button(self, name: str, pressed: bool) -> None:
         self.emit("button", name, "press" if pressed else "release")
         if pressed and name in {"TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO"}:
-            for knob in self.knobs:
-                knob.invalidate()
+            self.current_page = name
+            self.reload_parameters(force=True)
         self.status.set(f"{name} {'down' if pressed else 'up'}")
 
     def trig(self, trig: int, pressed: bool, source: str = "mouse") -> None:
@@ -212,10 +233,6 @@ class PanelApp:
         self.emit("encoder", name, delta)
         suffix = f" → {value}" if value is not None else ""
         self.status.set(f"Encoder {name}: {delta:+d}{suffix}")
-
-    def sync_encoder(self, name: str, value: int) -> None:
-        self.emit("encoder_value", name, clamp_panel_value(value))
-        self.status.set(f"Encoder {name} endpoint target → {value}")
 
     def key_press(self, event) -> str | None:
         key = event.keysym.lower()
@@ -314,8 +331,26 @@ class PanelApp:
         nonzero = sum(v != 0 for v in data[:FRAME_BYTES])
         self.status.set(f"Firmware OLED — {nonzero} nonzero bytes")
 
+    def reload_parameters(self, force: bool = False) -> None:
+        if self.parameter_file is None:
+            return
+        try:
+            st = self.parameter_file.stat()
+        except FileNotFoundError:
+            return
+        if not force and st.st_mtime_ns == self.last_parameter_mtime:
+            return
+        data = self.parameter_file.read_bytes()
+        values = decode_page_parameters(data, self.current_page)
+        if values is None:
+            return
+        for knob, value in zip(self.knobs, values):
+            knob.set_readback(value)
+        self.last_parameter_mtime = st.st_mtime_ns
+
     def poll(self) -> None:
         self.reload_frame()
+        self.reload_parameters()
         self.root.after(33, self.poll)
 
     def close(self) -> None:
@@ -327,10 +362,11 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--frame", type=Path, required=True)
     ap.add_argument("--events", type=Path, required=True)
+    ap.add_argument("--parameters", type=Path)
     ap.add_argument("--scale", type=int, default=6)
     args = ap.parse_args()
     root = tk.Tk()
-    PanelApp(root, args.frame, args.events, args.scale)
+    PanelApp(root, args.frame, args.events, args.scale, args.parameters)
     root.mainloop()
 
 

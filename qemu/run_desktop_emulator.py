@@ -170,6 +170,7 @@ def main() -> None:
     uart = runtime / "panel.sock"
     monitor = runtime / "monitor.sock"
     frame = runtime / "front-buffer.bin"
+    parameters = runtime / "parameter-state.bin"
     events = runtime / "panel-events.jsonl"
     log = runtime / "qemu.log"
 
@@ -193,6 +194,7 @@ def main() -> None:
 
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
+    env["AR_MK2_PARAMETER_STATE_OUT"] = str(parameters)
     if args.no_mock_calibration:
         env.pop("AR_MK2_MOCK_CALIBRATION", None)
     else:
@@ -252,7 +254,7 @@ def main() -> None:
         hmp_continue(monitor)
 
         root = tk.Tk()
-        PanelApp(root, frame, events, args.scale)
+        PanelApp(root, frame, events, args.scale, parameters)
         root.mainloop()
 
         if qemu_proc.poll() is not None and qemu_proc.returncode:

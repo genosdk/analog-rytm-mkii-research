@@ -54,16 +54,20 @@ The desktop panel maps `QWERTYUI` to Trigs 1–8 and `ASDFGHJK` to Trigs
 mouse buttons. Repeated key-down events are suppressed, and losing window
 focus releases every held trig so the firmware cannot retain a stuck pad.
 
-Encoders A–I are displayed as virtual knobs. Vertical mouse drag changes one
-step per two pixels and the wheel changes one step per notch. Each knob keeps a
-host-side value clamped to 0–127. On first grab, it sends a saturating `-127`
-sweep followed by its displayed value, establishing an actual absolute firmware
-value through native signed `0x3n` deltas. Later movement uses the same signed
-delta format. Page changes invalidate that
-synchronization because A–I then address different functions.
+Encoders A–H are displayed as the eight page-function knobs. Vertical mouse
+drag changes one step per two pixels and the wheel changes one step per notch;
+movement uses native signed `0x3n` deltas. The previous `-127`/target endpoint
+guess has been removed: the stock acceleration gate can suppress or scale those
+two frames, so they do not establish an absolute value.
+
+QEMU instead exports the firmware's 42-word live track bank from `0x8000E5B0`.
+The frontend selects the proven per-page A–H offsets and decodes each big-endian
+Q8 word's high byte as the authoritative 0–127 value. SYN, SMP, FLTR, AMP, and
+LFO are mapped. TRIG uses a different owner and remains readback-open. Native
+encoder index 8 is the separate Level/Data control, not a ninth page-function
+knob.
 
 ## Current target
 
-Trace UI dispatch case 0 through its state mutation and redraw/presentation calls. The goal is to prove one native panel frame causes a visible change in the presented framebuffer at pointer global `0x4026F474`.
-
-The emulator is not considered standalone-interactive until that round trip is reproducible without manual debugger intervention.
+Resolve the TRIG-page owner and separate Level/Data readback path without
+regressing the now-proven five-page Q8 export.

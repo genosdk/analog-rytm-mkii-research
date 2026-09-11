@@ -102,16 +102,6 @@ class PanelLink:
         if delta:
             self.send(bytes((0x30 | idx, delta & 0xFF)))
 
-    def set_encoder_value(self, name: str, value: int) -> None:
-        """Establish an absolute 0..127 value using relative deltas."""
-        if not 0 <= value <= 127 or name.upper() not in ENCODERS:
-            return
-        # Saturate at zero first, then move to the requested value. This is an
-        # experimental fallback until native parameter readback is mapped.
-        self.encoder(name, -127)
-        if value:
-            self.encoder(name, value)
-
 
 def connect_unix(path: Path, timeout: float) -> socket.socket:
     deadline = time.monotonic() + timeout
@@ -172,14 +162,6 @@ def follow_events(path: Path, link: PanelLink, start_at_end: bool) -> None:
                 except (TypeError, ValueError):
                     continue
                 link.encoder(name, delta)
-                continue
-
-            if kind == "encoder_value":
-                try:
-                    absolute = int(value)
-                except (TypeError, ValueError):
-                    continue
-                link.set_encoder_value(name, absolute)
                 continue
 
             print(f"unmapped panel event: {event}", flush=True)

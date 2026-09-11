@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_ACTIVE_ENCODER_BINDING_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PARTIAL_NATIVE_EVENT_DISPATCH_PROVEN_BINDING_READBACK_OPEN",
+  "status": "PASS_NATIVE_EVENT_DISPATCH_AND_Q8_READBACK",
   "encoder_motion_path": {
     "wire": "0x3n followed by signed 8-bit movement delta",
     "parser": "0x4007F30C",
@@ -24,9 +24,10 @@
     "subscriber_dispatch": "0x400770F6 / 0x40076F62",
     "active_page_handler": "dynamic adapter 0x400761A6 selects target 0x40038B58, entering shared handler body 0x4003882C",
     "parameter_selection": "the active page vtable lookup at 0x4003886E resolves encoder index 0 to parameter descriptor ID 100",
-    "value_resolution": "the generic adjustment call at 0x400389D4 enters 0x4006CAD2 and returns normally at the correctly aligned boundary 0x40038A02, but D0 is null",
+    "value_resolution": "0x4006CAD2 is the native acceleration/debounce integrator, not a binding lookup; initial D0=0 suppressions are expected while its per-encoder countdown exceeds the threshold",
     "interrupt_result": "No missing or stalling panel interrupt remains in this path; the correctly aligned 0x4007EB58 service breakpoint fires continuously",
-    "current_blocker": "Parameter ID 100 is selected, but its live value/binding object is absent or inactive, so the handler exits without a Q8 mutation."
+    "q8_mutation": "four rapid Encoder-A +5 frames produce the first nonzero integrator result; fallback setter 0x400361B6 changes parameter ID 100 at 0x8000E5C4 from 0x3D00 to 0x3D05",
+    "readback": "the live track bank at 0x8000E5B0 contains 42 big-endian Q8 words; the high byte is the authoritative 0..127 frontend value"
   },
   "negative_controls": {
     "neutral_panel_scans": "0x20..0x25 with zero payload do not consume the encoder accumulator",
@@ -53,12 +54,12 @@
     "native_encoder_accumulation": "PASS",
     "native_type_1_delivery": "PASS",
     "active_page_handler_selection": "PASS",
-    "active_function_mutation": "NOT_YET_PROVEN",
-    "authoritative_readback": false
+    "active_function_mutation": "PASS",
+    "authoritative_readback": true
   },
   "next_gate": {
-    "name": "AR172_QEMU_ENCODER_BINDING_READBACK_GATE",
-    "objective": "Determine why parameter ID 100 returns a null live value/binding object from 0x4006CAD2, activate it through the native page/track descriptor path, then prove before/after Q8 readback for positive and negative deltas."
+    "name": "AR172_QEMU_TRIG_AND_LEVEL_READBACK_GATE",
+    "objective": "Resolve the TRIG-page parameter owner and separate encoder-I Level/Data readback while preserving the five mapped page banks."
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

@@ -34,12 +34,11 @@ The desktop bridge currently exposes only panel mappings verified directly again
 The page keys have been validated by causal changes in the firmware's presented OLED framebuffer.
 
 The computer keyboard maps `QWERTYUI` to Trigs 1–8 and `ASDFGHJK` to
-Trigs 9–16. Click and drag a virtual knob vertically, or use the mouse wheel,
-to target its current function from 0–127. On first grab after a page change,
-the bridge performs a unit-counter endpoint sweep toward the displayed knob
-value; subsequent movement is relative and clamped at both endpoints. Exact
-active-value readback is still being mapped, so the displayed number is not yet
-firmware-authoritative before that first grab.
+Trigs 9–16. Click and drag one of the eight A–H function knobs vertically, or
+use the mouse wheel, to send native relative encoder movement. The displayed
+0–127 values are initialized and refreshed from the firmware's live Q8 track
+bank on SYN, SMP, FLTR, AMP, and LFO pages. TRIG-page readback and the separate
+Level/Data encoder remain open.
 
 ## Display
 

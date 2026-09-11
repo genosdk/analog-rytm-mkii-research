@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_DESKTOP_INPUT_GATE",
   "recorded_at_utc": "2026-09-10",
-  "status": "PARTIAL_QWERTY_PASS_MOUSE_ENCODER_CONSUMER_OPEN",
+  "status": "PASS_QWERTY_MOUSE_AND_FIVE_PAGE_READBACK",
   "qwerty": {
     "mapping": "QWERTYUI / ASDFGHJK -> Trigs 1..16",
     "transport": "keydown/keyup -> validated group-3/group-2 press/release bitmaps",
@@ -10,16 +10,16 @@
     "focus_loss_releases_held_trigs": true
   },
   "virtual_knobs": {
-    "controls": "A..I",
+    "controls": "A..H page-function encoders; native index I is the separate Level/Data control",
     "range": "0..127",
     "interaction": "vertical mouse drag or wheel",
-    "absolute_sync": "experimental: first grab sends signed -127 to saturate at zero, then sends the displayed value; direct firmware readback remains open",
+    "absolute_sync": "removed after the native integrator proved a two-frame -127/target sequence cannot establish an absolute endpoint",
     "subsequent_motion": "host movement is sent as a signed 8-bit delta",
-    "page_change_behavior": "invalidate synchronization because A..I address new functions"
+    "readback": "SYN, SMP, FLTR, AMP, and LFO values refresh from the stock 42-word Q8 bank exported at 0x8000E5B0"
   },
   "runtime_proof": {
     "encoder": "A",
-    "requested_absolute_value": 64,
+    "probe": "signed -127 followed by +64; transport-only, not an absolute-value claim",
     "validated_probe_frames": ["30 81", "30 40"],
     "framebuffer_before_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
     "framebuffer_after_sha256": "488829bcb69852e604b8e3922a572c4b513a952e21ca3e1c8dd2519ac22c061d",
@@ -30,10 +30,10 @@
     "minimum_completed_audio_services": 64,
     "nonzero_host_audio": true
   },
-  "decision": "QWERTY controls traverse the native button event path. Mouse knobs produce the correct signed-delta UART frames and reach the nine native accumulators, but active-function mutation remains open because the accumulator consumer trigger is not yet identified. The earlier OLED-only result is not sufficient parameter evidence.",
+  "decision": "QWERTY controls traverse the native button event path. Mouse A..H controls traverse the native encoder event, integrator, setter, and Q8 mutation path. Frontend numbers now come from firmware state rather than an unsynchronized host counter.",
   "next_gate": {
-    "name": "AR172_QEMU_DESKTOP_CONTROL_CONTEXT_GATE",
-    "objective": "Read or infer the active page parameter values so all nine knob indicators initialize from firmware state without requiring first-grab endpoint synchronization."
+    "name": "AR172_QEMU_TRIG_AND_LEVEL_READBACK_GATE",
+    "objective": "Map the separate TRIG-page owner and encoder-I Level/Data state."
   },
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

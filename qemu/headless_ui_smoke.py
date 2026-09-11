@@ -164,7 +164,7 @@ def main() -> None:
     parser.add_argument(
         "--exercise-encoder",
         action="store_true",
-        help="synchronize encoder A to 64 and require a native framebuffer change",
+        help="send signed encoder-A probe vectors and require a framebuffer change",
     )
     parser.add_argument(
         "--trigger-count",
@@ -279,7 +279,7 @@ def main() -> None:
             events.append(
                 {
                     "control": "ENCODER A",
-                    "absolute_value": 64,
+                    "probe": "signed-delta transport",
                     "delta_frames": len(encoder_frames),
                     "signed_deltas": [-127, 64],
                 }
