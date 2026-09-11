@@ -43,6 +43,13 @@ fields. Encoder I is displayed separately as Level and follows the firmware's
 Trig presses 1–12 select native track indices 0–11, so mouse and QWERTY
 triggering also move the Level readback to the corresponding track.
 
+Launch with `--audio` to enable bounded native renderer service and the guarded
+emulator-generated `QEMU TEST` provider. After the normal UI appears, select a
+track and click **LOAD TEST**. The desktop opens SMP and sends the proven four
+`Encoder D +8` frames; the untouched stock setter assigns Sample Slot 1. Hold
+the matching QWERTY trigger through the first service (roughly 100 ms) to hear
+the generated sample through the host audio tap.
+
 ## Display
 
 The firmware stores its presented 1 KiB OLED framebuffer as 64x128 row-major MSB data. The desktop frontend rotates that buffer 90 degrees into the physical 128x64 display orientation.
@@ -76,9 +83,10 @@ the hardware pan/return mapping is not yet proven.
 
 The tap itself remains passive. In desktop mode, `--audio` also enables a
 bounded service gate: each rising Trig/pad edge schedules eight stock
-vector-191 renderer passes. This proves repeated QWERTY-to-host-PCM operation
-without enabling the unbounded research clock. Longer realtime playback is
-still blocked on ColdFire TCG throughput.
+vector-191 renderer passes and exposes the explicit **LOAD TEST** action. This
+proves repeated QWERTY-to-host-PCM operation without enabling the unbounded
+research clock. Longer realtime playback is still blocked on ColdFire TCG
+throughput.
 
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at

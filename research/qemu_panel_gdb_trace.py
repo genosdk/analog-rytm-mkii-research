@@ -97,6 +97,7 @@ def main() -> int:
     parser.add_argument("--boot-seconds", type=float, default=12)
     parser.add_argument("--event-repeats", type=int, default=4)
     parser.add_argument("--event-delay", type=float, default=0.02)
+    parser.add_argument("--log-events", action="store_true")
     args = parser.parse_args()
 
     runtime = Path(tempfile.mkdtemp(prefix="ar-mk2-gdb-trace-"))
@@ -165,8 +166,11 @@ def main() -> int:
         def send_events() -> None:
             for _ in range(args.event_repeats):
                 for offset in range(0, len(event), 2):
-                    writer.write(event[offset:offset + 2])
+                    frame = event[offset:offset + 2]
+                    writer.write(frame)
                     writer.flush()
+                    if args.log_events:
+                        print(f"send={frame.hex()}", flush=True)
                     time.sleep(args.event_delay)
 
         rsp.command("c", expect_reply=False)

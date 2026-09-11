@@ -353,6 +353,34 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertIn("--exercise-track-level", smoke_source)
         self.assertIn('changed != [2]', smoke_source)
 
+    def test_turnkey_qwerty_audio_gate(self):
+        report = json.loads(
+            (HERE / "AR172_QEMU_TURNKEY_QWERTY_AUDIO_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            report["status"],
+            "PASS_NATIVE_DEMO_ASSIGNMENT_AND_QWERTY_HOST_PCM",
+        )
+        self.assertEqual(
+            report["native_assignment"]["frames"], ["33 08"] * 4
+        )
+        self.assertTrue(report["qwerty_audio"]["nonzero_host_audio"])
+        launcher = (ROOT / "qemu" / "run_desktop_emulator.py").read_text(
+            encoding="utf-8"
+        )
+        panel = (ROOT / "qemu" / "desktop_panel.py").read_text(
+            encoding="utf-8"
+        )
+        smoke = (ROOT / "qemu" / "headless_ui_smoke.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('env["AR_MK2_MOCK_PROJECT_SAMPLE"] = "1"', launcher)
+        self.assertIn('text="LOAD TEST"', panel)
+        self.assertIn('self.encoder("D", 8)', panel)
+        self.assertIn("--exercise-demo-sample", smoke)
+
 
 @unittest.skipUnless(
     (HERE / "extracted_stock_nrv" / "section_2_id_1.decompressed.bin").exists(),

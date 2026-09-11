@@ -123,12 +123,14 @@ python qemu/run_desktop_emulator.py \
   --audio
 ```
 
-`--audio` enables the passive tap and a bounded trigger service. Each rising
-Trig/pad edge received through UART8 schedules one stock audio interrupt; the
-continuous research clock remains disabled. QEMU builds need a platform output
-driver (for example CoreAudio, PipeWire, PulseAudio, SDL, or OSS). For a
-deterministic capture, QEMU can instead be launched with its WAV default audio
-driver while `AR_MK2_AUDIO_TAP=1` is set.
+`--audio` enables the passive tap, the guarded generated `QEMU TEST` provider,
+and a bounded trigger service. Click **LOAD TEST** after boot to assign slot 1
+through four native SMP encoder frames. Each rising Trig/pad edge received
+through UART8 schedules eight stock audio interrupts; the continuous research
+clock remains disabled. QEMU builds need a platform output driver (for example
+CoreAudio, PipeWire, PulseAudio, SDL, or OSS). For a deterministic capture,
+QEMU can instead be launched with its WAV default audio driver while
+`AR_MK2_AUDIO_TAP=1` is set.
 
 ## GUI bridge
 

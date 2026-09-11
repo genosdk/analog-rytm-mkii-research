@@ -146,7 +146,8 @@ def main() -> None:
         action="store_true",
         help=(
             "enable the 48 kHz stereo renderer tap and eight bounded stock audio "
-            "service passes per rising pad/QWERTY edge"
+            "service passes per rising pad/QWERTY edge; also expose the guarded "
+            "QEMU TEST sample loader"
         ),
     )
     ap.add_argument(
@@ -220,6 +221,7 @@ def main() -> None:
     if args.audio:
         env["AR_MK2_AUDIO_TAP"] = "1"
         env["AR_MK2_AUDIO_TRIGGER_SERVICE"] = "1"
+        env["AR_MK2_MOCK_PROJECT_SAMPLE"] = "1"
     else:
         env.pop("AR_MK2_AUDIO_TAP", None)
         env.pop("AR_MK2_AUDIO_TRIGGER_SERVICE", None)
@@ -258,7 +260,10 @@ def main() -> None:
         hmp_continue(monitor)
 
         root = tk.Tk()
-        PanelApp(root, frame, events, args.scale, parameters, levels, trig_state)
+        PanelApp(
+            root, frame, events, args.scale,
+            parameters, levels, trig_state, args.audio,
+        )
         root.mainloop()
 
         if qemu_proc.poll() is not None and qemu_proc.returncode:

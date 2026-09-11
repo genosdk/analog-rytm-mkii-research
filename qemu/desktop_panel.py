@@ -161,7 +161,8 @@ class PanelApp:
     def __init__(self, root: tk.Tk, frame_file: Path, event_file: Path,
                  scale: int = 6, parameter_file: Path | None = None,
                  track_level_file: Path | None = None,
-                 trig_state_file: Path | None = None) -> None:
+                 trig_state_file: Path | None = None,
+                 demo_sample: bool = False) -> None:
         self.root = root
         self.frame_file = frame_file
         self.event_file = event_file
@@ -173,6 +174,8 @@ class PanelApp:
         self.last_parameter_mtime = 0
         self.last_track_level_mtime = 0
         self.last_trig_state_mtime = 0
+        self.parameter_data = b""
+        self.demo_loading = False
         self.current_page = "SYN"
         self.photo = None
         self.held_trigs: dict[int, set[str]] = {}
@@ -213,6 +216,11 @@ class PanelApp:
             b.grid(row=0, column=col, padx=3, pady=3)
             b.bind("<ButtonPress-1>", lambda _e, n=name: self.panel_button(n, True))
             b.bind("<ButtonRelease-1>", lambda _e, n=name: self.panel_button(n, False))
+        if demo_sample:
+            tk.Button(
+                page_frame, text="LOAD TEST", width=9,
+                command=self.load_demo_sample,
+            ).grid(row=0, column=len(PROVEN_BUTTONS), padx=3, pady=3)
 
         trig_frame = tk.Frame(shell, bg="#202020")
         trig_frame.grid(row=3, column=0, columnspan=9, sticky="ew", pady=(0, 10))
@@ -277,6 +285,29 @@ class PanelApp:
         self.emit("encoder", name, delta)
         suffix = f" → {value}" if value is not None else ""
         self.status.set(f"Encoder {name}: {delta:+d}{suffix}")
+
+    def load_demo_sample(self) -> None:
+        if self.demo_loading:
+            return
+        if len(self.parameter_data) < PARAMETER_BYTES:
+            self.status.set("Waiting for firmware parameter state…")
+            return
+        if self.parameter_data[0x26:0x28] != b"\x00\x00":
+            self.status.set("Sample Slot is already assigned")
+            return
+        self.demo_loading = True
+        self.panel_button("SMP", True)
+        self.root.after(80, lambda: self.panel_button("SMP", False))
+        for index in range(4):
+            self.root.after(400 + index * 100, lambda: self.encoder("D", 8))
+        self.root.after(900, self.finish_demo_sample_load)
+
+    def finish_demo_sample_load(self) -> None:
+        self.demo_loading = False
+        if self.parameter_data[0x26:0x28] == b"\x01\x00":
+            self.status.set("QEMU TEST assigned to Sample Slot 1")
+        else:
+            self.status.set("Sample assignment not accepted; click LOAD TEST again")
 
     def key_press(self, event) -> str | None:
         key = event.keysym.lower()
@@ -388,6 +419,7 @@ class PanelApp:
         if not force and st.st_mtime_ns == self.last_parameter_mtime:
             return
         data = self.parameter_file.read_bytes()
+        self.parameter_data = data
         values = decode_page_parameters(data, self.current_page)
         if values is None:
             return
@@ -445,12 +477,13 @@ def main() -> None:
     ap.add_argument("--parameters", type=Path)
     ap.add_argument("--track-levels", type=Path)
     ap.add_argument("--trig-state", type=Path)
+    ap.add_argument("--demo-sample", action="store_true")
     ap.add_argument("--scale", type=int, default=6)
     args = ap.parse_args()
     root = tk.Tk()
     PanelApp(
         root, args.frame, args.events, args.scale,
-        args.parameters, args.track_levels, args.trig_state,
+        args.parameters, args.track_levels, args.trig_state, args.demo_sample,
     )
     root.mainloop()
 

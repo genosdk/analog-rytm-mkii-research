@@ -169,6 +169,21 @@ def wait_track_level_state(path: Path, deadline: float, predicate):
     raise TimeoutError("track-level state did not reach the expected value")
 
 
+def wait_file_slice(path: Path, offset: int, expected: bytes,
+                    deadline: float) -> bytes:
+    while time.monotonic() < deadline:
+        try:
+            data = path.read_bytes()
+        except FileNotFoundError:
+            data = b""
+        if data[offset:offset + len(expected)] == expected:
+            return data
+        time.sleep(0.03)
+    raise TimeoutError(
+        f"{path.name} offset 0x{offset:X} did not become {expected.hex()}"
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--qemu", type=Path, required=True)
@@ -196,6 +211,11 @@ def main() -> None:
         "--exercise-track-level",
         action="store_true",
         help="select Trig 3 and prove encoder I mutates only track-3 Level",
+    )
+    parser.add_argument(
+        "--exercise-demo-sample",
+        action="store_true",
+        help="assign generated slot 1 through SMP encoder D and require QWERTY audio",
     )
     parser.add_argument(
         "--trigger-count",
@@ -235,6 +255,12 @@ def main() -> None:
         parser.error("--minimum-audio-services cannot be negative")
     if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
         args.qemu_debug = f"unimp,{args.qemu_debug}"
+    if args.exercise_demo_sample:
+        args.exercise_trigger_audio = True
+        args.require_nonzero_audio = True
+        args.minimum_audio_services = max(args.minimum_audio_services, 8)
+        if "unimp" not in args.qemu_debug.split(","):
+            args.qemu_debug = f"unimp,{args.qemu_debug}"
 
     qemu = args.qemu.expanduser().resolve()
     main_image = args.main.expanduser().resolve()
@@ -249,6 +275,7 @@ def main() -> None:
     os.mkfifo(panel_out)
     frame = runtime / "framebuffer.bin"
     track_levels = runtime / "track-level-state.bin"
+    parameters = runtime / "parameter-state.bin"
     log = runtime / "qemu.log"
     monitor_port = unused_local_port()
     diagnostics = runtime / "monitor.txt"
@@ -258,6 +285,10 @@ def main() -> None:
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
     if args.exercise_track_level:
         env["AR_MK2_TRACK_LEVEL_STATE_OUT"] = str(track_levels)
+    if args.exercise_demo_sample:
+        env["AR_MK2_MOCK_PROJECT_SAMPLE"] = "1"
+        env["AR_MK2_PARAMETER_STATE_OUT"] = str(parameters)
+        env["AR_MK2_AUDIO_TRIGGER_SERVICE"] = "1"
     if args.mock_audio_service:
         env["AR_MK2_MOCK_AUDIO_SERVICE"] = "1"
     else:
@@ -297,6 +328,29 @@ def main() -> None:
         encoder_frame = None
         encoder_state_changes = None
         track_level_result = None
+        demo_sample_result = None
+        if args.exercise_demo_sample:
+            wait_log_count(
+                log, "injected generated 16-bit test sample in slot 1", 1, deadline
+            )
+            wait_file_slice(parameters, 0x26, b"\x00\x00", deadline)
+            panel_writer.write(bytes.fromhex("25 10"))
+            time.sleep(0.08)
+            panel_writer.write(bytes.fromhex("25 00"))
+            time.sleep(0.6)
+            for _ in range(4):
+                panel_writer.write(bytes.fromhex("33 08"))
+                time.sleep(0.1)
+            wait_file_slice(parameters, 0x26, b"\x01\x00", deadline)
+            demo_sample_result = {
+                "provider": "QEMU TEST",
+                "sample_slot": 1,
+                "assignment": "four native encoder-D +8 frames",
+            }
+            events.append({
+                "control": "SMP + ENCODER D",
+                "result": "Sample Slot 1 assigned through stock setter",
+            })
         if args.exercise_track_level:
             initial_index, initial_levels = wait_track_level_state(
                 track_levels, deadline, lambda state: state[0] < 13
@@ -360,7 +414,15 @@ def main() -> None:
         if args.exercise_trigger_audio:
             for index in range(args.trigger_count):
                 panel_writer.write(bytes.fromhex("23 01"))
-                time.sleep(0.08)
+                if args.exercise_demo_sample:
+                    wait_log_count(
+                        log,
+                        "AR-MK2 AUDIO: completed vector 191 service",
+                        index * args.services_per_trigger + 1,
+                        deadline,
+                    )
+                else:
+                    time.sleep(0.08)
                 panel_writer.write(bytes.fromhex("23 00"))
                 wait_log_count(
                     log,
@@ -415,6 +477,7 @@ def main() -> None:
             "encoder_frame": metrics(encoder_frame) if encoder_frame else None,
             "encoder_state_changes": encoder_state_changes,
             "track_level": track_level_result,
+            "demo_sample": demo_sample_result,
             "smp_page": metrics(smp_page),
             "firmware_embedded": False,
         }, indent=2))
