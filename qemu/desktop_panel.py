@@ -20,17 +20,18 @@ FRAME_BYTES = 1024
 PROVEN_BUTTONS = ("TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO", "YES", "NO")
 PAGE_BUTTONS = PROVEN_BUTTONS[:6]
 PANEL_ASPECT = 385 / 225
-PANEL_BG = "#171918"
-PANEL_INSET = "#101211"
-PANEL_EDGE = "#373a38"
-CONTROL_FACE = "#252826"
-CONTROL_EDGE = "#555a56"
-TEXT = "#e6e9e5"
-MUTED = "#89908b"
-LED_OFF = "#4a1c14"
+PANEL_BG = "#989da1"
+PANEL_INSET = "#8f9498"
+PANEL_EDGE = "#707579"
+CONTROL_FACE = "#171918"
+CONTROL_EDGE = "#303331"
+TEXT = "#151817"
+MUTED = "#264a5a"
+LIGHT_TEXT = "#f1f3f1"
+LED_OFF = "#321813"
 LED_RED = "#ff4b2e"
 LED_ORANGE = "#ff7a32"
-OLED_PIXEL = "#e5eee8"
+OLED_PIXEL = "#d8f8ff"
 QWERTY_TRIGS = {
     key: trig
     for trig, key in enumerate("qwertyuiasdfghjk", start=1)
@@ -46,7 +47,7 @@ def clamp_panel_value(value: int) -> int:
 
 def panel_window_size(scale: int) -> tuple[int, int]:
     """Return one fixed hardware-proportional window size for a display scale."""
-    width = max(1120, W * max(1, scale) + 450)
+    width = max(1220, W * max(1, scale) + 500)
     width = int(round(width / 10) * 10)
     return width, int(round(width / PANEL_ASPECT))
 
@@ -58,8 +59,8 @@ class PanelButton(tk.Canvas):
                  callback: Callable[[str, bool], None]):
         super().__init__(
             parent,
-            width=76,
-            height=42,
+            width=72,
+            height=44,
             bg=PANEL_INSET,
             highlightthickness=0,
             cursor="hand2",
@@ -101,13 +102,14 @@ class PanelButton(tk.Canvas):
     def redraw(self) -> None:
         self.delete("all")
         focused = self.focus_get() == self
-        face = "#353936" if self.held else CONTROL_FACE
+        face = "#292c2a" if self.held else CONTROL_FACE
         edge = LED_ORANGE if focused else CONTROL_EDGE
-        self.create_rectangle(4, 7, 72, 38, fill=face, outline=edge, width=2)
-        self.create_text(38, 24, text=self.name, fill=TEXT,
-                         font=("TkDefaultFont", 9, "bold"))
+        self.create_rectangle(5, 8, 67, 39, fill="#090a09", outline="#565a57")
+        self.create_rectangle(8, 10, 64, 36, fill=face, outline=edge, width=1)
+        self.create_text(36, 24, text=self.name, fill=LIGHT_TEXT,
+                         font=("Helvetica", 8, "bold"))
         led = LED_RED if self.active or self.held else LED_OFF
-        self.create_oval(61, 1, 68, 8, fill=led, outline="")
+        self.create_oval(60, 1, 67, 8, fill=led, outline="#222321")
 
 
 class TrigPad(tk.Canvas):
@@ -139,13 +141,14 @@ class TrigPad(tk.Canvas):
 
     def redraw(self) -> None:
         self.delete("all")
-        face = "#4a2a20" if self.active else "#242725"
+        face = "#4a2a20" if self.active else "#151716"
         edge = LED_ORANGE if self.active else CONTROL_EDGE
-        self.create_rectangle(4, 14, 58, 64, fill=face, outline=edge, width=2)
-        self.create_text(31, 36, text=f"{self.trig:02d}", fill=TEXT,
-                         font=("TkDefaultFont", 11, "bold"))
-        self.create_text(31, 72, text=self.key, fill=MUTED,
-                         font=("TkDefaultFont", 8, "bold"))
+        self.create_rectangle(4, 14, 58, 64, fill="#090a09", outline="#656965")
+        self.create_rectangle(7, 16, 55, 60, fill=face, outline=edge, width=2)
+        self.create_text(31, 37, text=str(self.trig), fill=LIGHT_TEXT,
+                         font=("Helvetica", 11))
+        self.create_text(31, 72, text=self.key, fill="#314e5b",
+                         font=("Helvetica", 7, "bold"))
         led = LED_ORANGE if self.active else LED_OFF
         self.create_oval(27, 4, 35, 12, fill=led, outline="")
 
@@ -157,8 +160,8 @@ class VirtualKnob(tk.Canvas):
                  initial_value: int = 64):
         super().__init__(
             parent,
-            width=72,
-            height=94,
+            width=88,
+            height=104,
             bg=PANEL_INSET,
             highlightthickness=0,
             cursor="sb_v_double_arrow",
@@ -228,24 +231,25 @@ class VirtualKnob(tk.Canvas):
 
         self.delete("all")
         focused = self.focus_get() == self
-        self.create_text(36, 9, text=self.name, fill=TEXT,
-                         font=("TkDefaultFont", 9, "bold"))
-        for index in range(11):
-            tick = math.radians(225 - (270 * index / 10))
-            x1 = 36 + 25 * math.cos(tick)
-            y1 = 44 - 25 * math.sin(tick)
-            x2 = 36 + 28 * math.cos(tick)
-            y2 = 44 - 28 * math.sin(tick)
-            self.create_line(x1, y1, x2, y2, fill="#656a66", width=1)
+        cx, cy = 44, 49
+        self.create_text(cx, 8, text=self.name, fill=TEXT,
+                         font=("Helvetica", 9, "bold"))
         outline = LED_ORANGE if focused else CONTROL_EDGE
-        self.create_oval(15, 23, 57, 65, fill="#292c2a", outline=outline, width=2)
-        self.create_oval(20, 28, 52, 60, fill="#202220", outline="#111211")
+        # Layered face closely follows the broad, low-profile encoder caps in
+        # the supplied Photon/hardware reference without depending on a raster.
+        self.create_oval(15, 20, 75, 80, fill="#111312", outline="#696d69")
+        self.create_oval(18, 22, 72, 76, fill="#202321", outline=outline, width=2)
+        self.create_arc(21, 25, 69, 73, start=20, extent=150,
+                        style="arc", outline="#343836", width=2)
+        self.create_arc(21, 25, 69, 73, start=205, extent=125,
+                        style="arc", outline="#0b0c0b", width=2)
+        self.create_oval(26, 30, 64, 68, fill="#1b1d1c", outline="#252826")
         angle = math.radians(225 - (270 * self.value / 127))
-        x = 36 + 14 * math.cos(angle)
-        y = 44 - 14 * math.sin(angle)
-        self.create_line(36, 44, x, y, fill=OLED_PIXEL, width=3)
-        self.create_text(36, 82, text=f"{self.value:03d}", fill=MUTED,
-                         font=("TkFixedFont", 9, "bold"))
+        x = cx + 17 * math.cos(angle)
+        y = cy - 17 * math.sin(angle)
+        self.create_line(cx, cy, x, y, fill="#d7dcda", width=3)
+        self.create_text(cx, 94, text=f"{self.value:03d}", fill=MUTED,
+                         font=("TkFixedFont", 8, "bold"))
 
 
 class PanelApp:
@@ -284,7 +288,7 @@ class PanelApp:
         self.lfo2_audition_button: tk.Button | None = None
 
         root.title("Analog Rytm MKII — Firmware Emulator")
-        root.configure(bg="#0b0c0c")
+        root.configure(bg="#74797d")
         window_w, window_h = panel_window_size(scale)
         root.geometry(f"{window_w}x{window_h}")
         root.resizable(False, False)
@@ -294,20 +298,24 @@ class PanelApp:
             bg=PANEL_BG,
             width=window_w - 24,
             height=window_h - 24,
-            highlightthickness=1,
+            highlightthickness=2,
             highlightbackground=PANEL_EDGE,
         )
         shell.pack(padx=12, pady=12, fill="both", expand=True)
         shell.pack_propagate(False)
 
-        header = tk.Frame(shell, bg=PANEL_BG, height=38)
-        header.pack(fill="x", padx=18, pady=(10, 4))
+        header = tk.Frame(shell, bg=PANEL_BG, height=42)
+        header.pack(fill="x", padx=28, pady=(10, 2))
         header.pack_propagate(False)
-        tk.Label(header, text="PHOTON OS", fg=TEXT, bg=PANEL_BG,
-                 font=("TkDefaultFont", 15, "bold")).pack(side="left")
-        tk.Label(header, text="AR MKII  /  OS 1.72 EMULATOR", fg=MUTED,
-                 bg=PANEL_BG, font=("TkDefaultFont", 9, "bold")).pack(
-                     side="left", padx=(14, 0), pady=(5, 0))
+        brand = tk.Frame(header, bg=PANEL_BG)
+        brand.pack(side="left")
+        tk.Label(brand, text="PHOTON", fg=TEXT, bg=PANEL_BG,
+                 font=("Helvetica", 17, "bold italic")).pack(side="left")
+        tk.Label(brand, text="OS", fg=MUTED, bg=PANEL_BG,
+                 font=("Helvetica", 17)).pack(side="left", padx=(4, 0))
+        tk.Label(header, text="ANALOG RYTM MKII  /  OS 1.72", fg=MUTED,
+                 bg=PANEL_BG, font=("Helvetica", 8, "bold")).pack(
+                     side="left", padx=(18, 0), pady=(7, 0))
         self.frame_status = tk.StringVar(value="WAITING FOR FIRMWARE OLED")
         tk.Label(header, textvariable=self.frame_status, fg=MUTED, bg=PANEL_BG,
                  font=("TkFixedFont", 8)).pack(side="right", pady=(5, 0))
@@ -316,9 +324,9 @@ class PanelApp:
             text="FILTER 2",
             command=self.toggle_filter2,
             state="normal" if filter2_enabled else "disabled",
-            fg=TEXT,
+            fg=LIGHT_TEXT,
             bg=CONTROL_FACE,
-            activeforeground=TEXT,
+            activeforeground=LIGHT_TEXT,
             activebackground="#353936",
             disabledforeground="#5d625e",
             relief="flat",
@@ -329,17 +337,24 @@ class PanelApp:
         self.filter2_button.pack(side="right", padx=(0, 12), pady=(1, 0))
 
         work = tk.Frame(shell, bg=PANEL_BG)
-        work.pack(fill="x", padx=18)
+        work.pack(fill="x", padx=28)
 
         screen_panel = tk.Frame(
             work,
-            bg="#090a09",
-            padx=10,
+            bg="#171918",
+            padx=12,
             pady=10,
             highlightthickness=2,
-            highlightbackground="#414542",
+            highlightbackground="#4a4e4b",
         )
         screen_panel.pack(side="left", anchor="n")
+        tk.Label(
+            screen_panel,
+            text="8 VOICE ANALOG DRUM COMPUTER & SAMPLER",
+            fg="#d9ddda",
+            bg="#171918",
+            font=("Helvetica", 8),
+        ).pack(pady=(0, 7))
         self.canvas = tk.Canvas(
             screen_panel,
             width=W * scale,
@@ -349,15 +364,27 @@ class PanelApp:
         )
         self.canvas.pack()
         self.image_id = self.canvas.create_image(0, 0, anchor="nw")
+        self.draw_photon_splash()
+        screen_brand = tk.Frame(screen_panel, bg="#171918", height=28)
+        screen_brand.pack(fill="x", pady=(7, 0))
+        screen_brand.pack_propagate(False)
+        tk.Label(screen_brand, text="PHOTON", fg="#f0f2ef", bg="#171918",
+                 font=("Helvetica", 12, "bold italic")).pack(side="left")
+        tk.Label(screen_brand, text="OS", fg="#c7cbc8", bg="#171918",
+                 font=("Helvetica", 12)).pack(side="left", padx=(3, 0))
+        tk.Label(screen_brand, text="AR MKII", fg="#777d79", bg="#171918",
+                 font=("Helvetica", 8, "bold")).pack(side="right", pady=(5, 0))
 
-        controls = tk.Frame(work, bg=PANEL_INSET, padx=8, pady=6)
+        controls = tk.Frame(work, bg=PANEL_INSET, padx=7, pady=5,
+                            highlightthickness=1,
+                            highlightbackground="#aeb2b4")
         controls.pack(side="right", fill="both", expand=True, padx=(14, 0))
 
         enc_frame = tk.Frame(controls, bg=PANEL_INSET)
         enc_frame.pack()
         for index, name in enumerate("ABCDEFGH"):
             VirtualKnob(enc_frame, name, self.encoder).grid(
-                row=index // 4, column=index % 4, padx=1, pady=1)
+                row=index // 4, column=index % 4, padx=0, pady=0)
 
         lower_controls = tk.Frame(controls, bg=PANEL_INSET)
         lower_controls.pack(pady=(4, 0))
@@ -369,18 +396,18 @@ class PanelApp:
             self.page_widgets[name] = widget
 
         self.status = tk.StringVar(value="STARTING FIRMWARE…")
-        status_bar = tk.Frame(shell, bg="#111311", height=28)
-        status_bar.pack(fill="x", padx=18, pady=(8, 4))
+        status_bar = tk.Frame(shell, bg="#181a19", height=28)
+        status_bar.pack(fill="x", padx=28, pady=(7, 3))
         status_bar.pack_propagate(False)
-        tk.Label(status_bar, textvariable=self.status, fg=TEXT, bg="#111311",
+        tk.Label(status_bar, textvariable=self.status, fg=LIGHT_TEXT, bg="#181a19",
                  anchor="w", font=("TkFixedFont", 9)).pack(
                      side="left", fill="x", expand=True, padx=8)
         tk.Label(status_bar, text="LIVE PANEL BRIDGE", fg=LED_ORANGE,
-                 bg="#111311", font=("TkFixedFont", 8, "bold")).pack(
+                 bg="#181a19", font=("TkFixedFont", 8, "bold")).pack(
                      side="right", padx=8)
 
         trig_frame = tk.Frame(shell, bg=PANEL_BG)
-        trig_frame.pack(padx=18, pady=(2, 0))
+        trig_frame.pack(padx=28, pady=(2, 0))
         for trig in range(1, 17):
             widget = TrigPad(trig_frame, trig, TRIG_KEYS[trig], self.trig)
             widget.grid(row=0, column=trig - 1, padx=2)
@@ -390,16 +417,37 @@ class PanelApp:
             shell,
             text=("QWERTYUI / ASDFGHJK  •  DRAG OR SCROLL ENCODERS  •  "
                   "ARROWS ±1  •  PAGE ±8  •  HOME/END 0/127"),
-            fg=MUTED,
+            fg="#284d5e",
             bg=PANEL_BG,
             font=("TkFixedFont", 8),
-        ).pack(anchor="w", padx=22, pady=(3, 0))
+        ).pack(anchor="w", padx=32, pady=(3, 0))
 
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.root.bind_all("<KeyPress>", self.key_press, add="+")
         self.root.bind_all("<KeyRelease>", self.key_release, add="+")
         self.root.bind("<FocusOut>", self.focus_lost, add="+")
         self.poll()
+
+    def draw_photon_splash(self) -> None:
+        """Show the supplied-reference identity until firmware owns the OLED."""
+        width, height = W * self.scale, H * self.scale
+        cyan = OLED_PIXEL
+        self.canvas.create_text(
+            width // 2, height // 2 - 28,
+            text="PHOTON", fill=cyan, tags="splash",
+            font=("Courier", max(22, self.scale * 7), "bold"),
+        )
+        self.canvas.create_text(
+            width // 2, height // 2 + 20,
+            text="OS", fill=cyan, tags="splash",
+            font=("Courier", max(12, self.scale * 3), "bold"),
+        )
+        line = max(40, self.scale * 15)
+        self.canvas.create_line(
+            width // 2 - line, height // 2 + 52,
+            width // 2 + line, height // 2 + 52,
+            fill=cyan, width=max(1, self.scale // 3), tags="splash",
+        )
 
     def emit(self, kind: str, name: str, value) -> None:
         rec = {"t": time.time(), "kind": kind, "name": name, "value": value}
@@ -482,8 +530,8 @@ class PanelApp:
             button = tk.Button(
                 lane_bar, text=str(lane + 1),
                 command=lambda lane=lane: self.select_lfo2_lane(lane),
-                width=3, relief="flat", fg=TEXT, bg=CONTROL_FACE,
-                activeforeground=TEXT, activebackground="#353936",
+                width=3, relief="flat", fg=LIGHT_TEXT, bg=CONTROL_FACE,
+                activeforeground=LIGHT_TEXT, activebackground="#353936",
                 font=("TkDefaultFont", 8, "bold"),
             )
             button.pack(side="left", padx=1)
@@ -542,7 +590,7 @@ class PanelApp:
     def drawer_button(parent, text: str, command, width: int) -> tk.Button:
         return tk.Button(
             parent, text=text, command=command, width=width, relief="flat",
-            fg=TEXT, bg=CONTROL_FACE, activeforeground=TEXT,
+            fg=LIGHT_TEXT, bg=CONTROL_FACE, activeforeground=LIGHT_TEXT,
             activebackground="#353936", disabledforeground="#5d625e",
             font=("TkDefaultFont", 8, "bold"), padx=4, pady=5,
         )
@@ -564,7 +612,7 @@ class PanelApp:
         for index, button in enumerate(self.lfo2_lane_buttons):
             selected = index == self.lfo2_lane
             button.configure(bg="#5a3022" if selected else CONTROL_FACE,
-                             fg=LED_ORANGE if selected else TEXT)
+                             fg=LED_ORANGE if selected else LIGHT_TEXT)
         for knob, values in (
             (self.lfo2_rate_knob, self.lfo2_rate_values),
             (self.lfo2_depth_knob, self.lfo2_depth_values),
@@ -584,13 +632,13 @@ class PanelApp:
             enabled = self.lfo2_enabled[self.lfo2_lane]
             self.lfo2_enable_button.configure(
                 text="LFO ON" if enabled else "LFO OFF",
-                fg=LED_ORANGE if enabled else TEXT,
+                fg=LED_ORANGE if enabled else LIGHT_TEXT,
             )
         if self.lfo2_trigger_button is not None:
             triggered = self.lfo2_triggered[self.lfo2_lane]
             self.lfo2_trigger_button.configure(
                 text="NOTE RETRIG" if triggered else "FREE RUN",
-                fg=LED_ORANGE if triggered else TEXT,
+                fg=LED_ORANGE if triggered else LIGHT_TEXT,
             )
         if self.lfo2_audition_button is not None:
             self.lfo2_audition_button.configure(
@@ -703,6 +751,7 @@ class PanelApp:
         return pix
 
     def draw(self, data: bytes) -> None:
+        self.canvas.delete("splash")
         pix = self.decode_presented(data)
         small = tk.PhotoImage(width=W, height=H)
         for y, row in enumerate(pix):
