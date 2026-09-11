@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_LFO2_RETRIGGER_NEGATIVE_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_FREE_NOTE_ON_AND_NOTE_OFF_PRESERVE_ALL_LFO2_STATE",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "runtime": {
+    "qemu_version": "11.1.50",
+    "firmware": "caller-supplied official OS 1.72 MAIN",
+    "candidate": "temporary non-flashable Filter2/LFO2 runtime image",
+    "candidate_sha256": "ba92042551d7bc4796ce63f2db7cf6ffc71d7004eb4237081dca7d9bee779d04",
+    "firmware_embedded": false,
+    "paid_ci_used": false
+  },
+  "precondition": {
+    "desktop_control_transition": "all_lanes_free_random_hold",
+    "enable_mask": "0x00FF",
+    "initial_retrigger_mask": "0x0000",
+    "waveform": "random",
+    "mode": "hold"
+  },
+  "instrumentation": {
+    "lfo2_state_words_per_trial": 24,
+    "note_record_base": "0x42AC4038",
+    "note_record_track_stride": "0x38",
+    "note_on_type": 1,
+    "note_off_type": 2,
+    "candidate_bytes_modified": false,
+    "write_method": "QEMU local GDB stub while VM stopped",
+    "read_method": "one stopped HMP snapshot containing the lane's note record and all 24 LFO2 state words"
+  },
+  "matrix": [
+    {"trig": 1, "lane": 0, "note_record": "0x42AC4038", "free_note_on_words_preserved": 24, "note_off_mask": "0x0001", "note_off_words_preserved": 24},
+    {"trig": 2, "lane": 1, "note_record": "0x42AC4070", "free_note_on_words_preserved": 24, "note_off_mask": "0x0003", "note_off_words_preserved": 24},
+    {"trig": 3, "lane": 2, "note_record": "0x42AC40A8", "free_note_on_words_preserved": 24, "note_off_mask": "0x0007", "note_off_words_preserved": 24},
+    {"trig": 4, "lane": 3, "note_record": "0x42AC40E0", "free_note_on_words_preserved": 24, "note_off_mask": "0x000F", "note_off_words_preserved": 24},
+    {"trig": 5, "lane": 4, "note_record": "0x42AC4118", "free_note_on_words_preserved": 24, "note_off_mask": "0x001F", "note_off_words_preserved": 24},
+    {"trig": 6, "lane": 5, "note_record": "0x42AC4150", "free_note_on_words_preserved": 24, "note_off_mask": "0x003F", "note_off_words_preserved": 24},
+    {"trig": 7, "lane": 6, "note_record": "0x42AC4188", "free_note_on_words_preserved": 24, "note_off_mask": "0x007F", "note_off_words_preserved": 24},
+    {"trig": 8, "lane": 7, "note_record": "0x42AC41C0", "free_note_on_words_preserved": 24, "note_off_mask": "0x00FF", "note_off_words_preserved": 24}
+  ],
+  "aggregate": {
+    "accepted_free_mode_note_ons": 8,
+    "accepted_trigger_mode_note_offs": 8,
+    "event_acceptance_markers": 16,
+    "free_mode_preservation_comparisons": 192,
+    "note_off_preservation_comparisons": 192,
+    "total_state_preservation_comparisons": 384,
+    "unexpected_resets": 0
+  },
+  "bounded_audio": {
+    "completed_services": 64,
+    "continuous_service_clock": false,
+    "wav_channels": 2,
+    "wav_sample_width_bytes": 2,
+    "wav_backend_rate_hz": 44100,
+    "wav_frames_observed": 2928909,
+    "wav_pcm_bytes_observed": 11715636,
+    "wav_nonzero_pcm_bytes_observed": 5746,
+    "wav_contains_nonzero_pcm": true,
+    "wav_pcm_sha256": "28a5a8168055e2895a56623c53abc41be9a05d9c08a00e1c0d903f611817f151",
+    "fixture": "emulator-generated QEMU TEST sample; no proprietary PCM"
+  },
+  "framebuffer": {
+    "startup_modal_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
+    "normal_ui_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+    "smp_page_sha256": "cfe4a66a98f9f92bf7fcea175aaa47c10a725b49df4fb2b8ce81e9c306e2622d",
+    "later_ui_responsive": true
+  },
+  "reproducer": "qemu/headless_ui_smoke.py --exercise-runtime-controls --exercise-retrigger-negative-controls --exercise-trigger-audio --capture-audio-wav",
+  "scope_limit": "This proves the live note hook's two negative branches for all eight audio lanes under QEMU. It is not a physical timing or hardware-output claim.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

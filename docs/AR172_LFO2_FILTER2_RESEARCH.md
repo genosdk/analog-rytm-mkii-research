@@ -695,6 +695,12 @@ last-modulation and random-index words while preserving all 21 non-target
 sentinels. All 192 comparisons, 64 bounded renderer services, nonzero PCM and
 the later SMP page pass. This is recorded in
 `research/AR172_QEMU_LFO2_RETRIGGER_MATRIX_GATE.json`.
+The complementary live negative matrix proves both non-reset branches for all
+eight lanes. Every free-mode note-on is accepted while preserving all 24 state
+words; each lane is then changed to retrigger mode and its accepted note-off
+again preserves all 24. This yields 384 exact preservation comparisons with no
+false reset, followed by 64 bounded services, nonzero PCM and the SMP page.
+Evidence is in `research/AR172_QEMU_LFO2_RETRIGGER_NEGATIVE_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

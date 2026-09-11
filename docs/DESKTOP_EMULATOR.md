@@ -133,6 +133,14 @@ complete, generated-sample PCM remains nonzero, and the later SMP page remains
 responsive. The matrix is recorded in
 `research/AR172_QEMU_LFO2_RETRIGGER_MATRIX_GATE.json`.
 
+The negative-control matrix marks each lane's stock note record as well as all
+24 LFO2 state words. Trigs 1–8 in free mode each publish an accepted note-on
+without changing any state word. After enabling the held lane's retrigger bit,
+each corresponding note-off publishes type 2 and again preserves all 24
+words. All 384 preservation comparisons pass, followed by 64 bounded services,
+nonzero generated PCM and the SMP page. Evidence is in
+`research/AR172_QEMU_LFO2_RETRIGGER_NEGATIVE_GATE.json`.
+
 This option remains a research clock rather than a physical realtime claim.
 The backpressured 10 ms model has sustained 2,303 completed services while the
 UI remained responsive, but the physical device cadence has not yet been

@@ -252,7 +252,9 @@ def wait_lfo2_retrigger_reset(port: int, deadline: float) -> dict[str, str]:
 
 
 def seed_lfo2_retrigger_matrix(monitor_port: int, gdb_port: int,
-                               deadline: float) -> dict[int, dict[str, tuple[int, int]]]:
+                               deadline: float,
+                               note_marker: tuple[int, int] | None = None
+                               ) -> dict[int, dict[str, tuple[int, int]]]:
     sentinels = {
         lane: {
             "phase": (0x402B4520 + lane * 16, 0x12000001 + lane),
@@ -266,11 +268,21 @@ def seed_lfo2_retrigger_matrix(monitor_port: int, gdb_port: int,
         for lane in sentinels.values():
             for address, value in lane.values():
                 gdb_write_memory(gdb_port, address, value.to_bytes(4, "big"))
+        if note_marker is not None:
+            marker_address, marker_value = note_marker
+            gdb_write_memory(
+                gdb_port, marker_address, marker_value.to_bytes(4, "big")
+            )
     finally:
         hmp_command(monitor_port, "cont")
     for lane in sentinels.values():
         for address, value in lane.values():
             wait_hmp_value(monitor_port, address, "w", value, deadline)
+    if note_marker is not None:
+        marker_address, marker_value = note_marker
+        wait_hmp_value(
+            monitor_port, marker_address, "w", marker_value, deadline
+        )
     return sentinels
 
 
@@ -309,6 +321,41 @@ def wait_lfo2_selective_reset(
     raise TimeoutError(
         f"selective LFO2 reset for lane {target_lane} not observed: {last!r}"
     )
+
+
+def wait_lfo2_matrix_preserved(
+        port: int, sentinels: dict[int, dict[str, tuple[int, int]]],
+        deadline: float,
+        event_record: tuple[int, int] | None = None) -> dict[str, object]:
+    commands = ["stop"]
+    if event_record is not None:
+        commands.append(f"xp /1wx 0x{event_record[0]:08x}")
+    for lane in sentinels.values():
+        commands.extend(f"xp /1wx 0x{address:08x}"
+                        for address, _ in lane.values())
+    commands.append("cont")
+    command = "\n".join(commands)
+    last = ""
+    while time.monotonic() < deadline:
+        last = hmp_command(port, command).lower()
+        event_matched = (
+            event_record is None or
+            f"{event_record[0]:08x}: 0x{event_record[1]:08x}" in last
+        )
+        if event_matched and all(
+            f"{address:08x}: 0x{sentinel:08x}" in last
+            for lane in sentinels.values()
+            for address, sentinel in lane.values()
+        ):
+            return {
+                "state_words_preserved": 24,
+                "lanes_preserved": list(range(8)),
+                "accepted_event_type": (
+                    event_record[1] if event_record is not None else None
+                ),
+            }
+        time.sleep(0.01)
+    raise TimeoutError(f"LFO2 state preservation was not observed: {last!r}")
 
 
 def wav_metrics(path: Path) -> dict[str, int | str | bool]:
@@ -377,6 +424,11 @@ def main() -> None:
         help="prove Trigs 1-8 reset only their corresponding native LFO2 lane",
     )
     parser.add_argument(
+        "--exercise-retrigger-negative-controls",
+        action="store_true",
+        help="prove free-mode note-on and trigger-mode note-off preserve LFO2 state",
+    )
+    parser.add_argument(
         "--capture-audio-wav",
         action="store_true",
         help="capture the bounded renderer tap through QEMU's WAV backend",
@@ -423,6 +475,22 @@ def main() -> None:
     if args.exercise_retrigger_matrix and not args.exercise_trigger_audio:
         parser.error("--exercise-retrigger-matrix requires --exercise-trigger-audio")
     if args.exercise_retrigger_matrix and args.exercise_active_retrigger:
+        parser.error("select only one retrigger gate")
+    if (args.exercise_retrigger_negative_controls
+            and not args.exercise_runtime_controls):
+        parser.error(
+            "--exercise-retrigger-negative-controls requires "
+            "--exercise-runtime-controls"
+        )
+    if (args.exercise_retrigger_negative_controls
+            and not args.exercise_trigger_audio):
+        parser.error(
+            "--exercise-retrigger-negative-controls requires "
+            "--exercise-trigger-audio"
+        )
+    if (args.exercise_retrigger_negative_controls
+            and (args.exercise_retrigger_matrix
+                 or args.exercise_active_retrigger)):
         parser.error("select only one retrigger gate")
     if args.capture_audio_wav and args.services_per_trigger < 8:
         parser.error("--capture-audio-wav requires at least 8 services per trigger")
@@ -524,7 +592,9 @@ def main() -> None:
         runtime_transitions = []
         if args.exercise_runtime_controls:
             first = RuntimeControls()
-            configured_lanes = range(8) if args.exercise_retrigger_matrix else range(1)
+            all_lanes_gate = (args.exercise_retrigger_matrix or
+                              args.exercise_retrigger_negative_controls)
+            configured_lanes = range(8) if all_lanes_gate else range(1)
             for lane in configured_lanes:
                 first.filter2[lane] = 127
                 first.waveform[lane] = 6
@@ -532,10 +602,13 @@ def main() -> None:
                 first.rate[lane] = 127
                 first.depth[lane] = 32
                 first.enable_mask |= 1 << lane
-                first.trigger_mask |= 1 << lane
+                if not args.exercise_retrigger_negative_controls:
+                    first.trigger_mask |= 1 << lane
                 for parameter, value in (
                     ("filter2", 127), ("waveform", 6), ("mode", 3),
-                    ("rate", 127), ("depth", 32), ("enable", 1), ("trigger", 1),
+                    ("rate", 127), ("depth", 32), ("enable", 1),
+                    ("trigger", 0 if args.exercise_retrigger_negative_controls
+                     else 1),
                 ):
                     if parameter == "filter2":
                         emit_event(events_file, "filter2", str(lane), value)
@@ -544,7 +617,9 @@ def main() -> None:
                             events_file, "lfo2", f"{lane}:{parameter}", value
                         )
             wait_snapshot(controls_file, first.encode(), deadline)
-            active_mask = 0x00FF if args.exercise_retrigger_matrix else 0x0001
+            active_mask = 0x00FF if all_lanes_gate else 0x0001
+            retrigger_mask = (0x0000 if args.exercise_retrigger_negative_controls
+                              else active_mask)
             first_memory = {
                 "filter2_target": wait_hmp_value(
                     monitor_port, 0x402B442C, "w", 0x7FFFFFFF, deadline),
@@ -557,11 +632,15 @@ def main() -> None:
                 "enable_mask": wait_hmp_value(
                     monitor_port, 0x402B440E, "h", active_mask, deadline),
                 "retrigger_mask": wait_hmp_value(
-                    monitor_port, 0x402B4418, "h", active_mask, deadline),
+                    monitor_port, 0x402B4418, "h", retrigger_mask, deadline),
             }
             runtime_transitions.append({
-                "name": "all_lanes_random_hold" if args.exercise_retrigger_matrix
-                else "maximum_random_hold",
+                "name": (
+                    "all_lanes_free_random_hold"
+                    if args.exercise_retrigger_negative_controls else
+                    "all_lanes_random_hold" if args.exercise_retrigger_matrix
+                    else "maximum_random_hold"
+                ),
                 **first_memory,
             })
 
@@ -615,6 +694,49 @@ def main() -> None:
                         "selective_native_retrigger": selective,
                     })
 
+            if args.exercise_retrigger_negative_controls:
+                for lane in range(8):
+                    note_record = 0x42AC4038 + lane * 0x38
+                    sentinels = seed_lfo2_retrigger_matrix(
+                        monitor_port, gdb_port, deadline,
+                        (note_record, 0xFFFFFFFF)
+                    )
+                    emit_event(events_file, "trig", str(lane + 1), "press")
+                    note_on = wait_lfo2_matrix_preserved(
+                        monitor_port, sentinels, deadline, (note_record, 1)
+                    )
+                    wait_log_count(
+                        log,
+                        "AR-MK2 AUDIO: completed vector 191 service",
+                        (lane + 1) * args.services_per_trigger,
+                        deadline,
+                    )
+                    emit_event(
+                        events_file, "lfo2", f"{lane}:trigger", 1
+                    )
+                    note_off_mask = wait_hmp_value(
+                        monitor_port, 0x402B4418, "h",
+                        (1 << (lane + 1)) - 1, deadline
+                    )
+                    release_sentinels = seed_lfo2_retrigger_matrix(
+                        monitor_port, gdb_port, deadline,
+                        (note_record, 0xFFFFFFFF)
+                    )
+                    emit_event(events_file, "trig", str(lane + 1), "release")
+                    note_off = wait_lfo2_matrix_preserved(
+                        monitor_port, release_sentinels, deadline,
+                        (note_record, 2)
+                    )
+                    events.append({
+                        "control": f"TRIG {lane + 1}",
+                        "press": f"23 {1 << lane:02x}",
+                        "release": "23 00",
+                        "note_record": f"0x{note_record:08x}",
+                        "free_mode_note_on": note_on,
+                        "note_off_retrigger_mask": note_off_mask,
+                        "note_off": note_off,
+                    })
+
             second = RuntimeControls()
             second.filter2[0] = 0
             second.waveform[0] = 4
@@ -654,7 +776,8 @@ def main() -> None:
             }
             runtime_transitions.append({"name": "sine_half_minimum", **second_memory})
         if (args.exercise_trigger_audio and not args.exercise_active_retrigger
-                and not args.exercise_retrigger_matrix):
+                and not args.exercise_retrigger_matrix
+                and not args.exercise_retrigger_negative_controls):
             for index in range(args.trigger_count):
                 emit_event(events_file, "trig", "1", "press")
                 time.sleep(0.08)
@@ -701,7 +824,9 @@ def main() -> None:
             "events": events,
             "completed_audio_services": max(
                 args.minimum_audio_services,
-                (8 if args.exercise_retrigger_matrix else args.trigger_count)
+                (8 if (args.exercise_retrigger_matrix or
+                       args.exercise_retrigger_negative_controls)
+                 else args.trigger_count)
                 * args.services_per_trigger
                 if args.exercise_trigger_audio else 0,
             ),
