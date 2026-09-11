@@ -113,7 +113,7 @@ def probe(stock_path: Path, emulator_path: Path, report_path: Path | None = None
             cpu.pc = AUDIO_CALLBACK
             before = None
             multiply_calls = 0
-            for _ in range(230_000):
+            for _ in range(600_000):
                 if cpu.pc == MIXER:
                     break
                 if cpu.pc == FILTER_SYMBOLS["post_ingress"]:

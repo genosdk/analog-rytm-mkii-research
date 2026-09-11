@@ -431,7 +431,7 @@ class Filter2EightLaneProbeTests(StockProbeTest):
         self.assertEqual(full["plane_writes"], 256)
         self.assertEqual(full["state_writes"], 520)
         self.assertTrue(full["oracle_match"])
-        self.assertEqual(result["modeled_cost"]["semantic_instruction_delta"], 229353)
+        self.assertEqual(result["modeled_cost"]["semantic_instruction_delta"], 229361)
         for comparison in result["disabled_stock_equivalence"]:
             self.assertTrue(all(comparison["bit_identical"].values()))
 
@@ -717,6 +717,42 @@ class ControlFrameComputedRecordWriterProbeTests(StockProbeTest):
 
 
 class Lfo2CpuIntegrationProbeTests(StockProbeTest):
+    def test_live_candidate_spans_fit_persistent_zero_runs(self):
+        from filter2_eight_lane_probe import EXTENSION_BASE
+        from filter2_lfo2_cutoff_binding_probe import MODULATED_EXTENSION_END
+        from filter2_lfo2_state_canary_probe import STATE_BASE, STATE_END
+        from filter2_publication_shim_probe import SHIM_BASE, SHIM_BODY, TABLE_BASE, Q31_TABLE
+        from lfo2_control_publication_probe import CONTROL_SHIM_BASE, CONTROL_SHIM_END, RATE_TABLE_BASE, RATE_TABLE
+        from lfo2_extended_waveform_probe import (
+            EXTENDED_UPDATE_END, RANDOM_TABLE, RANDOM_TABLE_BASE,
+            SINE_TABLE, SINE_TABLE_BASE,
+        )
+        from lfo2_note_trigger_reset_probe import NOTE_HOOK_BASE, NOTE_HOOK_END
+        from lfo2_waveform_mode_probe import WAVE_SHIM_BASE, WAVE_SHIM_END, WAVE_UPDATE_BASE
+
+        spans = [
+            (EXTENSION_BASE, MODULATED_EXTENSION_END),
+            (STATE_BASE, STATE_END),
+            (SHIM_BASE, SHIM_BASE + len(SHIM_BODY)),
+            (TABLE_BASE, TABLE_BASE + len(Q31_TABLE)),
+            (CONTROL_SHIM_BASE, CONTROL_SHIM_END),
+            (RATE_TABLE_BASE, RATE_TABLE_BASE + len(RATE_TABLE)),
+            (NOTE_HOOK_BASE, NOTE_HOOK_END),
+            (WAVE_SHIM_BASE, WAVE_SHIM_END),
+            (WAVE_UPDATE_BASE, EXTENDED_UPDATE_END),
+            (SINE_TABLE_BASE, SINE_TABLE_BASE + len(SINE_TABLE)),
+            (RANDOM_TABLE_BASE, RANDOM_TABLE_BASE + len(RANDOM_TABLE)),
+        ]
+        persistent_runs = (
+            (0x402B25DC, 0x402B3001),
+            (0x402B41E0, 0x402B5000),
+        )
+        for start, end in spans:
+            self.assertTrue(any(lo <= start < end <= hi for lo, hi in persistent_runs))
+        for index, first in enumerate(spans):
+            for second in spans[index + 1:]:
+                self.assertTrue(first[1] <= second[0] or second[1] <= first[0])
+
     def test_cutoff_binding_all_eight_lanes(self):
         result = probe_filter2_lfo2_cutoff_binding(STOCK, EMULATOR)
         self.assertEqual(result["result"], "PASS")

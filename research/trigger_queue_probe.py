@@ -84,7 +84,9 @@ def run_complete_callback(cpu, base_sp: int) -> dict:
     cases: list[int] = []
     br_at_renderer: list[int] = []
     start = cpu.steps
-    for _ in range(200_000):
+    # Live Filter2/LFO2 candidates use the ColdFire-safe 32-step Q1.31
+    # multiply, so a complete bounded callback needs more headroom than stock.
+    for _ in range(600_000):
         if cpu.pc in CASES:
             cases.append(CASES[cpu.pc])
         if cpu.pc == RENDERER:

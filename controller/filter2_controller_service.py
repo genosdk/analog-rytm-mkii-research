@@ -211,7 +211,7 @@ class EmulatorBridge:
                 start_steps = cpu.steps
                 ingress = None
                 multiply_calls = 0
-                for _instruction in range(230_000):
+                for _instruction in range(600_000):
                     if cpu.pc == MIXER:
                         break
                     if cpu.pc == FILTER_SYMBOLS["post_ingress"]:
@@ -278,7 +278,7 @@ class EmulatorBridge:
                 cpu.pushl(RETURN_PC)
                 cpu.pc = AUDIO_CALLBACK
                 injected = False
-                for _instruction in range(230_000):
+                for _instruction in range(600_000):
                     if cpu.pc == FILTER_SYMBOLS["post_ingress"]:
                         for item_lane in range(LANES):
                             base = 0x800067F8 + item_lane * 0x80

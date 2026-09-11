@@ -4,7 +4,7 @@
     "path": "research/extracted_stock_nrv/section_3_id_3.decompressed.bin",
     "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
   },
-  "controller_candidate_sha256": "d0e1c427c5593f2d53aa8d8c58b1119150fc2e183cbea540a1559ccfdd2d8cd7",
+  "controller_candidate_sha256": "ec0970716103880c60d87b24afaf0eb6a06a45e42248d5c4761143f2383413d5",
   "sequence": {
     "callbacks": [
       {
@@ -22,7 +22,7 @@
             "modulation": "0xE40C5CFE",
             "effective_target": "0x1C7D3EC1",
             "random_index": 0,
-            "output_sha256": "757b6daf0f2ef56f81cf6ed8e1561f0c03b3a074fb6128da950fabe9edacbc5a",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -36,7 +36,7 @@
             "modulation": "0x29ED7482",
             "effective_target": "0x727E96C6",
             "random_index": 0,
-            "output_sha256": "6b11b60ed0b4e8c2cd46bfeeeea2bd658633a6069dcb393c56eb6557a6d2c9d1",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -50,7 +50,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "101036de8ce654f3ef9ff8cfa4b363b24ae1cb260977efd38e8cf6f27da117b8",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -72,7 +72,7 @@
             "modulation": "0xE8593AFE",
             "effective_target": "0x20CA1CC1",
             "random_index": 0,
-            "output_sha256": "30bf56a5349c24257a4e06e97319d19a90bdc854e5f1ff2ddaeec2e6a057ec1e",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -86,7 +86,7 @@
             "modulation": "0x237A2781",
             "effective_target": "0x6C0B49C5",
             "random_index": 0,
-            "output_sha256": "0b462f67c08347bdbed974be2c33a1e7ce11af04ff2f24489c965f64549fe240",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -100,7 +100,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "f13739266cb6e4d6a0a2d360cb2657d42e48981673a41635346438a6db7ffb20",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -139,7 +139,7 @@
             "modulation": "0xB5D20A7B",
             "effective_target": "0x00000000",
             "random_index": 0,
-            "output_sha256": "3fad03700757d053f659fb94b3e67b502bd5f2e968352443e10cd42defc39204",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -153,7 +153,7 @@
             "modulation": "0x1D06DA81",
             "effective_target": "0x6597FCC5",
             "random_index": 0,
-            "output_sha256": "5c0d6bab626288e8ebcf79eccc7e566bbc345d4096ca383ef661cbb23b47e583",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -167,7 +167,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "632c9d68add8bbd9aba450372e58a97aa4e4b7fdc3f0cf7a9b715cdacd80ba40",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -198,7 +198,7 @@
             "modulation": "0xBAD662D1",
             "effective_target": "0x00000000",
             "random_index": 0,
-            "output_sha256": "ee654585a944710209f90d4848b3facf76181ea787d3ba9c640146f1f24ac764",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -212,7 +212,7 @@
             "modulation": "0x16938D81",
             "effective_target": "0x5F24AFC5",
             "random_index": 0,
-            "output_sha256": "caf37e11cc8d69b9343a0b76bcef145b5e88b9aff8e8c7fac0d00170cb51404f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -226,7 +226,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x40810204",
             "random_index": 0,
-            "output_sha256": "bb8da48bb81fd48b33e399cc6b597303444e89327312a40ac097b47f569c6298",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -257,7 +257,7 @@
             "modulation": "0xC149AFD0",
             "effective_target": "0x00000000",
             "random_index": 0,
-            "output_sha256": "ee654585a944710209f90d4848b3facf76181ea787d3ba9c640146f1f24ac764",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -271,7 +271,7 @@
             "modulation": "0x16938D81",
             "effective_target": "0x5F24AFC5",
             "random_index": 0,
-            "output_sha256": "9cb4f135cad0616150674456abd8c54f112756ffaa64aa52f8585e394cecf173",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -285,7 +285,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x40810204",
             "random_index": 0,
-            "output_sha256": "e1e509ff4f6724b3730ed2480d69b57674fa3d0c889e591f56fe7d37845e3108",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -307,7 +307,7 @@
             "modulation": "0xC92BF17C",
             "effective_target": "0x019CD33F",
             "random_index": 0,
-            "output_sha256": "c47fe9861bcdbbe43da8859d87c3260ca34ef4743a14a0640122df4359dcc444",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -321,7 +321,7 @@
             "modulation": "0x16938D81",
             "effective_target": "0x5F24AFC5",
             "random_index": 0,
-            "output_sha256": "b27bd272a80e5ba22c979753665c02f6cf7689203bb9e88c4db17d6ca6dd7633",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -335,7 +335,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x40810204",
             "random_index": 0,
-            "output_sha256": "7272d78be3f36d5b27287ea541a94b811bd2455c55e9cdb528f5f17dfcf14932",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -374,7 +374,7 @@
             "modulation": "0xD27D27D0",
             "effective_target": "0x0AEE0993",
             "random_index": 0,
-            "output_sha256": "c31738c0cf784559c73862b8023633ae6c5aacb6a52c72bda03c821b554bc234",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -388,7 +388,7 @@
             "modulation": "0x10204080",
             "effective_target": "0x58B162C4",
             "random_index": 0,
-            "output_sha256": "5f33fee6152af574a3a8f1e791b98d82a8a7ffd5fd48f21d0f466b25018e4a2f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -402,7 +402,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "6f26406ab029fffa4bc9211c72333cca974570853a1ffea33561d61e77314033",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -424,7 +424,7 @@
             "modulation": "0xDD3D52D2",
             "effective_target": "0x15AE3495",
             "random_index": 0,
-            "output_sha256": "40e002cee2c819a03d31f169d21e7bbd0c83e401e45878875686eb5e05ed8cbc",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -438,7 +438,7 @@
             "modulation": "0x09ACF380",
             "effective_target": "0x523E15C4",
             "random_index": 0,
-            "output_sha256": "31ae604cf80cfc8dd306cb73772df453982b6aa5c234f34fd9a45bc6548ebfa9",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -452,7 +452,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "2f02b9adfdf29115e652c2f5859540a5c6f59fb3cb736cf024dda307f7b6e353",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -474,7 +474,7 @@
             "modulation": "0xE96C727D",
             "effective_target": "0x21DD5440",
             "random_index": 0,
-            "output_sha256": "b854ad46a6f32d2267ef4098530798e0648a0960ba8839902505fe6fa22694b9",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -488,7 +488,7 @@
             "modulation": "0x0339A67F",
             "effective_target": "0x4BCAC8C3",
             "random_index": 0,
-            "output_sha256": "1b012de6f63902fec45c2fa80faec40c324fe50648391b4c169d7d8a1c1bad82",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -502,7 +502,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -524,7 +524,7 @@
             "modulation": "0xF70A86D3",
             "effective_target": "0x2F7B6896",
             "random_index": 0,
-            "output_sha256": "dd820a53571a581d65d73dd25a6f89704d6bde9723cd324dd6de1ec0703c2354",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -538,7 +538,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "b7b1656d52f206cf57153fd71a737d07cc2eb83250e7409c239b5d795565ba0c",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -552,7 +552,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -583,7 +583,7 @@
             "modulation": "0x06178FD3",
             "effective_target": "0x3E887196",
             "random_index": 0,
-            "output_sha256": "d5f5902a8b3d26ad6daa26a69a06d27f3903d09d5362d9da0a987ff1a03b13c3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -597,7 +597,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "dfb35306bf79359c4eb258edd7d62eb9653df0d63e26897f7919a9f2b9a8258b",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -611,7 +611,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -633,7 +633,7 @@
             "modulation": "0x16938D80",
             "effective_target": "0x4F046F43",
             "random_index": 0,
-            "output_sha256": "c83d8ea54f4df28e8b4898df0e165d13165137912a619c75e66f93545febad00",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -647,7 +647,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -661,7 +661,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -683,7 +683,7 @@
             "modulation": "0x287E7FD4",
             "effective_target": "0x60EF6197",
             "random_index": 0,
-            "output_sha256": "86a0689767a418f042d9922271f2ce15096ffeefe2b10c272607befae5ab7ba2",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -697,7 +697,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -711,7 +711,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -733,7 +733,7 @@
             "modulation": "0x3BD866D6",
             "effective_target": "0x74494899",
             "random_index": 0,
-            "output_sha256": "46f50fe368af82e826bb7c3f1c055e3cfd8285449b4702ccb3beb4526abbda54",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           },
@@ -747,7 +747,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -761,7 +761,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -783,7 +783,7 @@
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
             "random_index": 0,
-            "output_sha256": "9267274e1d778d4a195517d820ee7ebef66f5eb094fb4dfbb26b302d99f6b603",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -797,7 +797,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -811,7 +811,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -833,7 +833,7 @@
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
             "random_index": 0,
-            "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -847,7 +847,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -861,7 +861,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -883,7 +883,7 @@
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
             "random_index": 0,
-            "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -897,7 +897,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -911,7 +911,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -933,7 +933,7 @@
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
             "random_index": 0,
-            "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -947,7 +947,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -961,7 +961,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -983,7 +983,7 @@
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
             "random_index": 0,
-            "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -997,7 +997,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -1011,7 +1011,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -1033,7 +1033,7 @@
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
             "random_index": 0,
-            "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -1047,7 +1047,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -1061,7 +1061,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -1083,7 +1083,7 @@
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
             "random_index": 0,
-            "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -1097,7 +1097,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -1111,7 +1111,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }
@@ -1133,7 +1133,7 @@
             "modulation": "0x50A14281",
             "effective_target": "0x7FFFFFFF",
             "random_index": 0,
-            "output_sha256": "ea540addfc4b380f8261ac4a42a2f72bf93ce40c3c2391bf33f400f8b235727f",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -1147,7 +1147,7 @@
             "modulation": "0xFFFFFFFF",
             "effective_target": "0x48912243",
             "random_index": 0,
-            "output_sha256": "9d5b63084748b2872d56d6f38c76c96ccd64c294de682a0c4938cfd70b7346a3",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": true,
             "oracle_match": true
           },
@@ -1161,7 +1161,7 @@
             "modulation": "0x1007E02F",
             "effective_target": "0x5088E233",
             "random_index": 0,
-            "output_sha256": "61337900c0ef88bb580f37e2e42a48f22a774465a46f01f6d02a2c650d791cea",
+            "output_sha256": "38723a2e5e8a17aa7950dc008209944e898f69a7bd10a23c839d341e935fd5ca",
             "terminal": false,
             "oracle_match": true
           }

@@ -1,0 +1,59 @@
+{
+  "gate": "QEMU_LFO2_RUNTIME_CONTROL",
+  "result": "PASS",
+  "date": "2026-09-11",
+  "scope": "Native QEMU compile, full Filter2/LFO2 candidate boot, and live atomic runtime-control import",
+  "baseline_commit": "13175e2",
+  "qemu": {
+    "version": "11.1.50",
+    "upstream_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "build": "PASS",
+    "compiler_policy": "Pinned project build flags, including the existing strict warning set",
+    "paid_ci_used": false
+  },
+  "candidate": {
+    "source": "Official OS 1.72 MAIN supplied locally; proprietary bytes are not recorded here",
+    "runtime_candidate_bytes": 2903032,
+    "filter2_lfo2_flags": "0x00000003",
+    "boot": "PASS",
+    "observed_pc": "0x40131820",
+    "framebuffer_bytes": 1024,
+    "framebuffer_nonzero_bytes": 793,
+    "framebuffer_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109"
+  },
+  "snapshot_abi": {
+    "magic": "F2L2",
+    "version": 1,
+    "bytes": 108,
+    "publication": "atomic replacement",
+    "poll_period_virtual_ms": 16
+  },
+  "initial_lane_0": {
+    "filter2_control": 127,
+    "filter2_target": "0x7FFFFFFF",
+    "waveform": 6,
+    "mode": 3,
+    "config": "0x0000001E",
+    "rate_control": 127,
+    "increment": "0x11111111",
+    "depth_control": 32,
+    "depth": "0x20408102",
+    "enable_mask": "0x0001",
+    "retrigger_mask": "0x0001"
+  },
+  "live_lane_0_update": {
+    "filter2_control": 0,
+    "filter2_target": "0x00000000",
+    "waveform": 4,
+    "mode": 2,
+    "config": "0x00000014",
+    "rate_control": 0,
+    "increment": "0x00006FD9",
+    "depth_control": 127,
+    "depth": "0x7FFFFFFF",
+    "enable_mask": "0x0000",
+    "retrigger_mask": "0x0000"
+  },
+  "conclusion": "The complete versioned snapshot is consumed by a natively compiled QEMU machine while the corrected full Filter2/LFO2 candidate boots and continues executing. Every inspected big-endian shadow-state field changed to its exact expected value after a live atomic file replacement.",
+  "scope_limit": "This gate validates control transport and live firmware execution. It does not claim physical MIDI/USB mappings, hardware timing, FPGA behavior, or sustained realtime audio."
+}

@@ -88,7 +88,8 @@ def assemble_extension() -> tuple[bytes, dict[str, int]]:
     b.branch_word(0x6700, "restore_state")
 
     for lane in range(LANES):
-        b.emit(f"0839{lane:04x}402b440d")  # BTST #lane, mask low byte
+        b.emit("3439402b440c")          # MOVE.W mask,D2
+        b.emit(f"0802{lane:04x}")       # BTST #lane,D2 (ColdFire-safe)
         b.branch_word(0x6700, f"lane_{lane}_skip")
         b.emit(f"41f9{OUTPUT_PLANE + lane * PLANE_LANE_STRIDE:08x}")
         b.emit(f"43f9{FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE:08x}")

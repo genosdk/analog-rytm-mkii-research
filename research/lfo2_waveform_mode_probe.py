@@ -52,8 +52,8 @@ MODE_HOLD = 3
 CONFIG_OFFSET = 20
 WAVE_MASK = 0x07
 MODE_MASK = 0x18
-WAVE_SHIM_BASE = 0x402B5200
-WAVE_UPDATE_BASE = 0x402B5400
+WAVE_SHIM_BASE = 0x402B2ECC
+WAVE_UPDATE_BASE = 0x402B25E0
 
 
 def relocate_extension() -> bytes:
@@ -127,7 +127,8 @@ def assemble_wave_updater() -> tuple[bytes, dict[str, int]]:
     b = Builder(WAVE_UPDATE_BASE)
     b.label("entry")
     for lane in range(LANES):
-        b.emit(f"0839{lane:04x}{LFO2_MASK_ADDRESS + 1:08x}")
+        b.emit(f"3439{LFO2_MASK_ADDRESS:08x}")
+        b.emit(f"0802{lane:04x}")
         b.branch_word(0x6700, f"lane_{lane}_copy")
         b.emit(f"41f9{LFO2_STATE0 + lane * LFO2_STATE_STRIDE:08x}")
         b.emit(f"43f9{FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE:08x}")
@@ -289,7 +290,7 @@ def run_matrix(module, armed_path: Path, stock: bytes) -> dict:
     install_input(bus, True)
     cpu.pushl(RETURN_PC); cpu.pc = AUDIO_CALLBACK
     before = None; multiply_calls = 0
-    for _ in range(180_000):
+    for _ in range(600_000):
         if cpu.pc == MIXER: break
         if cpu.pc == FILTER_SYMBOLS["post_ingress"]: before = plane_lanes(bus)
         if cpu.pc == FILTER_SYMBOLS["multiply"]: multiply_calls += 1

@@ -659,6 +659,18 @@ hold resumes without phase drift. This sequence exposed and corrected an
 earlier half-shot immediate encoded as `0x00008000`. Active random-lane testing
 also proves three disabled callbacks freeze phase, re-enable resumes it, and
 reset clears phase, last modulation, and random index before the next callback.
+Live QEMU validation exposed a separate load-time constraint that the offline
+interpreter could not model: OS startup clears the nominal zero cave from
+`0x402B5000` upward. The live candidate now fits entirely within two persistent
+stock-zero runs, `0x402B25DC..0x402B3001` and
+`0x402B41E0..0x402B5000`. Its waveform updater begins at `0x402B25E0`, sine
+table at `0x402B28CC`, rate table at `0x402B2CCC`, waveform shim at
+`0x402B2ECC`, note hook at `0x402B2F5C`, control shim at `0x402B4878`, and
+random table at `0x402B4C00`. A real-QEMU gate with all eight LFO lanes and all
+seven waveform selectors preloaded reaches the firmware idle loop after a
+forced audio interrupt with no illegal instruction in candidate code. Exact
+audio/state values remain covered separately by the MiniColdFire oracle suite;
+this gate is not a hardware timing claim.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic
@@ -682,9 +694,19 @@ re-adding each load-form product into the same accumulator. Matching the
 already-correct QEMU/base-interpreter rule activates the stock external-source
 mix path: the audition now captures the selected lane downstream of stock mixer
 `0x4010A2E0` and uses the renderer tap's proven six-guard-bit conversion to
-signed 16-bit PCM. Other source planes remain fixture-dependent. The next gate is to
-feed this verified bounded mixer output into a paced host-audio stream without
-enabling an unbounded service clock.
+signed 16-bit PCM. Other source planes remain fixture-dependent. This verified
+bounded output now feeds the passive paced renderer tap and eight-block trigger
+service described below without enabling the unbounded research clock;
+sustained realtime playback remains outside the proven TCG budget.
+
+The native desktop path now closes its separate runtime-control gate. QEMU
+11.1.50 compiles and links the 108-byte importer, boots the full Filter2/LFO2
+candidate to a live 1 KiB firmware framebuffer, and consumes two atomically
+replaced snapshots while running. Direct physical-memory inspection confirms
+the exact expected Filter2 target, waveform/mode config, rate increment, depth,
+enable mask and retrigger mask before and after the update. The evidence is
+recorded in `research/AR172_QEMU_LFO2_RUNTIME_CONTROL_GATE.json`; no hosted
+workflow or proprietary firmware artifact was published.
 
 The mechanical correction and its bounded runtime proof are recorded in
 `research/AR172_MINICOLDFIRE_AUDIO_EMAC_GATE.json`. Revalidation also isolated

@@ -35,7 +35,7 @@ from trigger_queue_probe import load_emulator, stock_call
 EPILOGUE_PATCH = 0x40118AE6
 EPILOGUE_CONTINUE = 0x40118AEC
 EPILOGUE_ORIGINAL = bytes.fromhex("46c14cd7041c")
-NOTE_HOOK_BASE = 0x402B5100
+NOTE_HOOK_BASE = 0x402B2F5C
 CALLSITE_PATCH = bytes.fromhex(f"4eb9{NOTE_HOOK_BASE:08x}")
 
 

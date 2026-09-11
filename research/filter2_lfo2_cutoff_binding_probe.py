@@ -49,7 +49,7 @@ LFO2_STATE0 = STATE_BASE + HEADER_BYTES + LANES * FILTER2_STATE_STRIDE
 LFO2_STATE_STRIDE = 16
 BASE_TARGET_OFFSET = 12
 EFFECTIVE_TARGET_OFFSET = 16
-LFO_UPDATE_BASE = TABLE_BASE + 0x200
+LFO_UPDATE_BASE = 0x402B25E0
 
 
 def assemble_extension() -> tuple[bytes, dict[str, int]]:
@@ -58,24 +58,32 @@ def assemble_extension() -> tuple[bytes, dict[str, int]]:
     b.label("entry")
     b.emit("4eb940117f00")                  # JSR stock ingress
     b.label("post_ingress")
-    b.emit("40e7")                          # MOVE.W SR,-(SP)
+    # Keep the live candidate within the ColdFire ISA subset exercised by
+    # QEMU.  The predecrement SR/MOVEM forms used by the early research model
+    # repeatedly restart on the emulated core, so preserve state with ordinary
+    # MOVE instructions just like the validated eight-lane Filter 2 kernel.
+    b.emit("2f002f012f022f032f042f052f062f072f082f09")
+                                              # push D0-D7/A0-A1
+    b.emit("40c0")                            # MOVE.W SR,D0
+    b.emit("3f00")                            # MOVE.W D0,-(SP)
     b.emit("4ab9402b4408")                  # TST.L flags
-    b.branch_word(0x6700, "restore_sr")
-    b.emit("48e7ffc0")                      # MOVEM.L D0-D7/A0-A1,-(SP)
+    b.branch_word(0x6700, "restore_state")
     b.emit(f"4eb9{LFO_UPDATE_BASE:08x}")    # JSR block-rate LFO2 updater
 
     for lane in range(LANES):
-        b.emit(f"0839{lane:04x}402b440d")
+        b.emit("3439402b440c")              # MOVE.W Filter2 mask,D2
+        b.emit(f"0802{lane:04x}")           # BTST #lane,D2
         b.branch_word(0x6700, f"lane_{lane}_skip")
         b.emit(f"41f9{OUTPUT_PLANE + lane * PLANE_LANE_STRIDE:08x}")
         b.emit(f"43f9{FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE:08x}")
         b.branch_word(0x6100, "process_lane")
         b.label(f"lane_{lane}_skip")
 
-    b.label("restore_registers")
-    b.emit("4cdf03ff")                      # MOVEM.L (SP)+,D0-D7/A0-A1
-    b.label("restore_sr")
-    b.emit("46df")                          # MOVE.W (SP)+,SR
+    b.label("restore_state")
+    b.emit("301f")                          # MOVE.W (SP)+,D0
+    b.emit("46c0")                          # MOVE.W D0,SR
+    b.emit("225f205f2e1f2c1f2a1f281f261f241f221f201f")
+                                              # pop A1/A0/D7-D0
     b.emit("4e75")                          # RTS
 
     b.label("process_lane")
@@ -118,11 +126,65 @@ def assemble_extension() -> tuple[bytes, dict[str, int]]:
     b.emit("4e75")
 
     b.label("multiply")
-    b.emit("4c041c05")                      # signed 32x32 -> D1:D5
-    b.emit("7e1f")
-    b.emit("eea9")
-    b.emit("da85")
-    b.emit("8285")
+    # ColdFire ISA A lacks the two-register 64-bit MULS.L result selected by
+    # the old extension word.  Form the exact signed product with the same
+    # fixed 32-step shift/add kernel used by filter2_eight_lane_probe.
+    b.emit("2f002f022f032f06")              # push D0/D2/D3/D6
+    b.emit("2401")                          # D2 = multiplicand
+    b.emit("2604")                          # D3 = multiplier
+    b.emit("2c02")
+    b.emit("b986")                          # product sign
+    b.emit("2f06")
+    b.emit("4a82")
+    b.branch_word(0x6A00, "multiply_abs_a_done")
+    b.emit("4482")
+    b.label("multiply_abs_a_done")
+    b.emit("4a83")
+    b.branch_word(0x6A00, "multiply_abs_b_done")
+    b.emit("4483")
+    b.label("multiply_abs_b_done")
+    b.emit("7c00")                          # high multiplicand
+    b.emit("7a00")                          # low accumulator
+    b.emit("7e00")                          # high accumulator
+    b.emit("7020")
+    b.label("multiply_loop")
+    b.emit("08030000")
+    b.branch_word(0x6700, "multiply_no_add")
+    b.emit("7200")
+    b.emit("da82")
+    b.branch_word(0x6400, "multiply_accumulate_high")
+    b.emit("5281")
+    b.label("multiply_accumulate_high")
+    b.emit("de86")
+    b.emit("de81")
+    b.label("multiply_no_add")
+    b.emit("7200")
+    b.emit("d482")
+    b.branch_word(0x6400, "multiply_shift_high")
+    b.emit("5281")
+    b.label("multiply_shift_high")
+    b.emit("dc86")
+    b.emit("dc81")
+    b.emit("e28b")
+    b.emit("5380")
+    b.branch_word(0x6600, "multiply_loop")
+    b.emit("261f")                          # restore sign
+    b.emit("4a83")
+    b.branch_word(0x6A00, "multiply_positive")
+    b.emit("4485")
+    b.branch_word(0x6700, "multiply_negate_high")
+    b.emit("4487")
+    b.emit("5387")
+    b.branch_word(0x6000, "multiply_positive")
+    b.label("multiply_negate_high")
+    b.emit("4487")
+    b.label("multiply_positive")
+    b.emit("2205")
+    b.emit("761f")
+    b.emit("e6a9")
+    b.emit("de87")
+    b.emit("8287")
+    b.emit("2c1f261f241f201f")              # restore D6/D3/D2/D0
     b.emit("4e75")
     return b.finish()
 
@@ -136,7 +198,8 @@ def assemble_lfo_updater() -> tuple[bytes, dict[str, int]]:
     b = Builder(LFO_UPDATE_BASE)
     b.label("entry")
     for lane in range(LANES):
-        b.emit(f"0839{lane:04x}{LFO2_MASK_ADDRESS + 1:08x}")
+        b.emit(f"3439{LFO2_MASK_ADDRESS:08x}")      # MOVE.W LFO2 mask,D2
+        b.emit(f"0802{lane:04x}")                    # BTST #lane,D2
         b.branch_word(0x6700, f"lane_{lane}_copy_base")
         b.emit(f"41f9{LFO2_STATE0 + lane * LFO2_STATE_STRIDE:08x}")
         b.emit(f"43f9{FILTER2_STATE0 + lane * FILTER2_STATE_STRIDE:08x}")
@@ -279,7 +342,9 @@ def run_integration(module, armed_path: Path, stock: bytes) -> dict:
         before = None
         multiply_calls = 0
         start = cpu.steps
-        for _ in range(240_000):
+        # The QEMU-safe software Q1.31 multiply is intentionally instruction
+        # heavier than the unsupported two-register MULS.L form.
+        for _ in range(600_000):
             if cpu.pc == MIXER:
                 break
             if cpu.pc == FILTER_SYMBOLS["post_ingress"]:
@@ -355,7 +420,7 @@ def probe(stock_path: Path, emulator_path: Path, candidate_output: Path | None =
         raise ValueError(f"unexpected MAIN SHA-256: {digest}")
     if MODULATED_EXTENSION_END > SHIM_BASE:
         raise ValueError("modulated Filter2 extension overlaps publication shim")
-    if LFO_UPDATE_BASE < TABLE_BASE + 512:
+    if not (LFO_UPDATE_END <= TABLE_BASE or TABLE_BASE + 512 <= LFO_UPDATE_BASE):
         raise ValueError("LFO2 updater overlaps Q1.31 control table")
 
     disabled, disabled_build = build_candidate(stock, False)

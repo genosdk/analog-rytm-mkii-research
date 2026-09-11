@@ -46,8 +46,8 @@ CONTROL_INDEX_END = 0x8000
 # The ColdFire-safe Filter 2 kernel occupies two extra bytes beyond the
 # original 0x402B4800 boundary.  Keep the later LFO2 regions disjoint by
 # moving this shim and its rate table one 0x200-byte page forward.
-CONTROL_SHIM_BASE = 0x402B4E00
-RATE_TABLE_BASE = 0x402B5000
+CONTROL_SHIM_BASE = 0x402B4878
+RATE_TABLE_BASE = 0x402B2CCC
 TRIGGER_MASK_ADDRESS = 0x402B4418
 RANDOM_INDEX_OFFSET = 24
 CALLBACKS_PER_SECOND = 1500.0
@@ -304,7 +304,7 @@ def end_to_end(module, armed_path: Path, stock: bytes) -> dict:
     cpu.pushl(RETURN_PC)
     cpu.pc = AUDIO_CALLBACK
     before = None
-    for _ in range(150_000):
+    for _ in range(600_000):
         if cpu.pc == MIXER:
             break
         if cpu.pc == FILTER_SYMBOLS["post_ingress"]:
@@ -362,7 +362,7 @@ def probe(stock_path: Path, emulator_path: Path, candidate_output: Path | None =
     digest = hashlib.sha256(stock).hexdigest()
     if digest != EXPECTED_MAIN_SHA256:
         raise ValueError(f"unexpected MAIN SHA-256: {digest}")
-    if CONTROL_SHIM_END > RATE_TABLE_BASE:
+    if RATE_TABLE_BASE + len(RATE_TABLE) > CONTROL_SHIM_BASE:
         raise ValueError("LFO2 control shim overlaps rate table")
     disabled, disabled_build = build_candidate(stock, False)
     armed, armed_build = build_candidate(stock, True)
