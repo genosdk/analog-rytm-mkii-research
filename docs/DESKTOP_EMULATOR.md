@@ -40,6 +40,8 @@ values are refreshed from native firmware storage on all six pages. SYN, SMP,
 FLTR, AMP, and LFO use the live Q8 track bank; TRIG uses its packed kit-record
 fields. Encoder I is displayed separately as Level and follows the firmware's
 32-bit selected-track index into the exported 13-track native Q8 level bank.
+Trig presses 1–12 select native track indices 0–11, so mouse and QWERTY
+triggering also move the Level readback to the corresponding track.
 
 ## Display
 

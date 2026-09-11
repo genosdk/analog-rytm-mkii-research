@@ -74,7 +74,12 @@ big-endian Q8 words beginning at `0x4123C8E3`; the first word changed from
 is read from `0x412FF96F`, and the desktop uses it to refresh the separate Level
 knob from the corresponding word.
 
+The selection/readback link is causal: Trigs 1–12 selected indices 0–11.
+After Trig 3 selected index 2, an encoder-I burst changed only bank word 2 from
+`0x6400` to `0x7F00`; the other 12 Level words were unchanged. Trig 13 left
+index 11 unchanged, consistent with FX selection being a separate control.
+
 ## Current target
 
-Exercise track selection from the desktop and verify that the exported index
-and encoder-I Level word advance together.
+Return to the native voice timing/seed descriptor gate now that QWERTY trigger,
+track selection, all six page-function readbacks, and Level/Data are connected.

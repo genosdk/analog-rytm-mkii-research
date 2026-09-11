@@ -335,9 +335,13 @@ class DesktopPanelInputTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        self.assertEqual(report["status"], "PASS_SIX_PAGE_AND_LEVEL_READBACK")
+        self.assertEqual(
+            report["status"],
+            "PASS_SIX_PAGE_LEVEL_AND_TRACK_SELECTION_READBACK",
+        )
         self.assertEqual(report["level_data"]["live_word"], "0x4123C8E3")
         self.assertEqual(report["trig"]["state_window"], "0x407C4B93..0x407C4B9C")
+        self.assertIn("word 2", report["track_selection"]["causal_mutation"])
         source = (
             ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
         ).read_text(encoding="utf-8")

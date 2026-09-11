@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_TRIG_LEVEL_READBACK_GATE",
   "recorded_at_utc": "2026-09-11",
-  "status": "PASS_SIX_PAGE_AND_LEVEL_READBACK",
+  "status": "PASS_SIX_PAGE_LEVEL_AND_TRACK_SELECTION_READBACK",
   "level_data": {
     "subscriber_adapter": "0x400C578A",
     "handler": "0x400C567A",
@@ -14,6 +14,12 @@
     "live_word": "0x4123C8E3",
     "bank": "13 consecutive big-endian Q8 words",
     "mutation": "0x6400 -> 0x6E00"
+  },
+  "track_selection": {
+    "trigs_1_through_12": "select native indices 0 through 11",
+    "trig_13": "leaves drum-track index unchanged; FX selection remains separate",
+    "causal_probe": "Trig 3 selected index 2, then encoder I changed only level-bank word 2",
+    "causal_mutation": "word 2: 0x6400 -> 0x7F00; all other 12 words unchanged"
   },
   "trig": {
     "parameter_ids_A_through_H": [29, 30, 31, 38, 34, 35, 36, 37],
@@ -43,7 +49,7 @@
   },
   "desktop": {
     "page_function_readback": ["TRIG", "SYN", "SMP", "FLTR", "AMP", "LFO"],
-    "level_data": "separate encoder-I Level knob follows the exported selected-track index into the 13-word bank",
+    "level_data": "separate encoder-I Level knob follows Trigs 1-12 through the exported selected-track index into the 13-word bank",
     "qemu_exports": [
       "AR_MK2_PARAMETER_STATE_OUT",
       "AR_MK2_TRIG_STATE_OUT",
