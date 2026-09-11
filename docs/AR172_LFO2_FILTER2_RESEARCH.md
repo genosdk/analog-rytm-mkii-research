@@ -682,6 +682,13 @@ candidate consumes desktop JSON events, applies two exact atomic control
 snapshots, completes all eight vector-191 services, and remains responsive to
 the following SMP event. This is recorded in
 `research/AR172_QEMU_DESKTOP_EVENT_RUNTIME_GATE.json`.
+The follow-on active-retrigger gate keeps lane 0's retrigger mask set, seeds
+nonzero phase, last-modulation and deterministic-random state while QEMU is
+paused, then resumes and sends the real desktop Trig 1 edge. The native note
+hook clears all three words before the delayed first renderer service; eight
+services, nonzero generated-sample PCM and the later SMP page then complete.
+This closes the live reset-taking branch and is recorded in
+`research/AR172_QEMU_LFO2_ACTIVE_RETRIGGER_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

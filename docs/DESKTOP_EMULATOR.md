@@ -115,6 +115,16 @@ QEMU now re-arms eDMA channel 15 when the modeled external audio interface
 consumes the DSPI1 transmit FIFO; without that request, firmware waited
 indefinitely for DSPI1 SR.EOQF at `0x40077D90` after the first transfer.
 
+The active-retrigger runtime gate uses that delay to prove the native note-on
+branch rather than merely traversing it. With lane 0 enabled in trigger mode,
+the harness pauses QEMU, seeds nonzero phase, last-modulation and random-index
+words through the local debug stub, resumes, and sends the ordinary desktop
+Trig 1 event. One atomic monitor snapshot observes all three words cleared
+before the first of eight bounded renderer services. The later SMP-page event
+and nonzero generated-sample WAV still pass. This instrumentation changes no
+candidate bytes and is recorded in
+`research/AR172_QEMU_LFO2_ACTIVE_RETRIGGER_GATE.json`.
+
 This option remains a research clock rather than a physical realtime claim.
 The backpressured 10 ms model has sustained 2,303 completed services while the
 UI remained responsive, but the physical device cadence has not yet been

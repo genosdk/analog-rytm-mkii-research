@@ -122,12 +122,17 @@ def hmp_command(port: int, command: str, timeout: float = 2.0) -> str:
             except TimeoutError:
                 pass
             sock.sendall(command.encode("ascii") + b"\n")
+            response = bytearray()
+            expected_prompts = command.count("\n") + 1
             while True:
                 try:
                     chunk = sock.recv(4096)
                     if not chunk:
                         break
                     chunks.append(chunk)
+                    response.extend(chunk)
+                    if response.count(b"(qemu) ") >= expected_prompts:
+                        break
                 except TimeoutError:
                     break
             return b"".join(chunks).decode("utf-8", errors="replace")
@@ -136,6 +141,55 @@ def hmp_command(port: int, command: str, timeout: float = 2.0) -> str:
         finally:
             sock.close()
     raise TimeoutError(f"monitor socket unavailable on port {port}")
+
+
+def gdb_write_memory(port: int, address: int, data: bytes,
+                     timeout: float = 2.0) -> None:
+    """Write halted guest memory through QEMU's local GDB stub."""
+    payload = f"M{address:x},{len(data):x}:{data.hex()}".encode("ascii")
+    checksum = f"{sum(payload) & 0xff:02x}".encode("ascii")
+    packet = b"$" + payload + b"#" + checksum
+    deadline = time.monotonic() + timeout
+    last = b""
+    while time.monotonic() < deadline:
+        try:
+            with socket.create_connection(
+                    ("127.0.0.1", port), timeout=0.2) as sock:
+                sock.settimeout(0.2)
+                sock.sendall(packet)
+                response = bytearray()
+                while time.monotonic() < deadline:
+                    try:
+                        response.extend(sock.recv(4096))
+                    except TimeoutError:
+                        continue
+                    if b"$OK#" in response:
+                        return
+                    last = bytes(response)
+        except OSError:
+            time.sleep(0.03)
+    raise TimeoutError(
+        f"GDB memory write to 0x{address:08x} failed: {last!r}"
+    )
+
+
+def seed_lfo2_retrigger_state(monitor_port: int, gdb_port: int,
+                              deadline: float) -> dict[str, str]:
+    sentinels = {
+        "phase": (0x402B4520, 0x12345678),
+        "last_modulation": (0x402B452C, 0x23456789),
+        "random_index": (0x402B4438, 0x3456789A),
+    }
+    hmp_command(monitor_port, "stop")
+    try:
+        for address, value in sentinels.values():
+            gdb_write_memory(gdb_port, address, value.to_bytes(4, "big"))
+    finally:
+        hmp_command(monitor_port, "cont")
+    return {
+        name: wait_hmp_value(monitor_port, address, "w", value, deadline)
+        for name, (address, value) in sentinels.items()
+    }
 
 
 def emit_event(path: Path, kind: str, name: str, value) -> None:
@@ -175,6 +229,26 @@ def wait_hmp_value(port: int, address: int, width: str,
             return marker
         time.sleep(0.03)
     raise TimeoutError(f"{command} did not reach {marker}: {last!r}")
+
+
+def wait_lfo2_retrigger_reset(port: int, deadline: float) -> dict[str, str]:
+    addresses = {
+        "phase": 0x402B4520,
+        "last_modulation": 0x402B452C,
+        "random_index": 0x402B4438,
+    }
+    commands = ["stop"]
+    commands.extend(f"xp /1wx 0x{address:08x}" for address in addresses.values())
+    commands.append("cont")
+    command = "\n".join(commands)
+    last = ""
+    while time.monotonic() < deadline:
+        last = hmp_command(port, command).lower()
+        if all(f"{address:08x}: 0x00000000" in last
+               for address in addresses.values()):
+            return {name: "0x00000000" for name in addresses}
+        time.sleep(0.01)
+    raise TimeoutError(f"native LFO2 reset was not observed atomically: {last!r}")
 
 
 def wav_metrics(path: Path) -> dict[str, int | str | bool]:
@@ -233,6 +307,11 @@ def main() -> None:
         help="exercise desktop Filter2/LFO2 events against a full runtime candidate",
     )
     parser.add_argument(
+        "--exercise-active-retrigger",
+        action="store_true",
+        help="prove Trig 1 clears seeded native LFO2 state before audio service",
+    )
+    parser.add_argument(
         "--capture-audio-wav",
         action="store_true",
         help="capture the bounded renderer tap through QEMU's WAV backend",
@@ -270,6 +349,10 @@ def main() -> None:
         parser.error("--minimum-audio-services cannot be negative")
     if args.capture_audio_wav and not args.exercise_trigger_audio:
         parser.error("--capture-audio-wav requires --exercise-trigger-audio")
+    if args.exercise_active_retrigger and not args.exercise_runtime_controls:
+        parser.error("--exercise-active-retrigger requires --exercise-runtime-controls")
+    if args.exercise_active_retrigger and not args.exercise_trigger_audio:
+        parser.error("--exercise-active-retrigger requires --exercise-trigger-audio")
     if args.capture_audio_wav and args.services_per_trigger < 8:
         parser.error("--capture-audio-wav requires at least 8 services per trigger")
     if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
@@ -294,6 +377,9 @@ def main() -> None:
     audio_wav = runtime / "bounded-renderer.wav"
     log = runtime / "qemu.log"
     monitor_port = unused_local_port()
+    gdb_port = unused_local_port()
+    while gdb_port == monitor_port:
+        gdb_port = unused_local_port()
     diagnostics = runtime / "monitor.txt"
     env = os.environ.copy()
     env["AR_MK2_MOCK_CALIBRATION"] = "1"
@@ -323,6 +409,7 @@ def main() -> None:
         "-bios", str(main_image), "-display", "none",
         "-serial", f"pipe:{panel_base}",
         "-monitor", f"tcp:127.0.0.1:{monitor_port},server=on,wait=off",
+        "-gdb", f"tcp:127.0.0.1:{gdb_port}",
         "-d", args.qemu_debug, "-D", str(log),
     ]
     if args.capture_audio_wav:
@@ -398,6 +485,32 @@ def main() -> None:
             }
             runtime_transitions.append({"name": "maximum_random_hold", **first_memory})
 
+            if args.exercise_active_retrigger:
+                for index in range(args.trigger_count):
+                    seeded = seed_lfo2_retrigger_state(
+                        monitor_port, gdb_port, deadline
+                    )
+                    emit_event(events_file, "trig", "1", "press")
+                    reset = wait_lfo2_retrigger_reset(monitor_port, deadline)
+                    time.sleep(0.08)
+                    emit_event(events_file, "trig", "1", "release")
+                    wait_log_count(
+                        log,
+                        "AR-MK2 AUDIO: completed vector 191 service",
+                        (index + 1) * args.services_per_trigger,
+                        deadline,
+                    )
+                    events.append(
+                        {
+                            "control": "TRIG 1",
+                            "ordinal": index + 1,
+                            "press": "23 01",
+                            "release": "23 00",
+                            "seeded_native_state": seeded,
+                            "native_retrigger_reset": reset,
+                        }
+                    )
+
             second = RuntimeControls()
             second.filter2[0] = 0
             second.waveform[0] = 4
@@ -428,7 +541,7 @@ def main() -> None:
                     monitor_port, 0x402B4418, "h", 0x0000, deadline),
             }
             runtime_transitions.append({"name": "sine_half_minimum", **second_memory})
-        if args.exercise_trigger_audio:
+        if args.exercise_trigger_audio and not args.exercise_active_retrigger:
             for index in range(args.trigger_count):
                 emit_event(events_file, "trig", "1", "press")
                 time.sleep(0.08)

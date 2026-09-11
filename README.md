@@ -93,6 +93,9 @@ and reproducible tooling.
 - Desktop pad/QWERTY rising edges now schedule eight bounded vector-191 renderer
   services. Re-arming DSPI1's channel-15 transmit request at each external
   audio event prevents the firmware's EOQ wait from stalling repeated blocks.
+- A live active-retrigger gate seeds lane-0 phase, modulation and random state,
+  sends the ordinary desktop Trig 1 edge with its retrigger mask enabled, and
+  observes all three words cleared before the eight renderer services begin.
 - The packaged macOS shell now uses a hardware-proportional native panel with
   persistent page/trigger LEDs and keyboard-accessible A-I encoders. Its
   **FILTER 2** drawer publishes eight absolute runtime controls through an

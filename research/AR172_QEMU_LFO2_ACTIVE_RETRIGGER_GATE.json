@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_LFO2_ACTIVE_RETRIGGER_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_REAL_TRIG1_CLEARS_NATIVE_LFO2_STATE_BEFORE_AUDIO",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "runtime": {
+    "qemu_version": "11.1.50",
+    "firmware": "caller-supplied official OS 1.72 MAIN",
+    "candidate": "temporary non-flashable Filter2/LFO2 runtime image",
+    "candidate_sha256": "ba92042551d7bc4796ce63f2db7cf6ffc71d7004eb4237081dca7d9bee779d04",
+    "firmware_embedded": false,
+    "paid_ci_used": false
+  },
+  "precondition": {
+    "desktop_control_transition": "maximum_random_hold",
+    "lane": 0,
+    "enable_mask": "0x0001",
+    "retrigger_mask": "0x0001",
+    "waveform": "random",
+    "mode": "hold",
+    "filter2_target": "0x7FFFFFFF",
+    "increment": "0x11111111",
+    "depth": "0x20408102"
+  },
+  "instrumentation": {
+    "method": "stop VM through HMP, write three big-endian sentinels through QEMU's local GDB stub, resume VM, and verify each sentinel through physical-memory HMP reads",
+    "candidate_bytes_modified": false,
+    "phase": {
+      "address": "0x402B4520",
+      "seeded": "0x12345678",
+      "observed_after_trig1": "0x00000000"
+    },
+    "last_modulation": {
+      "address": "0x402B452C",
+      "seeded": "0x23456789",
+      "observed_after_trig1": "0x00000000"
+    },
+    "random_index": {
+      "address": "0x402B4438",
+      "seeded": "0x3456789A",
+      "observed_after_trig1": "0x00000000"
+    },
+    "readback": "one stop/read-three/resume HMP transaction before the delayed vector-191 service"
+  },
+  "causal_event": {
+    "transport": "desktop JSONL -> panel_event_bridge.follow_events -> UART8 pipe -> eDMA34 -> stock event path -> native note hook",
+    "control": "Trig 1",
+    "press": "23 01",
+    "release": "23 00",
+    "reset_observed_while_retrigger_mask_active": true
+  },
+  "bounded_audio": {
+    "scheduled_vector": 191,
+    "completed_services_after_reset": 8,
+    "continuous_service_clock": false,
+    "wav_channels": 2,
+    "wav_sample_width_bytes": 2,
+    "wav_backend_rate_hz": 44100,
+    "wav_frames_observed": 1449918,
+    "wav_pcm_bytes_observed": 5799672,
+    "wav_nonzero_pcm_bytes_observed": 636,
+    "wav_contains_nonzero_pcm": true,
+    "wav_pcm_sha256": "7cc508a81a2ad8806e9c0b195624f26517a14dc72947aaa8ab161d7d9e8a6158",
+    "fixture": "emulator-generated QEMU TEST sample; no proprietary PCM"
+  },
+  "framebuffer": {
+    "startup_modal_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
+    "normal_ui_sha256": "f83ba08842ec178344879e946e66f82a99a7fed90fe7a1e2c020fd7180f4dfb9",
+    "smp_page_sha256": "592a43e29c1f63cca43fa15d899abd671743761ad00f805f78b01a78575a6030",
+    "later_ui_responsive": true
+  },
+  "reproducer": "qemu/headless_ui_smoke.py --exercise-runtime-controls --exercise-active-retrigger --exercise-trigger-audio --capture-audio-wav",
+  "scope_limit": "This proves the active lane-0 native note-on hook clears phase, last modulation, and deterministic-random index in live QEMU before bounded renderer service. It is not a physical timing or hardware-output claim.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}
