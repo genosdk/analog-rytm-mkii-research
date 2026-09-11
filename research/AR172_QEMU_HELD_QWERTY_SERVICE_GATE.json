@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HELD_QWERTY_SERVICE_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_HELD_KEY_SERVICE_AND_BOUNDED_RELEASE",
+  "trigger": {
+    "press": "23 01",
+    "release": "23 00",
+    "transport": "QWERTY Q uses the native UART8 Trig-1 frames",
+    "auto_repeat": "repeated key-down frames do not create a new rising bitmap edge"
+  },
+  "service_policy": {
+    "initial_blocks": 8,
+    "held_refill": "one reserve block while either native pad bitmap group remains nonzero",
+    "final_release_tail_blocks": 8,
+    "unbounded_clock": false
+  },
+  "runtime_acceptance": {
+    "active_test_sample_frames": 4096,
+    "minimum_services_before_host_release": 100,
+    "services_at_native_release": 106,
+    "services_after_release_tail": 114,
+    "held_service_wall_seconds": 0.694,
+    "held_service_rate_hz": 144.183,
+    "required_realtime_service_rate_hz": 1500,
+    "measured_realtime_shortfall_factor": 10.403,
+    "release_tail_is_anchored_to_native_key_up": true,
+    "service_count_stable_after_one_second": true,
+    "nonzero_stock_renderer_reached_host_tap": true,
+    "later_smp_framebuffer_responsive": true
+  },
+  "boundary": {
+    "proven": "native renderer service continues beyond the former eight-block edge budget while a real pad state remains held, then stops deterministically",
+    "not_claimed": "real-time 48 kHz throughput; host wall-time performance remains a separate optimization gate"
+  },
+  "regression": {
+    "command": "qemu/headless_ui_smoke.py --exercise-held-audio --held-services 100 --timeout 55",
+    "firmware_embedded": false
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Official stock firmware ran only from local temporary storage. No firmware, project data, factory sample names, captured PCM, or modified firmware artifact is included."
+}

@@ -48,8 +48,9 @@ default, including when the macOS app is opened by double-clicking. After the
 normal UI appears, select a track and click **LOAD TEST**. The desktop opens SMP
 and sends the proven four
 `Encoder D +8` frames; the untouched stock setter assigns Sample Slot 1. Hold
-the matching QWERTY trigger through the first service (roughly 100 ms) to hear
-the generated sample through the host audio tap. Launch with `--no-audio` to
+the matching QWERTY trigger to hear the generated sample through the host audio
+tap. Renderer service continues while the native pad bitmap remains asserted;
+key-up completes a bounded eight-block release tail. Launch with `--no-audio` to
 disable the host tap, bounded trigger service, and test-sample provider.
 
 ## Display
@@ -84,12 +85,21 @@ converts the signed renderer words to little-endian 16-bit PCM, and hands the
 result to QEMU at 48 kHz. The same mono mix is currently sent to left and right;
 the hardware pan/return mapping is not yet proven.
 
-The tap itself remains passive. The default desktop mode also enables a
-bounded service gate: each rising Trig/pad edge schedules eight stock
-vector-191 renderer passes and exposes the explicit **LOAD TEST** action. This
-proves repeated QWERTY-to-host-PCM operation without enabling the unbounded
-research clock. Longer realtime playback is still blocked on ColdFire TCG
-throughput.
+The tap itself remains passive. The default desktop mode also enables a guarded
+service gate and exposes the explicit **LOAD TEST** action. A rising Trig/pad
+edge schedules eight stock vector-191 renderer passes. If the native pad bitmap
+is still asserted when that budget drains, the emulator replenishes one block
+at a time from the SSI-derived timer. The final native release replaces any
+reserve with exactly eight blocks, after accounting for an in-flight service.
+Keyboard auto-repeat does not manufacture another rising edge.
+
+The held-key smoke gate used a 4,096-frame generated sample so its first 100
+measured services all contained active sample data. It completed those services
+in 0.694 seconds (144.183 services/s), observed native key-up at service 106,
+stopped at service 114 after the eight-block tail, produced nonzero host PCM,
+and retained responsive SMP-page rendering. Real-time 48 kHz needs 1,500
+32-frame services/s, so this is a control-semantics result, not a real-time
+playback claim; ColdFire TCG is still about 10.4 times short in this run.
 
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at
@@ -101,10 +111,12 @@ routine at `0x40117A28`. The shim waits for its acknowledgement
 and for CPU IPL to return below 5 before issuing another request, preventing
 interrupt coalescing from masquerading as sustained renderer progress.
 
-For the bounded trigger gate, a pad edge is delayed by 10 Type-8 ticks so the
-native trigger state is visible before source 63 is raised. The shim observes
+For a short trigger, a pad edge is delayed by 10 Type-8 ticks so the native
+trigger state is visible before source 63 is raised. A held pad uses the
+SSI-derived timer after its initial budget; its release tail returns to the
+Type-8 scheduler for UI headroom. The shim observes
 the native IFR63 clear on entry and CPU interrupt level returning below 5 on
-completion. The verified desktop budget is eight 32-frame blocks per pad edge.
+completion. The verified release budget is eight 32-frame blocks.
 QEMU now re-arms eDMA channel 15 when the modeled external audio interface
 consumes the DSPI1 transmit FIFO; without that request, firmware waited
 indefinitely for DSPI1 SR.EOQF at `0x40077D90` after the first transfer.

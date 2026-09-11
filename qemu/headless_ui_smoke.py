@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import socket
 import subprocess
@@ -61,6 +62,26 @@ def wait_log_count(path: Path, needle: str, count: int, deadline: float) -> None
             return
         time.sleep(0.03)
     raise TimeoutError(f"observed {observed}/{count} log markers: {needle}")
+
+
+def log_count(path: Path, needle: str) -> int:
+    try:
+        return path.read_text(encoding="utf-8", errors="replace").count(needle)
+    except FileNotFoundError:
+        return 0
+
+
+def wait_native_release_count(path: Path, deadline: float) -> int:
+    pattern = re.compile(r"AR-MK2 AUDIO: final pad release .* completed=(\d+)")
+    while time.monotonic() < deadline:
+        try:
+            match = pattern.search(path.read_text(encoding="utf-8", errors="replace"))
+        except FileNotFoundError:
+            match = None
+        if match is not None:
+            return int(match.group(1))
+        time.sleep(0.03)
+    raise TimeoutError("native pad release marker was not observed")
 
 
 def metrics(data: bytes) -> dict[str, int | str]:
@@ -218,6 +239,20 @@ def main() -> None:
         help="assign generated slot 1 through SMP encoder D and require QWERTY audio",
     )
     parser.add_argument(
+        "--exercise-held-audio",
+        action="store_true",
+        help=(
+            "hold QWERTY Trig 1 beyond the initial eight services, release it, "
+            "and require the fixed tail to stop cleanly"
+        ),
+    )
+    parser.add_argument(
+        "--held-services",
+        type=int,
+        default=12,
+        help="services required before releasing Trig 1 in held-audio mode",
+    )
+    parser.add_argument(
         "--trigger-count",
         type=int,
         default=1,
@@ -253,6 +288,10 @@ def main() -> None:
         parser.error("--services-per-trigger must be at least 1")
     if args.minimum_audio_services < 0:
         parser.error("--minimum-audio-services cannot be negative")
+    if args.held_services <= args.services_per_trigger:
+        parser.error("--held-services must exceed --services-per-trigger")
+    if args.exercise_held_audio:
+        args.exercise_demo_sample = True
     if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
         args.qemu_debug = f"unimp,{args.qemu_debug}"
     if args.exercise_demo_sample:
@@ -287,6 +326,8 @@ def main() -> None:
         env["AR_MK2_TRACK_LEVEL_STATE_OUT"] = str(track_levels)
     if args.exercise_demo_sample:
         env["AR_MK2_MOCK_PROJECT_SAMPLE"] = "1"
+        if args.exercise_held_audio:
+            env["AR_MK2_MOCK_PROJECT_SAMPLE_FRAMES"] = "4096"
         env["AR_MK2_PARAMETER_STATE_OUT"] = str(parameters)
         env["AR_MK2_AUDIO_TRIGGER_SERVICE"] = "1"
     if args.mock_audio_service:
@@ -329,6 +370,8 @@ def main() -> None:
         encoder_state_changes = None
         track_level_result = None
         demo_sample_result = None
+        held_audio_result = None
+        expected_audio_services = 0
         if args.exercise_demo_sample:
             wait_log_count(
                 log, "injected generated 16-bit test sample in slot 1", 1, deadline
@@ -412,31 +455,92 @@ def main() -> None:
                 }
             )
         if args.exercise_trigger_audio:
-            for index in range(args.trigger_count):
+            if args.exercise_held_audio:
+                hold_started = time.monotonic()
                 panel_writer.write(bytes.fromhex("23 01"))
-                if args.exercise_demo_sample:
-                    wait_log_count(
-                        log,
-                        "AR-MK2 AUDIO: completed vector 191 service",
-                        index * args.services_per_trigger + 1,
-                        deadline,
-                    )
-                else:
-                    time.sleep(0.08)
-                panel_writer.write(bytes.fromhex("23 00"))
                 wait_log_count(
                     log,
                     "AR-MK2 AUDIO: completed vector 191 service",
-                    (index + 1) * args.services_per_trigger,
+                    args.held_services,
                     deadline,
                 )
+                hold_elapsed = time.monotonic() - hold_started
+                release_started = time.monotonic()
+                panel_writer.write(bytes.fromhex("23 00"))
+                services_at_native_release = wait_native_release_count(
+                    log, deadline
+                )
+                expected_audio_services = (
+                    services_at_native_release + args.services_per_trigger
+                )
+                wait_log_count(
+                    log,
+                    "AR-MK2 AUDIO: completed vector 191 service",
+                    expected_audio_services,
+                    deadline,
+                )
+                release_elapsed = time.monotonic() - release_started
+                stopped_count = log_count(
+                    log, "AR-MK2 AUDIO: completed vector 191 service"
+                )
+                time.sleep(1.0)
+                final_count = log_count(
+                    log, "AR-MK2 AUDIO: completed vector 191 service"
+                )
+                if final_count != stopped_count:
+                    raise AssertionError(
+                        "audio service continued after the release tail: "
+                        f"{stopped_count} -> {final_count}"
+                    )
+                held_audio_result = {
+                    "minimum_services_before_host_release": args.held_services,
+                    "services_at_native_release": services_at_native_release,
+                    "release_tail_services": args.services_per_trigger,
+                    "services_after_stop_check": final_count,
+                    "stopped_after_release": True,
+                    "held_service_wall_seconds": round(hold_elapsed, 3),
+                    "held_service_rate_hz": round(
+                        args.held_services / hold_elapsed, 3
+                    ),
+                    "release_tail_wall_seconds": round(release_elapsed, 3),
+                }
                 events.append(
                     {
                         "control": "TRIG 1",
-                        "ordinal": index + 1,
                         "press": "23 01",
                         "release": "23 00",
+                        "mode": "held",
                     }
+                )
+            else:
+                for index in range(args.trigger_count):
+                    panel_writer.write(bytes.fromhex("23 01"))
+                    if args.exercise_demo_sample:
+                        wait_log_count(
+                            log,
+                            "AR-MK2 AUDIO: completed vector 191 service",
+                            index * args.services_per_trigger + 1,
+                            deadline,
+                        )
+                    else:
+                        time.sleep(0.08)
+                    panel_writer.write(bytes.fromhex("23 00"))
+                    wait_log_count(
+                        log,
+                        "AR-MK2 AUDIO: completed vector 191 service",
+                        (index + 1) * args.services_per_trigger,
+                        deadline,
+                    )
+                    events.append(
+                        {
+                            "control": "TRIG 1",
+                            "ordinal": index + 1,
+                            "press": "23 01",
+                            "release": "23 00",
+                        }
+                    )
+                expected_audio_services = (
+                    args.trigger_count * args.services_per_trigger
                 )
         if args.minimum_audio_services:
             wait_log_count(
@@ -468,8 +572,7 @@ def main() -> None:
             "events": events,
             "completed_audio_services": max(
                 args.minimum_audio_services,
-                args.trigger_count * args.services_per_trigger
-                if args.exercise_trigger_audio else 0,
+                expected_audio_services,
             ),
             "nonzero_host_audio": args.require_nonzero_audio,
             "startup_modal": metrics(before),
@@ -478,6 +581,7 @@ def main() -> None:
             "encoder_state_changes": encoder_state_changes,
             "track_level": track_level_result,
             "demo_sample": demo_sample_result,
+            "held_audio": held_audio_result,
             "smp_page": metrics(smp_page),
             "firmware_embedded": False,
         }, indent=2))

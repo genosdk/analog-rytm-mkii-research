@@ -108,6 +108,13 @@ Add `--exercise-trigger-audio` with `AR_MK2_AUDIO_TRIGGER_SERVICE=1` to verify
 that a finite Trig-1 audio-service budget drains and the UI still accepts the
 following SMP-page event.
 
+Add `--exercise-held-audio --held-services 100` to assign a generated
+4,096-frame sample, hold Trig 1 through at least 100 active renderer services,
+anchor key-up to the firmware-observed release, require exactly eight trailing
+services, verify the count remains stopped for one second, and then check the
+SMP page remains responsive. This is a lifecycle/throughput measurement; it
+does not require real-time host cadence.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,
@@ -124,10 +131,12 @@ python qemu/run_desktop_emulator.py \
 
 Audio is enabled by default so the same path works when the packaged macOS app
 is opened by double-clicking. It includes the passive tap, the guarded generated
-`QEMU TEST` provider, and a bounded trigger service. Click **LOAD TEST** after
+`QEMU TEST` provider, and a guarded trigger service. Click **LOAD TEST** after
 boot to assign slot 1 through four native SMP encoder frames. Each rising Trig/pad edge received
-through UART8 schedules eight stock audio interrupts; the continuous research
-clock remains disabled. Pass `--no-audio` to disable all three audio/demo
+through UART8 schedules eight stock audio interrupts. If the native bitmap is
+still held, service continues one block at a time; native release ends with an
+eight-block tail. The independent continuous research clock remains disabled.
+Pass `--no-audio` to disable all three audio/demo
 features. QEMU builds need a platform output driver (for example
 CoreAudio, PipeWire, PulseAudio, SDL, or OSS). For a deterministic capture,
 QEMU can instead be launched with its WAV default audio driver while

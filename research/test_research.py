@@ -143,7 +143,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         )
         self.assertIn("ar_edma_pump_dspi1_tx(&c->edma)", source)
 
-    def test_desktop_audio_service_is_bounded_by_pad_edges(self):
+    def test_desktop_audio_service_tracks_held_pad_and_release_tail(self):
         source = (
             ROOT / "qemu" / "hw" / "m68k" / "ar_mk2_intc_pit.c"
         ).read_text(encoding="utf-8")
@@ -152,6 +152,11 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("ar_panel_audio_observe", source)
         self.assertIn("group == 2 || group == 3", source)
         self.assertIn("c->audio_service_budget--", source)
+        self.assertIn("c->audio_pad_held", source)
+        self.assertIn("final pad release group=%u", source)
+        self.assertIn("completed=%u; bounded %u-block", source)
+        self.assertIn("AR_AUDIO_TRIGGER_BLOCKS - in_flight", source)
+        self.assertIn("!c->audio_service_budget", source)
         self.assertIn("c->audio_service_delay--", source)
         self.assertIn("c->audio_service_pending", source)
         self.assertIn("c->audio_service_entered", source)
@@ -172,6 +177,11 @@ class QemuAudioEdmaTests(unittest.TestCase):
             "c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS", source
         )
         self.assertIn("AR_MK2_AUDIO_TRIGGER_SERVICE", source)
+        machine = (
+            ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_MK2_MOCK_PROJECT_SAMPLE_FRAMES", machine)
+        self.assertIn("AR_SYNTH_SAMPLE_MAX_FRAMES 48000u", machine)
         launcher = (ROOT / "qemu" / "run_desktop_emulator.py").read_text(
             encoding="utf-8"
         )
@@ -395,6 +405,20 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertIn('text="LOAD TEST"', panel)
         self.assertIn('self.encoder("D", 8)', panel)
         self.assertIn("--exercise-demo-sample", smoke)
+        self.assertIn("--exercise-held-audio", smoke)
+        self.assertIn(
+            'env["AR_MK2_MOCK_PROJECT_SAMPLE_FRAMES"] = "4096"', smoke
+        )
+        self.assertIn("audio service continued after the release tail", smoke)
+
+        held = json.loads(
+            (HERE / "AR172_QEMU_HELD_QWERTY_SERVICE_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            held["status"], "PASS_HELD_KEY_SERVICE_AND_BOUNDED_RELEASE"
+        )
 
 
 @unittest.skipUnless(

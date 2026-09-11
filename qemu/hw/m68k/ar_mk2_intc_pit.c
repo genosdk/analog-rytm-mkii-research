@@ -164,6 +164,7 @@ struct ARCoreState {
     unsigned audio_service_completed;
     uint8_t panel_pending_command;
     uint8_t panel_button_groups[16];
+    bool audio_pad_held;
     bool audio_service_seen;
     bool source44_seen;
     bool source57_seen;
@@ -536,9 +537,13 @@ static void ar_panel_audio_observe(ARCoreState *c, uint8_t value)
         c->panel_pending_command = 0;
         if ((command & 0xf0) == 0x20) {
             unsigned group = command & 0x0f;
+            uint8_t falling = c->panel_button_groups[group] & ~value;
             uint8_t rising = value & ~c->panel_button_groups[group];
+            bool was_held = c->audio_pad_held;
 
             c->panel_button_groups[group] = value;
+            c->audio_pad_held = c->panel_button_groups[2] ||
+                                c->panel_button_groups[3];
             if (c->trigger_audio_service && (group == 2 || group == 3) &&
                 rising) {
                 c->audio_service_budget = AR_AUDIO_TRIGGER_BLOCKS;
@@ -547,6 +552,19 @@ static void ar_panel_audio_observe(ARCoreState *c, uint8_t value)
                               "AR-MK2 AUDIO: pad edge group=%u mask=%02x; "
                               "scheduled %u renderer blocks\n",
                               group, rising, AR_AUDIO_TRIGGER_BLOCKS);
+            }
+            if (c->trigger_audio_service && (group == 2 || group == 3) &&
+                falling && was_held && !c->audio_pad_held) {
+                unsigned in_flight = c->audio_service_pending ||
+                                     c->audio_service_entered;
+
+                c->audio_service_budget = AR_AUDIO_TRIGGER_BLOCKS - in_flight;
+                qemu_log_mask(LOG_UNIMP,
+                              "AR-MK2 AUDIO: final pad release group=%u "
+                              "mask=%02x completed=%u; bounded %u-block "
+                              "release tail\n",
+                              group, falling, c->audio_service_completed,
+                              AR_AUDIO_TRIGGER_BLOCKS);
             }
         }
         return;
@@ -1121,11 +1139,19 @@ static void ar_audio_service_tick(ARCoreState *c, bool continuous)
     if (c->audio_service_entered &&
         ((c->cpu->env.sr & SR_I) >> SR_I_SHIFT) < 5) {
         c->audio_service_entered = false;
-        c->audio_service_delay = AR_AUDIO_TRIGGER_DELAY_TICKS;
+        c->audio_service_delay = c->audio_pad_held ? 0 :
+                                 AR_AUDIO_TRIGGER_DELAY_TICKS;
         c->audio_service_completed++;
         qemu_log_mask(LOG_UNIMP,
                       "AR-MK2 AUDIO: completed vector 191 service count=%u\n",
                       c->audio_service_completed);
+        if (!continuous && c->audio_pad_held &&
+            !c->audio_service_budget) {
+            /* Keep one request in reserve only while a real panel bitmap bit
+             * remains asserted. Key auto-repeat has no rising edge, and the
+             * last release replaces this with the fixed release-tail budget. */
+            c->audio_service_budget = 1;
+        }
     }
     if (!continuous && c->audio_service_delay) {
         c->audio_service_delay--;
@@ -1165,6 +1191,13 @@ static void ar_audio_service_feed(void *opaque)
     ARCoreState *c = opaque;
 
     ar_audio_service_tick(c, true);
+    if (!c->mock_audio_service && c->trigger_audio_service &&
+        c->audio_pad_held) {
+        /* A held pad may use the SSI-derived 32-frame cadence. The pending /
+         * entered lifecycle still prevents interrupt coalescing; release-tail
+         * work remains on the slower Type-8 scheduler for UI headroom. */
+        ar_audio_service_tick(c, false);
+    }
     timer_mod_ns(c->audio_service_timer,
                  qemu_clock_get_ns(QEMU_CLOCK_VIRTUAL) +
                  AR_AUDIO_BLOCK_PERIOD_NS);
