@@ -36,7 +36,7 @@ from panel_event_bridge import (
     follow_events,
     publish_runtime_controls,
 )
-from desktop_panel import PanelApp
+from desktop_panel import PanelApp, SKIN_H, SKIN_W, skin_asset_path
 
 
 def wait_for(path: Path, proc: subprocess.Popen, timeout: float = 10.0) -> None:
@@ -102,6 +102,14 @@ def self_test(qemu: Path) -> None:
         raise RuntimeError("bundled QEMU did not report a valid version")
     if "elektron-ar-mk2" not in machines.stdout:
         raise RuntimeError("bundled QEMU is missing the elektron-ar-mk2 machine")
+    expected_png_header = b"\x89PNG\r\n\x1a\n"
+    expected_size = SKIN_W.to_bytes(4, "big") + SKIN_H.to_bytes(4, "big")
+    for filename in ("photon_panel_neutral.png", "photon_panel_active.png"):
+        data = skin_asset_path(filename).read_bytes()[:24]
+        if data[:8] != expected_png_header or data[16:24] != expected_size:
+            raise RuntimeError(
+                f"bundled photographic skin is invalid: {filename}"
+            )
 
 
 def hmp_continue(path: Path, timeout: float = 5.0) -> None:

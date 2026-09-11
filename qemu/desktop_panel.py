@@ -80,15 +80,25 @@ TRIG_RECTS = {
     trig: skin_rect(center - 35, 702, center + 35, 772)
     for trig, center in enumerate(_TRIG_CENTERS, start=1)
 }
+_PAD_X = (195, 317, 438, 561)
+_PAD_Y = (546, 415, 283)
+PAD_RECTS = {
+    trig: skin_rect(
+        _PAD_X[(trig - 1) % 4],
+        _PAD_Y[(trig - 1) // 4],
+        _PAD_X[(trig - 1) % 4] + 100,
+        _PAD_Y[(trig - 1) // 4] + 99,
+    )
+    for trig in range(1, 13)
+}
 
 
-def skin_asset_path() -> Path:
+def skin_asset_path(filename: str = "photon_panel_neutral.png") -> Path:
     """Resolve the faceplate both in source trees and frozen PyInstaller apps."""
-    candidates = [Path(__file__).resolve().parent / "assets" / "photon_panel_neutral.png"]
+    candidates = [Path(__file__).resolve().parent / "assets" / filename]
     bundle = getattr(sys, "_MEIPASS", None)
     if bundle:
-        candidates.insert(0, Path(bundle) / "qemu" / "assets" /
-                          "photon_panel_neutral.png")
+        candidates.insert(0, Path(bundle) / "qemu" / "assets" / filename)
     for candidate in candidates:
         if candidate.is_file():
             return candidate
@@ -369,6 +379,9 @@ class PanelApp:
                                 cursor="hand2", takefocus=True)
         self.canvas.pack()
         self.skin_photo = tk.PhotoImage(file=str(skin_asset_path()))
+        self.active_skin_photo = tk.PhotoImage(
+            file=str(skin_asset_path("photon_panel_active.png"))
+        )
         self.canvas.create_image(0, 0, anchor="nw", image=self.skin_photo,
                                  tags="skin")
         ox1, oy1, ox2, oy2 = OLED_RECT
@@ -381,6 +394,14 @@ class PanelApp:
             self.page_widgets[name] = SkinState(self.redraw_skin_overlays)
         for trig in range(1, 17):
             self.trig_widgets[trig] = SkinState(self.redraw_skin_overlays)
+        self.active_photos: dict[tuple[str, str | int], tk.PhotoImage] = {}
+        self.active_image_ids: dict[tuple[str, str | int], int] = {}
+        for name, rect in BUTTON_RECTS.items():
+            self.add_active_crop(("button", name), rect, 1)
+        for trig, rect in TRIG_RECTS.items():
+            self.add_active_crop(("trig", trig), rect, 1)
+        for trig, rect in PAD_RECTS.items():
+            self.add_active_crop(("pad", trig), rect, 0)
 
         self.canvas.bind("<ButtonPress-1>", self.skin_press)
         self.canvas.bind("<ButtonRelease-1>", self.skin_release)
@@ -390,6 +411,7 @@ class PanelApp:
         self.canvas.bind("<MouseWheel>", self.skin_wheel)
         self.canvas.bind("<Button-4>", lambda event: self.skin_wheel(event, 1))
         self.canvas.bind("<Button-5>", lambda event: self.skin_wheel(event, -1))
+        self.redraw_skin_overlays()
 
         self.status = tk.StringVar(value="STARTING FIRMWARE…")
         self.frame_status = tk.StringVar(value="WAITING FOR FIRMWARE OLED")
@@ -425,6 +447,27 @@ class PanelApp:
                       rect: tuple[int, int, int, int]) -> bool:
         x1, y1, x2, y2 = rect
         return x1 <= x <= x2 and y1 <= y <= y2
+
+    @staticmethod
+    def expanded_rect(rect: tuple[int, int, int, int], margin: int
+                      ) -> tuple[int, int, int, int]:
+        x1, y1, x2, y2 = rect
+        return (max(0, x1 - margin), max(0, y1 - margin),
+                min(SKIN_W, x2 + margin), min(SKIN_H, y2 + margin))
+
+    def add_active_crop(self, key: tuple[str, str | int],
+                        rect: tuple[int, int, int, int], margin: int) -> None:
+        x1, y1, x2, y2 = self.expanded_rect(rect, margin)
+        photo = tk.PhotoImage(width=x2 - x1, height=y2 - y1)
+        photo.tk.call(
+            str(photo), "copy", str(self.active_skin_photo),
+            "-from", x1, y1, x2, y2, "-to", 0, 0,
+        )
+        self.active_photos[key] = photo
+        self.active_image_ids[key] = self.canvas.create_image(
+            x1, y1, anchor="nw", image=photo, state="hidden",
+            tags=("active-state",),
+        )
 
     def knob_at(self, x: int, y: int) -> str | None:
         radius = round(42 * SKIN_W / SKIN_DESIGN_W)
@@ -521,18 +564,40 @@ class PanelApp:
     def redraw_skin_overlays(self) -> None:
         self.canvas.delete("control-overlay")
         orange = LED_ORANGE
+        for item_id in self.active_image_ids.values():
+            self.canvas.itemconfigure(item_id, state="hidden")
         for name, state in self.page_widgets.items():
             if state.active or name in self.button_held:
-                self.canvas.create_rectangle(
-                    *BUTTON_RECTS[name], outline=orange, width=2,
-                    tags="control-overlay",
+                self.canvas.itemconfigure(
+                    self.active_image_ids[("button", name)], state="normal"
                 )
         for trig, state in self.trig_widgets.items():
             if state.active:
-                self.canvas.create_rectangle(
-                    *TRIG_RECTS[trig], outline=orange, width=3,
-                    tags="control-overlay",
+                self.canvas.itemconfigure(
+                    self.active_image_ids[("trig", trig)], state="normal"
                 )
+                if trig in PAD_RECTS:
+                    self.canvas.itemconfigure(
+                        self.active_image_ids[("pad", trig)], state="normal"
+                    )
+        import math
+
+        for name, (cx, cy) in KNOB_CENTERS.items():
+            angle = math.radians(225 - 270 * self.encoder_values[name] / 127)
+            inner = round(16 * SKIN_W / SKIN_DESIGN_W)
+            outer = round(27 * SKIN_W / SKIN_DESIGN_W)
+            x1 = cx + inner * math.cos(angle)
+            y1 = cy - inner * math.sin(angle)
+            x2 = cx + outer * math.cos(angle)
+            y2 = cy - outer * math.sin(angle)
+            self.canvas.create_line(
+                x1, y1, x2, y2, fill="#090a09", width=4,
+                capstyle="round", tags="control-overlay",
+            )
+            self.canvas.create_line(
+                x1, y1, x2, y2, fill="#e7ece9", width=2,
+                capstyle="round", tags="control-overlay",
+            )
         focused = getattr(self, "focused_encoder", None)
         if focused in KNOB_CENTERS:
             cx, cy = KNOB_CENTERS[focused]
@@ -541,6 +606,10 @@ class PanelApp:
                 cx - radius, cy - radius, cx + radius, cy + radius,
                 outline=orange, width=2, tags="control-overlay",
             )
+        self.canvas.tag_raise("active-state")
+        self.canvas.tag_raise("oled-background")
+        self.canvas.tag_raise("oled")
+        self.canvas.tag_raise("splash")
         self.canvas.tag_raise("control-overlay")
 
     def draw_photon_splash(self) -> None:

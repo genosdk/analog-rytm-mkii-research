@@ -40,6 +40,12 @@ invisible hit regions preserve the validated nine encoders, eight page/action
 keys, and sixteen Trigs. Press, focus, and LED state are rendered as independent
 overlays rather than being baked into the neutral skin.
 
+The activation sheet is coordinate-identical to the neutral faceplate. Only a
+held control's photographic crop is raised, allowing simultaneous Trigs and
+their corresponding performance pads to glow independently. Encoder values use
+small physical-style cap markers; the selected encoder receives a restrained
+orange focus ring.
+
 The nine encoders are mouse-draggable 0–127 knobs; the wheel and keyboard also
 change their values. QWERTYUI/ASDFGHJK provide press/release control for Trigs
 1–16. A narrow host status strip beneath the hardware keeps the Filter 2

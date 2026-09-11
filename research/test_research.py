@@ -250,6 +250,7 @@ class DesktopPanelInputTests(unittest.TestCase):
             BUTTON_RECTS,
             KNOB_CENTERS,
             OLED_RECT,
+            PAD_RECTS,
             PAGE_BUTTONS,
             PANEL_ASPECT,
             QWERTY_TRIGS,
@@ -277,9 +278,11 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertEqual(set(KNOB_CENTERS), set("ABCDEFGHI"))
         self.assertEqual(set(BUTTON_RECTS), set(PAGE_BUTTONS + ("YES", "NO")))
         self.assertEqual(set(TRIG_RECTS), set(range(1, 17)))
+        self.assertEqual(set(PAD_RECTS), set(range(1, 13)))
         self.assertGreater(OLED_RECT[2] - OLED_RECT[0], 200)
         self.assertGreater(OLED_RECT[3] - OLED_RECT[1], 100)
         self.assertTrue(skin_asset_path().is_file())
+        self.assertTrue(skin_asset_path("photon_panel_active.png").is_file())
 
     def test_knob_delta_uses_validated_signed_encoder_frame(self):
         from qemu.panel_event_bridge import PanelLink
