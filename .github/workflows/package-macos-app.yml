@@ -91,7 +91,9 @@ jobs:
             --windowed \
             --name 'AR MKII Emulator' \
             --osx-bundle-identifier 'org.photonos.armk2emulator' \
-            --paths . \
+            --paths "$GITHUB_WORKSPACE/research" \
+            --hidden-import audio_callback_probe \
+            --hidden-import filter2_publication_shim_probe \
             qemu/run_desktop_emulator.py
 
       - name: Embed QEMU and dynamic libraries
