@@ -10,9 +10,12 @@ only this executable plus the custom qemu-system-m68k backend.
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import hashlib
+import json
 import os
 from pathlib import Path
+import platform
 import shutil
 import socket
 import subprocess
@@ -21,7 +24,8 @@ import tempfile
 import threading
 import time
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
+import traceback
 
 if not getattr(sys, "frozen", False):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "research"))
@@ -44,6 +48,119 @@ from desktop_panel import (
     skin_runtime_self_test,
     validate_skin_geometry,
 )
+
+DIAGNOSTIC_SCHEMA = 1
+
+
+def file_identity(path: Path) -> dict[str, object]:
+    """Return reproducible metadata without exposing file contents or paths."""
+    try:
+        if not path.is_file():
+            return {"name": path.name, "present": False}
+        digest = hashlib.sha256()
+        with path.open("rb") as source:
+            for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                digest.update(chunk)
+        size = path.stat().st_size
+    except OSError as error:
+        return {
+            "name": path.name,
+            "present": False,
+            "error": type(error).__name__,
+        }
+    return {
+        "name": path.name,
+        "present": True,
+        "bytes": size,
+        "sha256": digest.hexdigest(),
+    }
+
+
+def skin_identity(filename: str) -> dict[str, object]:
+    try:
+        return file_identity(skin_asset_path(filename))
+    except (FileNotFoundError, OSError) as error:
+        return {"name": filename, "present": False, "error": str(error)}
+
+
+def write_diagnostic_report(
+    error: BaseException,
+    trace: str,
+    directory: Path | None = None,
+) -> Path:
+    """Persist a privacy-bounded first-launch report outside the runtime tree."""
+    if directory is None:
+        directory = (
+            Path.home() / "Library" / "Logs" / "Photon OS" / "AR MKII Emulator"
+        )
+    directory.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    output = directory / f"diagnostic-{stamp}.json"
+    qemu = bundle_dir() / "qemu-system-m68k"
+    report = {
+        "schema": DIAGNOSTIC_SCHEMA,
+        "created_utc": datetime.now(timezone.utc).isoformat(),
+        "application": "AR MKII Emulator",
+        "frozen": bool(getattr(sys, "frozen", False)),
+        "system": {
+            "platform": platform.platform(),
+            "machine": platform.machine(),
+            "mac_version": platform.mac_ver()[0],
+            "python": platform.python_version(),
+            "tk": str(tk.TkVersion),
+            "tcl": str(tk.TclVersion),
+        },
+        "backend": file_identity(qemu),
+        "skins": [
+            skin_identity(filename)
+            for filename in (
+                "photon_panel_neutral.png",
+                "photon_panel_active.png",
+            )
+        ],
+        "error": {
+            "type": type(error).__name__,
+            "message": str(error),
+            "traceback": trace,
+        },
+        "excluded": [
+            "firmware bytes",
+            "firmware path",
+            "OLED framebuffer",
+            "panel event history",
+        ],
+    }
+    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n",
+                      encoding="utf-8")
+    return output
+
+
+def show_failure_dialog(error: BaseException, report: Path) -> None:
+    """Make frozen-app failures visible even though the bundle has no console."""
+    root = tk.Tk()
+    root.withdraw()
+    try:
+        messagebox.showerror(
+            "AR MKII Emulator could not start",
+            f"{error}\n\nDiagnostic saved to:\n{report}",
+            parent=root,
+        )
+    finally:
+        root.destroy()
+
+
+def install_callback_reporter(root: tk.Tk) -> None:
+    """Convert otherwise-console-only Tk callback errors into useful reports."""
+    def report_callback_exception(exc_type, error, tb) -> None:
+        trace = "".join(traceback.format_exception(exc_type, error, tb))
+        report = write_diagnostic_report(error, trace)
+        messagebox.showerror(
+            "AR MKII Emulator encountered an error",
+            f"{error}\n\nDiagnostic saved to:\n{report}",
+            parent=root,
+        )
+
+    root.report_callback_exception = report_callback_exception
 
 
 def wait_for(path: Path, proc: subprocess.Popen, timeout: float = 10.0) -> None:
@@ -121,6 +238,18 @@ def self_test(qemu: Path) -> None:
     with tempfile.TemporaryDirectory(prefix="ar-mk2-skin-test-") as directory:
         runtime = Path(directory)
         skin_runtime_self_test(runtime / "frame.bin", runtime / "events.jsonl")
+        diagnostic = write_diagnostic_report(
+            RuntimeError("packaged diagnostic probe"),
+            "packaged diagnostic traceback probe",
+            runtime,
+        )
+        report = json.loads(diagnostic.read_text(encoding="utf-8"))
+        if not report["backend"]["present"]:
+            raise RuntimeError("packaged diagnostic could not identify QEMU")
+        if not all(row["present"] for row in report["skins"]):
+            raise RuntimeError("packaged diagnostic could not identify skins")
+        if report["error"]["message"] != "packaged diagnostic probe":
+            raise RuntimeError("packaged diagnostic error record is invalid")
 
 
 def hmp_continue(path: Path, timeout: float = 5.0) -> None:
@@ -311,6 +440,7 @@ def main() -> None:
         hmp_continue(monitor)
 
         root = tk.Tk()
+        install_callback_reporter(root)
         PanelApp(root, frame, events, args.scale, filter2_enabled, args.audio)
         root.mainloop()
 
@@ -337,5 +467,23 @@ def main() -> None:
             shutil.rmtree(runtime, ignore_errors=True)
 
 
+def guarded_main() -> None:
+    """Give Finder-launched failures a native error path and sanitized report."""
+    try:
+        main()
+    except SystemExit as error:
+        if error.code not in (None, 0) and getattr(sys, "frozen", False):
+            report = write_diagnostic_report(error, traceback.format_exc())
+            if "--self-test" not in sys.argv:
+                show_failure_dialog(error, report)
+        raise
+    except Exception as error:
+        if getattr(sys, "frozen", False):
+            report = write_diagnostic_report(error, traceback.format_exc())
+            if "--self-test" not in sys.argv:
+                show_failure_dialog(error, report)
+        raise
+
+
 if __name__ == "__main__":
-    main()
+    guarded_main()

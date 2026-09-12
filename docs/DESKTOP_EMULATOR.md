@@ -12,6 +12,12 @@ The desktop emulator runs the unmodified Analog Rytm MKII OS 1.72 MAIN image in 
 4. The emulated firmware presents one dismissible startup modal. Press **NO**
    once to continue to the normal parameter UI.
 
+Finder-launched startup and Tk callback failures are shown in a native dialog.
+The app also writes a diagnostic JSON file under
+`~/Library/Logs/Photon OS/AR MKII Emulator/`. It records macOS/architecture,
+Python/Tk versions, backend and skin hashes, and the exception. Firmware bytes
+and paths, OLED contents, and panel-event history are deliberately excluded.
+
 The desktop profile supplies synthetic calibration plus empty, volatile
 factory-storage state. Stock OS 1.72 validates the modeled eMMC identity and
 block count, `ekFS`, the empty `MaGj` manifest, and the `SM` version-2 record.

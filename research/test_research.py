@@ -140,6 +140,32 @@ class MacosPackagingTests(unittest.TestCase):
         self.assertIn("--hidden-import audio_callback_probe", workflow)
         self.assertIn("--hidden-import lfo2_extended_waveform_probe", workflow)
 
+    def test_first_launch_diagnostic_is_sanitized_and_reproducible(self):
+        sys.path.insert(0, str(ROOT / "qemu"))
+        try:
+            from run_desktop_emulator import write_diagnostic_report
+        finally:
+            sys.path.pop(0)
+
+        with tempfile.TemporaryDirectory() as directory:
+            output = write_diagnostic_report(
+                RuntimeError("synthetic launch failure"),
+                "synthetic traceback",
+                Path(directory),
+            )
+            report = json.loads(output.read_text(encoding="utf-8"))
+
+        self.assertEqual(report["schema"], 1)
+        self.assertEqual(report["error"]["type"], "RuntimeError")
+        self.assertEqual(report["error"]["message"], "synthetic launch failure")
+        self.assertEqual(report["error"]["traceback"], "synthetic traceback")
+        self.assertEqual(len(report["skins"]), 2)
+        self.assertTrue(all(row["present"] for row in report["skins"]))
+        self.assertNotIn("path", report["backend"])
+        self.assertTrue(all("path" not in row for row in report["skins"]))
+        self.assertIn("firmware bytes", report["excluded"])
+        self.assertIn("firmware path", report["excluded"])
+
 
 class QemuAudioEdmaTests(unittest.TestCase):
     def test_linked_audio_descriptor_semantics_are_modeled(self):
