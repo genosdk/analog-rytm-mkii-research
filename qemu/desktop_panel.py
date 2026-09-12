@@ -1086,6 +1086,61 @@ def skin_runtime_self_test(frame_file: Path, event_file: Path) -> None:
             for item_id in panel.active_image_ids.values()
         ):
             raise RuntimeError("Tk failed to clear photographic overlays")
+
+        # Replay pointer input through the production coordinate dispatcher.
+        # The emitted JSONL is the exact handoff consumed by panel_event_bridge.
+        event_file.unlink(missing_ok=True)
+
+        class PointerEvent:
+            def __init__(self, x: int, y: int, y_root: int = 500) -> None:
+                self.x = x
+                self.y = y
+                self.y_root = y_root
+
+        expected_events: list[tuple[str, str, str | int]] = []
+        for name, (x1, y1, x2, y2) in BUTTON_RECTS.items():
+            event = PointerEvent((x1 + x2) // 2, (y1 + y2) // 2)
+            panel.skin_press(event)
+            if panel.canvas.itemcget(
+                panel.active_image_ids[("button", name)], "state"
+            ) != "normal":
+                raise RuntimeError(f"photographic button {name} did not illuminate")
+            panel.skin_release(event)
+            expected_events.extend(
+                (("button", name, "press"), ("button", name, "release"))
+            )
+
+        for trig, (x1, y1, x2, y2) in TRIG_RECTS.items():
+            event = PointerEvent((x1 + x2) // 2, (y1 + y2) // 2)
+            panel.skin_press(event)
+            if panel.canvas.itemcget(
+                panel.active_image_ids[("trig", trig)], "state"
+            ) != "normal":
+                raise RuntimeError(f"photographic Trig {trig} did not illuminate")
+            panel.skin_release(event)
+            expected_events.extend(
+                (("trig", str(trig), "press"),
+                 ("trig", str(trig), "release"))
+            )
+
+        for name, (x, y) in KNOB_CENTERS.items():
+            press = PointerEvent(x, y)
+            panel.skin_press(press)
+            panel.skin_drag(PointerEvent(x, y - 10, press.y_root - 10))
+            panel.skin_release(press)
+            if panel.encoder_values[name] != 69:
+                raise RuntimeError(f"photographic encoder {name} drag failed")
+            expected_events.append(("encoder", name, 5))
+
+        actual_events = [
+            (record["kind"], record["name"], record["value"])
+            for record in (
+                json.loads(line)
+                for line in event_file.read_text(encoding="utf-8").splitlines()
+            )
+        ]
+        if actual_events != expected_events:
+            raise RuntimeError("photographic controls emitted invalid panel events")
     finally:
         root.destroy()
 

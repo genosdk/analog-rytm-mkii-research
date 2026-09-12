@@ -394,6 +394,28 @@ class DesktopPanelInputTests(unittest.TestCase):
             self.assertFalse(panel.held_trigs[1])
             self.assertFalse(panel.pending_key_releases)
 
+    def test_photographic_hitbox_centers_dispatch_every_control(self):
+        from qemu.desktop_panel import (
+            BUTTON_RECTS,
+            KNOB_CENTERS,
+            PanelApp,
+            TRIG_RECTS,
+        )
+
+        panel = PanelApp.__new__(PanelApp)
+        for name, (x, y) in KNOB_CENTERS.items():
+            self.assertEqual(panel.control_at(x, y), ("encoder", name))
+        for name, (x1, y1, x2, y2) in BUTTON_RECTS.items():
+            self.assertEqual(
+                panel.control_at((x1 + x2) // 2, (y1 + y2) // 2),
+                ("button", name),
+            )
+        for trig, (x1, y1, x2, y2) in TRIG_RECTS.items():
+            self.assertEqual(
+                panel.control_at((x1 + x2) // 2, (y1 + y2) // 2),
+                ("trig", trig),
+            )
+
     def test_mixed_source_ownership_and_focus_loss_release_once(self):
         class Event:
             keysym = "q"

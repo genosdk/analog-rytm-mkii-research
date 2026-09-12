@@ -76,7 +76,10 @@ self-test. It loads both photographic rasters, constructs all 36 active crops,
 composes every control state simultaneously, renders a patterned firmware OLED
 surface, clears the overlays, and rejects incomplete or out-of-bounds geometry.
 This runs from the signed `.app`, so it validates the same frozen resources and
-Tk image path used at launch rather than only inspecting PNG headers.
+Tk image path used at launch rather than only inspecting PNG headers. It then
+replays pointer presses at all eight button and sixteen Trig hit regions plus a
+drag on each encoder A-I, checks the corresponding illumination, and compares
+all 57 emitted JSONL records with the production bridge contract.
 
 By default, the launcher derives a temporary, non-flashable Filter 2 + LFO2
 runtime candidate from the caller-supplied, hash-verified OS 1.72 MAIN. One
