@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_AUDIO_SHADOW_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_SAME_PROCESS_SHADOW_CONTROL",
+  "implementation": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "control_fixture": "research/build_audio_shadow_fixture.py",
+    "algorithm": [
+      "Discover the complete byte footprint during one natural call.",
+      "At the next natural entry, snapshot every discovered byte and every QEMU-exposed register.",
+      "Run the native call and retain its ordered access values plus exit state.",
+      "If discovery coverage and snapshots are complete, restore entry memory and writable registers, then redirect the same vCPU to the kernel entry.",
+      "Compare shadow access values, exit registers, and final memory against the native call; restore the native exit state before resuming the caller."
+    ],
+    "fail_closed_conditions": [
+      "new native byte outside the discovery footprint aborts before replay",
+      "register or memory snapshot failure",
+      "register or memory restore failure",
+      "ordered access mismatch",
+      "exit-register mismatch",
+      "final-memory mismatch",
+      "process exit before the shadow call completes"
+    ]
+  },
+  "non_proprietary_control": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "machine": "mcf5208evb",
+    "registers": 29,
+    "discovery_events": 3,
+    "footprint_bytes": 8,
+    "native_events": 3,
+    "shadow_events": 3,
+    "access_match": true,
+    "exit_register_match": true,
+    "final_memory_match": true,
+    "result": "PASS_IDENTICAL_NATIVE_SHADOW"
+  },
+  "stock_audio_target": {
+    "entry_pc": "0x401184C4",
+    "inclusive_instruction_window": "0x401184C4..0x401187FF",
+    "exit_pc": "0x40117FC2",
+    "status": "READY_PENDING_LOCAL_MAIN_RUN",
+    "acceptance": "The stock target must pass without footprint, snapshot, restore, access, register, or final-memory mismatch."
+  },
+  "next_gate": "Run the verifier against a local stock held-audio session. If exact replay passes, use the same restored entry state for the first whole-kernel accelerator candidate.",
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {"touched": false},
+  "safety": "The committed fixture is original synthetic ColdFire code. Aggregate reports contain no guest addresses or values. No Elektron firmware, project data, sample names, PCM, or runtime trace is committed."
+}

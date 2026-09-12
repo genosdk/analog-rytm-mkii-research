@@ -193,6 +193,38 @@ python research/audio_contract_compare.py \
 Neither trace belongs in source control: it contains runtime register and guest
 address values. The committed gate stores aggregate counts only.
 
+### Identical-state shadow replay
+
+`ar_audio_shadow.c` closes the independent-boot state gap without exporting
+runtime values. Its first natural kernel call discovers the accessed-byte
+footprint. At the next entry it snapshots that memory and all exposed
+registers, records the native execution, restores the entry state, and redirects
+the same vCPU through the kernel once more. It compares the complete ordered
+access stream, exit registers, and final footprint, then restores the native
+exit state before the caller continues.
+
+Build and run the non-proprietary control fixture:
+
+```bash
+cc -shared -fPIC -Wall -Wextra -Werror \
+  $(pkg-config --cflags glib-2.0) \
+  -I/path/to/qemu/include/plugins qemu/plugins/ar_audio_shadow.c \
+  -o /tmp/ar_audio_shadow.so $(pkg-config --libs glib-2.0)
+python research/build_audio_shadow_fixture.py /tmp/audio-shadow-fixture.bin
+qemu-system-m68k -M mcf5208evb -cpu any -m 128M \
+  -kernel /tmp/audio-shadow-fixture.bin -nographic -monitor none -serial none \
+  -plugin /tmp/ar_audio_shadow.so,out=/tmp/audio-shadow.json,\
+start=0x40000020,end=0x4000002f,exit=0x4000000c
+```
+
+The control must report `PASS_IDENTICAL_NATIVE_SHADOW`. For stock MAIN, omit
+the three PC overrides to use the audio-kernel defaults and pass the plugin to
+the held-audio smoke runner. The plugin fails closed if the second or shadow
+native call touches a byte absent from discovery, any state operation fails, or
+any access/exit value diverges. A native footprint miss or snapshot error aborts
+before replay. It emits aggregate results only; use it in a disposable research
+run, as required for all accelerator experiments.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

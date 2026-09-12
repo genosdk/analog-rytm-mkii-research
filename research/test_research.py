@@ -19,6 +19,12 @@ from audio_stream_trace import trace as trace_audio_stream
 from audio_interface_trace import trace as trace_audio_interface
 from audio_handoff_trace import trace as trace_audio_handoff
 from audio_contract_compare import TraceError, compare, load_trace, validate_trace
+from build_audio_shadow_fixture import (
+    DATA as SHADOW_DATA,
+    EXIT as SHADOW_EXIT,
+    START as SHADOW_START,
+    build as build_audio_shadow_fixture,
+)
 from br_bridge_trace import trace
 from br_consumer_trace import trace as trace_br_consumer
 from br_quantizer_runtime_trace import trace as trace_br_quantizer_runtime
@@ -168,6 +174,34 @@ class QemuAudioEdmaTests(unittest.TestCase):
             incomplete[-1]["complete"] = False
             with self.assertRaises(TraceError):
                 validate_trace(incomplete)
+
+        shadow = json.loads(
+            (HERE / "AR172_QEMU_AUDIO_SHADOW_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(shadow["status"], "PASS_SAME_PROCESS_SHADOW_CONTROL")
+        self.assertEqual(
+            shadow["non_proprietary_control"]["result"],
+            "PASS_IDENTICAL_NATIVE_SHADOW",
+        )
+        self.assertEqual(shadow["stock_audio_target"]["status"],
+                         "READY_PENDING_LOCAL_MAIN_RUN")
+        shadow_plugin = (
+            ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("qemu_plugin_read_memory_vaddr", shadow_plugin)
+        self.assertIn("qemu_plugin_write_memory_vaddr", shadow_plugin)
+        self.assertIn("qemu_plugin_write_register", shadow_plugin)
+        self.assertIn("qemu_plugin_set_pc(start_pc)", shadow_plugin)
+        fixture = build_audio_shadow_fixture()
+        self.assertEqual(
+            fixture[SHADOW_START - 0x40000000 : SHADOW_START - 0x40000000 + 6],
+            bytes.fromhex("203940000100"),
+        )
+        self.assertEqual(fixture[SHADOW_EXIT - 0x40000000 :][:2],
+                         bytes.fromhex("60f8"))
+        self.assertEqual(fixture[SHADOW_DATA - 0x40000000 :][:4], bytes(4))
 
     def test_ssi1_clock_gate_report(self):
         report_path = HERE / "AR172_SSI1_CLOCK_INPUT_TRACE.json"

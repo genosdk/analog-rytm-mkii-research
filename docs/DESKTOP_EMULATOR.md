@@ -137,6 +137,18 @@ authorize replacement. The immediate acceleration gate is an identical entry
 snapshot or same-process shadow execution followed by strict native/candidate
 comparison. Runtime traces remain local and were deleted after aggregation.
 
+The identical-state mechanism is now implemented and proven against an
+original, non-proprietary ColdFire control fixture. `ar_audio_shadow.c` uses one
+call for footprint discovery, snapshots the next call at entry, executes it,
+restores the state in-process, and repeats the same kernel on the same vCPU. The
+control matched all 29 registers, three ordered accesses, and all eight touched
+bytes at exit. It then restored the native exit state before resuming normal
+guest execution.
+
+This proves the shadow harness, not the stock audio kernel: the latter remains
+`READY_PENDING_LOCAL_MAIN_RUN`. A stock run must pass the same fail-closed
+checks before this boundary can validate an accelerator.
+
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at
 vector 191, the shim models SSI1 transmit-FIFO demand every 666.667

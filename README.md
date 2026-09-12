@@ -113,6 +113,10 @@ and reproducible tooling.
   `0x401184C4..0x401187FF` audio kernel plus every ordered data access inside it.
   The committed comparator supports strict and topology-only checks and rejects
   incomplete traces; live traces and firmware-derived values remain uncommitted.
+- A same-process shadow plugin now discovers the kernel's byte footprint,
+  snapshots entry state, performs an identical-state replay, and restores the
+  native exit state. Its original ColdFire control fixture passes exact access,
+  register, and final-memory comparison; stock MAIN validation is the next gate.
 
 ## Stock BR hardware characterization
 
