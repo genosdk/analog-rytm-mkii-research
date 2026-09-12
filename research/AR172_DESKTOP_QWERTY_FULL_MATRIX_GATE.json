@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_QWERTY_FULL_MATRIX_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_ALL_16_KEYS_AND_CROSS_GROUP_MASKS",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "production_path": {
+    "frontend": "qemu/desktop_panel.py PanelApp",
+    "event_transport": "JSONL",
+    "bridge": "qemu/panel_event_bridge.py follow_events",
+    "firmware_transport": "UART8 native panel frames",
+    "alternate_input_model_used": false
+  },
+  "keyboard_matrix": [
+    {"key": "Q", "trig": 1, "group": 3, "bit": 0, "press": "23 01", "release": "23 00"},
+    {"key": "W", "trig": 2, "group": 3, "bit": 1, "press": "23 02", "release": "23 00"},
+    {"key": "E", "trig": 3, "group": 3, "bit": 2, "press": "23 04", "release": "23 00"},
+    {"key": "R", "trig": 4, "group": 3, "bit": 3, "press": "23 08", "release": "23 00"},
+    {"key": "T", "trig": 5, "group": 3, "bit": 4, "press": "23 10", "release": "23 00"},
+    {"key": "Y", "trig": 6, "group": 3, "bit": 5, "press": "23 20", "release": "23 00"},
+    {"key": "U", "trig": 7, "group": 3, "bit": 6, "press": "23 40", "release": "23 00"},
+    {"key": "I", "trig": 8, "group": 3, "bit": 7, "press": "23 80", "release": "23 00"},
+    {"key": "A", "trig": 9, "group": 2, "bit": 0, "press": "22 01", "release": "22 00"},
+    {"key": "S", "trig": 10, "group": 2, "bit": 1, "press": "22 02", "release": "22 00"},
+    {"key": "D", "trig": 11, "group": 2, "bit": 2, "press": "22 04", "release": "22 00"},
+    {"key": "F", "trig": 12, "group": 2, "bit": 3, "press": "22 08", "release": "22 00"},
+    {"key": "G", "trig": 13, "group": 2, "bit": 4, "press": "22 10", "release": "22 00"},
+    {"key": "H", "trig": 14, "group": 2, "bit": 5, "press": "22 20", "release": "22 00"},
+    {"key": "J", "trig": 15, "group": 2, "bit": 6, "press": "22 40", "release": "22 00"},
+    {"key": "K", "trig": 16, "group": 2, "bit": 7, "press": "22 80", "release": "22 00"}
+  ],
+  "sequential_replay": {
+    "key_order": "QWERTYUIASDFGHJK",
+    "frame_count": 32,
+    "exact_match": true,
+    "duplicate_frames": 0,
+    "stuck_triggers": 0,
+    "pending_releases_after_replay": 0
+  },
+  "cross_group_chord": {
+    "keys": ["Q", "A"],
+    "trigs": [1, 9],
+    "frames_hex": ["23 01", "22 01", "23 00", "22 00"],
+    "duplicate_a_press_suppressed": true,
+    "group_3_release_preserved_group_2": true,
+    "group_2_release_preserved_group_3": true,
+    "stuck_triggers": 0
+  },
+  "validation": {
+    "focused_desktop_panel_tests": 12,
+    "full_research_tests": 51,
+    "expected_fixture_skips": 15,
+    "result": "PASS"
+  },
+  "related_live_evidence": [
+    "research/AR172_QEMU_QWERTY_CHORD_GATE.json",
+    "research/AR172_QEMU_DESKTOP_EVENT_RUNTIME_GATE.json"
+  ],
+  "scope_limit": "This host/bridge gate proves exact production QWERTY mapping, JSONL publication and native UART8 masks for all 16 triggers, including independent group-2/group-3 ownership. The cited live QEMU gates separately establish downstream stock-firmware handling for their exercised trigger subset; this gate does not claim live firmware observation of all 16 triggers or physical keyboard timing.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

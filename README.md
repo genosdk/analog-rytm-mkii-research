@@ -108,6 +108,8 @@ and reproducible tooling.
   replays two clean Trig-1 cycles as exact native UART8 frames.
 - A live Q/W chord gate preserves combined UART masks and independently advances
   both stock note records through overlapping note-on and staggered note-off.
+- The full QWERTYUI/ASDFGHJK matrix replays exact group-3/group-2 UART masks for
+  all 16 triggers, including an independent cross-group Q+A press/release chord.
 - The packaged macOS shell now uses a pixel-registered photographic Photon OS
   faceplate with a live firmware OLED, independent page/trigger illumination,
   invisible hardware hit regions, and keyboard-accessible A-I encoders. Its

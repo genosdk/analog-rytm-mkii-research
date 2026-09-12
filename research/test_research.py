@@ -532,6 +532,107 @@ class DesktopPanelInputTests(unittest.TestCase):
             self.assertFalse(panel.held_trigs[1])
             self.assertFalse(panel.held_trigs[2])
 
+    def test_full_qwerty_matrix_replays_exact_uart8_frames(self):
+        from qemu.panel_event_bridge import PanelLink, follow_events
+
+        class Event:
+            def __init__(self, keysym):
+                self.keysym = keysym
+
+        class SocketStub:
+            def __init__(self):
+                self.frames = []
+
+            def sendall(self, data):
+                self.frames.append(data)
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_panel(event_file)
+            trig_stub = panel.trig_widgets[1].__class__
+            panel.trig_widgets = {trig: trig_stub() for trig in range(1, 17)}
+
+            for key in "qwertyuiasdfghjk":
+                panel.key_press(Event(key))
+                panel.key_release(Event(key))
+                panel.root.run_pending()
+
+            sock = SocketStub()
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(sock, verbose=False), False,
+                      None, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            while len(sock.frames) < 32 and time.monotonic() < deadline:
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            expected = []
+            for group in (3, 2):
+                for bit in range(8):
+                    expected.extend(
+                        [bytes((0x20 | group, 1 << bit)),
+                         bytes((0x20 | group, 0))]
+                    )
+            self.assertFalse(follower.is_alive())
+            self.assertEqual(sock.frames, expected)
+            self.assertEqual(len(self.panel_events(event_file)), 32)
+            self.assertTrue(all(not owners for owners in panel.held_trigs.values()))
+            self.assertFalse(panel.pending_key_releases)
+
+    def test_cross_group_qwerty_chord_keeps_masks_independent(self):
+        from qemu.panel_event_bridge import PanelLink, follow_events
+
+        class Event:
+            def __init__(self, keysym):
+                self.keysym = keysym
+
+        class SocketStub:
+            def __init__(self):
+                self.frames = []
+
+            def sendall(self, data):
+                self.frames.append(data)
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_panel(event_file)
+            panel.trig_widgets[9] = panel.trig_widgets[1].__class__()
+            panel.key_press(Event("q"))
+            panel.key_press(Event("a"))
+            panel.key_press(Event("a"))
+            panel.key_release(Event("q"))
+            panel.root.run_pending()
+            panel.key_release(Event("a"))
+            panel.root.run_pending()
+
+            sock = SocketStub()
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(sock, verbose=False), False,
+                      None, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            while len(sock.frames) < 4 and time.monotonic() < deadline:
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            self.assertFalse(follower.is_alive())
+            self.assertEqual(
+                sock.frames,
+                [b"\x23\x01", b"\x22\x01", b"\x23\x00", b"\x22\x00"],
+            )
+            self.assertFalse(panel.held_trigs[1])
+            self.assertFalse(panel.held_trigs[9])
+            self.assertFalse(panel.pending_key_releases)
+
     def test_knob_delta_uses_validated_signed_encoder_frame(self):
         from qemu.panel_event_bridge import PanelLink
 

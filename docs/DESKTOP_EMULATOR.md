@@ -191,6 +191,14 @@ move from seeded sentinels through `on/sentinel → on/on → off/on → off/off
 with no cross-lane clobber. The subsequent SMP page remains responsive.
 Evidence is in `research/AR172_QEMU_QWERTY_CHORD_GATE.json`.
 
+The complete packaged keyboard matrix is also replayed through the production
+JSONL bridge. QWERTYUI maps exactly to Trigs 1–8 as group-3 masks `01` through
+`80`, and ASDFGHJK maps to Trigs 9–16 as group-2 masks `01` through `80`; every
+key's release returns only its owning group to `00`. A simultaneous Q+A test
+then proves that releasing either key leaves the other UART group untouched,
+with exact frames `23 01`, `22 01`, `23 00`, `22 00`. Evidence is in
+`research/AR172_DESKTOP_QWERTY_FULL_MATRIX_GATE.json`.
+
 This option remains a research clock rather than a physical realtime claim.
 The backpressured 10 ms model has sustained 2,303 completed services while the
 UI remained responsive, but the physical device cadence has not yet been
