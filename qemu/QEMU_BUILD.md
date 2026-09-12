@@ -242,6 +242,11 @@ any access/exit value diverges. A native footprint miss or snapshot error aborts
 before replay. It emits aggregate results only; use it in a disposable research
 run, as required for all accelerator experiments.
 
+For a routine whose nested callees lie outside the entry/end address interval,
+`mem-start=ADDRESS` and `mem-end=ADDRESS` select a separate inclusive code range
+for memory instrumentation. They default to `start` and `end`. The inactive
+callback fast path keeps broad-range discovery from penalizing firmware boot.
+
 The first accelerator boundary is the stock 16-iteration fractional MAC/MSAC
 core, which emits four 32-bit values per iteration. It can be replayed
 independently with:
@@ -366,6 +371,16 @@ profile and 10,620,900 fewer than native: incremental and combined reductions
 of 22.47% and 41.20%, respectively. A sustained held-audio smoke retained the
 exact eight-service release tail and responsive SMP UI. All helpers remain
 research-only, opt-in, and guarded for native fallback.
+
+The next exact profile splits the 5,324,300-instruction handoff call at
+`0x40109F04` from its stateful DMA/MMIO tail. Replaying the whole call is not
+valid: CPU registers match, but access values and touched memory do not. Its
+leaf at `0x40108C7C..0x4010926A` (exit `0x4010A06A`) is deterministic and has
+no nested calls on the stock fixture path. It accounts for exactly 3,000,100
+instructions per 100 services, or 19.79% of the remaining ISR. Native/native
+replays at `stable=8` and `stable=16` matched all 3,309 ordered accesses, all 35
+registers, and every touched byte; the later footprint reached ten pages and
+4,114 bytes. This leaf is the next verifier-only reconstruction target.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

@@ -55,6 +55,8 @@ typedef struct {
 static uint64_t start_pc = 0x401184c4;
 static uint64_t end_pc = 0x401187ff;
 static uint64_t exit_pc = 0x40117fc2;
+static uint64_t memory_start_pc;
+static uint64_t memory_end_pc;
 static const uint64_t page_mask = ~(uint64_t)0xfff;
 static const size_t page_size = 4096;
 static FILE *report_file;
@@ -1178,6 +1180,9 @@ static void memory_access(unsigned int cpu_index, qemu_plugin_meminfo_t info,
     unsigned size = 1u << qemu_plugin_mem_size_shift(info);
 
     (void)cpu_index;
+    if (!active) {
+        return;
+    }
     g_mutex_lock(&lock);
     if (!active) {
         g_mutex_unlock(&lock);
@@ -1357,7 +1362,7 @@ static void translate(struct qemu_plugin_tb *tb, void *userdata)
                 insn, boundary, QEMU_PLUGIN_CB_RW_REGS_PC,
                 (void *)(uintptr_t)pc);
         }
-        if (!runtime_inner && pc >= start_pc && pc <= end_pc) {
+        if (!runtime_inner && pc >= memory_start_pc && pc <= memory_end_pc) {
             qemu_plugin_register_vcpu_mem_cb(
                 insn, memory_access, QEMU_PLUGIN_CB_NO_REGS,
                 QEMU_PLUGIN_MEM_RW, (void *)(uintptr_t)pc);
@@ -1436,6 +1441,10 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             end_pc = g_ascii_strtoull(argv[i] + 4, NULL, 0);
         } else if (g_str_has_prefix(argv[i], "exit=")) {
             exit_pc = g_ascii_strtoull(argv[i] + 5, NULL, 0);
+        } else if (g_str_has_prefix(argv[i], "mem-start=")) {
+            memory_start_pc = g_ascii_strtoull(argv[i] + 10, NULL, 0);
+        } else if (g_str_has_prefix(argv[i], "mem-end=")) {
+            memory_end_pc = g_ascii_strtoull(argv[i] + 8, NULL, 0);
         } else if (g_str_has_prefix(argv[i], "stable=")) {
             required_stable_calls = g_ascii_strtoull(argv[i] + 7, NULL, 0);
         } else if (!strcmp(argv[i], "candidate=inner")) {
@@ -1457,8 +1466,14 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             return -1;
         }
     }
+    if (!memory_start_pc) {
+        memory_start_pc = start_pc;
+    }
+    if (!memory_end_pc) {
+        memory_end_pc = end_pc;
+    }
     if (!out_path || !*out_path || !start_pc || end_pc < start_pc || !exit_pc ||
-        !required_stable_calls) {
+        !required_stable_calls || memory_end_pc < memory_start_pc) {
         fprintf(stderr, "audio-shadow requires out=PATH and valid PCs\n");
         return -1;
     }

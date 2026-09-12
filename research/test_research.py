@@ -385,6 +385,27 @@ class QemuAudioEdmaTests(unittest.TestCase):
             / "0007-m68k-add-ar-audio-outer-tcg-helper.patch"
         ).read_text(encoding="utf-8")
         self.assertIn("DEF_HELPER_1(ar_audio_outer, i32, env)", outer_patch)
+        handoff_leaf = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_LEAF_SHADOW_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            handoff_leaf["status"],
+            "PASS_HANDOFF_LEAF_IDENTICAL_NATIVE_SHADOW",
+        )
+        self.assertTrue(
+            handoff_leaf["boundary_selection"]["whole_handoff_rejected"]
+        )
+        self.assertEqual(
+            handoff_leaf["profile"]["selected_leaf"]
+                        ["guest_instructions_per_call"],
+            30001,
+        )
+        self.assertEqual(
+            handoff_leaf["same_process_replay"]["native_events_per_call"],
+            3309,
+        )
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -400,6 +421,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         )
         self.assertIn('!strcmp(argv[i], "candidate=outer")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-outer")', shadow_plugin)
+        self.assertIn('g_str_has_prefix(argv[i], "mem-start=")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)
         fixture = build_audio_shadow_fixture()

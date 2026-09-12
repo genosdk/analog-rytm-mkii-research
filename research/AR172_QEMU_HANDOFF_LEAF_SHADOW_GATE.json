@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_LEAF_SHADOW_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_HANDOFF_LEAF_IDENTICAL_NATIVE_SHADOW",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all three TCG helpers enabled",
+    "completed_services": 100,
+    "all_helper_isr_guest_instructions": 15157246,
+    "whole_handoff": {
+      "entry_pc": "0x40109F04",
+      "exit_pc": "0x4011CC54",
+      "guest_instructions": 5324300,
+      "remaining_isr_share_percent": 35.127
+    },
+    "selected_leaf": {
+      "entry_pc": "0x40108C7C",
+      "inclusive_native_window": "0x40108C7C..0x4010926A",
+      "exit_pc": "0x4010A06A",
+      "guest_instructions": 3000100,
+      "guest_instructions_per_call": 30001,
+      "remaining_isr_share_percent": 19.793,
+      "nested_calls_on_stock_fixture_path": 0
+    }
+  },
+  "boundary_selection": {
+    "whole_handoff_rejected": true,
+    "reason": "The full call includes stateful DMA/MMIO effects: native replay preserved all 35 CPU registers but did not reproduce access values or touched memory.",
+    "selected_leaf_role": "deterministic DSP work before the stateful handoff tail"
+  },
+  "same_process_replay": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "native_events_per_call": 3309,
+    "shadow_events_per_call": 3309,
+    "registers": 35,
+    "access_address_type_value_match": true,
+    "exit_register_match": true,
+    "candidate_fallback": false,
+    "first_run": {
+      "required_stable_calls": 8,
+      "discovery_calls": 9,
+      "footprint_pages": 9,
+      "touched_bytes": 3814,
+      "touched_memory_match": true
+    },
+    "late_cursor_run": {
+      "required_stable_calls": 16,
+      "discovery_calls": 33,
+      "footprint_pages": 10,
+      "touched_bytes": 4114,
+      "touched_memory_match": true
+    }
+  },
+  "verifier_extension": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "options": ["mem-start=ADDRESS", "mem-end=ADDRESS"],
+    "purpose": "Allow a call boundary and its instrumented nested-code range to be specified independently.",
+    "inactive_fast_path": true
+  },
+  "conclusion": "The 30,001-instruction leaf is a stable, deterministic replay boundary at two cursor positions and is the next accelerator candidate. The containing DMA handoff is not replayable as one transaction.",
+  "next_gate": "Map the selected leaf's loop structure and memory topology, then implement a verifier-only clean-room candidate.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only aggregate instruction, access, register-count, footprint, and boundary-address results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}
