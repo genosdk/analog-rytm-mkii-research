@@ -4,11 +4,12 @@
   "recorded_at_utc": "2026-09-12",
   "status": "PASS_OUTER_RENDERER_IDENTICAL_NATIVE_SHADOW",
   "boundary": {
-    "role": "512-iteration outer renderer MAC and pointer pipeline",
+    "role": "64-iteration outer renderer MAC and pointer pipeline",
     "entry_pc": "0x401184C4",
     "inclusive_end_pc": "0x401184F6",
     "exit_pc": "0x401184F8",
-    "iterations_per_service": 512,
+    "iterations_per_call": 64,
+    "memory_events_per_iteration": 8,
     "guest_instructions_in_top_100_blocks": 4403200,
     "combined_profile_share_percent": 22.522
   },
@@ -52,7 +53,7 @@
     "undo the final D3:D1 increment after loop exit"
   ],
   "conclusion": "The top remaining bounded renderer loop replays exactly at two cursor positions under both prior helpers and is suitable for clean-room candidate reconstruction.",
-  "next_gate": "Reconstruct the loop's four word-MAC operations, indexed pointer updates, multiword ADDX state, and final compensation as a verifier-only candidate.",
+  "next_gate": "Reconstruct the loop's six word-MAC operations, indexed pointer updates, and multiword ADDX state as a verifier-only candidate ending before the native final compensation.",
   "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
   "railway": {"touched": false},
   "safety": "Only decoded operation classes and aggregate replay results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."

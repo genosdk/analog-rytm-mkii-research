@@ -333,11 +333,21 @@ explicit-arm oracle runs (`AR_MK2_AUDIO_TRANSFORM_TCG_DEFER=1` with
 addresses, all 35 guest registers, and all 4,576 touched bytes. With both
 helpers enabled, the exact 100-service ISR profile is 19,550,803 guest
 instructions: 6,227,343 fewer than native, a 24.16% reduction. The next
-candidate is the 512-iteration loop at `0x401184C4..0x401184F6`.
-That loop now passes identical native replay at both eight- and sixteen-call
-stability horizons. Each replay matched 512 ordered plugin-visible events and
-all 35 guest registers across a five-page footprint; the later cursor expanded
-the touched-byte union from 2,652 to 3,238 without changing the exact result.
+candidate is the 64-iteration loop at `0x401184C4..0x401184F6`. Its eight
+memory operations per iteration account for the 512 ordered accesses observed
+per call. The loop passes identical native replay at both eight- and
+sixteen-call stability horizons. Each replay matched all 35 guest registers
+across a five-page footprint; the later cursor expanded the touched-byte union
+from 2,652 to 3,238 without changing the exact result.
+
+The verifier-only reconstruction is selected with `candidate=outer`. It
+models the six fractional word MAC-with-load operations, two indexed pointer
+updates, the D3:D1 ADD/ADDX pair, loop control, and ACC0 clear. It exits at
+`0x401184F8`, leaving the native post-loop compensation outside the candidate.
+Two stock runs at the same eight- and sixteen-call cursors matched all 35 guest
+registers and all touched bytes, with zero candidate guest accesses and no
+fallback. It remains verifier-only until a direct-state helper passes the
+explicit-arm oracle and exact instruction profile.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

@@ -4,8 +4,8 @@
  * Natural calls discover touched 4 KiB pages until the footprint stabilizes.
  * The next call snapshots those pages and every writable register, runs
  * natively, restores the entry state, and jumps back to the kernel entry. That
- * replay is either the native code again or the optional inner-loop candidate
- * from identical state. Native shadow access values must match exactly; the
+ * replay is either the native code again or an optional accelerator candidate
+ * from identical state. Native shadow access values must match exactly; an
  * optimized candidate must match complete register and touched-memory state.
  * The same guarded implementation can run on every matching call with
  * runtime=inner; transactional stores and register rollback preserve native
@@ -85,6 +85,7 @@ static bool candidate_inner;
 static bool candidate_tcg;
 static bool candidate_transform;
 static bool candidate_tcg_transform;
+static bool candidate_outer;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -99,6 +100,9 @@ static uint64_t runtime_fallbacks;
 #define TRANSFORM_START_PC 0x4011c56e
 #define TRANSFORM_END_PC   0x4011c596
 #define TRANSFORM_EXIT_PC  0x4011c598
+#define OUTER_START_PC 0x401184c4
+#define OUTER_END_PC   0x401184f6
+#define OUTER_EXIT_PC  0x401184f8
 #define MACSR_PAV0     0x100
 #define MACSR_OMC      0x080
 #define MACSR_SU       0x040
@@ -739,6 +743,116 @@ static bool accelerate_transform(void)
     return true;
 }
 
+static bool accelerate_outer(void)
+{
+    InnerState s;
+    InnerState entry;
+    InnerWrites writes = { 0 };
+    size_t applied = 0;
+
+    if (!read_inner_state(&s) ||
+        (s.macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) != MACSR_FI ||
+        s.mask != UINT32_MAX || s.d[4] != 64) {
+        return false;
+    }
+    entry = s;
+
+    for (unsigned iteration = 0; iteration < 64; iteration++) {
+        uint32_t loaded;
+        uint32_t sum;
+        uint32_t carry;
+        unsigned shift;
+
+        if (!inner_queue_write(&writes, s.a[1], s.d[7])) {
+            return false;
+        }
+        s.a[1] += 4;
+        s.d[5] = s.d[3];
+
+        if (!inner_read_memory(&writes, (s.a[5] + 1024) & s.mask,
+                               &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 0,
+                      transform_word_operand(s.a[6], true),
+                      transform_word_operand(s.d[6], true));
+        s.d[7] = loaded;
+
+        if (!inner_read_memory(&writes, s.a[2] & s.mask, &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 0,
+                      transform_word_operand(s.a[6], false),
+                      transform_word_operand(s.d[6], false));
+        s.a[6] = loaded;
+        s.a[2] += 4;
+
+        if (!inner_read_memory(&writes, s.a[2] & s.mask, &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 0,
+                      transform_word_operand(s.d[7], true),
+                      transform_word_operand(s.a[6], true));
+        s.d[6] = loaded;
+        s.a[2] += 4;
+
+        shift = s.d[0] & 63;
+        s.d[5] = shift >= 32 ? 0 : s.d[5] >> shift;
+        s.a[2] = s.a[4] + s.d[1] * 2;
+
+        if (!inner_read_memory(&writes, (s.a[5] + 2048) & s.mask,
+                               &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 0,
+                      transform_word_operand(s.d[7], false),
+                      transform_word_operand(s.a[6], false));
+        s.d[7] = loaded;
+        s.a[5] = s.a[0] + s.d[5] * 4;
+
+        if (!inner_read_memory(&writes, s.a[2] & s.mask, &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 0,
+                      transform_word_operand(s.d[7], true),
+                      transform_word_operand(s.d[6], true));
+        s.a[6] = loaded;
+        s.a[2] += 4;
+
+        if (!inner_read_memory(&writes, s.a[5] & s.mask, &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 0,
+                      transform_word_operand(s.d[7], false),
+                      transform_word_operand(s.d[6], false));
+        s.d[6] = loaded;
+
+        if (!inner_read_memory(&writes, s.a[7], &loaded)) {
+            return false;
+        }
+        sum = s.d[3] + loaded;
+        carry = sum < s.d[3];
+        s.d[3] = sum;
+        s.d[1] += s.d[2] + carry;
+        s.d[4]--;
+        s.d[7] = inner_movclr(&s, 0);
+    }
+    s.ps = (s.ps & ~0x1fU) | CCF_Z;
+
+    if (!inner_apply_writes(&writes, &applied)) {
+        inner_rollback_writes(&writes, applied);
+        return false;
+    }
+    if (!write_inner_state(&s)) {
+        bool rollback_ok = inner_rollback_writes(&writes, applied);
+
+        rollback_ok &= write_inner_state(&entry);
+        (void)rollback_ok;
+        return false;
+    }
+    return true;
+}
+
 static void page_state_free(gpointer data)
 {
     PageState *page = data;
@@ -968,7 +1082,8 @@ static void write_report(bool complete)
         return;
     }
     bool candidate_ok = (!candidate_inner && !candidate_tcg &&
-                         !candidate_transform && !candidate_tcg_transform) ||
+                         !candidate_transform && !candidate_tcg_transform &&
+                         !candidate_outer) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -978,6 +1093,7 @@ static void write_report(bool complete)
          candidate_tcg ? "PASS_NATIVE_INNER_TCG" :
          candidate_transform ? "PASS_NATIVE_TRANSFORM_CANDIDATE" :
          candidate_tcg_transform ? "PASS_NATIVE_TRANSFORM_TCG" :
+         candidate_outer ? "PASS_NATIVE_OUTER_CANDIDATE" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -1005,11 +1121,13 @@ static void write_report(bool complete)
             candidate_inner ? "inner" :
             candidate_tcg ? "tcg-inner" :
             candidate_transform ? "transform" :
-            candidate_tcg_transform ? "tcg-transform" : "native-shadow",
+            candidate_tcg_transform ? "tcg-transform" :
+            candidate_outer ? "outer" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
-            (candidate_inner || candidate_transform) && candidate_executed ?
+            (candidate_inner || candidate_transform || candidate_outer) &&
+            candidate_executed ?
             "false" : "true",
             footprint_miss ? "true" : "false",
             snapshot_error ? "true" : "false",
@@ -1088,11 +1206,12 @@ static void boundary(unsigned int cpu_index, void *userdata)
             active = true;
         } else if (phase == PHASE_SHADOW) {
             active = true;
-            if (candidate_inner || candidate_transform) {
+            if (candidate_inner || candidate_transform || candidate_outer) {
                 candidate_attempted = true;
-                candidate_executed = candidate_inner ?
-                                     accelerate_inner() :
-                                     accelerate_transform();
+                candidate_executed = candidate_inner ? accelerate_inner() :
+                                     candidate_transform ?
+                                     accelerate_transform() :
+                                     accelerate_outer();
                 if (candidate_executed) {
                     redirect_candidate = true;
                 } else {
@@ -1170,7 +1289,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
                  read_tcg_transform_control(&control)) && control == 0;
             candidate_fallback = !candidate_executed;
         }
-        access_match = (candidate_inner || candidate_transform) &&
+        access_match = (candidate_inner || candidate_transform ||
+                        candidate_outer) &&
                        candidate_executed ?
                        true : compare_accesses();
         register_match = compare_registers();
@@ -1281,6 +1401,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_transform = true;
         } else if (!strcmp(argv[i], "candidate=tcg-transform")) {
             candidate_tcg_transform = true;
+        } else if (!strcmp(argv[i], "candidate=outer")) {
+            candidate_outer = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -1294,7 +1416,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         return -1;
     }
     if ((candidate_inner + candidate_tcg + candidate_transform +
-         candidate_tcg_transform + runtime_inner) > 1) {
+         candidate_tcg_transform + candidate_outer + runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
     }
@@ -1314,6 +1436,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != TRANSFORM_START_PC || end_pc != TRANSFORM_END_PC ||
          exit_pc != TRANSFORM_EXIT_PC)) {
         fprintf(stderr, "transform TCG candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_outer &&
+        (start_pc != OUTER_START_PC || end_pc != OUTER_END_PC ||
+         exit_pc != OUTER_EXIT_PC)) {
+        fprintf(stderr, "outer candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

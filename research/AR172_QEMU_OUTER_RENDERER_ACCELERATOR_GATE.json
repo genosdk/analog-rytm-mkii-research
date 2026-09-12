@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_OUTER_RENDERER_ACCELERATOR_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_NATIVE_OUTER_CANDIDATE",
+  "implementation": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "mode": "candidate=outer",
+    "scope": "same-process verifier candidate",
+    "production_enabled": false,
+    "guards": [
+      "exact validated entry, end, and exit PCs",
+      "complete named 35-register guest-state surface",
+      "fractional EMAC mode without saturation, signed-integer, or rounding modes",
+      "full 0xFFFFFFFF EMAC address mask",
+      "entry loop count D4 equals 64",
+      "successful reads and transactional writes for every memory operation"
+    ]
+  },
+  "candidate": {
+    "description": "Fixed 64-iteration renderer MAC and pointer pipeline",
+    "entry_pc": "0x401184C4",
+    "inclusive_native_window": "0x401184C4..0x401184F6",
+    "exit_pc": "0x401184F8",
+    "iterations": 64,
+    "memory_events_per_iteration": 8,
+    "fractional_word_macs_per_iteration": 6,
+    "post_loop_compensation_in_candidate": false
+  },
+  "stock_audio_target": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and both prior TCG helpers enabled",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "registers": 35,
+    "footprint_pages": 5,
+    "native_events": 512,
+    "candidate_guest_events": 0,
+    "candidate_attempted": true,
+    "candidate_executed": true,
+    "candidate_fallback": false,
+    "validation_runs": 2,
+    "first_run": {
+      "required_stable_calls": 8,
+      "discovery_calls": 8,
+      "touched_bytes": 2652,
+      "exit_register_match": true,
+      "touched_memory_match": true
+    },
+    "late_cursor_run": {
+      "required_stable_calls": 16,
+      "discovery_calls": 16,
+      "touched_bytes": 3238,
+      "exit_register_match": true,
+      "touched_memory_match": true
+    },
+    "held_audio_smoke_passed": true,
+    "nonzero_host_audio": true
+  },
+  "conclusion": "The clean-room candidate replaces the bounded native renderer loop with zero guest instruction accesses while reproducing every touched byte and the complete guest exit state at two cursor positions.",
+  "next_gate": "Move the validated renderer loop into a direct-state TCG helper, repeat the explicit native/candidate oracle, and measure the exact ISR instruction reduction.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "The implementation contains a clean-room reconstruction and aggregate results only. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}
