@@ -25,6 +25,8 @@ patch -p1 < /path/to/0003-m68k-fix-coldfire-emac-load-operands.patch
 patch -p1 < /path/to/0004-m68k-expose-coldfire-emac-gdb-registers.patch
 # Add the disabled-by-default direct-state audio inner-loop helper.
 patch -p1 < /path/to/0005-m68k-add-ar-audio-inner-tcg-helper.patch
+# Add the disabled-by-default 572-word control-transform helper.
+patch -p1 < /path/to/0006-m68k-add-ar-audio-transform-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -40,6 +42,8 @@ add/subtract operation from the extension word, then restores signed Q1.31
 product alignment; without it, packed parameter lanes are halved or sourced
 from the wrong register. The fifth patch adds the opt-in direct-state helper;
 it has no effect unless `AR_MK2_AUDIO_INNER_TCG` is set for the AR machine.
+The sixth patch similarly adds the independently controlled 572-word transform
+helper, enabled only by `AR_MK2_AUDIO_TRANSFORM_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -322,6 +326,14 @@ The verifier implementation is selected with `candidate=transform`; two stock
 runs, including a later `stable=16` cursor, matched complete state and memory
 with zero candidate guest accesses. It remains verifier-only until the same
 explicit-arm oracle passes for a direct-state helper.
+
+Patch 0006 promotes that candidate to a second direct-state helper. Two
+explicit-arm oracle runs (`AR_MK2_AUDIO_TRANSFORM_TCG_DEFER=1` with
+`candidate=tcg-transform`) matched all 1,717 ordered access values and
+addresses, all 35 guest registers, and all 4,576 touched bytes. With both
+helpers enabled, the exact 100-service ISR profile is 19,550,803 guest
+instructions: 6,227,343 fewer than native, a 24.16% reduction. The next
+candidate is the 512-iteration loop at `0x401184C4..0x401184F6`.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

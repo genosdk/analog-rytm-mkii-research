@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_CONTROL_TRANSFORM_TCG_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_CORRECT_24PCT_INSTRUCTION_REDUCTION",
+  "implementation": {
+    "patch": "qemu/patches/0006-m68k-add-ar-audio-transform-tcg-helper.patch",
+    "machine_source": "qemu/hw/m68k/elektron_ar_mk2.c",
+    "mode": "AR_MK2_AUDIO_TRANSFORM_TCG=1",
+    "default_enabled": false,
+    "transport": "target/m68k TCG helper with direct CPU-state and guest-memory access",
+    "fallback": "Execute the native translated block unless the control, D3=572 loop count, EMAC mode, and full-mask guards all pass."
+  },
+  "same_process_oracle": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and inner TCG helper enabled",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "late_cursor_required_stable_calls": 16,
+    "native_events": 1717,
+    "accelerated_events": 1717,
+    "access_address_type_value_match": true,
+    "access_pc_comparison_applicable": false,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 2,
+    "touched_bytes": 4576,
+    "touched_memory_match": true,
+    "candidate_fallback": false
+  },
+  "exact_vector_191_profile": {
+    "completed_services": 100,
+    "native_guest_instructions": 25778146,
+    "inner_helper_only_guest_instructions": 21724503,
+    "both_helpers_guest_instructions": 19550803,
+    "transform_incremental_removed_instructions": 2173700,
+    "transform_incremental_reduction_percent": 10.006,
+    "combined_removed_instructions": 6227343,
+    "combined_reduction_percent": 24.157,
+    "nonzero_host_audio": true,
+    "release_tail_services": 8,
+    "stopped_after_release": true,
+    "ui_responsive": true
+  },
+  "next_candidate": {
+    "role": "512-iteration outer renderer loop",
+    "entry_pc": "0x401184C4",
+    "loop_branch_pc": "0x401184F6",
+    "exit_pc": "0x401184F8",
+    "guest_instructions_in_top_100_blocks": 4403200,
+    "combined_profile_share_percent": 22.522
+  },
+  "conclusion": "The second direct-state helper matches the native transform at two cursor positions and compounds the exact ISR reduction to 24.16%. This instruction-count result is independent of noisy shared-host wall timing.",
+  "next_gate": "Validate the 512-iteration outer renderer loop as a complete-state replay boundary, then reconstruct its fixed MAC and pointer pipeline.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room bounded arithmetic and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}

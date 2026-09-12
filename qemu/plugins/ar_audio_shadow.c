@@ -60,6 +60,7 @@ static const size_t page_size = 4096;
 static FILE *report_file;
 static GPtrArray *registers;
 static struct qemu_plugin_register *tcg_control_register;
+static struct qemu_plugin_register *tcg_transform_control_register;
 static GHashTable *footprint;
 static GHashTable *touched_bytes;
 static GPtrArray *pages;
@@ -83,6 +84,7 @@ static bool footprint_grew;
 static bool candidate_inner;
 static bool candidate_tcg;
 static bool candidate_transform;
+static bool candidate_tcg_transform;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -237,6 +239,18 @@ static bool write_tcg_control(uint32_t raw)
     return qemu_plugin_write_register(tcg_control_register, value);
 }
 
+static bool write_tcg_transform_control(uint32_t raw)
+{
+    g_autoptr(GByteArray) value = g_byte_array_sized_new(4);
+    uint32_t be = GUINT32_TO_BE(raw);
+
+    if (!tcg_transform_control_register) {
+        return false;
+    }
+    g_byte_array_append(value, (uint8_t *)&be, sizeof(be));
+    return qemu_plugin_write_register(tcg_transform_control_register, value);
+}
+
 static bool read_tcg_control(uint32_t *result)
 {
     g_autoptr(GByteArray) value = g_byte_array_new();
@@ -244,6 +258,21 @@ static bool read_tcg_control(uint32_t *result)
 
     if (!tcg_control_register ||
         !qemu_plugin_read_register(tcg_control_register, value) ||
+        value->len != sizeof(raw)) {
+        return false;
+    }
+    memcpy(&raw, value->data, sizeof(raw));
+    *result = GUINT32_FROM_BE(raw);
+    return true;
+}
+
+static bool read_tcg_transform_control(uint32_t *result)
+{
+    g_autoptr(GByteArray) value = g_byte_array_new();
+    uint32_t raw;
+
+    if (!tcg_transform_control_register ||
+        !qemu_plugin_read_register(tcg_transform_control_register, value) ||
         value->len != sizeof(raw)) {
         return false;
     }
@@ -884,7 +913,8 @@ static bool compare_memory(void)
 
 static bool access_equal(const Access *a, const Access *b)
 {
-    if ((!candidate_tcg && a->pc != b->pc) || a->address != b->address ||
+    if ((!candidate_tcg && !candidate_tcg_transform && a->pc != b->pc) ||
+        a->address != b->address ||
         a->size != b->size || a->store != b->store ||
         a->value.type != b->value.type) {
         return false;
@@ -938,7 +968,7 @@ static void write_report(bool complete)
         return;
     }
     bool candidate_ok = (!candidate_inner && !candidate_tcg &&
-                         !candidate_transform) ||
+                         !candidate_transform && !candidate_tcg_transform) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -947,6 +977,7 @@ static void write_report(bool complete)
         (candidate_inner ? "PASS_NATIVE_INNER_CANDIDATE" :
          candidate_tcg ? "PASS_NATIVE_INNER_TCG" :
          candidate_transform ? "PASS_NATIVE_TRANSFORM_CANDIDATE" :
+         candidate_tcg_transform ? "PASS_NATIVE_TRANSFORM_TCG" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -973,7 +1004,8 @@ static void write_report(bool complete)
             native_accesses->len, shadow_accesses->len,
             candidate_inner ? "inner" :
             candidate_tcg ? "tcg-inner" :
-            candidate_transform ? "transform" : "native-shadow",
+            candidate_transform ? "transform" :
+            candidate_tcg_transform ? "tcg-transform" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
@@ -1068,7 +1100,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
                     restore_error |= !restore_memory(true);
                     restore_error |= !restore_registers(true);
                 }
-            } else if (candidate_tcg) {
+            } else if (candidate_tcg || candidate_tcg_transform) {
                 candidate_attempted = true;
             }
         }
@@ -1116,7 +1148,9 @@ static void boundary(unsigned int cpu_index, void *userdata)
             g_mutex_unlock(&lock);
             return;
         }
-        if (candidate_tcg && !write_tcg_control(2)) {
+        if ((candidate_tcg && !write_tcg_control(2)) ||
+            (candidate_tcg_transform &&
+             !write_tcg_transform_control(2))) {
             candidate_fallback = true;
             phase = PHASE_DONE;
             write_report(true);
@@ -1128,10 +1162,12 @@ static void boundary(unsigned int cpu_index, void *userdata)
         qemu_plugin_set_pc(start_pc);
     }
     if (phase == PHASE_SHADOW) {
-        if (candidate_tcg) {
+        if (candidate_tcg || candidate_tcg_transform) {
             uint32_t control;
 
-            candidate_executed = read_tcg_control(&control) && control == 0;
+            candidate_executed =
+                (candidate_tcg ? read_tcg_control(&control) :
+                 read_tcg_transform_control(&control)) && control == 0;
             candidate_fallback = !candidate_executed;
         }
         access_match = (candidate_inner || candidate_transform) &&
@@ -1188,6 +1224,11 @@ static void vcpu_init(unsigned int cpu_index, void *userdata)
             g_free(reg);
             continue;
         }
+        if (!strcmp(desc->name, "ar_audio_transform_control")) {
+            tcg_transform_control_register = desc->handle;
+            g_free(reg);
+            continue;
+        }
         reg->handle = desc->handle;
         reg->name = g_strdup(desc->name);
         reg->readonly = desc->is_readonly;
@@ -1238,6 +1279,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_tcg = true;
         } else if (!strcmp(argv[i], "candidate=transform")) {
             candidate_transform = true;
+        } else if (!strcmp(argv[i], "candidate=tcg-transform")) {
+            candidate_tcg_transform = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -1251,7 +1294,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         return -1;
     }
     if ((candidate_inner + candidate_tcg + candidate_transform +
-         runtime_inner) > 1) {
+         candidate_tcg_transform + runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
     }
@@ -1265,6 +1308,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != TRANSFORM_START_PC || end_pc != TRANSFORM_END_PC ||
          exit_pc != TRANSFORM_EXIT_PC)) {
         fprintf(stderr, "transform candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_tcg_transform &&
+        (start_pc != TRANSFORM_START_PC || end_pc != TRANSFORM_END_PC ||
+         exit_pc != TRANSFORM_EXIT_PC)) {
+        fprintf(stderr, "transform TCG candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");
