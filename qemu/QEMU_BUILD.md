@@ -156,6 +156,43 @@ entry/stop windows. Override `start` and `stop` to measure a nested routine;
 set `stop=0` to let the following entry close a continuous window. It records
 addresses and counts only; it never reads guest memory.
 
+For whole-kernel differential work, build the contract plugin against the same
+pinned QEMU tree:
+
+```bash
+cc -shared -fPIC -Wall -Wextra -Werror \
+  $(pkg-config --cflags glib-2.0) \
+  -I/path/to/qemu/include/plugins qemu/plugins/ar_audio_contract.c \
+  -o /tmp/ar_audio_contract.so $(pkg-config --libs glib-2.0)
+```
+
+Pass it to a held-audio smoke run with a local output path:
+
+```bash
+python qemu/headless_ui_smoke.py \
+  --qemu /path/to/qemu-system-m68k \
+  --main /path/to/decompressed-main.bin \
+  --exercise-held-audio --held-services 1 \
+  --qemu-plugin /tmp/ar_audio_contract.so,out=/tmp/native.ndjson
+```
+
+The default window is `0x401184C4..0x401187FF`; the plugin snapshots every
+QEMU-exposed register on entry and at the observed `0x40117FC2` exit, and logs
+the ordered value, address, width, direction, and instruction PC for every data
+access made inside the window. `out=PATH` is mandatory. A trace killed before
+the exit boundary is marked incomplete and is rejected by the comparator.
+
+Compare captures with either the complete value contract or address topology:
+
+```bash
+python research/audio_contract_compare.py native.ndjson candidate.ndjson
+python research/audio_contract_compare.py \
+  --mode topology native.ndjson candidate.ndjson
+```
+
+Neither trace belongs in source control: it contains runtime register and guest
+address values. The committed gate stores aggregate counts only.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

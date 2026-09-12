@@ -5,6 +5,7 @@ import io
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -17,6 +18,7 @@ from ar172_extract import NRV2BDepacker, decode_sysex, parse_ele3
 from audio_stream_trace import trace as trace_audio_stream
 from audio_interface_trace import trace as trace_audio_interface
 from audio_handoff_trace import trace as trace_audio_handoff
+from audio_contract_compare import TraceError, compare, load_trace, validate_trace
 from br_bridge_trace import trace
 from br_consumer_trace import trace as trace_br_consumer
 from br_quantizer_runtime_trace import trace as trace_br_quantizer_runtime
@@ -104,6 +106,69 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class QemuAudioEdmaTests(unittest.TestCase):
+    def test_audio_contract_probe_and_comparator(self):
+        report = json.loads(
+            (HERE / "AR172_QEMU_AUDIO_CONTRACT_PROBE_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            report["status"], "PASS_NATIVE_AUDIO_KERNEL_CONTRACT_CAPTURED"
+        )
+        self.assertEqual(report["validated_capture"]["memory_events"], 1009)
+        self.assertEqual(report["validated_capture"]["loads"], 791)
+        self.assertEqual(report["validated_capture"]["stores"], 218)
+
+        plugin = (ROOT / "qemu" / "plugins" / "ar_audio_contract.c").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("QEMU_PLUGIN_CB_R_REGS", plugin)
+        self.assertIn("qemu_plugin_read_register", plugin)
+        self.assertIn("qemu_plugin_register_vcpu_mem_cb", plugin)
+        self.assertIn("qemu_plugin_mem_get_value", plugin)
+        self.assertIn('g_str_has_prefix(argv[i], "out=")', plugin)
+
+        records = [
+            {
+                "kind": "header", "schema_version": 1,
+                "start_pc": "0x401184c4", "end_pc": "0x401187ff",
+                "exit_pc": "0x40117fc2", "defaults": True,
+            },
+            {
+                "kind": "boundary", "phase": "entry", "pc": "0x401184c4",
+                "registers": {"d0": "0x00000001", "pc": "0x401184c4"},
+            },
+            {
+                "kind": "memory", "sequence": 0, "pc": "0x401184c8",
+                "operation": "load", "address": "0x42000000", "size": 4,
+                "value": "0x00000002",
+            },
+            {
+                "kind": "boundary", "phase": "exit", "pc": "0x40117fc2",
+                "registers": {"d0": "0x00000002", "pc": "0x40117fc2"},
+            },
+            {
+                "kind": "footer", "complete": True, "memory_events": 1,
+                "loads": 1, "stores": 0,
+            },
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "trace.ndjson"
+            path.write_text(
+                "".join(json.dumps(row) + "\n" for row in records),
+                encoding="utf-8",
+            )
+            loaded = load_trace(path)
+            self.assertTrue(compare(loaded, loaded, "strict")["match"])
+            changed = json.loads(json.dumps(loaded))
+            changed[2]["value"] = "0x00000003"
+            self.assertFalse(compare(loaded, changed, "strict")["match"])
+            self.assertTrue(compare(loaded, changed, "topology")["match"])
+            incomplete = json.loads(json.dumps(loaded))
+            incomplete[-1]["complete"] = False
+            with self.assertRaises(TraceError):
+                validate_trace(incomplete)
+
     def test_ssi1_clock_gate_report(self):
         report_path = HERE / "AR172_SSI1_CLOCK_INPUT_TRACE.json"
         report = json.loads(report_path.read_text(encoding="utf-8"))

@@ -109,6 +109,10 @@ and reproducible tooling.
   and PLL state still require a bootloader/board-state capture.
 - A BR-low/high test with deterministic nonzero CPU render planes produces identical
   CPU PCM/combined output while the hardware control word diverges.
+- A one-call QEMU contract probe now captures all exposed registers around the
+  `0x401184C4..0x401187FF` audio kernel plus every ordered data access inside it.
+  The committed comparator supports strict and topology-only checks and rejects
+  incomplete traces; live traces and firmware-derived values remain uncommitted.
 
 ## Stock BR hardware characterization
 

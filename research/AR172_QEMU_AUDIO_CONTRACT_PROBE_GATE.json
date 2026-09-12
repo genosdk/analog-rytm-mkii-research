@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_AUDIO_CONTRACT_PROBE_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_NATIVE_AUDIO_KERNEL_CONTRACT_CAPTURED",
+  "target": {
+    "entry_pc": "0x401184C4",
+    "inclusive_instruction_window": "0x401184C4..0x401187FF",
+    "observed_exit_pc": "0x40117FC2",
+    "purpose": "Capture the QEMU-visible boundary and data-access contract needed to validate a future whole-kernel accelerator."
+  },
+  "tooling": {
+    "plugin": "qemu/plugins/ar_audio_contract.c",
+    "comparator": "research/audio_contract_compare.py",
+    "trace_format": "schema-version-1 NDJSON",
+    "required_plugin_option": "out=PATH",
+    "comparison_modes": ["strict", "topology"],
+    "incomplete_trace_policy": "reject"
+  },
+  "validated_capture": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "workload": "stock MAIN held-audio smoke",
+    "completed_calls": 1,
+    "entry_registers": 29,
+    "exit_registers": 29,
+    "memory_events": 1009,
+    "loads": 791,
+    "stores": 218,
+    "unique_instruction_pcs_with_memory": 97,
+    "exit_pc": "0x40117FC2"
+  },
+  "repeatability": {
+    "independent_boots": 2,
+    "structural_counts_equal": true,
+    "strict_comparison_equal": false,
+    "topology_comparison_equal": false,
+    "reason": "Independent boots did not begin from identical register state and produced different accessed-address topology. Counts alone are not an acceleration oracle."
+  },
+  "record_replay": {
+    "attempted_modes": ["auto", "shift=5"],
+    "result": "Both replays timed out before native sample assignment.",
+    "failed_runtime_flags_committed": false
+  },
+  "next_gate": "Create an identical kernel entry state by boundary snapshot/restore or same-process shadow execution, then require strict native-versus-accelerated agreement.",
+  "validation": {
+    "plugin_compiler_flags": "-Wall -Wextra -Werror",
+    "plugin_loaded": true,
+    "repository_tests": {"passed": 43, "skipped": 15}
+  },
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {"touched": false},
+  "safety": "The live trace was deleted after aggregate validation. No firmware, guest register values, guest addresses from a run, sample names, project data, or PCM are committed."
+}

@@ -124,6 +124,19 @@ experiments were reverted. A useful real-time accelerator therefore needs a
 larger, differentially validated kernel or ISR boundary, not another individual
 MAC helper rewrite.
 
+That next boundary is now captured by `qemu/plugins/ar_audio_contract.c`. One
+stock invocation of `0x401184C4..0x401187FF` exposed 29 registers at each
+boundary and 1,009 ordered data accesses (791 loads and 218 stores across 97
+instruction PCs), returning through `0x40117FC2`. The companion comparator has
+strict value and address-topology modes and refuses incomplete captures.
+
+Two independent boots reproduced the counts but not identical entry state or
+address topology. QEMU record/replay attempts also timed out before native
+sample assignment. Therefore these counts characterize the boundary but do not
+authorize replacement. The immediate acceleration gate is an identical entry
+snapshot or same-process shadow execution followed by strict native/candidate
+comparison. Runtime traces remain local and were deleted after aggregation.
+
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at
 vector 191, the shim models SSI1 transmit-FIFO demand every 666.667
