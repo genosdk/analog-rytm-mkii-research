@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_QWERTY_CHORD_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_OVERLAPPING_PRESS_AND_STAGGERED_RELEASE",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "runtime": {
+    "qemu_version": "11.1.50",
+    "firmware": "caller-supplied official OS 1.72 MAIN",
+    "candidate": "temporary non-flashable Filter2/LFO2 runtime image",
+    "candidate_sha256": "ba92042551d7bc4796ce63f2db7cf6ffc71d7004eb4237081dca7d9bee779d04",
+    "firmware_embedded": false,
+    "paid_ci_used": false
+  },
+  "host_precondition": {
+    "production_frontend": "qemu/desktop_panel.py PanelApp",
+    "keys": ["Q", "W"],
+    "trigs": [1, 2],
+    "duplicate_w_press_suppressed": true,
+    "uart8_frames": ["23 01", "23 03", "23 02", "23 00"]
+  },
+  "instrumentation": {
+    "initial_write": "seed only the two native event-type words to 0xFFFFFFFF through the QEMU local GDB stub while stopped",
+    "post_seed_writes": 0,
+    "read_method": "one stopped HMP snapshot containing both event-type words after every edge",
+    "candidate_bytes_modified": false
+  },
+  "native_note_records": {
+    "trig1_event_type_address": "0x42AC4038",
+    "trig2_event_type_address": "0x42AC4070",
+    "states": [
+      {"name": "seeded", "trig1": "0xFFFFFFFF", "trig2": "0xFFFFFFFF"},
+      {"name": "trig1_on", "trig1": 1, "trig2": "0xFFFFFFFF"},
+      {"name": "trig1_trig2_on", "trig1": 1, "trig2": 1},
+      {"name": "trig1_off_trig2_on", "trig1": 2, "trig2": 1},
+      {"name": "trig1_trig2_off", "trig1": 2, "trig2": 2}
+    ],
+    "accepted_note_on_type": 1,
+    "accepted_note_off_type": 2,
+    "exact_word_comparisons": 10,
+    "cross_lane_clobbers": 0
+  },
+  "framebuffer": {
+    "startup_modal_sha256": "9a3920316d49a85c550e8ec5a2ccbeffecff9b15f674cc6060bd2151946e9109",
+    "normal_ui_sha256": "e4be014be12c7c02f3807a14f82a2f53e14f624fab22044a90a3c55720a3c7ca",
+    "smp_page_sha256": "ce76d6e2eae845de39591ceba496c4cd2be08565f03cc670c69934dc8d7d73a6",
+    "later_ui_responsive": true
+  },
+  "reproducer": "qemu/headless_ui_smoke.py --exercise-trigger-chord",
+  "scope_limit": "This composes the separately gated production QWERTY/JSONL mask sequence with live QEMU observation of both stock note records. It does not claim physical keyboard timing, polyphonic audio output, or hardware behavior.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

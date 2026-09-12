@@ -174,6 +174,13 @@ pad exactly once. Replaying two cycles through the production bridge yields
 exact UART8 frames `23 01`, `23 00`, `23 01`, `23 00`. Evidence is in
 `research/AR172_DESKTOP_QWERTY_LIFECYCLE_GATE.json`.
 
+The two-key overlap gate composes that frontend behavior with live QEMU.
+Holding Q, adding W, releasing Q and finally releasing W publishes group-3
+masks `01 → 03 → 02 → 00`. Atomic snapshots of both native stock note records
+move from seeded sentinels through `on/sentinel → on/on → off/on → off/off`,
+with no cross-lane clobber. The subsequent SMP page remains responsive.
+Evidence is in `research/AR172_QEMU_QWERTY_CHORD_GATE.json`.
+
 This option remains a research clock rather than a physical realtime claim.
 The backpressured 10 ms model has sustained 2,303 completed services while the
 UI remained responsive, but the physical device cadence has not yet been

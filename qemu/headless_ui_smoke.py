@@ -233,6 +233,25 @@ def wait_hmp_value(port: int, address: int, width: str,
     raise TimeoutError(f"{command} did not reach {marker}: {last!r}")
 
 
+def wait_guest_words(port: int, expected: dict[int, int],
+                     deadline: float) -> dict[str, str]:
+    commands = ["stop"]
+    commands.extend(f"xp /1wx 0x{address:08x}" for address in expected)
+    commands.append("cont")
+    command = "\n".join(commands)
+    last = ""
+    while time.monotonic() < deadline:
+        last = hmp_command(port, command).lower()
+        if all(f"{address:08x}: 0x{value:08x}" in last
+               for address, value in expected.items()):
+            return {
+                f"0x{address:08X}": f"0x{value:08X}"
+                for address, value in expected.items()
+            }
+        time.sleep(0.01)
+    raise TimeoutError(f"atomic guest words not observed: {last!r}")
+
+
 def wait_lfo2_retrigger_reset(port: int, deadline: float) -> dict[str, str]:
     addresses = {
         "phase": 0x402B4520,
@@ -436,6 +455,11 @@ def main() -> None:
         help="prove desktop reset generations selectively clear native LFO2 state",
     )
     parser.add_argument(
+        "--exercise-trigger-chord",
+        action="store_true",
+        help="prove overlapping Trig 1/2 press and staggered release state",
+    )
+    parser.add_argument(
         "--capture-audio-wav",
         action="store_true",
         help="capture the bounded renderer tap through QEMU's WAV backend",
@@ -510,6 +534,12 @@ def main() -> None:
                  or args.exercise_retrigger_negative_controls
                  or args.exercise_active_retrigger)):
         parser.error("select only one LFO2 state-reset gate")
+    if (args.exercise_trigger_chord
+            and (args.exercise_retrigger_matrix
+                 or args.exercise_retrigger_negative_controls
+                 or args.exercise_active_retrigger
+                 or args.exercise_explicit_reset_matrix)):
+        parser.error("select the trigger chord or one LFO2 state-reset gate")
     if args.capture_audio_wav and args.services_per_trigger < 8:
         parser.error("--capture-audio-wav requires at least 8 services per trigger")
     if args.exercise_trigger_audio and "unimp" not in args.qemu_debug.split(","):
@@ -864,6 +894,49 @@ def main() -> None:
                 **second_memory,
                 **({"reset_generations": second.reset_generation}
                    if args.exercise_explicit_reset_matrix else {}),
+            })
+        if args.exercise_trigger_chord:
+            note_words = (0x42AC4038, 0x42AC4070)
+            hmp_command(monitor_port, "stop")
+            try:
+                for address in note_words:
+                    gdb_write_memory(
+                        gdb_port, address, (0xFFFFFFFF).to_bytes(4, "big")
+                    )
+            finally:
+                hmp_command(monitor_port, "cont")
+            chord_states = [{
+                "name": "seeded",
+                "words": wait_guest_words(
+                    monitor_port,
+                    {note_words[0]: 0xFFFFFFFF, note_words[1]: 0xFFFFFFFF},
+                    deadline,
+                ),
+            }]
+            for name, trig, pressed, expected in (
+                ("trig1_on", 1, True, (1, 0xFFFFFFFF)),
+                ("trig1_trig2_on", 2, True, (1, 1)),
+                ("trig1_off_trig2_on", 1, False, (2, 1)),
+                ("trig1_trig2_off", 2, False, (2, 2)),
+            ):
+                emit_event(
+                    events_file, "trig", str(trig),
+                    "press" if pressed else "release",
+                )
+                chord_states.append({
+                    "name": name,
+                    "words": wait_guest_words(
+                        monitor_port,
+                        {note_words[0]: expected[0], note_words[1]: expected[1]},
+                        deadline,
+                    ),
+                })
+            events.append({
+                "control": "TRIG 1 + TRIG 2 CHORD",
+                "host_gated_uart_frames": [
+                    "23 01", "23 03", "23 02", "23 00"
+                ],
+                "native_note_states": chord_states,
             })
         if (args.exercise_trigger_audio and not args.exercise_active_retrigger
                 and not args.exercise_retrigger_matrix

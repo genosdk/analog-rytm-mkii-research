@@ -220,6 +220,9 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("--exercise-explicit-reset-matrix", source)
         self.assertIn("selective_explicit_reset", source)
         self.assertIn("unchanged_reset_generations", source)
+        self.assertIn("--exercise-trigger-chord", source)
+        self.assertIn("TRIG 1 + TRIG 2 CHORD", source)
+        self.assertIn("wait_guest_words", source)
         self.assertIn('emit_event(events_file, "trig", "1", "press")', source)
         self.assertIn("wait_snapshot(controls_file, first.encode(), deadline)", source)
         self.assertIn("wait_hmp_value", source)
@@ -448,6 +451,53 @@ class DesktopPanelInputTests(unittest.TestCase):
                 sock.frames,
                 [b"\x23\x01", b"\x23\x00", b"\x23\x01", b"\x23\x00"],
             )
+
+    def test_overlapping_qwerty_chord_preserves_group_masks(self):
+        from qemu.panel_event_bridge import PanelLink, follow_events
+
+        class Event:
+            def __init__(self, keysym):
+                self.keysym = keysym
+
+        class SocketStub:
+            def __init__(self):
+                self.frames = []
+
+            def sendall(self, data):
+                self.frames.append(data)
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_panel(event_file)
+            panel.trig_widgets[2] = panel.trig_widgets[1].__class__()
+            panel.key_press(Event("q"))
+            panel.key_press(Event("w"))
+            panel.key_press(Event("w"))
+            panel.key_release(Event("q"))
+            panel.root.run_pending()
+            panel.key_release(Event("w"))
+            panel.root.run_pending()
+
+            sock = SocketStub()
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(sock, verbose=False), False,
+                      None, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            while len(sock.frames) < 4 and time.monotonic() < deadline:
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            self.assertEqual(
+                sock.frames,
+                [b"\x23\x01", b"\x23\x03", b"\x23\x02", b"\x23\x00"],
+            )
+            self.assertFalse(panel.held_trigs[1])
+            self.assertFalse(panel.held_trigs[2])
 
     def test_knob_delta_uses_validated_signed_encoder_frame(self):
         from qemu.panel_event_bridge import PanelLink

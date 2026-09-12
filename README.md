@@ -106,6 +106,8 @@ and reproducible tooling.
 - The packaged QWERTY lifecycle suppresses host key-repeat duplicates, preserves
   mixed mouse/keyboard pad ownership, releases held pads on focus loss, and
   replays two clean Trig-1 cycles as exact native UART8 frames.
+- A live Q/W chord gate preserves combined UART masks and independently advances
+  both stock note records through overlapping note-on and staggered note-off.
 - The packaged macOS shell now uses a pixel-registered photographic Photon OS
   faceplate with a live firmware OLED, independent page/trigger illumination,
   invisible hardware hit regions, and keyboard-accessible A-I encoders. Its

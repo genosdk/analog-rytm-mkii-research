@@ -719,6 +719,12 @@ mouse/keyboard co-ownership and focus-loss cleanup. The four resulting JSONL
 events replay through `panel_event_bridge.follow_events` as exact UART8 frames
 `23 01 / 23 00 / 23 01 / 23 00`. Evidence is in
 `research/AR172_DESKTOP_QWERTY_LIFECYCLE_GATE.json`.
+The follow-on live chord gate holds Q/Trig 1, adds W/Trig 2, releases Trig 1
+while Trig 2 remains held, then releases Trig 2. The production host test emits
+combined group-3 masks `01 / 03 / 02 / 00`; live QEMU snapshots observe the two
+stock event-type words transition `on/sentinel / on/on / off/on / off/off`.
+All ten seeded-and-edge comparisons pass without cross-lane clobber. Evidence
+is in `research/AR172_QEMU_QWERTY_CHORD_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic
