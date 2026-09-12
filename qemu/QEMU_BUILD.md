@@ -318,6 +318,10 @@ control transform at `0x4011C56E..0x4011C596` (exit `0x4011C598`). It accounts
 for at least 2,173,600 instructions, or 10.01% of the post-helper ISR. An
 identical-state native replay matched its 1,717 ordered accesses, all 35 guest
 registers, and 4,576 touched bytes, making it the next accelerator candidate.
+The verifier implementation is selected with `candidate=transform`; two stock
+runs, including a later `stable=16` cursor, matched complete state and memory
+with zero candidate guest accesses. It remains verifier-only until the same
+explicit-arm oracle passes for a direct-state helper.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

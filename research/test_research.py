@@ -290,6 +290,18 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertTrue(
             post_inner["same_process_native_shadow"]["exit_register_match"]
         )
+        transform = json.loads(
+            (HERE / "AR172_QEMU_CONTROL_TRANSFORM_ACCELERATOR_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(transform["status"], "PASS_NATIVE_TRANSFORM_CANDIDATE")
+        self.assertEqual(transform["stock_audio_target"]["native_events"], 1717)
+        self.assertEqual(
+            transform["stock_audio_target"]["candidate_guest_events"], 0
+        )
+        self.assertEqual(transform["stock_audio_target"]["validation_runs"], 2)
+        self.assertTrue(transform["stock_audio_target"]["exit_register_match"])
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -299,6 +311,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("qemu_plugin_set_pc(start_pc)", shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-inner")', shadow_plugin)
+        self.assertIn('!strcmp(argv[i], "candidate=transform")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)
         fixture = build_audio_shadow_fixture()

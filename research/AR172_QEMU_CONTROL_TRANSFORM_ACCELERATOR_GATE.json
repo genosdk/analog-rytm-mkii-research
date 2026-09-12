@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_CONTROL_TRANSFORM_ACCELERATOR_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_NATIVE_TRANSFORM_CANDIDATE",
+  "implementation": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "mode": "candidate=transform",
+    "scope": "same-process verifier candidate",
+    "production_enabled": false,
+    "guards": [
+      "exact validated entry, end, and exit PCs",
+      "complete named 35-register guest-state surface",
+      "fractional EMAC mode without saturation, signed-integer, or rounding modes",
+      "full 0xFFFFFFFF EMAC address mask",
+      "entry loop count D3 equals 572",
+      "successful reads and transactional writes for every memory operation"
+    ]
+  },
+  "candidate": {
+    "description": "Fixed 286-pair/572-word control transform",
+    "entry_pc": "0x4011C56E",
+    "inclusive_native_window": "0x4011C56E..0x4011C596",
+    "exit_pc": "0x4011C598",
+    "pair_iterations": 286
+  },
+  "stock_audio_target": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and inner TCG helper enabled",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "registers": 35,
+    "footprint_pages": 2,
+    "touched_bytes": 4576,
+    "native_events": 1717,
+    "candidate_guest_events": 0,
+    "candidate_attempted": true,
+    "candidate_executed": true,
+    "candidate_fallback": false,
+    "validation_runs": 2,
+    "late_cursor_run": {
+      "required_stable_calls": 16,
+      "discovery_calls": 16,
+      "native_events": 1717,
+      "candidate_guest_events": 0,
+      "exit_register_match": true,
+      "touched_memory_match": true
+    },
+    "exit_register_match": true,
+    "touched_memory_match": true,
+    "held_audio_smoke_passed": true,
+    "nonzero_host_audio": true
+  },
+  "conclusion": "The clean-room candidate replaces the bounded native transform with zero guest instruction accesses while reproducing every touched byte and the complete guest exit state at two cursor positions.",
+  "next_gate": "Move the validated transform into the direct-state TCG helper and repeat the explicit native/candidate oracle plus exact ISR instruction profile.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "The implementation contains a clean-room reconstruction and aggregate results only. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}
