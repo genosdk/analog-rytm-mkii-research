@@ -363,6 +363,28 @@ class QemuAudioEdmaTests(unittest.TestCase):
             outer_candidate["stock_audio_target"]["late_cursor_run"]
                            ["touched_memory_match"]
         )
+        outer_tcg = json.loads(
+            (HERE / "AR172_QEMU_OUTER_RENDERER_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            outer_tcg["status"], "PASS_CORRECT_41PCT_INSTRUCTION_REDUCTION"
+        )
+        self.assertEqual(outer_tcg["same_process_oracle"]["registers"], 35)
+        self.assertTrue(outer_tcg["same_process_oracle"]["touched_memory_match"])
+        self.assertEqual(
+            outer_tcg["exact_vector_191_profile"]
+                     ["all_three_helpers_guest_instructions"],
+            15157246,
+        )
+        outer_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0007-m68k-add-ar-audio-outer-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DEF_HELPER_1(ar_audio_outer, i32, env)", outer_patch)
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -377,6 +399,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
             '!strcmp(argv[i], "candidate=tcg-transform")', shadow_plugin
         )
         self.assertIn('!strcmp(argv[i], "candidate=outer")', shadow_plugin)
+        self.assertIn('!strcmp(argv[i], "candidate=tcg-outer")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)
         fixture = build_audio_shadow_fixture()

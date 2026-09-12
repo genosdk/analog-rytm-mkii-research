@@ -17,13 +17,14 @@ typedef struct {
 } Block;
 
 static GHashTable *blocks;
+static struct qemu_plugin_scoreboard *active_scoreboard;
+static qemu_plugin_u64 active_score;
 static uint64_t start_pc = 0x4011b3ae;
 static uint64_t stop_pc = 0x4011cf0a;
 static uint64_t service_limit = 100;
 static uint64_t services;
 static uint64_t completed;
 static uint64_t total_insns;
-static bool active;
 static bool reported;
 
 static gint compare_blocks(gconstpointer a, gconstpointer b)
@@ -65,29 +66,40 @@ static void report(void)
     reported = true;
 }
 
-static void execute(unsigned int cpu_index, void *userdata)
+static void count_block(unsigned int cpu_index, void *userdata)
 {
     Block *block = userdata;
 
     (void)cpu_index;
-    if (stop_pc && block->pc == stop_pc && active) {
-        active = false;
+    block->count++;
+    total_insns += block->insns;
+}
+
+static void boundary(unsigned int cpu_index, void *userdata)
+{
+    Block *block = userdata;
+    uint64_t pc = block->pc;
+
+    if (stop_pc && pc == stop_pc &&
+        qemu_plugin_u64_get(active_score, cpu_index)) {
+        qemu_plugin_u64_set(active_score, cpu_index, 0);
         completed++;
         if (completed == service_limit && !reported) {
             report();
         }
         return;
     }
-    if (block->pc == start_pc) {
+    if (pc == start_pc) {
         services++;
-        active = services <= service_limit;
-        if (!stop_pc && !active && !reported) {
+        qemu_plugin_u64_set(active_score, cpu_index,
+                            services <= service_limit);
+        if (!stop_pc && services > service_limit && !reported) {
             report();
         }
-    }
-    if (active) {
-        block->count++;
-        total_insns += block->insns;
+        if (services <= service_limit) {
+            block->count++;
+            total_insns += block->insns;
+        }
     }
 }
 
@@ -103,8 +115,14 @@ static void translate(struct qemu_plugin_tb *tb, void *userdata)
         block->insns = qemu_plugin_tb_n_insns(tb);
         g_hash_table_insert(blocks, &block->pc, block);
     }
-    qemu_plugin_register_vcpu_tb_exec_cb(tb, execute,
-                                         QEMU_PLUGIN_CB_NO_REGS, block);
+    if (pc == start_pc || (stop_pc && pc == stop_pc)) {
+        qemu_plugin_register_vcpu_tb_exec_cb(
+            tb, boundary, QEMU_PLUGIN_CB_NO_REGS, block);
+    } else {
+        qemu_plugin_register_vcpu_tb_exec_cond_cb(
+            tb, count_block, QEMU_PLUGIN_CB_NO_REGS, QEMU_PLUGIN_COND_NE,
+            active_score, 0, block);
+    }
 }
 
 static void at_exit(void *userdata)
@@ -114,6 +132,7 @@ static void at_exit(void *userdata)
         report();
     }
     g_hash_table_destroy(blocks);
+    qemu_plugin_scoreboard_free(active_scoreboard);
 }
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
@@ -137,6 +156,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         return -1;
     }
     blocks = g_hash_table_new_full(g_int64_hash, g_int64_equal, NULL, g_free);
+    active_scoreboard = qemu_plugin_scoreboard_new(sizeof(uint64_t));
+    active_score = qemu_plugin_scoreboard_u64(active_scoreboard);
     qemu_plugin_register_vcpu_tb_trans_cb(id, translate, NULL);
     qemu_plugin_register_atexit_cb(id, at_exit, NULL);
     return 0;

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_OUTER_RENDERER_TCG_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_CORRECT_41PCT_INSTRUCTION_REDUCTION",
+  "implementation": {
+    "patch": "qemu/patches/0007-m68k-add-ar-audio-outer-tcg-helper.patch",
+    "machine_source": "qemu/hw/m68k/elektron_ar_mk2.c",
+    "mode": "AR_MK2_AUDIO_OUTER_TCG=1",
+    "default_enabled": false,
+    "transport": "target/m68k TCG helper with direct CPU-state and guest-memory access",
+    "fallback": "Execute the native translated loop unless the control, D4=64 loop count, fractional EMAC mode, and full-mask guards all pass."
+  },
+  "same_process_oracle": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and both prior TCG helpers enabled",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "late_cursor_required_stable_calls": 16,
+    "native_events": 512,
+    "accelerated_events": 512,
+    "access_address_type_value_match": true,
+    "access_pc_comparison_applicable": false,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 5,
+    "first_cursor_touched_bytes": 2652,
+    "late_cursor_touched_bytes": 3238,
+    "touched_memory_match": true,
+    "candidate_fallback": false
+  },
+  "sustained_runtime_smoke": {
+    "minimum_services_before_host_release": 20,
+    "release_tail_services": 8,
+    "stopped_after_release": true,
+    "ui_responsive": true
+  },
+  "exact_vector_191_profile": {
+    "completed_services": 100,
+    "native_guest_instructions": 25778146,
+    "inner_and_transform_helpers_guest_instructions": 19550803,
+    "all_three_helpers_guest_instructions": 15157246,
+    "outer_incremental_removed_instructions": 4393557,
+    "outer_incremental_reduction_percent": 22.473,
+    "combined_removed_instructions": 10620900,
+    "combined_reduction_percent": 41.201,
+    "nonzero_host_audio": true,
+    "release_tail_services": 8,
+    "stopped_after_release": true,
+    "ui_responsive": true
+  },
+  "conclusion": "The third direct-state helper matches the stock outer loop at two cursor positions and lowers the exact 100-service ISR profile by 41.20% relative to native execution. The result is independent of shared-host wall timing.",
+  "next_gate": "Profile the remaining renderer with all three helpers enabled and promote the largest independently replayable bounded hotspot.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room bounded arithmetic and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}

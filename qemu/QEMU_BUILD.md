@@ -27,6 +27,8 @@ patch -p1 < /path/to/0004-m68k-expose-coldfire-emac-gdb-registers.patch
 patch -p1 < /path/to/0005-m68k-add-ar-audio-inner-tcg-helper.patch
 # Add the disabled-by-default 572-word control-transform helper.
 patch -p1 < /path/to/0006-m68k-add-ar-audio-transform-tcg-helper.patch
+# Add the disabled-by-default 64-iteration outer-renderer helper.
+patch -p1 < /path/to/0007-m68k-add-ar-audio-outer-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -43,7 +45,9 @@ product alignment; without it, packed parameter lanes are halved or sourced
 from the wrong register. The fifth patch adds the opt-in direct-state helper;
 it has no effect unless `AR_MK2_AUDIO_INNER_TCG` is set for the AR machine.
 The sixth patch similarly adds the independently controlled 572-word transform
-helper, enabled only by `AR_MK2_AUDIO_TRANSFORM_TCG=1`.
+helper, enabled only by `AR_MK2_AUDIO_TRANSFORM_TCG=1`. The seventh adds the
+64-iteration outer renderer helper, enabled only by
+`AR_MK2_AUDIO_OUTER_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -154,7 +158,7 @@ cc -fPIC -shared -O2 $(pkg-config --cflags glib-2.0) \
 python qemu/headless_ui_smoke.py \
   --qemu /path/to/qemu-system-m68k \
   --main /path/to/decompressed-main.bin \
-  --exercise-held-audio --held-services 100 --qemu-debug unimp,plugin \
+  --exercise-held-audio --held-services 100 --qemu-debug guest_errors,plugin \
   --qemu-plugin /tmp/ar_audio_window.so,start=0x4011b3ae,stop=0x4011cf0a,services=100
 ```
 
@@ -346,8 +350,22 @@ updates, the D3:D1 ADD/ADDX pair, loop control, and ACC0 clear. It exits at
 `0x401184F8`, leaving the native post-loop compensation outside the candidate.
 Two stock runs at the same eight- and sixteen-call cursors matched all 35 guest
 registers and all touched bytes, with zero candidate guest accesses and no
-fallback. It remains verifier-only until a direct-state helper passes the
-explicit-arm oracle and exact instruction profile.
+fallback.
+
+Patch 0007 promotes that candidate to a third direct-state helper. Two
+explicit-arm oracle runs (`AR_MK2_AUDIO_OUTER_TCG_DEFER=1` with
+`candidate=tcg-outer`) matched all 512 access values and addresses, all 35 guest
+registers, and every touched byte across five pages. The later `stable=16`
+cursor expanded the union from 2,652 to 3,238 bytes without changing the exact
+result. Guest-PC attribution is excluded because the helper emits the memory
+operations from its entry instruction.
+
+With all three helpers enabled, the exact 100-service vector-191 profile is
+15,157,246 guest instructions. That is 4,393,557 fewer than the two-helper
+profile and 10,620,900 fewer than native: incremental and combined reductions
+of 22.47% and 41.20%, respectively. A sustained held-audio smoke retained the
+exact eight-service release tail and responsive SMP UI. All helpers remain
+research-only, opt-in, and guarded for native fallback.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

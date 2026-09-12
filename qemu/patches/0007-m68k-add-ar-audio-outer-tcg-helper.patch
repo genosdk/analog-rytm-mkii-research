@@ -1,0 +1,181 @@
+From: AR MKII research <research@example.invalid>
+Subject: [PATCH] target/m68k: add opt-in AR outer-renderer helper
+
+Add a disabled-by-default direct-state helper for the validated 64-iteration
+outer renderer loop.  A separate one-shot control lets the shadow plugin run
+the stock loop first, restore its entry state, and arm exactly one accelerated
+replay.
+---
+ gdbstub/gdb-xml/cf-emac.xml |  1 +
+ target/m68k/cpu.h           |  2 +
+ target/m68k/helper.c        | 88 +++++++++++++++++++++++++++++++++++++
+ target/m68k/helper.h        |  1 +
+ target/m68k/translate.c     | 10 +++++
+ 5 files changed, 102 insertions(+)
+
+diff --git a/target/m68k/cpu.h b/target/m68k/cpu.h
+--- a/target/m68k/cpu.h
++++ b/target/m68k/cpu.h
+@@ -158,6 +158,8 @@ typedef struct CPUArchState {
+     uint32_t ar_audio_inner_control;
+     bool ar_audio_transform_accel;
+     uint32_t ar_audio_transform_control;
++    bool ar_audio_outer_accel;
++    uint32_t ar_audio_outer_control;
+ } CPUM68KState;
+ 
+ /*
+diff --git a/target/m68k/helper.h b/target/m68k/helper.h
+--- a/target/m68k/helper.h
++++ b/target/m68k/helper.h
+@@ -109,6 +109,7 @@ DEF_HELPER_3(set_mac_extu, void, env, i32, i32)
+ DEF_HELPER_3(set_mac_extu, void, env, i32, i32)
+ DEF_HELPER_1(ar_audio_inner, i32, env)
+ DEF_HELPER_1(ar_audio_transform, i32, env)
++DEF_HELPER_1(ar_audio_outer, i32, env)
+ 
+ DEF_HELPER_2(flush_flags, void, env, i32)
+ DEF_HELPER_2(set_ccr, void, env, i32)
+diff --git a/target/m68k/helper.c b/target/m68k/helper.c
+--- a/target/m68k/helper.c
++++ b/target/m68k/helper.c
+@@ -141,6 +141,8 @@ static int cf_emac_gdb_get_reg(CPUState *cs, GByteArray *mem_buf, int n)
+         return gdb_get_reg32(mem_buf, env->ar_audio_inner_control);
+     case 7:
+         return gdb_get_reg32(mem_buf, env->ar_audio_transform_control);
++    case 8:
++        return gdb_get_reg32(mem_buf, env->ar_audio_outer_control);
+     }
+     return 0;
+ }
+@@ -167,6 +169,9 @@ static int cf_emac_gdb_set_reg(CPUState *cs, uint8_t *mem_buf, int n)
+     case 7:
+         env->ar_audio_transform_control = ldl_be_p(mem_buf);
+         return 4;
++    case 8:
++        env->ar_audio_outer_control = ldl_be_p(mem_buf);
++        return 4;
+     }
+     return 0;
+ }
+@@ -1646,6 +1651,89 @@ uint32_t HELPER(ar_audio_transform)(CPUM68KState *env)
+     return 1;
+ }
+ 
++uint32_t HELPER(ar_audio_outer)(CPUM68KState *env)
++{
++    if (!env->ar_audio_outer_control || env->dregs[4] != 64 ||
++        (env->macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
++            MACSR_FI || env->mac_mask != UINT32_MAX) {
++        return 0;
++    }
++    if (env->ar_audio_outer_control == 2) {
++        env->ar_audio_outer_control = 0;
++    }
++
++    for (unsigned iteration = 0; iteration < 64; iteration++) {
++        uint32_t loaded;
++        uint32_t sum;
++        uint32_t carry;
++        unsigned shift;
++
++        cpu_stl_data_ra(env, env->aregs[1], env->dregs[7], GETPC());
++        env->aregs[1] += 4;
++        env->dregs[5] = env->dregs[3];
++
++        loaded = cpu_ldl_data_ra(env,
++            (env->aregs[5] + 1024) & env->mac_mask, GETPC());
++        ar_audio_transform_mac(env, 0,
++            ar_audio_transform_word(env->aregs[6], true),
++            ar_audio_transform_word(env->dregs[6], true));
++        env->dregs[7] = loaded;
++
++        loaded = cpu_ldl_data_ra(env,
++            env->aregs[2] & env->mac_mask, GETPC());
++        ar_audio_transform_mac(env, 0,
++            ar_audio_transform_word(env->aregs[6], false),
++            ar_audio_transform_word(env->dregs[6], false));
++        env->aregs[6] = loaded;
++        env->aregs[2] += 4;
++
++        loaded = cpu_ldl_data_ra(env,
++            env->aregs[2] & env->mac_mask, GETPC());
++        ar_audio_transform_mac(env, 0,
++            ar_audio_transform_word(env->dregs[7], true),
++            ar_audio_transform_word(env->aregs[6], true));
++        env->dregs[6] = loaded;
++        env->aregs[2] += 4;
++
++        shift = env->dregs[0] & 63;
++        env->dregs[5] = shift >= 32 ? 0 : env->dregs[5] >> shift;
++        env->aregs[2] = env->aregs[4] + env->dregs[1] * 2;
++
++        loaded = cpu_ldl_data_ra(env,
++            (env->aregs[5] + 2048) & env->mac_mask, GETPC());
++        ar_audio_transform_mac(env, 0,
++            ar_audio_transform_word(env->dregs[7], false),
++            ar_audio_transform_word(env->aregs[6], false));
++        env->dregs[7] = loaded;
++        env->aregs[5] = env->aregs[0] + env->dregs[5] * 4;
++
++        loaded = cpu_ldl_data_ra(env,
++            env->aregs[2] & env->mac_mask, GETPC());
++        ar_audio_transform_mac(env, 0,
++            ar_audio_transform_word(env->dregs[7], true),
++            ar_audio_transform_word(env->dregs[6], true));
++        env->aregs[6] = loaded;
++        env->aregs[2] += 4;
++
++        loaded = cpu_ldl_data_ra(env,
++            env->aregs[5] & env->mac_mask, GETPC());
++        ar_audio_transform_mac(env, 0,
++            ar_audio_transform_word(env->dregs[7], false),
++            ar_audio_transform_word(env->dregs[6], false));
++        env->dregs[6] = loaded;
++
++        loaded = cpu_ldl_data_ra(env, env->aregs[7], GETPC());
++        sum = env->dregs[3] + loaded;
++        carry = sum < env->dregs[3];
++        env->dregs[3] = sum;
++        env->dregs[1] += env->dregs[2] + carry;
++        env->dregs[4]--;
++        env->dregs[7] = ar_audio_inner_movclr(env, 0);
++    }
++    cpu_m68k_set_ccr(env, CCF_Z);
++    return 1;
++}
++
+ uint32_t HELPER(get_macs)(uint64_t val)
+ {
+     if (val == (int32_t)val) {
+diff --git a/target/m68k/translate.c b/target/m68k/translate.c
+--- a/target/m68k/translate.c
++++ b/target/m68k/translate.c
+@@ -6070,6 +6070,16 @@ static void m68k_tr_translate_insn(DisasContextBase *dcbase, CPUState *cpu)
+         tcg_gen_exit_tb(NULL, 0);
+         gen_set_label(native);
+     }
++    if (env->ar_audio_outer_accel && dc->base.pc_next == 0x401184c4) {
++        TCGLabel *native = gen_new_label();
++        TCGv_i32 accelerated = tcg_temp_new_i32();
++
++        gen_helper_ar_audio_outer(accelerated, tcg_env);
++        tcg_gen_brcondi_i32(TCG_COND_EQ, accelerated, 0, native);
++        tcg_gen_movi_i32(QREG_PC, 0x401184f8);
++        tcg_gen_exit_tb(NULL, 0);
++        gen_set_label(native);
++    }
+ 
+     insn = read_im16(env, dc);
+ 
+diff --git a/gdbstub/gdb-xml/cf-emac.xml b/gdbstub/gdb-xml/cf-emac.xml
+--- a/gdbstub/gdb-xml/cf-emac.xml
++++ b/gdbstub/gdb-xml/cf-emac.xml
+@@ -9,4 +9,5 @@
+   <reg name="mac_mask" bitsize="32" type="uint32" group="system"/>
+   <reg name="ar_audio_inner_control" bitsize="32" type="uint32" group="system"/>
+   <reg name="ar_audio_transform_control" bitsize="32" type="uint32" group="system"/>
++  <reg name="ar_audio_outer_control" bitsize="32" type="uint32" group="system"/>
+ </feature>
+--
+2.43.0
