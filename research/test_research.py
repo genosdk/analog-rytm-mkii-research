@@ -333,6 +333,44 @@ class DesktopPanelInputTests(unittest.TestCase):
             return []
         return [json.loads(line) for line in event_file.read_text().splitlines()]
 
+    @staticmethod
+    def make_headless_skin_panel(event_file):
+        from qemu.desktop_panel import PAGE_BUTTONS, PanelApp
+
+        class CanvasStub:
+            def focus_set(self):
+                self.focused = True
+
+        class StateStub:
+            def __init__(self):
+                self.active = False
+                self.states = []
+
+            def set_active(self, active):
+                self.active = active
+                self.states.append(active)
+
+        class StatusStub:
+            def set(self, value):
+                self.value = value
+
+        panel = PanelApp.__new__(PanelApp)
+        panel.canvas = CanvasStub()
+        panel.event_file = event_file
+        panel.mouse_control = None
+        panel.focused_encoder = None
+        panel.drag_y = 0
+        panel.drag_value = 64
+        panel.encoder_values = {name: 64 for name in "ABCDEFGHI"}
+        panel.button_held = set()
+        panel.active_page = "TRIG"
+        panel.page_widgets = {name: StateStub() for name in PAGE_BUTTONS}
+        panel.held_trigs = {}
+        panel.trig_widgets = {trig: StateStub() for trig in range(1, 17)}
+        panel.status = StatusStub()
+        panel.redraw_skin_overlays = lambda: None
+        return panel
+
     def test_qwerty_layout_and_knob_clamp(self):
         from qemu.desktop_panel import (
             BUTTON_RECTS,
@@ -658,6 +696,78 @@ class DesktopPanelInputTests(unittest.TestCase):
             self.assertFalse(panel.held_trigs[1])
             self.assertFalse(panel.held_trigs[9])
             self.assertFalse(panel.pending_key_releases)
+
+    def test_every_photographic_control_replays_exact_uart8_frames(self):
+        from qemu.desktop_panel import BUTTON_RECTS, KNOB_CENTERS, TRIG_RECTS
+        from qemu.panel_event_bridge import BUTTONS, PanelLink, follow_events
+
+        class PointerEvent:
+            def __init__(self, x, y, y_root=500):
+                self.x = x
+                self.y = y
+                self.y_root = y_root
+
+        class SocketStub:
+            def __init__(self):
+                self.frames = []
+
+            def sendall(self, data):
+                self.frames.append(data)
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_skin_panel(event_file)
+
+            for _name, (x1, y1, x2, y2) in BUTTON_RECTS.items():
+                event = PointerEvent((x1 + x2) // 2, (y1 + y2) // 2)
+                panel.skin_press(event)
+                panel.skin_release(event)
+            for _trig, (x1, y1, x2, y2) in TRIG_RECTS.items():
+                event = PointerEvent((x1 + x2) // 2, (y1 + y2) // 2)
+                panel.skin_press(event)
+                panel.skin_release(event)
+            for _name, (x, y) in KNOB_CENTERS.items():
+                event = PointerEvent(x, y)
+                panel.skin_press(event)
+                panel.skin_drag(PointerEvent(x, y - 10, event.y_root - 10))
+                panel.skin_release(event)
+
+            sock = SocketStub()
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(sock, verbose=False), False,
+                      None, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            while len(sock.frames) < 57 and time.monotonic() < deadline:
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            expected = []
+            group_masks = {2: 0, 3: 0, 4: 0, 5: 0}
+            for name in BUTTON_RECTS:
+                group, bit = BUTTONS[name]
+                group_masks[group] |= 1 << bit
+                expected.append(bytes((0x20 | group, group_masks[group])))
+                group_masks[group] &= ~(1 << bit)
+                expected.append(bytes((0x20 | group, group_masks[group])))
+            for trig in TRIG_RECTS:
+                group, bit = (3, trig - 1) if trig <= 8 else (2, trig - 9)
+                expected.extend(
+                    [bytes((0x20 | group, 1 << bit)),
+                     bytes((0x20 | group, 0))]
+                )
+            expected.extend(bytes((0x30 | index, 5)) for index in range(9))
+
+            self.assertFalse(follower.is_alive())
+            self.assertEqual(sock.frames, expected)
+            self.assertEqual(len(self.panel_events(event_file)), 57)
+            self.assertEqual(panel.encoder_values, {name: 69 for name in "ABCDEFGHI"})
+            self.assertFalse(panel.button_held)
+            self.assertTrue(all(not owners for owners in panel.held_trigs.values()))
 
     def test_knob_delta_uses_validated_signed_encoder_frame(self):
         from qemu.panel_event_bridge import PanelLink

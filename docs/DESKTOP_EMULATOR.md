@@ -87,6 +87,12 @@ replays pointer presses at all eight button and sixteen Trig hit regions plus a
 drag on each encoder A-I, checks the corresponding illumination, and compares
 all 57 emitted JSONL records with the production bridge contract.
 
+The downstream photographic-control gate continues those same 57 interactions
+through `panel_event_bridge.follow_events`. It verifies exact UART8 bytes for
+all eight page/action buttons, all sixteen Trigs, and a +5 drag on every encoder
+A–I. The replay ends with no held buttons or Trigs. Evidence is in
+`research/AR172_DESKTOP_PHOTOGRAPHIC_UART_GATE.json`.
+
 By default, the launcher derives a temporary, non-flashable Filter 2 + LFO2
 runtime candidate from the caller-supplied, hash-verified OS 1.72 MAIN. One
 versioned 108-byte snapshot atomically publishes eight lanes of Filter 2,

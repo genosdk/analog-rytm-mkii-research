@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_PHOTOGRAPHIC_UART_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_ALL_PHOTOGRAPHIC_CONTROLS_TO_UART8",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "production_path": {
+    "geometry_and_dispatch": "qemu/desktop_panel.py PanelApp.control_at",
+    "pointer_handlers": ["PanelApp.skin_press", "PanelApp.skin_release", "PanelApp.skin_drag"],
+    "event_transport": "JSONL",
+    "bridge": "qemu/panel_event_bridge.py follow_events",
+    "firmware_transport": "UART8 native panel frames",
+    "alternate_input_model_used": false
+  },
+  "button_matrix": [
+    {"control": "TRIG", "group": 5, "bit": 2, "press": "25 04", "release": "25 00"},
+    {"control": "SYN", "group": 5, "bit": 3, "press": "25 08", "release": "25 00"},
+    {"control": "SMP", "group": 5, "bit": 4, "press": "25 10", "release": "25 00"},
+    {"control": "FLTR", "group": 5, "bit": 5, "press": "25 20", "release": "25 00"},
+    {"control": "AMP", "group": 5, "bit": 6, "press": "25 40", "release": "25 00"},
+    {"control": "LFO", "group": 5, "bit": 7, "press": "25 80", "release": "25 00"},
+    {"control": "YES", "group": 5, "bit": 0, "press": "25 01", "release": "25 00"},
+    {"control": "NO", "group": 4, "bit": 0, "press": "24 01", "release": "24 00"}
+  ],
+  "trigger_matrix": {
+    "controls": "Trig 1..16",
+    "trigs_1_8": {
+      "group": 3,
+      "press_masks_hex": ["01", "02", "04", "08", "10", "20", "40", "80"],
+      "release_mask_hex": "00"
+    },
+    "trigs_9_16": {
+      "group": 2,
+      "press_masks_hex": ["01", "02", "04", "08", "10", "20", "40", "80"],
+      "release_mask_hex": "00"
+    }
+  },
+  "encoder_matrix": {
+    "controls": "A..I",
+    "drag_pixels_up": 10,
+    "initial_value": 64,
+    "final_value": 69,
+    "delta": 5,
+    "frames_hex": ["30 05", "31 05", "32 05", "33 05", "34 05", "35 05", "36 05", "37 05", "38 05"]
+  },
+  "replay": {
+    "button_frames": 16,
+    "trigger_frames": 32,
+    "encoder_frames": 9,
+    "total_jsonl_records": 57,
+    "total_uart8_frames": 57,
+    "exact_order_and_bytes": true,
+    "held_buttons_after_replay": 0,
+    "held_triggers_after_replay": 0
+  },
+  "validation": {
+    "focused_desktop_panel_tests": 13,
+    "full_research_tests": 53,
+    "expected_fixture_skips": 15,
+    "result": "PASS"
+  },
+  "related_evidence": [
+    "research/AR172_DESKTOP_QWERTY_FULL_MATRIX_GATE.json",
+    "research/AR172_QEMU_PAGE_CONTROL_STATE_GATE.json"
+  ],
+  "scope_limit": "This gate executes the production coordinate dispatcher, pointer handlers, JSONL follower and UART8 encoder with headless UI state doubles. The packaged native-Tk self-test separately validates the same hit regions, photographic overlays and frozen resources. This gate does not claim live stock-firmware observation of every control or physical-panel timing.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

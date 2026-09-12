@@ -116,6 +116,9 @@ and reproducible tooling.
   **FILTER 2** drawer remains in a separate host strip and publishes eight
   absolute runtime controls through an atomic snapshot consumed by the custom
   QEMU machine.
+- A complete photographic-control replay now carries all 57 pixel-dispatched
+  button, Trig and encoder interactions through JSONL to exact native UART8
+  frames, with no held controls after release.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
