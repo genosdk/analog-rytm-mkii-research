@@ -27,9 +27,9 @@
     "required_stable_calls": 8,
     "discovery_events": 3042,
     "footprint_pages": 2,
-    "touched_bytes": 552,
+    "touched_bytes": 556,
     "snapshot_bytes": 8192,
-    "registers": 29,
+    "registers": 35,
     "native_events": 338,
     "shadow_events": 338,
     "footprint_miss": false,
@@ -39,7 +39,7 @@
     "exit_register_match": true,
     "touched_memory_match": true
   },
-  "conclusion": "The inner loop is a bounded replayable accelerator candidate. These results prove identical native replay at the boundary, not replacement correctness or speedup.",
+  "conclusion": "The inner loop is a bounded replayable accelerator candidate. Exact replay includes the four raw EMAC accumulators, MACSR, and MASK. These results prove identical native replay at the boundary, not replacement correctness or speedup.",
   "next_gate": "Implement an optional QEMU whole-loop helper and require identical access, exit-register, and touched-memory results against the native oracle before measuring throughput.",
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."

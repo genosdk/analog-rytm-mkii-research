@@ -141,24 +141,30 @@ The identical-state mechanism is now implemented and proven against an
 original, non-proprietary ColdFire control fixture. `ar_audio_shadow.c`
 accumulates touched 4 KiB pages until eight consecutive calls add no new page,
 snapshots the next call at entry, executes it, restores the state in-process,
-and repeats the same kernel on the same vCPU. The control matched all 29
+and repeats the same kernel on the same vCPU. The control matched all 35
 registers, three ordered accesses, and both touched pages at exit. It then
 restored the native exit state before resuming normal guest execution.
 
-The stock 1.72 kernel now passes the same gate. Nine discovery calls stabilized
-12 touched pages; the native and shadow passes then matched all 1,009 ordered
-accesses, all 29 exit registers, and all 4,695 actually touched bytes. The held
-audio smoke remained responsive and produced nonzero host audio. No live values
-or firmware bytes were retained. This closes the identical-entry-state gate and
-opens differential validation of the first accelerator candidate.
+The stock 1.72 kernel now passes the same gate. In the complete-register run,
+17 discovery calls stabilized 13 touched pages; the native and shadow passes
+then matched all 1,009 ordered accesses, all 35 exit registers, and all 5,379
+actually touched bytes. The held audio smoke remained responsive and produced
+nonzero host audio. No live values or firmware bytes were retained. This closes
+the identical-entry-state gate and opens differential validation of the first
+accelerator candidate.
 
 The first bounded candidate is the 16-iteration fractional MAC/MSAC core at
 `0x401185EC..0x40118668`, returning at `0x4011866C`. Each iteration emits four
 32-bit values, for 64 output values total. An identical-state stock run
-stabilized two pages, then matched all 338 native and shadow accesses, all 29
-exit registers, and 552 touched bytes. The next gate is an optional QEMU
+stabilized two pages, then matched all 338 native and shadow accesses, all 35
+exit registers, and 556 touched bytes. The next gate is an optional QEMU
 whole-loop helper at this boundary, with the native implementation retained as
 the differential oracle and automatic fallback.
+
+QEMU's standard m68k GDB surface omitted the ColdFire EMAC accumulators,
+`MACSR`, and `MASK`. Patch 0004 adds those six registers, increasing the oracle
+from 29 to 35 registers. The non-proprietary control, stock whole kernel, and
+16-iteration inner loop all still pass exact replay with the complete state.
 
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at

@@ -1,0 +1,114 @@
+From: AR MKII research <research@example.invalid>
+Subject: [PATCH] target/m68k: expose ColdFire EMAC registers to GDB
+
+The m68k GDB register surface omits the four EMAC accumulators, MACSR and
+MASK.  This prevents debugger and plugin clients from snapshotting complete
+ColdFire execution state.  Add a ColdFire EMAC feature containing the raw
+QEMU accumulator representation and the two control registers.
+
+The raw accumulator names are intentional: QEMU stores each architectural
+48-bit accumulator in a sign-extended 64-bit internal representation, and an
+exact state round trip must preserve that representation.
+---
+ configs/targets/m68k-linux-user.mak |  2 +-
+ configs/targets/m68k-softmmu.mak    |  2 +-
+ gdbstub/gdb-xml/cf-emac.xml         | 10 ++++++++++
+ target/m68k/helper.c                | 42 +++++++++++++++++++++++++++++++++++++-
+ 4 files changed, 53 insertions(+), 3 deletions(-)
+
+diff --git a/configs/targets/m68k-linux-user.mak b/configs/targets/m68k-linux-user.mak
+--- a/configs/targets/m68k-linux-user.mak
++++ b/configs/targets/m68k-linux-user.mak
+@@ -2,6 +2,6 @@ TARGET_ARCH=m68k
+ TARGET_SYSTBL_ABI=common
+ TARGET_SYSTBL=syscall.tbl
+ TARGET_BIG_ENDIAN=y
+-TARGET_XML_FILES= cf-core.xml cf-fp.xml m68k-core.xml m68k-fp.xml
++TARGET_XML_FILES= cf-core.xml cf-fp.xml cf-emac.xml m68k-core.xml m68k-fp.xml
+ TARGET_HAS_BFLT=y
+ TARGET_LONG_BITS=32
+diff --git a/configs/targets/m68k-softmmu.mak b/configs/targets/m68k-softmmu.mak
+--- a/configs/targets/m68k-softmmu.mak
++++ b/configs/targets/m68k-softmmu.mak
+@@ -1,4 +1,4 @@
+ TARGET_ARCH=m68k
+ TARGET_BIG_ENDIAN=y
+-TARGET_XML_FILES= cf-core.xml cf-fp.xml m68k-core.xml m68k-fp.xml
++TARGET_XML_FILES= cf-core.xml cf-fp.xml cf-emac.xml m68k-core.xml m68k-fp.xml
+ TARGET_LONG_BITS=32
+diff --git a/gdbstub/gdb-xml/cf-emac.xml b/gdbstub/gdb-xml/cf-emac.xml
+new file mode 100644
+--- /dev/null
++++ b/gdbstub/gdb-xml/cf-emac.xml
+@@ -0,0 +1,10 @@
++<?xml version="1.0"?>
++<!DOCTYPE feature SYSTEM "gdb-target.dtd">
++<feature name="org.gnu.gdb.coldfire.emac">
++  <reg name="macc0_raw" bitsize="64" type="uint64" group="system"/>
++  <reg name="macc1_raw" bitsize="64" type="uint64" group="system"/>
++  <reg name="macc2_raw" bitsize="64" type="uint64" group="system"/>
++  <reg name="macc3_raw" bitsize="64" type="uint64" group="system"/>
++  <reg name="macsr" bitsize="32" type="uint32" group="system"/>
++  <reg name="mac_mask" bitsize="32" type="uint32" group="system"/>
++</feature>
+diff --git a/target/m68k/helper.c b/target/m68k/helper.c
+--- a/target/m68k/helper.c
++++ b/target/m68k/helper.c
+@@ -123,6 +123,43 @@ static int m68k_fpu_gdb_set_reg(CPUState *cs, uint8_t *mem_buf, int n)
+     return 0;
+ }
+
++static int cf_emac_gdb_get_reg(CPUState *cs, GByteArray *mem_buf, int n)
++{
++    M68kCPU *cpu = M68K_CPU(cs);
++    CPUM68KState *env = &cpu->env;
++
++    if (n < 4) {
++        return gdb_get_reg64(mem_buf, env->macc[n]);
++    }
++    switch (n) {
++    case 4:
++        return gdb_get_reg32(mem_buf, env->macsr);
++    case 5:
++        return gdb_get_reg32(mem_buf, env->mac_mask);
++    }
++    return 0;
++}
++
++static int cf_emac_gdb_set_reg(CPUState *cs, uint8_t *mem_buf, int n)
++{
++    M68kCPU *cpu = M68K_CPU(cs);
++    CPUM68KState *env = &cpu->env;
++
++    if (n < 4) {
++        env->macc[n] = ldq_be_p(mem_buf);
++        return 8;
++    }
++    switch (n) {
++    case 4:
++        env->macsr = ldl_be_p(mem_buf);
++        return 4;
++    case 5:
++        env->mac_mask = ldl_be_p(mem_buf);
++        return 4;
++    }
++    return 0;
++}
++
+ void m68k_cpu_init_gdb(M68kCPU *cpu)
+ {
+     CPUState *cs = CPU(cpu);
+@@ -135,7 +172,10 @@ void m68k_cpu_init_gdb(M68kCPU *cpu)
+         gdb_register_coprocessor(cs, m68k_fpu_gdb_get_reg, m68k_fpu_gdb_set_reg,
+                                  gdb_find_static_feature("m68k-fp.xml"));
+     }
+-    /* TODO: Add [E]MAC registers.  */
++    if (m68k_feature(env, M68K_FEATURE_CF_EMAC)) {
++        gdb_register_coprocessor(cs, cf_emac_gdb_get_reg, cf_emac_gdb_set_reg,
++                                 gdb_find_static_feature("cf-emac.xml"));
++    }
+ }
+
+ void HELPER(cf_movec_to)(CPUM68KState *env, uint32_t reg, uint32_t val)
+--
+2.43.0

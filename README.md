@@ -119,7 +119,8 @@ and reproducible tooling.
   pass exact access, register, and touched-memory comparison.
 - The 16-iteration fractional MAC/MSAC core at `0x401185EC..0x40118668`
   emits 64 output values and independently passes the same gate: 338 ordered
-  accesses, all 29 registers, and 552 touched bytes match. This is the first
+  accesses and all 35 registers match. The complete state includes four raw
+  EMAC accumulators, `MACSR`, and `MASK`. This is the first
   bounded accelerator candidate.
 
 ## Stock BR hardware characterization

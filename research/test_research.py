@@ -193,6 +193,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         )
         self.assertEqual(shadow["stock_audio_target"]["native_events"], 1009)
         self.assertEqual(shadow["stock_audio_target"]["shadow_events"], 1009)
+        self.assertEqual(shadow["stock_audio_target"]["registers"], 35)
         self.assertTrue(shadow["stock_audio_target"]["nonzero_host_audio"])
         inner = json.loads(
             (HERE / "AR172_QEMU_AUDIO_INNER_LOOP_SHADOW_GATE.json").read_text(
@@ -204,9 +205,27 @@ class QemuAudioEdmaTests(unittest.TestCase):
         )
         self.assertEqual(inner["stock_audio_target"]["native_events"], 338)
         self.assertEqual(inner["stock_audio_target"]["shadow_events"], 338)
+        self.assertEqual(inner["stock_audio_target"]["registers"], 35)
         self.assertTrue(inner["stock_audio_target"]["access_match"])
         self.assertTrue(inner["stock_audio_target"]["exit_register_match"])
         self.assertTrue(inner["stock_audio_target"]["touched_memory_match"])
+        emac_surface = json.loads(
+            (HERE / "AR172_QEMU_EMAC_REGISTER_SURFACE_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            emac_surface["status"], "PASS_COMPLETE_EMAC_STATE_SHADOW"
+        )
+        self.assertEqual(emac_surface["qemu"]["register_count_after"], 35)
+        emac_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0004-m68k-expose-coldfire-emac-gdb-registers.patch"
+        ).read_text(encoding="utf-8")
+        for name in ("macc0_raw", "macc3_raw", "macsr", "mac_mask"):
+            self.assertIn(name, emac_patch)
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")

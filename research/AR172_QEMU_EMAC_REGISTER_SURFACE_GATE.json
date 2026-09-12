@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_EMAC_REGISTER_SURFACE_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_COMPLETE_EMAC_STATE_SHADOW",
+  "qemu": {
+    "revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "version": "11.1.50",
+    "patch": "qemu/patches/0004-m68k-expose-coldfire-emac-gdb-registers.patch",
+    "registers_added": [
+      "macc0_raw",
+      "macc1_raw",
+      "macc2_raw",
+      "macc3_raw",
+      "macsr",
+      "mac_mask"
+    ],
+    "register_count_before": 29,
+    "register_count_after": 35
+  },
+  "non_proprietary_control": {
+    "status": "PASS_IDENTICAL_NATIVE_SHADOW",
+    "registers": 35,
+    "native_events": 3,
+    "shadow_events": 3,
+    "access_match": true,
+    "exit_register_match": true,
+    "touched_memory_match": true
+  },
+  "stock_whole_kernel": {
+    "firmware_version": "1.72",
+    "entry_pc": "0x401184C4",
+    "exit_pc": "0x40117FC2",
+    "status": "PASS_IDENTICAL_NATIVE_SHADOW",
+    "registers": 35,
+    "native_events": 1009,
+    "shadow_events": 1009,
+    "access_match": true,
+    "exit_register_match": true,
+    "touched_memory_match": true,
+    "held_audio_smoke_passed": true,
+    "nonzero_host_audio": true
+  },
+  "stock_inner_loop": {
+    "firmware_version": "1.72",
+    "entry_pc": "0x401185EC",
+    "exit_pc": "0x4011866C",
+    "iterations": 16,
+    "status": "PASS_IDENTICAL_NATIVE_SHADOW",
+    "registers": 35,
+    "native_events": 338,
+    "shadow_events": 338,
+    "access_match": true,
+    "exit_register_match": true,
+    "touched_memory_match": true
+  },
+  "conclusion": "The shadow oracle now round-trips and compares complete QEMU ColdFire EMAC state in addition to general, status, PC, and floating-point registers. The stock whole kernel and bounded inner loop remain identical.",
+  "next_gate": "Implement the optional inner-loop accelerator against the 35-register oracle and fail closed to native execution on any unsupported state.",
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {"touched": false},
+  "safety": "Only generic QEMU register-surface code, aggregate counts, and instruction-boundary addresses are committed. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}

@@ -21,6 +21,8 @@ patch -p1 < /path/to/0001-m68k-reset-coldfire-emac-mask.patch
 patch -p1 < /path/to/0002-m68k-fix-coldfire-emac-dual-detection.patch
 # Decode load-form operands and fractional products from the correct fields.
 patch -p1 < /path/to/0003-m68k-fix-coldfire-emac-load-operands.patch
+# Expose complete ColdFire EMAC state to GDB and QEMU plugins.
+patch -p1 < /path/to/0004-m68k-expose-coldfire-emac-gdb-registers.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -219,7 +221,9 @@ qemu-system-m68k -M mcf5208evb -cpu any -m 128M \
 start=0x40000020,end=0x4000002f,exit=0x4000000c
 ```
 
-The control must report `PASS_IDENTICAL_NATIVE_SHADOW`. For stock MAIN, omit
+The control must report `PASS_IDENTICAL_NATIVE_SHADOW`. With patch 0004, the
+snapshot includes 35 registers: the previous 29 plus four raw EMAC
+accumulators, `MACSR`, and `MASK`. For stock MAIN, omit
 the three PC overrides to use the audio-kernel defaults and pass the plugin to
 the held-audio smoke runner. The plugin fails closed if the second or shadow
 native call touches a page absent from discovery, any state operation fails, or
@@ -236,8 +240,9 @@ independently with:
 start=0x401185ec,end=0x40118668,exit=0x4011866c
 ```
 
-The validated run matched 338 ordered accesses, all 29 exit registers, and 552
-touched bytes. This proves the boundary is replayable; it does not yet claim a
+The validated complete-state run matched 338 ordered accesses, all 35 exit
+registers, and 556 touched bytes. This proves the boundary is replayable; it
+does not yet claim a
 replacement implementation or speedup.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
