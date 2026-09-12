@@ -1,0 +1,260 @@
+From: AR MKII research <research@example.invalid>
+Subject: [PATCH] target/m68k: add opt-in AR audio inner-loop helper
+
+Add a research-only, disabled-by-default TCG helper for the validated stock
+1.72 audio inner loop.  The helper operates directly on CPU state and guest
+memory, guards the exact entry PC and supported EMAC mode, and falls back to
+native translation when its preconditions are absent.  A one-shot control
+supports identical-state native/candidate replay before sustained runs.
+---
+ gdbstub/gdb-xml/cf-emac.xml |   1 +
+ target/m68k/cpu.h       |   2 +
+ target/m68k/helper.c    | 154 +++++++++++++++++++++++++++++++++++++++++
+ target/m68k/helper.h    |   1 +
+ target/m68k/translate.c |  15 ++++-
+ 5 files changed, 171 insertions(+), 1 deletion(-)
+
+diff --git a/gdbstub/gdb-xml/cf-emac.xml b/gdbstub/gdb-xml/cf-emac.xml
+--- a/gdbstub/gdb-xml/cf-emac.xml
++++ b/gdbstub/gdb-xml/cf-emac.xml
+@@ -7,4 +7,5 @@
+   <reg name="macc3_raw" bitsize="64" type="uint64" group="system"/>
+   <reg name="macsr" bitsize="32" type="uint32" group="system"/>
+   <reg name="mac_mask" bitsize="32" type="uint32" group="system"/>
++  <reg name="ar_audio_inner_control" bitsize="32" type="uint32" group="system"/>
+ </feature>
+
+diff --git a/target/m68k/cpu.h b/target/m68k/cpu.h
+--- a/target/m68k/cpu.h
++++ b/target/m68k/cpu.h
+@@ -154,6 +154,8 @@ typedef struct CPUArchState {
+ 
+     /* Fields from here on are preserved across CPU reset. */
+     uint64_t features;
++    bool ar_audio_inner_accel;
++    uint32_t ar_audio_inner_control;
+ } CPUM68KState;
+ 
+ /*
+diff --git a/target/m68k/helper.h b/target/m68k/helper.h
+--- a/target/m68k/helper.h
++++ b/target/m68k/helper.h
+@@ -107,6 +107,7 @@ DEF_HELPER_2(get_mac_exti, i32, env, i32)
+ DEF_HELPER_3(set_mac_extf, void, env, i32, i32)
+ DEF_HELPER_3(set_mac_exts, void, env, i32, i32)
+ DEF_HELPER_3(set_mac_extu, void, env, i32, i32)
++DEF_HELPER_1(ar_audio_inner, i32, env)
+ 
+ DEF_HELPER_2(flush_flags, void, env, i32)
+ DEF_HELPER_2(set_ccr, void, env, i32)
+diff --git a/target/m68k/helper.c b/target/m68k/helper.c
+--- a/target/m68k/helper.c
++++ b/target/m68k/helper.c
+@@ -26,6 +26,7 @@
+ #include "exec/gdbstub.h"
+ #include "exec/helper-proto.h"
+ #include "accel/tcg/cpu-loop.h"
++#include "accel/tcg/cpu-ldst.h"
+ #include "system/memory.h"
+ #include "gdbstub/helpers.h"
+ #include "fpu/softfloat.h"
+@@ -140,5 +141,7 @@ static int cf_emac_gdb_get_reg(CPUState *cs, GByteArray *mem_buf, int n)
+     case 5:
+         return gdb_get_reg32(mem_buf, env->mac_mask);
++    case 6:
++        return gdb_get_reg32(mem_buf, env->ar_audio_inner_control);
+     }
+     return 0;
+ }
+@@ -160,6 +163,9 @@ static int cf_emac_gdb_set_reg(CPUState *cs, uint8_t *mem_buf, int n)
+     case 5:
+         env->mac_mask = ldl_be_p(mem_buf);
+         return 4;
++    case 6:
++        env->ar_audio_inner_control = ldl_be_p(mem_buf);
++        return 4;
+     }
+     return 0;
+ }
+@@ -1418,6 +1419,154 @@ uint32_t HELPER(get_macf)(CPUM68KState *env, uint64_t val)
+     return result;
+ }
+ 
++typedef struct ARAudioInnerMac {
++    uint16_t insn;
++    uint16_t ext;
++    int16_t displacement;
++} ARAudioInnerMac;
++
++static const ARAudioInnerMac ar_audio_inner_before_acc0[] = {
++    { 0xa8d9, 0xc805,   0 }, { 0xa8e9, 0xc800,   4 },
++    { 0xa840, 0x0810,   0 }, { 0xa8e9, 0xc801,  12 },
++    { 0xa841, 0x0810,   0 }, { 0xa8e9, 0xc802,  20 },
++    { 0xac99, 0xc812,   0 }, { 0xa8e9, 0xc803,  24 },
++    { 0xa8ee, 0xc813, -16 }, { 0xa8ae, 0xc903, -12 },
++    { 0xaeae, 0x4902,  -8 }, { 0xa8ee, 0x7901,  -4 },
++    { 0xac99, 0xc900,   0 }, { 0xac99, 0x4913,   0 },
++    { 0xaca9, 0x7912, -20 }, { 0xa8e9, 0xc911,  -8 },
++};
++
++static const ARAudioInnerMac ar_audio_inner_after_acc0 = {
++    0xa8a9, 0x7910, -12
++};
++
++static void ar_audio_inner_clear_mac_flags(CPUM68KState *env)
++{
++    env->macsr &= ~(MACSR_N | MACSR_Z | MACSR_V | MACSR_EV);
++}
++
++static void ar_audio_inner_mac(CPUM68KState *env,
++                               const ARAudioInnerMac *op)
++{
++    uint32_t rx;
++    uint32_t ry;
++    uint32_t loaded = 0;
++    uint32_t address = 0;
++    uint64_t product;
++    unsigned acc = ((op->insn >> 7) & 1) | ((op->ext >> 3) & 2);
++    bool load = (op->insn & 0x30) != 0;
++
++    if (load) {
++        unsigned mode = (op->insn >> 3) & 7;
++        unsigned areg = op->insn & 7;
++
++        address = env->aregs[areg];
++        if (mode == 5) {
++            address += op->displacement;
++        }
++        address &= env->mac_mask;
++        loaded = cpu_ldl_data_ra(env, address, GETPC());
++        acc ^= 1;
++        rx = (op->ext & 0x8000) ? env->aregs[(op->ext >> 12) & 7] :
++                                  env->dregs[(op->ext >> 12) & 7];
++        ry = (op->ext & 8) ? env->aregs[op->ext & 7] :
++                             env->dregs[op->ext & 7];
++    } else {
++        rx = (op->insn & 0x40) ? env->aregs[(op->insn >> 9) & 7] :
++                                 env->dregs[(op->insn >> 9) & 7];
++        ry = (op->insn & 8) ? env->aregs[op->insn & 7] :
++                              env->dregs[op->insn & 7];
++    }
++
++    ar_audio_inner_clear_mac_flags(env);
++    product = HELPER(macmulf)(env, rx, ry);
++    if (op->ext & 0x100) {
++        env->macc[acc] -= product;
++    } else {
++        env->macc[acc] += product;
++    }
++    HELPER(macsatf)(env, acc);
++    HELPER(mac_set_flags)(env, acc);
++
++    if (load) {
++        unsigned reg = (op->insn >> 9) & 7;
++
++        if (op->insn & 0x40) {
++            env->aregs[reg] = loaded;
++        } else {
++            env->dregs[reg] = loaded;
++        }
++        if (((op->insn >> 3) & 7) == 3) {
++            env->aregs[op->insn & 7] = address + 4;
++        }
++    }
++}
++
++static uint32_t ar_audio_inner_movclr(CPUM68KState *env, unsigned acc)
++{
++    uint32_t result = HELPER(get_macf)(env, env->macc[acc]);
++
++    env->macc[acc] = 0;
++    env->macsr &= ~(MACSR_PAV0 << acc);
++    return result;
++}
++
++static uint32_t ar_audio_inner_sats_add(uint32_t left, uint32_t right)
++{
++    uint32_t result = left + right;
++
++    if ((~(left ^ right) & (left ^ result) & 0x80000000U) != 0) {
++        return (result & 0x80000000U) ? 0x7fffffffU : 0x80000000U;
++    }
++    return result;
++}
++
++uint32_t HELPER(ar_audio_inner)(CPUM68KState *env)
++{
++    if (!env->ar_audio_inner_control ||
++        (env->macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
++            MACSR_FI || env->mac_mask != UINT32_MAX) {
++        return 0;
++    }
++    if (env->ar_audio_inner_control == 2) {
++        env->ar_audio_inner_control = 0;
++    }
++
++    env->aregs[4] = cpu_ldl_data_ra(env, env->aregs[1], GETPC());
++    env->aregs[1] += 8;
++    env->aregs[7] -= 4;
++    cpu_stl_data_ra(env, env->aregs[7], 16, GETPC());
++
++    for (unsigned iteration = 0; iteration < 16; iteration++) {
++        env->macc[2] = (uint64_t)((int64_t)(int32_t)env->aregs[4] * 256);
++        env->macsr &= ~(MACSR_PAV0 << 2);
++        ar_audio_inner_clear_mac_flags(env);
++        HELPER(mac_set_flags)(env, 2);
++
++        for (size_t i = 0; i < ARRAY_SIZE(ar_audio_inner_before_acc0); i++) {
++            ar_audio_inner_mac(env, &ar_audio_inner_before_acc0[i]);
++        }
++        env->dregs[7] = ar_audio_inner_movclr(env, 0);
++        cpu_stl_data_ra(env, env->aregs[6], env->dregs[7], GETPC());
++        env->aregs[6] += 4;
++
++        ar_audio_inner_mac(env, &ar_audio_inner_after_acc0);
++        env->dregs[6] = ar_audio_inner_sats_add(env->dregs[6], env->dregs[7]);
++        cpu_stl_data_ra(env, env->aregs[2], env->dregs[6], GETPC());
++        env->aregs[2] += 4;
++
++        env->dregs[7] = ar_audio_inner_movclr(env, 2);
++        cpu_stl_data_ra(env, env->aregs[6], env->dregs[7], GETPC());
++        env->aregs[6] += 4;
++        env->dregs[4] = ar_audio_inner_sats_add(env->dregs[4], env->dregs[7]);
++        cpu_stl_data_ra(env, env->aregs[2], env->dregs[4], GETPC());
++        env->aregs[2] += 4;
++        cpu_stl_data_ra(env, env->aregs[7], 15 - iteration, GETPC());
++    }
++    cpu_m68k_set_ccr(env, CCF_Z);
++    return 1;
++}
++
+ uint32_t HELPER(get_macs)(uint64_t val)
+ {
+     if (val == (int32_t)val) {
+diff --git a/target/m68k/translate.c b/target/m68k/translate.c
+--- a/target/m68k/translate.c
++++ b/target/m68k/translate.c
+@@ -6048,7 +6048,20 @@ static void m68k_tr_translate_insn(DisasContextBase *dcbase, CPUState *cpu)
+ {
+     DisasContext *dc = container_of(dcbase, DisasContext, base);
+     CPUM68KState *env = cpu_env(cpu);
+-    uint16_t insn = read_im16(env, dc);
++    uint16_t insn;
++
++    if (env->ar_audio_inner_accel && dc->base.pc_next == 0x401185ec) {
++        TCGLabel *native = gen_new_label();
++        TCGv_i32 accelerated = tcg_temp_new_i32();
++
++        gen_helper_ar_audio_inner(accelerated, tcg_env);
++        tcg_gen_brcondi_i32(TCG_COND_EQ, accelerated, 0, native);
++        tcg_gen_movi_i32(QREG_PC, 0x4011866c);
++        tcg_gen_exit_tb(NULL, 0);
++        gen_set_label(native);
++    }
++
++    insn = read_im16(env, dc);
+ 
+     opcode_table[insn](env, dc, insn);
+     do_writebacks(dc);
+--
+2.43.0

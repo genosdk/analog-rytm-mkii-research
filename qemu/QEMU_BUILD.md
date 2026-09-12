@@ -23,6 +23,8 @@ patch -p1 < /path/to/0002-m68k-fix-coldfire-emac-dual-detection.patch
 patch -p1 < /path/to/0003-m68k-fix-coldfire-emac-load-operands.patch
 # Expose complete ColdFire EMAC state to GDB and QEMU plugins.
 patch -p1 < /path/to/0004-m68k-expose-coldfire-emac-gdb-registers.patch
+# Add the disabled-by-default direct-state audio inner-loop helper.
+patch -p1 < /path/to/0005-m68k-add-ar-audio-inner-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -36,7 +38,8 @@ opcodes; without it, ordinary MAC-with-load instructions can perform an
 unintended second accumulation. The third patch selects the load-form Rx and
 add/subtract operation from the extension word, then restores signed Q1.31
 product alignment; without it, packed parameter lanes are halved or sourced
-from the wrong register.
+from the wrong register. The fifth patch adds the opt-in direct-state helper;
+it has no effect unless `AR_MK2_AUDIO_INNER_TCG` is set for the AR machine.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -268,8 +271,45 @@ attempted, executed, and fallback counts.
 This transport is correct but not useful for performance. A 10-second quiet
 stock comparison measured 176.498 native services/s versus 176.988 services/s
 with 14,224 accelerated inner calls and zero fallbacks, a +0.28% change. Keep
-runtime mode disabled by default; the next accelerator should be a guarded
-target/m68k TCG helper with direct state and RAM access.
+runtime mode disabled by default.
+
+Patch 0005 moves the same bounded implementation into a target/m68k TCG
+helper with direct CPU-state and guest-memory access. It remains disabled by
+default. Enable it for a sustained research run with:
+
+```bash
+AR_MK2_AUDIO_INNER_TCG=1 python qemu/headless_ui_smoke.py \
+  --qemu /path/to/qemu-system-m68k --main /path/to/MAIN.bin \
+  --exercise-held-audio --held-seconds 10 --demo-sample-frames 48000
+```
+
+For same-process oracle validation, delay activation until the restored shadow
+call and request the TCG candidate mode:
+
+```bash
+AR_MK2_AUDIO_INNER_TCG=1 AR_MK2_AUDIO_INNER_TCG_DEFER=1 \
+python qemu/headless_ui_smoke.py \
+  --qemu /path/to/qemu-system-m68k --main /path/to/MAIN.bin \
+  --exercise-held-audio --held-services 28 \
+  --qemu-plugin /tmp/ar_audio_shadow.so,out=/tmp/audio-inner-tcg.json,\
+start=0x401185ec,end=0x40118668,exit=0x4011866c,stable=16,candidate=tcg-inner
+```
+
+The deferred helper runs natively through footprint discovery and the oracle;
+the verifier arms it only after restoring the shadow entry state. The validated
+run matched all 338 ordered access values and addresses, all 35 exit registers,
+and all 560 touched bytes. Because the helper replaces many guest instructions
+with one host call, this mode excludes per-access guest-PC attribution from the
+otherwise complete ordered comparison.
+
+The first matched 10-second quiet pair measured 167.196 native services/s
+versus 198.481 services/s with the TCG helper (+18.71%), but a repeated
+10-second pair measured 163.982 versus 168.798 (+2.94%), and a five-second pair
+measured 172.997 versus 164.996 (-4.62%). Shared-host variation spans zero, so
+these runs do not support a stable material-speedup claim. Every run retained
+nonzero audio, the exact eight-service release tail, and responsive UI. The
+helper remains research-only and opt-in; the next performance gate should use
+within-process measurement while expanding the accelerated boundary.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

@@ -786,6 +786,14 @@ static void elektron_ar_mk2_init(MachineState *machine)
     }
     s->cpu = M68K_CPU(cpu_create(machine->cpu_type));
     env = &s->cpu->env;
+    {
+        const char *accel = g_getenv("AR_MK2_AUDIO_INNER_TCG");
+        const char *defer = g_getenv("AR_MK2_AUDIO_INNER_TCG_DEFER");
+
+        env->ar_audio_inner_accel = accel && *accel && strcmp(accel, "0");
+        env->ar_audio_inner_control = env->ar_audio_inner_accel &&
+            !(defer && *defer && strcmp(defer, "0"));
+    }
 
     /* External SDRAM. */
     memory_region_add_subregion(sysmem, AR_SDRAM_BASE, machine->ram);

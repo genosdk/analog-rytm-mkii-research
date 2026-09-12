@@ -59,6 +59,7 @@ static const uint64_t page_mask = ~(uint64_t)0xfff;
 static const size_t page_size = 4096;
 static FILE *report_file;
 static GPtrArray *registers;
+static struct qemu_plugin_register *tcg_control_register;
 static GHashTable *footprint;
 static GHashTable *touched_bytes;
 static GPtrArray *pages;
@@ -80,6 +81,7 @@ static uint64_t stable_discovery_calls;
 static uint64_t required_stable_calls = 8;
 static bool footprint_grew;
 static bool candidate_inner;
+static bool candidate_tcg;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -216,6 +218,33 @@ static bool write_register_value(const char *name, uint64_t raw,
         return false;
     }
     return qemu_plugin_write_register(reg->handle, value);
+}
+
+static bool write_tcg_control(uint32_t raw)
+{
+    g_autoptr(GByteArray) value = g_byte_array_sized_new(4);
+    uint32_t be = GUINT32_TO_BE(raw);
+
+    if (!tcg_control_register) {
+        return false;
+    }
+    g_byte_array_append(value, (uint8_t *)&be, sizeof(be));
+    return qemu_plugin_write_register(tcg_control_register, value);
+}
+
+static bool read_tcg_control(uint32_t *result)
+{
+    g_autoptr(GByteArray) value = g_byte_array_new();
+    uint32_t raw;
+
+    if (!tcg_control_register ||
+        !qemu_plugin_read_register(tcg_control_register, value) ||
+        value->len != sizeof(raw)) {
+        return false;
+    }
+    memcpy(&raw, value->data, sizeof(raw));
+    *result = GUINT32_FROM_BE(raw);
+    return true;
 }
 
 static bool read_memory_u32(uint32_t address, uint32_t *result)
@@ -710,7 +739,9 @@ static bool compare_registers(void)
                 return false;
             }
             memcpy(&actual, value->data, sizeof(actual));
-            if (GUINT32_FROM_BE(actual) != exit_pc) {
+            if (GUINT32_FROM_BE(actual) != exit_pc &&
+                (value->len != reg->native_exit->len ||
+                 memcmp(value->data, reg->native_exit->data, value->len))) {
                 return false;
             }
         } else if (value->len != reg->native_exit->len ||
@@ -747,7 +778,7 @@ static bool compare_memory(void)
 
 static bool access_equal(const Access *a, const Access *b)
 {
-    if (a->pc != b->pc || a->address != b->address ||
+    if ((!candidate_tcg && a->pc != b->pc) || a->address != b->address ||
         a->size != b->size || a->store != b->store ||
         a->value.type != b->value.type) {
         return false;
@@ -800,12 +831,14 @@ static void write_report(bool complete)
         reported = true;
         return;
     }
-    bool candidate_ok = !candidate_inner || candidate_executed;
+    bool candidate_ok = (!candidate_inner && !candidate_tcg) ||
+                        candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
                 candidate_ok;
     const char *status = pass ?
         (candidate_inner ? "PASS_NATIVE_INNER_CANDIDATE" :
+         candidate_tcg ? "PASS_NATIVE_INNER_TCG" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -830,11 +863,12 @@ static void write_report(bool complete)
             discovery_events, pages->len, g_hash_table_size(touched_bytes),
             (uint64_t)pages->len * page_size, registers->len,
             native_accesses->len, shadow_accesses->len,
-            candidate_inner ? "inner" : "native-shadow",
+            candidate_inner ? "inner" :
+            candidate_tcg ? "tcg-inner" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
-            candidate_executed ? "false" : "true",
+            candidate_inner && candidate_executed ? "false" : "true",
             footprint_miss ? "true" : "false",
             snapshot_error ? "true" : "false",
             restore_error ? "true" : "false",
@@ -922,6 +956,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
                     restore_error |= !restore_memory(true);
                     restore_error |= !restore_registers(true);
                 }
+            } else if (candidate_tcg) {
+                candidate_attempted = true;
             }
         }
         g_mutex_unlock(&lock);
@@ -968,12 +1004,26 @@ static void boundary(unsigned int cpu_index, void *userdata)
             g_mutex_unlock(&lock);
             return;
         }
+        if (candidate_tcg && !write_tcg_control(2)) {
+            candidate_fallback = true;
+            phase = PHASE_DONE;
+            write_report(true);
+            g_mutex_unlock(&lock);
+            return;
+        }
         phase = PHASE_SHADOW;
         g_mutex_unlock(&lock);
         qemu_plugin_set_pc(start_pc);
     }
     if (phase == PHASE_SHADOW) {
-        access_match = candidate_executed ? true : compare_accesses();
+        if (candidate_tcg) {
+            uint32_t control;
+
+            candidate_executed = read_tcg_control(&control) && control == 0;
+            candidate_fallback = !candidate_executed;
+        }
+        access_match = candidate_inner && candidate_executed ?
+                       true : compare_accesses();
         register_match = compare_registers();
         memory_match = compare_memory();
         restore_error |= !restore_memory(false);
@@ -1020,6 +1070,11 @@ static void vcpu_init(unsigned int cpu_index, void *userdata)
             &g_array_index(available, qemu_plugin_reg_descriptor, i);
         RegisterState *reg = g_new0(RegisterState, 1);
 
+        if (!strcmp(desc->name, "ar_audio_inner_control")) {
+            tcg_control_register = desc->handle;
+            g_free(reg);
+            continue;
+        }
         reg->handle = desc->handle;
         reg->name = g_strdup(desc->name);
         reg->readonly = desc->is_readonly;
@@ -1066,6 +1121,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             required_stable_calls = g_ascii_strtoull(argv[i] + 7, NULL, 0);
         } else if (!strcmp(argv[i], "candidate=inner")) {
             candidate_inner = true;
+        } else if (!strcmp(argv[i], "candidate=tcg-inner")) {
+            candidate_tcg = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -1078,11 +1135,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         fprintf(stderr, "audio-shadow requires out=PATH and valid PCs\n");
         return -1;
     }
-    if (candidate_inner && runtime_inner) {
-        fprintf(stderr, "candidate=inner and runtime=inner are exclusive\n");
+    if ((candidate_inner && candidate_tcg) ||
+        (runtime_inner && (candidate_inner || candidate_tcg))) {
+        fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
     }
-    if ((candidate_inner || runtime_inner) &&
+    if ((candidate_inner || candidate_tcg || runtime_inner) &&
         (start_pc != INNER_START_PC || end_pc != INNER_END_PC ||
          exit_pc != INNER_EXIT_PC)) {
         fprintf(stderr, "inner acceleration requires the validated inner PCs\n");

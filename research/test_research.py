@@ -253,6 +253,27 @@ class QemuAudioEdmaTests(unittest.TestCase):
             runtime["quiet_benchmark"]["accelerator_executions"], 14224
         )
         self.assertLess(runtime["quiet_benchmark"]["rate_delta_percent"], 1.0)
+        tcg = json.loads(
+            (HERE / "AR172_QEMU_AUDIO_INNER_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(tcg["status"], "PASS_CORRECT_NO_STABLE_SPEEDUP")
+        self.assertTrue(tcg["same_process_oracle"]["exit_register_match"])
+        self.assertTrue(tcg["same_process_oracle"]["touched_memory_match"])
+        self.assertTrue(
+            tcg["same_process_oracle"]["access_address_type_value_match"]
+        )
+        self.assertFalse(tcg["quiet_benchmark"]["material_speedup_confirmed"])
+        tcg_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0005-m68k-add-ar-audio-inner-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DEF_HELPER_1(ar_audio_inner, i32, env)", tcg_patch)
+        self.assertIn("cpu_ldl_data_ra", tcg_patch)
+        self.assertIn("env->ar_audio_inner_accel", tcg_patch)
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -261,6 +282,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("qemu_plugin_write_register", shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(start_pc)", shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
+        self.assertIn('!strcmp(argv[i], "candidate=tcg-inner")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)
         fixture = build_audio_shadow_fixture()

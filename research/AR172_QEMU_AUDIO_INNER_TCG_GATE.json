@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_AUDIO_INNER_TCG_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_CORRECT_NO_STABLE_SPEEDUP",
+  "implementation": {
+    "patch": "qemu/patches/0005-m68k-add-ar-audio-inner-tcg-helper.patch",
+    "machine_source": "qemu/hw/m68k/elektron_ar_mk2.c",
+    "mode": "AR_MK2_AUDIO_INNER_TCG=1",
+    "default_enabled": false,
+    "transport": "target/m68k TCG helper with direct CPU-state and guest-memory access",
+    "fallback": "Execute the native translated block when the EMAC mode or mask guard rejects the call."
+  },
+  "same_process_oracle": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "required_stable_calls": 16,
+    "discovery_calls": 17,
+    "activation": "Deferred until the verifier restores and explicitly arms the shadow call.",
+    "native_events": 338,
+    "accelerated_events": 338,
+    "access_address_type_value_match": true,
+    "access_pc_comparison_applicable": false,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 2,
+    "touched_bytes": 560,
+    "touched_memory_match": true,
+    "candidate_fallback": false
+  },
+  "quiet_benchmark": {
+    "generated_sample_frames": 48000,
+    "required_realtime_rate_hz": 1500,
+    "paired_runs": [
+      {
+        "hold_seconds": 10,
+        "native_rate_hz": 167.196,
+        "accelerated_rate_hz": 198.481,
+        "rate_delta_percent": 18.712
+      },
+      {
+        "hold_seconds": 10,
+        "native_rate_hz": 163.982,
+        "accelerated_rate_hz": 168.798,
+        "rate_delta_percent": 2.937
+      },
+      {
+        "hold_seconds": 5,
+        "native_rate_hz": 172.997,
+        "accelerated_rate_hz": 164.996,
+        "rate_delta_percent": -4.625
+      }
+    ],
+    "material_speedup_confirmed": false,
+    "interpretation": "Shared-host wall-rate variation spans zero; the direct helper is correct but these measurements do not establish a stable throughput gain.",
+    "nonzero_host_audio": true,
+    "release_tail_services": 8,
+    "stopped_after_release": true,
+    "ui_responsive": true
+  },
+  "conclusion": "The direct-state helper preserves the validated exit state and memory effects, but repeated paired runs do not establish a stable material throughput gain. It remains opt-in.",
+  "next_gate": "Profile and expand to the next broader bounded renderer block, then use within-process measurement to reduce shared-host scheduler noise.",
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Only a clean-room bounded arithmetic reconstruction and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}
