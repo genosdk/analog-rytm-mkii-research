@@ -105,6 +105,46 @@ def skin_asset_path(filename: str = "photon_panel_neutral.png") -> Path:
     raise FileNotFoundError("photographic panel skin is missing")
 
 
+def active_crop_specs() -> list[
+    tuple[tuple[str, str | int], tuple[int, int, int, int], int]
+]:
+    """Return the single source of truth for photographic active overlays."""
+    specs = [
+        (("button", name), rect, 1) for name, rect in BUTTON_RECTS.items()
+    ]
+    specs.extend((("trig", trig), rect, 1) for trig, rect in TRIG_RECTS.items())
+    specs.extend((("pad", trig), rect, 0) for trig, rect in PAD_RECTS.items())
+    return specs
+
+
+def validate_skin_geometry() -> None:
+    """Reject an incomplete or out-of-bounds pixel registration manifest."""
+    if set(KNOB_CENTERS) != set("ABCDEFGHI"):
+        raise RuntimeError("photographic skin must register encoders A-I")
+    if set(BUTTON_RECTS) != set(PROVEN_BUTTONS):
+        raise RuntimeError("photographic skin button registration is incomplete")
+    if set(TRIG_RECTS) != set(range(1, 17)):
+        raise RuntimeError("photographic skin must register Trigs 1-16")
+    if set(PAD_RECTS) != set(range(1, 13)):
+        raise RuntimeError("photographic skin must register pads 1-12")
+
+    rects = [("OLED", OLED_RECT)]
+    rects.extend((f"button {name}", rect) for name, rect in BUTTON_RECTS.items())
+    rects.extend((f"Trig {trig}", rect) for trig, rect in TRIG_RECTS.items())
+    rects.extend((f"pad {trig}", rect) for trig, rect in PAD_RECTS.items())
+    for label, (x1, y1, x2, y2) in rects:
+        if not (0 <= x1 < x2 <= SKIN_W and 0 <= y1 < y2 <= SKIN_H):
+            raise RuntimeError(f"photographic skin {label} is out of bounds")
+    for name, (x, y) in KNOB_CENTERS.items():
+        if not (0 <= x < SKIN_W and 0 <= y < SKIN_H):
+            raise RuntimeError(f"photographic skin encoder {name} is out of bounds")
+
+    specs = active_crop_specs()
+    keys = [key for key, _rect, _margin in specs]
+    if len(keys) != 36 or len(set(keys)) != len(keys):
+        raise RuntimeError("photographic skin active-state manifest is invalid")
+
+
 def clamp_panel_value(value: int) -> int:
     return max(0, min(127, value))
 
@@ -332,6 +372,7 @@ class PanelApp:
     def __init__(self, root: tk.Tk, frame_file: Path, event_file: Path,
                  scale: int = 6, filter2_enabled: bool = False,
                  audio_enabled: bool = False) -> None:
+        validate_skin_geometry()
         self.root = root
         self.frame_file = frame_file
         self.event_file = event_file
@@ -396,12 +437,8 @@ class PanelApp:
             self.trig_widgets[trig] = SkinState(self.redraw_skin_overlays)
         self.active_photos: dict[tuple[str, str | int], tk.PhotoImage] = {}
         self.active_image_ids: dict[tuple[str, str | int], int] = {}
-        for name, rect in BUTTON_RECTS.items():
-            self.add_active_crop(("button", name), rect, 1)
-        for trig, rect in TRIG_RECTS.items():
-            self.add_active_crop(("trig", trig), rect, 1)
-        for trig, rect in PAD_RECTS.items():
-            self.add_active_crop(("pad", trig), rect, 0)
+        for key, rect, margin in active_crop_specs():
+            self.add_active_crop(key, rect, margin)
 
         self.canvas.bind("<ButtonPress-1>", self.skin_press)
         self.canvas.bind("<ButtonRelease-1>", self.skin_release)
@@ -997,6 +1034,60 @@ class PanelApp:
     def close(self) -> None:
         self.release_all_trigs()
         self.root.destroy()
+
+
+def skin_runtime_self_test(frame_file: Path, event_file: Path) -> None:
+    """Exercise Tk loading, crop composition, stacking, and OLED rendering."""
+    validate_skin_geometry()
+    root = tk.Tk()
+    root.withdraw()
+    try:
+        panel = PanelApp(root, frame_file, event_file, filter2_enabled=False)
+        root.update_idletasks()
+
+        specs = active_crop_specs()
+        if set(panel.active_photos) != {key for key, _rect, _margin in specs}:
+            raise RuntimeError("Tk did not construct every photographic overlay")
+        for key, rect, margin in specs:
+            x1, y1, x2, y2 = panel.expanded_rect(rect, margin)
+            photo = panel.active_photos[key]
+            if (photo.width(), photo.height()) != (x2 - x1, y2 - y1):
+                raise RuntimeError(f"Tk produced an invalid active crop for {key}")
+
+        # Compose every independently addressable state at once. This also
+        # proves the pad+Trig pair used by Trigs 1-12 can coexist with all
+        # remaining photographic overlays.
+        for state in panel.page_widgets.values():
+            state.active = True
+        for state in panel.trig_widgets.values():
+            state.active = True
+        panel.redraw_skin_overlays()
+        root.update_idletasks()
+        if any(
+            panel.canvas.itemcget(item_id, "state") != "normal"
+            for item_id in panel.active_image_ids.values()
+        ):
+            raise RuntimeError("Tk failed to compose all photographic overlays")
+
+        panel.draw(bytes([0xAA]) * FRAME_BYTES)
+        root.update_idletasks()
+        x1, y1, x2, y2 = OLED_RECT
+        if (panel.photo.width(), panel.photo.height()) != (x2 - x1, y2 - y1):
+            raise RuntimeError("Tk produced an invalid firmware OLED surface")
+
+        for state in panel.page_widgets.values():
+            state.active = False
+        for state in panel.trig_widgets.values():
+            state.active = False
+        panel.redraw_skin_overlays()
+        root.update_idletasks()
+        if any(
+            panel.canvas.itemcget(item_id, "state") != "hidden"
+            for item_id in panel.active_image_ids.values()
+        ):
+            raise RuntimeError("Tk failed to clear photographic overlays")
+    finally:
+        root.destroy()
 
 
 def main() -> None:

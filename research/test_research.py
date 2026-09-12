@@ -313,6 +313,7 @@ class DesktopPanelInputTests(unittest.TestCase):
             KNOB_CENTERS,
             OLED_RECT,
             PAD_RECTS,
+            PanelApp,
             PAGE_BUTTONS,
             PANEL_ASPECT,
             QWERTY_TRIGS,
@@ -320,9 +321,11 @@ class DesktopPanelInputTests(unittest.TestCase):
             SKIN_W,
             STATUS_H,
             TRIG_RECTS,
+            active_crop_specs,
             clamp_panel_value,
             panel_window_size,
             skin_asset_path,
+            validate_skin_geometry,
         )
 
         self.assertEqual(
@@ -345,6 +348,14 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertGreater(OLED_RECT[3] - OLED_RECT[1], 100)
         self.assertTrue(skin_asset_path().is_file())
         self.assertTrue(skin_asset_path("photon_panel_active.png").is_file())
+        validate_skin_geometry()
+        specs = active_crop_specs()
+        self.assertEqual(len(specs), 36)
+        self.assertEqual(len({key for key, _rect, _margin in specs}), 36)
+        for _key, rect, margin in specs:
+            x1, y1, x2, y2 = PanelApp.expanded_rect(rect, margin)
+            self.assertTrue(0 <= x1 < x2 <= SKIN_W)
+            self.assertTrue(0 <= y1 < y2 <= SKIN_H)
 
     def test_qwerty_repeat_suppression_release_and_second_press(self):
         class Event:

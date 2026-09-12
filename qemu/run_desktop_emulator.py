@@ -36,7 +36,14 @@ from panel_event_bridge import (
     follow_events,
     publish_runtime_controls,
 )
-from desktop_panel import PanelApp, SKIN_H, SKIN_W, skin_asset_path
+from desktop_panel import (
+    PanelApp,
+    SKIN_H,
+    SKIN_W,
+    skin_asset_path,
+    skin_runtime_self_test,
+    validate_skin_geometry,
+)
 
 
 def wait_for(path: Path, proc: subprocess.Popen, timeout: float = 10.0) -> None:
@@ -110,6 +117,10 @@ def self_test(qemu: Path) -> None:
             raise RuntimeError(
                 f"bundled photographic skin is invalid: {filename}"
             )
+    validate_skin_geometry()
+    with tempfile.TemporaryDirectory(prefix="ar-mk2-skin-test-") as directory:
+        runtime = Path(directory)
+        skin_runtime_self_test(runtime / "frame.bin", runtime / "events.jsonl")
 
 
 def hmp_continue(path: Path, timeout: float = 5.0) -> None:
@@ -182,8 +193,11 @@ def main() -> None:
             "slow under TCG and intended only for tracing"
         ),
     )
-    ap.add_argument("--self-test", action="store_true",
-                    help="verify the bundled QEMU backend and exit")
+    ap.add_argument(
+        "--self-test",
+        action="store_true",
+        help="verify the bundled QEMU backend and photographic UI, then exit",
+    )
     args = ap.parse_args()
 
     qemu = resolve_qemu(args.qemu)

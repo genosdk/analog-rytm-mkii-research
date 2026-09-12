@@ -71,6 +71,13 @@ The standalone application contains:
 
 The application starts QEMU paused, connects the emulated front-panel UART first, and only then releases the guest CPU. This prevents the initial panel identity query from being lost during host startup.
 
+Each packaged architecture must also pass the frontend's native Tk runtime
+self-test. It loads both photographic rasters, constructs all 36 active crops,
+composes every control state simultaneously, renders a patterned firmware OLED
+surface, clears the overlays, and rejects incomplete or out-of-bounds geometry.
+This runs from the signed `.app`, so it validates the same frozen resources and
+Tk image path used at launch rather than only inspecting PNG headers.
+
 By default, the launcher derives a temporary, non-flashable Filter 2 + LFO2
 runtime candidate from the caller-supplied, hash-verified OS 1.72 MAIN. One
 versioned 108-byte snapshot atomically publishes eight lanes of Filter 2,
