@@ -226,6 +226,22 @@ class QemuAudioEdmaTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         for name in ("macc0_raw", "macc3_raw", "macsr", "mac_mask"):
             self.assertIn(name, emac_patch)
+        accelerator = json.loads(
+            (HERE / "AR172_QEMU_AUDIO_INNER_ACCELERATOR_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            accelerator["status"], "PASS_NATIVE_INNER_CANDIDATE"
+        )
+        target = accelerator["stock_audio_target"]
+        self.assertEqual(target["native_events"], 338)
+        self.assertEqual(target["candidate_guest_events"], 0)
+        self.assertEqual(target["validation_runs"], 2)
+        self.assertTrue(target["late_cursor_run"]["exit_register_match"])
+        self.assertTrue(target["exit_register_match"])
+        self.assertTrue(target["touched_memory_match"])
+        self.assertFalse(accelerator["implementation"]["production_enabled"])
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -233,6 +249,8 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("qemu_plugin_write_memory_vaddr", shadow_plugin)
         self.assertIn("qemu_plugin_write_register", shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(start_pc)", shadow_plugin)
+        self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
+        self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)
         fixture = build_audio_shadow_fixture()
         self.assertEqual(
             fixture[SHADOW_START - 0x40000000 : SHADOW_START - 0x40000000 + 6],

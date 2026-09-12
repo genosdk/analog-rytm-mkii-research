@@ -122,6 +122,10 @@ and reproducible tooling.
   accesses and all 35 registers match. The complete state includes four raw
   EMAC accumulators, `MACSR`, and `MASK`. This is the first
   bounded accelerator candidate.
+- A verifier-only C implementation now replaces that block with zero guest
+  instruction accesses and reproduces all 556 touched bytes plus the complete
+  35-register exit state. Sustained runtime enablement and benchmarking remain
+  gated separately.
 
 ## Stock BR hardware characterization
 

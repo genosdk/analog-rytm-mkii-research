@@ -4,8 +4,9 @@
  * Natural calls discover touched 4 KiB pages until the footprint stabilizes.
  * The next call snapshots those pages and every writable register, runs
  * natively, restores the entry state, and jumps back to the kernel entry. That
- * replay is a shadow execution from identical state; its access values and
- * exit state must match the native call exactly.
+ * replay is either the native code again or the optional inner-loop candidate
+ * from identical state. Native shadow access values must match exactly; the
+ * optimized candidate must match complete register and touched-memory state.
  *
  * Only aggregate results are written. The output contains no register values,
  * guest addresses, firmware bytes, or PCM.
@@ -28,6 +29,7 @@ typedef enum {
 
 typedef struct {
     struct qemu_plugin_register *handle;
+    char *name;
     bool readonly;
     GByteArray *entry;
     GByteArray *native_exit;
@@ -74,14 +76,414 @@ static uint64_t discovery_calls;
 static uint64_t stable_discovery_calls;
 static uint64_t required_stable_calls = 8;
 static bool footprint_grew;
+static bool candidate_inner;
+static bool candidate_attempted;
+static bool candidate_executed;
+static bool candidate_fallback;
+
+#define INNER_START_PC 0x401185ec
+#define INNER_END_PC   0x40118668
+#define INNER_EXIT_PC  0x4011866c
+#define MACSR_PAV0     0x100
+#define MACSR_OMC      0x080
+#define MACSR_SU       0x040
+#define MACSR_FI       0x020
+#define MACSR_RT       0x010
+#define MACSR_N        0x008
+#define MACSR_Z        0x004
+#define MACSR_V        0x002
+#define MACSR_EV       0x001
+#define CCF_Z          0x004
+
+typedef struct {
+    uint32_t d[8];
+    uint32_t a[8];
+    uint64_t macc[4];
+    uint32_t macsr;
+    uint32_t mask;
+    uint32_t ps;
+} InnerState;
+
+typedef struct {
+    uint16_t insn;
+    uint16_t ext;
+    int16_t displacement;
+} InnerMac;
+
+static const InnerMac inner_before_acc0[] = {
+    { 0xa8d9, 0xc805,   0 },
+    { 0xa8e9, 0xc800,   4 },
+    { 0xa840, 0x0810,   0 },
+    { 0xa8e9, 0xc801,  12 },
+    { 0xa841, 0x0810,   0 },
+    { 0xa8e9, 0xc802,  20 },
+    { 0xac99, 0xc812,   0 },
+    { 0xa8e9, 0xc803,  24 },
+    { 0xa8ee, 0xc813, -16 },
+    { 0xa8ae, 0xc903, -12 },
+    { 0xaeae, 0x4902,  -8 },
+    { 0xa8ee, 0x7901,  -4 },
+    { 0xac99, 0xc900,   0 },
+    { 0xac99, 0x4913,   0 },
+    { 0xaca9, 0x7912, -20 },
+    { 0xa8e9, 0xc911,  -8 },
+};
+
+static const InnerMac inner_after_acc0 = { 0xa8a9, 0x7910, -12 };
 
 static void register_state_free(gpointer data)
 {
     RegisterState *reg = data;
 
+    g_free(reg->name);
     g_byte_array_unref(reg->entry);
     g_byte_array_unref(reg->native_exit);
     g_free(reg);
+}
+
+static RegisterState *find_register(const char *name)
+{
+    for (size_t i = 0; i < registers->len; i++) {
+        RegisterState *reg = g_ptr_array_index(registers, i);
+
+        if (!strcmp(reg->name, name)) {
+            return reg;
+        }
+    }
+    return NULL;
+}
+
+static bool read_register_value(const char *name, uint64_t *result,
+                                size_t expected_size)
+{
+    RegisterState *reg = find_register(name);
+    g_autoptr(GByteArray) value = g_byte_array_new();
+
+    if (!reg || !qemu_plugin_read_register(reg->handle, value) ||
+        value->len != expected_size) {
+        return false;
+    }
+    if (expected_size == 4) {
+        uint32_t raw;
+
+        memcpy(&raw, value->data, sizeof(raw));
+        *result = GUINT32_FROM_BE(raw);
+    } else if (expected_size == 8) {
+        uint64_t raw;
+
+        memcpy(&raw, value->data, sizeof(raw));
+        *result = GUINT64_FROM_BE(raw);
+    } else {
+        return false;
+    }
+    return true;
+}
+
+static bool write_register_value(const char *name, uint64_t raw,
+                                 size_t size)
+{
+    RegisterState *reg = find_register(name);
+    g_autoptr(GByteArray) value = g_byte_array_sized_new(size);
+
+    if (!reg || reg->readonly) {
+        return false;
+    }
+    if (size == 4) {
+        uint32_t be = GUINT32_TO_BE(raw);
+        g_byte_array_append(value, (uint8_t *)&be, sizeof(be));
+    } else if (size == 8) {
+        uint64_t be = GUINT64_TO_BE(raw);
+        g_byte_array_append(value, (uint8_t *)&be, sizeof(be));
+    } else {
+        return false;
+    }
+    return qemu_plugin_write_register(reg->handle, value);
+}
+
+static bool read_memory_u32(uint32_t address, uint32_t *result)
+{
+    g_autoptr(GByteArray) value = g_byte_array_new();
+
+    if (!qemu_plugin_read_memory_vaddr(address, value, 4) || value->len != 4) {
+        return false;
+    }
+    memcpy(result, value->data, sizeof(*result));
+    *result = GUINT32_FROM_BE(*result);
+    return true;
+}
+
+static bool write_memory_u32(uint32_t address, uint32_t raw)
+{
+    g_autoptr(GByteArray) value = g_byte_array_sized_new(4);
+    uint32_t be = GUINT32_TO_BE(raw);
+
+    g_byte_array_append(value, (uint8_t *)&be, sizeof(be));
+    return qemu_plugin_write_memory_vaddr(address, value);
+}
+
+static void inner_mac_clear_flags(InnerState *s)
+{
+    s->macsr &= ~(MACSR_N | MACSR_Z | MACSR_V | MACSR_EV);
+}
+
+static void inner_mac_set_flags(InnerState *s, unsigned acc)
+{
+    uint64_t value = s->macc[acc];
+    int64_t upper;
+
+    if (!value) {
+        s->macsr |= MACSR_Z;
+    } else if (value & (UINT64_C(1) << 47)) {
+        s->macsr |= MACSR_N;
+    }
+    if (s->macsr & (MACSR_PAV0 << acc)) {
+        s->macsr |= MACSR_V;
+    }
+    upper = (int64_t)value >> 40;
+    if (upper != 0 && upper != -1) {
+        s->macsr |= MACSR_EV;
+    }
+}
+
+static void inner_mac_saturate_fractional(InnerState *s, unsigned acc)
+{
+    int64_t sum = (int64_t)s->macc[acc];
+    int64_t result = (int64_t)(s->macc[acc] << 16) >> 16;
+
+    if (result != sum) {
+        s->macsr |= MACSR_V;
+    }
+    if (s->macsr & MACSR_V) {
+        s->macsr |= MACSR_PAV0 << acc;
+        if (s->macsr & MACSR_OMC) {
+            result = (result >> 63) ^ INT64_C(0x7fffffffffff);
+        }
+    }
+    s->macc[acc] = result;
+}
+
+static bool inner_mac(InnerState *s, const InnerMac *op)
+{
+    uint32_t rx;
+    uint32_t ry;
+    uint32_t loaded = 0;
+    uint32_t address = 0;
+    uint64_t product;
+    unsigned acc = ((op->insn >> 7) & 1) | ((op->ext >> 3) & 2);
+    bool load = (op->insn & 0x30) != 0;
+
+    if (!(op->ext & 0x0800) ||
+        (!load && (op->ext & 3)) ||
+        (load && ((op->insn >> 3) & 7) != 3 &&
+         ((op->insn >> 3) & 7) != 5)) {
+        return false;
+    }
+    if (load) {
+        unsigned mode = (op->insn >> 3) & 7;
+        unsigned areg = op->insn & 7;
+
+        address = s->a[areg];
+        if (mode == 5) {
+            address += op->displacement;
+        }
+        address &= s->mask;
+        if (!read_memory_u32(address, &loaded)) {
+            return false;
+        }
+        acc ^= 1;
+        rx = (op->ext & 0x8000) ? s->a[(op->ext >> 12) & 7] :
+                                  s->d[(op->ext >> 12) & 7];
+        ry = (op->ext & 8) ? s->a[op->ext & 7] : s->d[op->ext & 7];
+    } else {
+        rx = (op->insn & 0x40) ? s->a[(op->insn >> 9) & 7] :
+                                  s->d[(op->insn >> 9) & 7];
+        ry = (op->insn & 8) ? s->a[op->insn & 7] :
+                              s->d[op->insn & 7];
+    }
+
+    inner_mac_clear_flags(s);
+    product = (uint64_t)(((int64_t)(int32_t)rx * (int32_t)ry) >> 23);
+    if (op->ext & 0x100) {
+        s->macc[acc] -= product;
+    } else {
+        s->macc[acc] += product;
+    }
+    inner_mac_saturate_fractional(s, acc);
+    inner_mac_set_flags(s, acc);
+
+    if (load) {
+        unsigned reg = (op->insn >> 9) & 7;
+
+        if (op->insn & 0x40) {
+            s->a[reg] = loaded;
+        } else {
+            s->d[reg] = loaded;
+        }
+        if (((op->insn >> 3) & 7) == 3) {
+            s->a[op->insn & 7] = address + 4;
+        }
+    }
+    return true;
+}
+
+static uint32_t inner_movclr(InnerState *s, unsigned acc)
+{
+    uint32_t result = s->macc[acc] >> 8;
+
+    s->macc[acc] = 0;
+    s->macsr &= ~(MACSR_PAV0 << acc);
+    return result;
+}
+
+static uint32_t inner_saturating_add(uint32_t left, uint32_t right)
+{
+    uint32_t result = left + right;
+
+    if ((~(left ^ right) & (left ^ result) & 0x80000000U) != 0) {
+        return (result & 0x80000000U) ? 0x7fffffffU : 0x80000000U;
+    }
+    return result;
+}
+
+static bool read_inner_state(InnerState *s)
+{
+    static const char *dnames[] = {
+        "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7"
+    };
+    static const char *anames[] = {
+        "a0", "a1", "a2", "a3", "a4", "a5", "fp", "sp"
+    };
+    static const char *mnames[] = {
+        "macc0_raw", "macc1_raw", "macc2_raw", "macc3_raw"
+    };
+    uint64_t value;
+
+    for (size_t i = 0; i < G_N_ELEMENTS(dnames); i++) {
+        if (!read_register_value(dnames[i], &value, 4)) {
+            return false;
+        }
+        s->d[i] = value;
+    }
+    for (size_t i = 0; i < G_N_ELEMENTS(anames); i++) {
+        if (!read_register_value(anames[i], &value, 4)) {
+            return false;
+        }
+        s->a[i] = value;
+    }
+    for (size_t i = 0; i < G_N_ELEMENTS(mnames); i++) {
+        if (!read_register_value(mnames[i], &value, 8)) {
+            return false;
+        }
+        s->macc[i] = value;
+    }
+    if (!read_register_value("macsr", &value, 4)) {
+        return false;
+    }
+    s->macsr = value;
+    if (!read_register_value("mac_mask", &value, 4)) {
+        return false;
+    }
+    s->mask = value;
+    if (!read_register_value("ps", &value, 4)) {
+        return false;
+    }
+    s->ps = value;
+    return true;
+}
+
+static bool write_inner_state(const InnerState *s)
+{
+    static const char *dnames[] = {
+        "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7"
+    };
+    static const char *anames[] = {
+        "a0", "a1", "a2", "a3", "a4", "a5", "fp", "sp"
+    };
+    static const char *mnames[] = {
+        "macc0_raw", "macc1_raw", "macc2_raw", "macc3_raw"
+    };
+
+    for (size_t i = 0; i < G_N_ELEMENTS(dnames); i++) {
+        if (!write_register_value(dnames[i], s->d[i], 4)) {
+            return false;
+        }
+    }
+    for (size_t i = 0; i < G_N_ELEMENTS(anames); i++) {
+        if (!write_register_value(anames[i], s->a[i], 4)) {
+            return false;
+        }
+    }
+    for (size_t i = 0; i < G_N_ELEMENTS(mnames); i++) {
+        if (!write_register_value(mnames[i], s->macc[i], 8)) {
+            return false;
+        }
+    }
+    return write_register_value("macsr", s->macsr, 4) &&
+           write_register_value("mac_mask", s->mask, 4) &&
+           write_register_value("ps", s->ps, 4);
+}
+
+static bool accelerate_inner(void)
+{
+    InnerState s;
+
+    if (!read_inner_state(&s) ||
+        (s.macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) != MACSR_FI ||
+        s.mask != UINT32_MAX) {
+        return false;
+    }
+
+    if (!read_memory_u32(s.a[1], &s.a[4])) {
+        return false;
+    }
+    s.a[1] += 8;
+    s.a[7] -= 4;
+    if (!write_memory_u32(s.a[7], 16)) {
+        return false;
+    }
+
+    for (unsigned iteration = 0; iteration < 16; iteration++) {
+        s.macc[2] = (uint64_t)((int64_t)(int32_t)s.a[4] * 256);
+        s.macsr &= ~(MACSR_PAV0 << 2);
+        inner_mac_clear_flags(&s);
+        inner_mac_set_flags(&s, 2);
+
+        for (size_t i = 0; i < G_N_ELEMENTS(inner_before_acc0); i++) {
+            if (!inner_mac(&s, &inner_before_acc0[i])) {
+                return false;
+            }
+        }
+        s.d[7] = inner_movclr(&s, 0);
+        if (!write_memory_u32(s.a[6], s.d[7])) {
+            return false;
+        }
+        s.a[6] += 4;
+
+        if (!inner_mac(&s, &inner_after_acc0)) {
+            return false;
+        }
+        s.d[6] = inner_saturating_add(s.d[6], s.d[7]);
+        if (!write_memory_u32(s.a[2], s.d[6])) {
+            return false;
+        }
+        s.a[2] += 4;
+
+        s.d[7] = inner_movclr(&s, 2);
+        if (!write_memory_u32(s.a[6], s.d[7])) {
+            return false;
+        }
+        s.a[6] += 4;
+        s.d[4] = inner_saturating_add(s.d[4], s.d[7]);
+        if (!write_memory_u32(s.a[2], s.d[4])) {
+            return false;
+        }
+        s.a[2] += 4;
+        if (!write_memory_u32(s.a[7], 15 - iteration)) {
+            return false;
+        }
+    }
+    s.ps = (s.ps & ~0x1fU) | CCF_Z;
+    return write_inner_state(&s);
 }
 
 static void page_state_free(gpointer data)
@@ -209,9 +611,21 @@ static bool compare_registers(void)
         RegisterState *reg = g_ptr_array_index(registers, i);
 
         g_byte_array_set_size(value, 0);
-        if (!qemu_plugin_read_register(reg->handle, value) ||
-            value->len != reg->native_exit->len ||
-            memcmp(value->data, reg->native_exit->data, value->len)) {
+        if (!qemu_plugin_read_register(reg->handle, value)) {
+            return false;
+        }
+        if (candidate_executed && !strcmp(reg->name, "pc")) {
+            uint32_t actual;
+
+            if (value->len != sizeof(actual)) {
+                return false;
+            }
+            memcpy(&actual, value->data, sizeof(actual));
+            if (GUINT32_FROM_BE(actual) != exit_pc) {
+                return false;
+            }
+        } else if (value->len != reg->native_exit->len ||
+                   memcmp(value->data, reg->native_exit->data, value->len)) {
             return false;
         }
     }
@@ -284,8 +698,13 @@ static bool compare_accesses(void)
 
 static void write_report(bool complete)
 {
+    bool candidate_ok = !candidate_inner || candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
-                !restore_error && access_match && register_match && memory_match;
+                !restore_error && access_match && register_match && memory_match &&
+                candidate_ok;
+    const char *status = pass ?
+        (candidate_inner ? "PASS_NATIVE_INNER_CANDIDATE" :
+                           "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
             "{\"schema_version\":1,\"complete\":%s,"
@@ -297,15 +716,23 @@ static void write_report(bool complete)
             "\"snapshot_bytes\":%" PRIu64
             ",\"registers\":%u,"
             "\"native_events\":%u,\"shadow_events\":%u,"
+            "\"candidate\":\"%s\",\"candidate_attempted\":%s,"
+            "\"candidate_executed\":%s,\"candidate_fallback\":%s,"
+            "\"access_comparison_applicable\":%s,"
             "\"footprint_miss\":%s,\"snapshot_error\":%s,"
             "\"restore_error\":%s,\"access_match\":%s,"
             "\"register_match\":%s,\"memory_match\":%s}\n",
             complete ? "true" : "false",
-            pass ? "PASS_IDENTICAL_NATIVE_SHADOW" : "FAIL",
+            status,
             discovery_calls, stable_discovery_calls, required_stable_calls,
             discovery_events, pages->len, g_hash_table_size(touched_bytes),
             (uint64_t)pages->len * page_size, registers->len,
             native_accesses->len, shadow_accesses->len,
+            candidate_inner ? "inner" : "native-shadow",
+            candidate_attempted ? "true" : "false",
+            candidate_executed ? "true" : "false",
+            candidate_fallback ? "true" : "false",
+            candidate_executed ? "false" : "true",
             footprint_miss ? "true" : "false",
             snapshot_error ? "true" : "false",
             restore_error ? "true" : "false",
@@ -352,6 +779,7 @@ static void memory_access(unsigned int cpu_index, qemu_plugin_meminfo_t info,
 static void boundary(unsigned int cpu_index, void *userdata)
 {
     uint64_t pc = (uintptr_t)userdata;
+    bool redirect_candidate = false;
 
     (void)cpu_index;
     g_mutex_lock(&lock);
@@ -366,8 +794,22 @@ static void boundary(unsigned int cpu_index, void *userdata)
             active = true;
         } else if (phase == PHASE_SHADOW) {
             active = true;
+            if (candidate_inner) {
+                candidate_attempted = true;
+                candidate_executed = accelerate_inner();
+                if (candidate_executed) {
+                    redirect_candidate = true;
+                } else {
+                    candidate_fallback = true;
+                    restore_error |= !restore_memory(true);
+                    restore_error |= !restore_registers(true);
+                }
+            }
         }
         g_mutex_unlock(&lock);
+        if (redirect_candidate) {
+            qemu_plugin_set_pc(exit_pc);
+        }
         return;
     }
     if (pc != exit_pc || !active) {
@@ -413,7 +855,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
         qemu_plugin_set_pc(start_pc);
     }
     if (phase == PHASE_SHADOW) {
-        access_match = compare_accesses();
+        access_match = candidate_executed ? true : compare_accesses();
         register_match = compare_registers();
         memory_match = compare_memory();
         restore_error |= !restore_memory(false);
@@ -435,7 +877,8 @@ static void translate(struct qemu_plugin_tb *tb, void *userdata)
 
         if (pc == start_pc || pc == exit_pc) {
             qemu_plugin_register_vcpu_insn_exec_cb(
-                insn, boundary, QEMU_PLUGIN_CB_RW_REGS, (void *)(uintptr_t)pc);
+                insn, boundary, QEMU_PLUGIN_CB_RW_REGS_PC,
+                (void *)(uintptr_t)pc);
         }
         if (pc >= start_pc && pc <= end_pc) {
             qemu_plugin_register_vcpu_mem_cb(
@@ -460,6 +903,7 @@ static void vcpu_init(unsigned int cpu_index, void *userdata)
         RegisterState *reg = g_new0(RegisterState, 1);
 
         reg->handle = desc->handle;
+        reg->name = g_strdup(desc->name);
         reg->readonly = desc->is_readonly;
         reg->entry = g_byte_array_new();
         reg->native_exit = g_byte_array_new();
@@ -502,6 +946,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             exit_pc = g_ascii_strtoull(argv[i] + 5, NULL, 0);
         } else if (g_str_has_prefix(argv[i], "stable=")) {
             required_stable_calls = g_ascii_strtoull(argv[i] + 7, NULL, 0);
+        } else if (!strcmp(argv[i], "candidate=inner")) {
+            candidate_inner = true;
         } else {
             fprintf(stderr, "unknown audio-shadow option: %s\n", argv[i]);
             return -1;
@@ -510,6 +956,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
     if (!out_path || !*out_path || !start_pc || end_pc < start_pc || !exit_pc ||
         !required_stable_calls) {
         fprintf(stderr, "audio-shadow requires out=PATH and valid PCs\n");
+        return -1;
+    }
+    if (candidate_inner &&
+        (start_pc != INNER_START_PC || end_pc != INNER_END_PC ||
+         exit_pc != INNER_EXIT_PC)) {
+        fprintf(stderr, "candidate=inner requires the validated inner PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

@@ -166,6 +166,16 @@ QEMU's standard m68k GDB surface omitted the ColdFire EMAC accumulators,
 from 29 to 35 registers. The non-proprietary control, stock whole kernel, and
 16-iteration inner loop all still pass exact replay with the complete state.
 
+The first optimized candidate is implemented inside the shadow verifier behind
+`candidate=inner`. From the same restored entry state it executes the fixed
+16-iteration arithmetic block in C and redirects directly to `0x4011866C`.
+Against stock 1.72 it replaced 338 native guest accesses with zero candidate
+guest accesses while matching all 556 touched bytes and the complete
+35-register exit state. A second run delayed the candidate from the ninth to
+the seventeenth natural call and produced the same exact result at the later
+sample cursor. This is a verifier-only result: sustained runtime use and any
+speedup claim require the next gate.
+
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at
 vector 191, the shim models SSI1 transmit-FIFO demand every 666.667

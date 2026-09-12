@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_AUDIO_INNER_ACCELERATOR_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_NATIVE_INNER_CANDIDATE",
+  "implementation": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "mode": "candidate=inner",
+    "scope": "verifier-only same-process candidate",
+    "production_enabled": false,
+    "fail_closed_guards": [
+      "exact validated entry, end, and exit PCs",
+      "complete named 35-register surface",
+      "fractional EMAC mode without saturation, signed-integer, or rounding modes",
+      "full 0xFFFFFFFF EMAC address mask",
+      "successful reads and writes for every candidate memory operation"
+    ]
+  },
+  "candidate": {
+    "description": "Fixed 16-iteration fractional EMAC renderer core",
+    "entry_pc": "0x401185EC",
+    "inclusive_native_window": "0x401185EC..0x40118668",
+    "exit_pc": "0x4011866C",
+    "iterations": 16,
+    "output_values_per_iteration": 4,
+    "output_values_total": 64
+  },
+  "stock_audio_target": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "registers": 35,
+    "footprint_pages": 2,
+    "touched_bytes": 556,
+    "native_events": 338,
+    "candidate_guest_events": 0,
+    "candidate_attempted": true,
+    "candidate_executed": true,
+    "candidate_fallback": false,
+    "validation_runs": 2,
+    "late_cursor_run": {
+      "required_stable_calls": 16,
+      "discovery_calls": 17,
+      "native_events": 338,
+      "candidate_guest_events": 0,
+      "exit_register_match": true,
+      "touched_memory_match": true
+    },
+    "access_comparison_applicable": false,
+    "exit_register_match": true,
+    "touched_memory_match": true,
+    "held_audio_smoke_passed": true,
+    "nonzero_host_audio": true
+  },
+  "boundary_observation": "Native instruction callbacks can expose the containing translation-block PC rather than the logical instruction PC. Candidate PC validation therefore requires qemu_plugin_set_pc to land on the known exit boundary; the remaining 34 register values compare directly to the native snapshot.",
+  "conclusion": "The C candidate replaces the bounded native block with zero guest instruction accesses while reproducing every touched byte and the complete architectural exit state. This validates the implementation but does not yet enable it for sustained production execution or claim a speedup.",
+  "next_gate": "Extract a lightweight fail-closed runtime plugin, run sustained stock audio through it, and measure service throughput before considering default enablement.",
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {"touched": false},
+  "safety": "The implementation contains a clean-room reconstruction of the bounded arithmetic behavior and aggregate results only. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}

@@ -242,8 +242,22 @@ start=0x401185ec,end=0x40118668,exit=0x4011866c
 
 The validated complete-state run matched 338 ordered accesses, all 35 exit
 registers, and 556 touched bytes. This proves the boundary is replayable; it
-does not yet claim a
-replacement implementation or speedup.
+does not yet claim a replacement implementation or speedup.
+
+To run the verifier-only optimized candidate from the identical restored state,
+add `candidate=inner`:
+
+```bash
+-plugin /tmp/ar_audio_shadow.so,out=/tmp/audio-inner-candidate.json,\
+start=0x401185ec,end=0x40118668,exit=0x4011866c,candidate=inner
+```
+
+A passing result reports `PASS_NATIVE_INNER_CANDIDATE`, 338 native events,
+zero candidate guest events, and matching registers and touched memory. The
+candidate rejects any other PC window, non-fractional/rounded/saturating EMAC
+mode, non-full EMAC mask, missing register, or failed memory operation. This
+mode validates one same-process candidate invocation; it is not yet the
+sustained runtime accelerator.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
