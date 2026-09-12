@@ -274,6 +274,22 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("DEF_HELPER_1(ar_audio_inner, i32, env)", tcg_patch)
         self.assertIn("cpu_ldl_data_ra", tcg_patch)
         self.assertIn("env->ar_audio_inner_accel", tcg_patch)
+        post_inner = json.loads(
+            (HERE / "AR172_QEMU_POST_INNER_PROFILE_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(post_inner["status"], "PASS_NEXT_ACCELERATOR_BOUNDARY")
+        self.assertEqual(
+            post_inner["exact_vector_191_profile"]["guest_instructions"],
+            21724503,
+        )
+        self.assertEqual(
+            post_inner["same_process_native_shadow"]["native_events"], 1717
+        )
+        self.assertTrue(
+            post_inner["same_process_native_shadow"]["exit_register_match"]
+        )
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")

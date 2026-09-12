@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_POST_INNER_PROFILE_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_NEXT_ACCELERATOR_BOUNDARY",
+  "configuration": {
+    "firmware_version": "1.72",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "inner_tcg_helper_enabled": true,
+    "workload": "generated slot-1 sample with held Trig 1"
+  },
+  "exact_vector_191_profile": {
+    "completed_services": 100,
+    "guest_instructions": 21724503,
+    "native_baseline_guest_instructions": 25778146,
+    "removed_guest_instructions": 4053643,
+    "guest_instruction_reduction_percent": 15.725,
+    "largest_kernel_families_in_top_100": [
+      {"range": "0x401184C4..0x401187FF", "guest_instructions": 4994300, "isr_share_lower_bound_percent": 22.989},
+      {"range": "0x40109F00..0x4010A6FF", "guest_instructions": 3674600, "isr_share_lower_bound_percent": 16.915},
+      {"range": "0x4011C500..0x4011C8FF", "guest_instructions": 3103900, "isr_share_lower_bound_percent": 14.288}
+    ]
+  },
+  "selected_boundary": {
+    "role": "572-word control transform",
+    "entry_pc": "0x4011C56E",
+    "inclusive_end_pc": "0x4011C596",
+    "exit_pc": "0x4011C598",
+    "pair_iterations_per_service": 286,
+    "guest_instructions_in_top_100_blocks": 2173600,
+    "post_helper_isr_share_lower_bound_percent": 10.005
+  },
+  "same_process_native_shadow": {
+    "status": "PASS_IDENTICAL_NATIVE_SHADOW",
+    "required_stable_calls": 8,
+    "discovery_calls": 8,
+    "native_events": 1717,
+    "shadow_events": 1717,
+    "registers": 35,
+    "footprint_pages": 2,
+    "touched_bytes": 4576,
+    "access_match": true,
+    "exit_register_match": true,
+    "touched_memory_match": true
+  },
+  "conclusion": "The inner TCG helper removes 15.73% of exact ISR guest instructions. The adjacent fixed 572-word transform is independently replayable and represents at least another 10.01% of the remaining profiled workload.",
+  "next_gate": "Reconstruct the 286-pair transform as a guarded verifier candidate, prove its 1,717-access and complete-state contract, then move it into the direct-state helper.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only aggregate instruction, access, register-count, and footprint results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}

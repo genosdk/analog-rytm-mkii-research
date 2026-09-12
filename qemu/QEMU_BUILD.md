@@ -311,6 +311,14 @@ nonzero audio, the exact eight-service release tail, and responsive UI. The
 helper remains research-only and opt-in; the next performance gate should use
 within-process measurement while expanding the accelerated boundary.
 
+With the helper enabled, a 100-service exact vector-191 profile falls from
+25,778,146 to 21,724,503 guest instructions, a 15.73% reduction independent of
+wall-clock scheduling. The next bounded hotspot is the 286-pair/572-word
+control transform at `0x4011C56E..0x4011C596` (exit `0x4011C598`). It accounts
+for at least 2,173,600 instructions, or 10.01% of the post-helper ISR. An
+identical-state native replay matched its 1,717 ordered accesses, all 35 guest
+registers, and 4,576 touched bytes, making it the next accelerator candidate.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,
