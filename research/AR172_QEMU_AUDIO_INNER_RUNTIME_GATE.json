@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_AUDIO_INNER_RUNTIME_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_CORRECT_NO_MATERIAL_SPEEDUP",
+  "implementation": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "mode": "runtime=inner",
+    "default_enabled": false,
+    "transactional": true,
+    "fallback": "Restore queued memory writes and modified registers, then execute the untouched native block."
+  },
+  "functional_smoke": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1",
+    "minimum_services_before_release": 100,
+    "completed_audio_services": 114,
+    "accelerator_attempts": 912,
+    "accelerator_executions": 912,
+    "native_fallbacks": 0,
+    "nonzero_host_audio": true,
+    "release_tail_services": 8,
+    "stopped_after_release": true,
+    "ui_responsive": true
+  },
+  "quiet_benchmark": {
+    "hold_seconds": 10,
+    "generated_sample_frames": 48000,
+    "required_realtime_rate_hz": 1500,
+    "native_services": 1765,
+    "native_rate_hz": 176.498,
+    "accelerated_services": 1770,
+    "accelerated_rate_hz": 176.988,
+    "accelerator_attempts": 14224,
+    "accelerator_executions": 14224,
+    "native_fallbacks": 0,
+    "rate_delta_hz": 0.49,
+    "rate_delta_percent": 0.278,
+    "remaining_realtime_shortfall_ratio": 8.475,
+    "interpretation": "The measured delta is not material. Per-call QEMU plugin register and virtual-memory API overhead consumes the benefit of skipping the guest block."
+  },
+  "conclusion": "The reconstructed inner block is correct under sustained execution, but a QEMU plugin is not a useful acceleration transport. Runtime mode remains opt-in and disabled by default.",
+  "next_gate": "Move the proven arithmetic implementation into a guarded target/m68k TCG helper so it can access CPU state and guest RAM directly, then repeat the native/candidate oracle and quiet benchmark.",
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {"touched": false},
+  "safety": "Only aggregate counts and rates are committed. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}

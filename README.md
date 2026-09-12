@@ -126,6 +126,11 @@ and reproducible tooling.
   instruction accesses and reproduces all 556 touched bytes plus the complete
   35-register exit state. Sustained runtime enablement and benchmarking remain
   gated separately.
+- The guarded runtime plugin accelerated 14,224/14,224 calls with no fallback,
+  preserved nonzero audio and UI responsiveness, but improved a quiet 10-second
+  run only from 176.498 to 176.988 services/s (+0.28%). Direct target/TCG state
+  access is therefore the next acceleration transport; runtime mode stays off
+  by default.
 
 ## Stock BR hardware characterization
 

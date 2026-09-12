@@ -259,6 +259,18 @@ mode, non-full EMAC mask, missing register, or failed memory operation. This
 mode validates one same-process candidate invocation; it is not yet the
 sustained runtime accelerator.
 
+For opt-in sustained research runs, replace `candidate=inner` with
+`runtime=inner`. The runtime path queues all memory writes transactionally,
+rolls back modified memory and registers on failure, and otherwise redirects
+every matching call to the validated exit. Its aggregate report contains only
+attempted, executed, and fallback counts.
+
+This transport is correct but not useful for performance. A 10-second quiet
+stock comparison measured 176.498 native services/s versus 176.988 services/s
+with 14,224 accelerated inner calls and zero fallbacks, a +0.28% change. Keep
+runtime mode disabled by default; the next accelerator should be a guarded
+target/m68k TCG helper with direct state and RAM access.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

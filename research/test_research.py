@@ -242,6 +242,17 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertTrue(target["exit_register_match"])
         self.assertTrue(target["touched_memory_match"])
         self.assertFalse(accelerator["implementation"]["production_enabled"])
+        runtime = json.loads(
+            (HERE / "AR172_QEMU_AUDIO_INNER_RUNTIME_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(runtime["status"], "PASS_CORRECT_NO_MATERIAL_SPEEDUP")
+        self.assertEqual(runtime["functional_smoke"]["native_fallbacks"], 0)
+        self.assertEqual(
+            runtime["quiet_benchmark"]["accelerator_executions"], 14224
+        )
+        self.assertLess(runtime["quiet_benchmark"]["rate_delta_percent"], 1.0)
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -250,6 +261,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("qemu_plugin_write_register", shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(start_pc)", shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
+        self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)
         fixture = build_audio_shadow_fixture()
         self.assertEqual(

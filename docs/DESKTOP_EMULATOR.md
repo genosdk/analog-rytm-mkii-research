@@ -176,6 +176,17 @@ the seventeenth natural call and produced the same exact result at the later
 sample cursor. This is a verifier-only result: sustained runtime use and any
 speedup claim require the next gate.
 
+The same implementation now has an opt-in `runtime=inner` mode with
+transactional memory writes and native fallback. A 100-service held-audio smoke
+accelerated 912/912 inner calls with zero fallback, preserved nonzero host
+audio and the fixed eight-service release tail, and left the UI responsive. In
+a quiet 10-second comparison, however, native execution reached 176.498
+services/s and the plugin reached 176.988 services/s (+0.28%). The result is
+correct but not a material speedup: repeated plugin register and virtual-memory
+API calls consume the saved guest execution. Runtime mode remains disabled by
+default. The next implementation belongs inside target/m68k as a guarded TCG
+helper with direct CPU-state and RAM access.
+
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at
 vector 191, the shim models SSI1 transmit-FIFO demand every 666.667

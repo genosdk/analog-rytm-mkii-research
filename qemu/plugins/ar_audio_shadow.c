@@ -7,6 +7,9 @@
  * replay is either the native code again or the optional inner-loop candidate
  * from identical state. Native shadow access values must match exactly; the
  * optimized candidate must match complete register and touched-memory state.
+ * The same guarded implementation can run on every matching call with
+ * runtime=inner; transactional stores and register rollback preserve native
+ * fallback if an operation cannot be completed.
  *
  * Only aggregate results are written. The output contains no register values,
  * guest addresses, firmware bytes, or PCM.
@@ -80,6 +83,10 @@ static bool candidate_inner;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
+static bool runtime_inner;
+static uint64_t runtime_attempts;
+static uint64_t runtime_executed;
+static uint64_t runtime_fallbacks;
 
 #define INNER_START_PC 0x401185ec
 #define INNER_END_PC   0x40118668
@@ -109,6 +116,17 @@ typedef struct {
     uint16_t ext;
     int16_t displacement;
 } InnerMac;
+
+typedef struct {
+    uint32_t address;
+    uint32_t original;
+    uint32_t value;
+} InnerWrite;
+
+typedef struct {
+    InnerWrite item[65];
+    size_t count;
+} InnerWrites;
 
 static const InnerMac inner_before_acc0[] = {
     { 0xa8d9, 0xc805,   0 },
@@ -221,6 +239,62 @@ static bool write_memory_u32(uint32_t address, uint32_t raw)
     return qemu_plugin_write_memory_vaddr(address, value);
 }
 
+static bool inner_read_memory(const InnerWrites *writes, uint32_t address,
+                              uint32_t *result)
+{
+    for (size_t i = writes->count; i > 0; i--) {
+        if (writes->item[i - 1].address == address) {
+            *result = writes->item[i - 1].value;
+            return true;
+        }
+    }
+    return read_memory_u32(address, result);
+}
+
+static bool inner_queue_write(InnerWrites *writes, uint32_t address,
+                              uint32_t value)
+{
+    for (size_t i = 0; i < writes->count; i++) {
+        if (writes->item[i].address == address) {
+            writes->item[i].value = value;
+            return true;
+        }
+    }
+    if (writes->count == G_N_ELEMENTS(writes->item) ||
+        !read_memory_u32(address, &writes->item[writes->count].original)) {
+        return false;
+    }
+    writes->item[writes->count].address = address;
+    writes->item[writes->count].value = value;
+    writes->count++;
+    return true;
+}
+
+static bool inner_apply_writes(const InnerWrites *writes, size_t *applied)
+{
+    *applied = 0;
+    for (; *applied < writes->count; (*applied)++) {
+        const InnerWrite *write = &writes->item[*applied];
+
+        if (!write_memory_u32(write->address, write->value)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool inner_rollback_writes(const InnerWrites *writes, size_t applied)
+{
+    bool ok = true;
+
+    while (applied > 0) {
+        const InnerWrite *write = &writes->item[--applied];
+
+        ok &= write_memory_u32(write->address, write->original);
+    }
+    return ok;
+}
+
 static void inner_mac_clear_flags(InnerState *s)
 {
     s->macsr &= ~(MACSR_N | MACSR_Z | MACSR_V | MACSR_EV);
@@ -262,7 +336,7 @@ static void inner_mac_saturate_fractional(InnerState *s, unsigned acc)
     s->macc[acc] = result;
 }
 
-static bool inner_mac(InnerState *s, const InnerMac *op)
+static bool inner_mac(InnerState *s, InnerWrites *writes, const InnerMac *op)
 {
     uint32_t rx;
     uint32_t ry;
@@ -287,7 +361,7 @@ static bool inner_mac(InnerState *s, const InnerMac *op)
             address += op->displacement;
         }
         address &= s->mask;
-        if (!read_memory_u32(address, &loaded)) {
+        if (!inner_read_memory(writes, address, &loaded)) {
             return false;
         }
         acc ^= 1;
@@ -426,19 +500,23 @@ static bool write_inner_state(const InnerState *s)
 static bool accelerate_inner(void)
 {
     InnerState s;
+    InnerState entry;
+    InnerWrites writes = { 0 };
+    size_t applied = 0;
 
     if (!read_inner_state(&s) ||
         (s.macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) != MACSR_FI ||
         s.mask != UINT32_MAX) {
         return false;
     }
+    entry = s;
 
-    if (!read_memory_u32(s.a[1], &s.a[4])) {
+    if (!inner_read_memory(&writes, s.a[1], &s.a[4])) {
         return false;
     }
     s.a[1] += 8;
     s.a[7] -= 4;
-    if (!write_memory_u32(s.a[7], 16)) {
+    if (!inner_queue_write(&writes, s.a[7], 16)) {
         return false;
     }
 
@@ -449,41 +527,52 @@ static bool accelerate_inner(void)
         inner_mac_set_flags(&s, 2);
 
         for (size_t i = 0; i < G_N_ELEMENTS(inner_before_acc0); i++) {
-            if (!inner_mac(&s, &inner_before_acc0[i])) {
+            if (!inner_mac(&s, &writes, &inner_before_acc0[i])) {
                 return false;
             }
         }
         s.d[7] = inner_movclr(&s, 0);
-        if (!write_memory_u32(s.a[6], s.d[7])) {
+        if (!inner_queue_write(&writes, s.a[6], s.d[7])) {
             return false;
         }
         s.a[6] += 4;
 
-        if (!inner_mac(&s, &inner_after_acc0)) {
+        if (!inner_mac(&s, &writes, &inner_after_acc0)) {
             return false;
         }
         s.d[6] = inner_saturating_add(s.d[6], s.d[7]);
-        if (!write_memory_u32(s.a[2], s.d[6])) {
+        if (!inner_queue_write(&writes, s.a[2], s.d[6])) {
             return false;
         }
         s.a[2] += 4;
 
         s.d[7] = inner_movclr(&s, 2);
-        if (!write_memory_u32(s.a[6], s.d[7])) {
+        if (!inner_queue_write(&writes, s.a[6], s.d[7])) {
             return false;
         }
         s.a[6] += 4;
         s.d[4] = inner_saturating_add(s.d[4], s.d[7]);
-        if (!write_memory_u32(s.a[2], s.d[4])) {
+        if (!inner_queue_write(&writes, s.a[2], s.d[4])) {
             return false;
         }
         s.a[2] += 4;
-        if (!write_memory_u32(s.a[7], 15 - iteration)) {
+        if (!inner_queue_write(&writes, s.a[7], 15 - iteration)) {
             return false;
         }
     }
     s.ps = (s.ps & ~0x1fU) | CCF_Z;
-    return write_inner_state(&s);
+    if (!inner_apply_writes(&writes, &applied)) {
+        inner_rollback_writes(&writes, applied);
+        return false;
+    }
+    if (!write_inner_state(&s)) {
+        bool rollback_ok = inner_rollback_writes(&writes, applied);
+
+        rollback_ok &= write_inner_state(&entry);
+        (void)rollback_ok;
+        return false;
+    }
+    return true;
 }
 
 static void page_state_free(gpointer data)
@@ -698,6 +787,19 @@ static bool compare_accesses(void)
 
 static void write_report(bool complete)
 {
+    if (runtime_inner) {
+        fprintf(report_file,
+                "{\"schema_version\":1,\"complete\":%s,"
+                "\"status\":\"RUNTIME_INNER_ACCELERATOR\","
+                "\"candidate\":\"inner\",\"attempted\":%" PRIu64
+                ",\"executed\":%" PRIu64 ",\"fallbacks\":%" PRIu64
+                "}\n",
+                complete ? "true" : "false", runtime_attempts,
+                runtime_executed, runtime_fallbacks);
+        fflush(report_file);
+        reported = true;
+        return;
+    }
     bool candidate_ok = !candidate_inner || candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -783,6 +885,22 @@ static void boundary(unsigned int cpu_index, void *userdata)
 
     (void)cpu_index;
     g_mutex_lock(&lock);
+    if (runtime_inner) {
+        if (pc == start_pc) {
+            runtime_attempts++;
+            if (accelerate_inner()) {
+                runtime_executed++;
+                redirect_candidate = true;
+            } else {
+                runtime_fallbacks++;
+            }
+        }
+        g_mutex_unlock(&lock);
+        if (redirect_candidate) {
+            qemu_plugin_set_pc(exit_pc);
+        }
+        return;
+    }
     if (pc == start_pc) {
         if (phase == PHASE_DISCOVERY) {
             footprint_grew = false;
@@ -875,12 +993,12 @@ static void translate(struct qemu_plugin_tb *tb, void *userdata)
         struct qemu_plugin_insn *insn = qemu_plugin_tb_get_insn(tb, i);
         uint64_t pc = qemu_plugin_insn_vaddr(insn);
 
-        if (pc == start_pc || pc == exit_pc) {
+        if (pc == start_pc || (!runtime_inner && pc == exit_pc)) {
             qemu_plugin_register_vcpu_insn_exec_cb(
                 insn, boundary, QEMU_PLUGIN_CB_RW_REGS_PC,
                 (void *)(uintptr_t)pc);
         }
-        if (pc >= start_pc && pc <= end_pc) {
+        if (!runtime_inner && pc >= start_pc && pc <= end_pc) {
             qemu_plugin_register_vcpu_mem_cb(
                 insn, memory_access, QEMU_PLUGIN_CB_NO_REGS,
                 QEMU_PLUGIN_MEM_RW, (void *)(uintptr_t)pc);
@@ -916,7 +1034,7 @@ static void at_exit(void *userdata)
     (void)userdata;
     g_mutex_lock(&lock);
     if (!reported) {
-        write_report(false);
+        write_report(runtime_inner);
     }
     fclose(report_file);
     g_mutex_unlock(&lock);
@@ -948,6 +1066,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             required_stable_calls = g_ascii_strtoull(argv[i] + 7, NULL, 0);
         } else if (!strcmp(argv[i], "candidate=inner")) {
             candidate_inner = true;
+        } else if (!strcmp(argv[i], "runtime=inner")) {
+            runtime_inner = true;
         } else {
             fprintf(stderr, "unknown audio-shadow option: %s\n", argv[i]);
             return -1;
@@ -958,10 +1078,14 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         fprintf(stderr, "audio-shadow requires out=PATH and valid PCs\n");
         return -1;
     }
-    if (candidate_inner &&
+    if (candidate_inner && runtime_inner) {
+        fprintf(stderr, "candidate=inner and runtime=inner are exclusive\n");
+        return -1;
+    }
+    if ((candidate_inner || runtime_inner) &&
         (start_pc != INNER_START_PC || end_pc != INNER_END_PC ||
          exit_pc != INNER_EXIT_PC)) {
-        fprintf(stderr, "candidate=inner requires the validated inner PCs\n");
+        fprintf(stderr, "inner acceleration requires the validated inner PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

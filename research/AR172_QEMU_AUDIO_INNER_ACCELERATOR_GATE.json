@@ -6,8 +6,9 @@
   "implementation": {
     "plugin": "qemu/plugins/ar_audio_shadow.c",
     "mode": "candidate=inner",
-    "scope": "verifier-only same-process candidate",
+    "scope": "same-process verifier candidate plus opt-in sustained runtime mode",
     "production_enabled": false,
+    "sustained_runtime_mode_available": true,
     "fail_closed_guards": [
       "exact validated entry, end, and exit PCs",
       "complete named 35-register surface",
@@ -55,7 +56,7 @@
   },
   "boundary_observation": "Native instruction callbacks can expose the containing translation-block PC rather than the logical instruction PC. Candidate PC validation therefore requires qemu_plugin_set_pc to land on the known exit boundary; the remaining 34 register values compare directly to the native snapshot.",
   "conclusion": "The C candidate replaces the bounded native block with zero guest instruction accesses while reproducing every touched byte and the complete architectural exit state. This validates the implementation but does not yet enable it for sustained production execution or claim a speedup.",
-  "next_gate": "Extract a lightweight fail-closed runtime plugin, run sustained stock audio through it, and measure service throughput before considering default enablement.",
+  "next_gate": "Use the validated implementation in a direct-state target/m68k TCG helper; the sustained plugin transport is correct but provides no material speedup.",
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."
   },
