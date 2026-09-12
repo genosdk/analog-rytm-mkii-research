@@ -152,10 +152,11 @@ audio smoke remained responsive and produced nonzero host audio. No live values
 or firmware bytes were retained. This closes the identical-entry-state gate and
 opens differential validation of the first accelerator candidate.
 
-The first bounded candidate is the 64-iteration fractional MAC/MSAC core at
-`0x401185EC..0x40118668`, returning at `0x4011866C`. An identical-state stock
-run stabilized two pages, then matched all 338 native and shadow accesses, all
-29 exit registers, and 552 touched bytes. The next gate is an optional QEMU
+The first bounded candidate is the 16-iteration fractional MAC/MSAC core at
+`0x401185EC..0x40118668`, returning at `0x4011866C`. Each iteration emits four
+32-bit values, for 64 output values total. An identical-state stock run
+stabilized two pages, then matched all 338 native and shadow accesses, all 29
+exit registers, and 552 touched bytes. The next gate is an optional QEMU
 whole-loop helper at this boundary, with the native implementation retained as
 the differential oracle and automatic fallback.
 

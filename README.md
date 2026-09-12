@@ -117,9 +117,10 @@ and reproducible tooling.
   snapshots entry state, performs an identical-state replay, and restores the
   native exit state. Both the original ColdFire control and stock 1.72 MAIN now
   pass exact access, register, and touched-memory comparison.
-- The 64-iteration fractional MAC/MSAC core at `0x401185EC..0x40118668`
-  independently passes the same gate: 338 ordered accesses, all 29 registers,
-  and 552 touched bytes match. This is the first bounded accelerator candidate.
+- The 16-iteration fractional MAC/MSAC core at `0x401185EC..0x40118668`
+  emits 64 output values and independently passes the same gate: 338 ordered
+  accesses, all 29 registers, and 552 touched bytes match. This is the first
+  bounded accelerator candidate.
 
 ## Stock BR hardware characterization
 

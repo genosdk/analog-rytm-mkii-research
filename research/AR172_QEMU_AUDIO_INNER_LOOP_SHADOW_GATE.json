@@ -8,7 +8,10 @@
     "method": "Same-process identical-entry-state native replay with page-granular snapshots and touched-byte exit comparison."
   },
   "candidate": {
-    "description": "64-iteration fractional MAC/MSAC core",
+    "description": "16-iteration fractional MAC/MSAC core producing four 32-bit values per iteration",
+    "iterations": 16,
+    "output_values_per_iteration": 4,
+    "output_values_total": 64,
     "entry_pc": "0x401185EC",
     "inclusive_instruction_window": "0x401185EC..0x40118668",
     "exit_pc": "0x4011866C",

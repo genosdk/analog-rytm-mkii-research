@@ -72,7 +72,7 @@
     "Page-granular snapshots closed the moving-address gap after eight stable calls.",
     "Untouched co-resident page bytes can change outside the kernel contract; final comparison is therefore limited to the union of bytes actually accessed by the kernel."
   ],
-  "next_gate": "Implement an optional whole-loop helper for the independently validated 64-iteration MAC/MSAC boundary, retaining native execution as the differential oracle and fallback.",
+  "next_gate": "Implement an optional whole-loop helper for the independently validated 16-iteration MAC/MSAC boundary, retaining native execution as the differential oracle and fallback.",
   "github_actions": {
     "policy": "Validate locally and publish with [skip ci]."
   },

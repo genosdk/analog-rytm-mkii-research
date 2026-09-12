@@ -227,8 +227,9 @@ any access/exit value diverges. A native footprint miss or snapshot error aborts
 before replay. It emits aggregate results only; use it in a disposable research
 run, as required for all accelerator experiments.
 
-The first accelerator boundary is the stock 64-iteration fractional MAC/MSAC
-core. It can be replayed independently with:
+The first accelerator boundary is the stock 16-iteration fractional MAC/MSAC
+core, which emits four 32-bit values per iteration. It can be replayed
+independently with:
 
 ```bash
 -plugin /tmp/ar_audio_shadow.so,out=/tmp/audio-inner-shadow.json,\
