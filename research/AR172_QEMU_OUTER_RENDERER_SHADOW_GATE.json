@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_OUTER_RENDERER_SHADOW_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_OUTER_RENDERER_IDENTICAL_NATIVE_SHADOW",
+  "boundary": {
+    "role": "512-iteration outer renderer MAC and pointer pipeline",
+    "entry_pc": "0x401184C4",
+    "inclusive_end_pc": "0x401184F6",
+    "exit_pc": "0x401184F8",
+    "iterations_per_service": 512,
+    "guest_instructions_in_top_100_blocks": 4403200,
+    "combined_profile_share_percent": 22.522
+  },
+  "configuration": {
+    "firmware_version": "1.72",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "inner_tcg_helper_enabled": true,
+    "control_transform_tcg_helper_enabled": true,
+    "workload": "generated slot-1 sample with held Trig 1"
+  },
+  "same_process_replay": {
+    "validation_runs": 2,
+    "native_events_per_call": 512,
+    "shadow_events_per_call": 512,
+    "registers": 35,
+    "footprint_pages": 5,
+    "first_run": {
+      "required_stable_calls": 8,
+      "discovery_calls": 8,
+      "touched_bytes": 2652,
+      "access_match": true,
+      "exit_register_match": true,
+      "touched_memory_match": true
+    },
+    "late_cursor_run": {
+      "required_stable_calls": 16,
+      "discovery_calls": 16,
+      "touched_bytes": 3238,
+      "access_match": true,
+      "exit_register_match": true,
+      "touched_memory_match": true
+    }
+  },
+  "decoded_pipeline": [
+    "store D7 through A1 postincrement",
+    "six fractional word MAC-with-load operations feeding D7, FP, and D6",
+    "shift D5 by D0 and derive indexed A2/A5 pointers",
+    "update the D3:D1 pair with ADD/ADDX",
+    "decrement D4 and loop while nonzero",
+    "undo the final D3:D1 increment after loop exit"
+  ],
+  "conclusion": "The top remaining bounded renderer loop replays exactly at two cursor positions under both prior helpers and is suitable for clean-room candidate reconstruction.",
+  "next_gate": "Reconstruct the loop's four word-MAC operations, indexed pointer updates, multiword ADDX state, and final compensation as a verifier-only candidate.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only decoded operation classes and aggregate replay results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}

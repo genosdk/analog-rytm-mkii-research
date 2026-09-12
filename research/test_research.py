@@ -329,6 +329,22 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn(
             "DEF_HELPER_1(ar_audio_transform, i32, env)", transform_patch
         )
+        outer = json.loads(
+            (HERE / "AR172_QEMU_OUTER_RENDERER_SHADOW_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            outer["status"], "PASS_OUTER_RENDERER_IDENTICAL_NATIVE_SHADOW"
+        )
+        self.assertEqual(outer["same_process_replay"]["validation_runs"], 2)
+        self.assertEqual(
+            outer["same_process_replay"]["native_events_per_call"], 512
+        )
+        self.assertTrue(
+            outer["same_process_replay"]["late_cursor_run"]
+                 ["exit_register_match"]
+        )
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")

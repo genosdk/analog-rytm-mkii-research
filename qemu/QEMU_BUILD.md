@@ -334,6 +334,10 @@ addresses, all 35 guest registers, and all 4,576 touched bytes. With both
 helpers enabled, the exact 100-service ISR profile is 19,550,803 guest
 instructions: 6,227,343 fewer than native, a 24.16% reduction. The next
 candidate is the 512-iteration loop at `0x401184C4..0x401184F6`.
+That loop now passes identical native replay at both eight- and sixteen-call
+stability horizons. Each replay matched 512 ordered plugin-visible events and
+all 35 guest registers across a five-page footprint; the later cursor expanded
+the touched-byte union from 2,652 to 3,238 without changing the exact result.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
