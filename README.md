@@ -113,10 +113,13 @@ and reproducible tooling.
   `0x401184C4..0x401187FF` audio kernel plus every ordered data access inside it.
   The committed comparator supports strict and topology-only checks and rejects
   incomplete traces; live traces and firmware-derived values remain uncommitted.
-- A same-process shadow plugin now discovers the kernel's byte footprint,
+- A same-process shadow plugin now discovers the kernel's touched-page footprint,
   snapshots entry state, performs an identical-state replay, and restores the
-  native exit state. Its original ColdFire control fixture passes exact access,
-  register, and final-memory comparison; stock MAIN validation is the next gate.
+  native exit state. Both the original ColdFire control and stock 1.72 MAIN now
+  pass exact access, register, and touched-memory comparison.
+- The 64-iteration fractional MAC/MSAC core at `0x401185EC..0x40118668`
+  independently passes the same gate: 338 ordered accesses, all 29 registers,
+  and 552 touched bytes match. This is the first bounded accelerator candidate.
 
 ## Stock BR hardware characterization
 

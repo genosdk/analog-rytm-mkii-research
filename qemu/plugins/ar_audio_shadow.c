@@ -1,10 +1,11 @@
 /*
  * Same-process replay verifier for the AR MKII native audio kernel.
  *
- * Call 1 discovers the data footprint. Call 2 snapshots that footprint and
- * every writable register, runs natively, restores the entry state, and jumps
- * back to the kernel entry. Call 3 is therefore a shadow execution from the
- * identical state. Its access values and exit state must match call 2 exactly.
+ * Natural calls discover touched 4 KiB pages until the footprint stabilizes.
+ * The next call snapshots those pages and every writable register, runs
+ * natively, restores the entry state, and jumps back to the kernel entry. That
+ * replay is a shadow execution from identical state; its access values and
+ * exit state must match the native call exactly.
  *
  * Only aggregate results are written. The output contains no register values,
  * guest addresses, firmware bytes, or PCM.
@@ -33,10 +34,10 @@ typedef struct {
 } RegisterState;
 
 typedef struct {
-    uint64_t address;
-    uint8_t entry;
-    uint8_t native_exit;
-} ByteState;
+    uint64_t base;
+    GByteArray *entry;
+    GByteArray *native_exit;
+} PageState;
 
 typedef struct {
     uint64_t pc;
@@ -49,10 +50,13 @@ typedef struct {
 static uint64_t start_pc = 0x401184c4;
 static uint64_t end_pc = 0x401187ff;
 static uint64_t exit_pc = 0x40117fc2;
+static const uint64_t page_mask = ~(uint64_t)0xfff;
+static const size_t page_size = 4096;
 static FILE *report_file;
 static GPtrArray *registers;
 static GHashTable *footprint;
-static GPtrArray *bytes;
+static GHashTable *touched_bytes;
+static GPtrArray *pages;
 static GArray *native_accesses;
 static GArray *shadow_accesses;
 static GMutex lock;
@@ -66,6 +70,10 @@ static bool access_match;
 static bool register_match;
 static bool memory_match;
 static uint64_t discovery_events;
+static uint64_t discovery_calls;
+static uint64_t stable_discovery_calls;
+static uint64_t required_stable_calls = 8;
+static bool footprint_grew;
 
 static void register_state_free(gpointer data)
 {
@@ -76,32 +84,53 @@ static void register_state_free(gpointer data)
     g_free(reg);
 }
 
-static void byte_state_free(gpointer data)
+static void page_state_free(gpointer data)
 {
-    g_free(data);
+    PageState *page = data;
+
+    g_byte_array_unref(page->entry);
+    g_byte_array_unref(page->native_exit);
+    g_free(page);
 }
 
-static void add_footprint(uint64_t address, unsigned size)
+static bool add_footprint(uint64_t address, unsigned size)
 {
+    bool grew = false;
+    uint64_t first = address & page_mask;
+    uint64_t last = (address + size - 1) & page_mask;
+
     for (unsigned i = 0; i < size; i++) {
         uint64_t byte_address = address + i;
 
-        if (!g_hash_table_lookup(footprint, &byte_address)) {
-            ByteState *state = g_new0(ByteState, 1);
+        if (!g_hash_table_contains(touched_bytes, &byte_address)) {
+            uint64_t *key = g_new(uint64_t, 1);
 
-            state->address = byte_address;
-            g_hash_table_insert(footprint, &state->address, state);
-            g_ptr_array_add(bytes, state);
+            *key = byte_address;
+            g_hash_table_add(touched_bytes, key);
         }
     }
+    for (uint64_t base = first; base <= last; base += page_size) {
+        if (!g_hash_table_lookup(footprint, &base)) {
+            PageState *state = g_new0(PageState, 1);
+
+            state->base = base;
+            state->entry = g_byte_array_sized_new(page_size);
+            state->native_exit = g_byte_array_sized_new(page_size);
+            g_hash_table_insert(footprint, &state->base, state);
+            g_ptr_array_add(pages, state);
+            grew = true;
+        }
+    }
+    return grew;
 }
 
 static bool footprint_contains(uint64_t address, unsigned size)
 {
-    for (unsigned i = 0; i < size; i++) {
-        uint64_t byte_address = address + i;
+    uint64_t first = address & page_mask;
+    uint64_t last = (address + size - 1) & page_mask;
 
-        if (!g_hash_table_lookup(footprint, &byte_address)) {
+    for (uint64_t base = first; base <= last; base += page_size) {
+        if (!g_hash_table_lookup(footprint, &base)) {
             return false;
         }
     }
@@ -110,22 +139,16 @@ static bool footprint_contains(uint64_t address, unsigned size)
 
 static bool snapshot_memory(bool at_entry)
 {
-    g_autoptr(GByteArray) value = g_byte_array_new();
     bool ok = true;
 
-    for (size_t i = 0; i < bytes->len; i++) {
-        ByteState *state = g_ptr_array_index(bytes, i);
+    for (size_t i = 0; i < pages->len; i++) {
+        PageState *state = g_ptr_array_index(pages, i);
+        GByteArray *value = at_entry ? state->entry : state->native_exit;
 
         g_byte_array_set_size(value, 0);
-        if (!qemu_plugin_read_memory_vaddr(state->address, value, 1) ||
-            value->len != 1) {
+        if (!qemu_plugin_read_memory_vaddr(state->base, value, page_size) ||
+            value->len != page_size) {
             ok = false;
-            continue;
-        }
-        if (at_entry) {
-            state->entry = value->data[0];
-        } else {
-            state->native_exit = value->data[0];
         }
     }
     return ok;
@@ -133,16 +156,13 @@ static bool snapshot_memory(bool at_entry)
 
 static bool restore_memory(bool to_entry)
 {
-    g_autoptr(GByteArray) value = g_byte_array_sized_new(1);
     bool ok = true;
 
-    for (size_t i = 0; i < bytes->len; i++) {
-        ByteState *state = g_ptr_array_index(bytes, i);
-        uint8_t byte = to_entry ? state->entry : state->native_exit;
+    for (size_t i = 0; i < pages->len; i++) {
+        PageState *state = g_ptr_array_index(pages, i);
+        GByteArray *value = to_entry ? state->entry : state->native_exit;
 
-        g_byte_array_set_size(value, 0);
-        g_byte_array_append(value, &byte, 1);
-        if (!qemu_plugin_write_memory_vaddr(state->address, value)) {
+        if (!qemu_plugin_write_memory_vaddr(state->base, value)) {
             ok = false;
         }
     }
@@ -202,13 +222,21 @@ static bool compare_memory(void)
 {
     g_autoptr(GByteArray) value = g_byte_array_new();
 
-    for (size_t i = 0; i < bytes->len; i++) {
-        ByteState *state = g_ptr_array_index(bytes, i);
+    for (size_t i = 0; i < pages->len; i++) {
+        PageState *state = g_ptr_array_index(pages, i);
 
         g_byte_array_set_size(value, 0);
-        if (!qemu_plugin_read_memory_vaddr(state->address, value, 1) ||
-            value->len != 1 || value->data[0] != state->native_exit) {
+        if (!qemu_plugin_read_memory_vaddr(state->base, value, page_size) ||
+            value->len != state->native_exit->len) {
             return false;
+        }
+        for (size_t offset = 0; offset < page_size; offset++) {
+            uint64_t address = state->base + offset;
+
+            if (g_hash_table_contains(touched_bytes, &address) &&
+                value->data[offset] != state->native_exit->data[offset]) {
+                return false;
+            }
         }
     }
     return true;
@@ -261,15 +289,22 @@ static void write_report(bool complete)
 
     fprintf(report_file,
             "{\"schema_version\":1,\"complete\":%s,"
-            "\"status\":\"%s\",\"discovery_events\":%" PRIu64
-            ",\"footprint_bytes\":%u,\"registers\":%u,"
+            "\"status\":\"%s\",\"discovery_calls\":%" PRIu64
+            ",\"stable_discovery_calls\":%" PRIu64
+            ",\"required_stable_calls\":%" PRIu64
+            ",\"discovery_events\":%" PRIu64
+            ",\"footprint_pages\":%u,\"touched_bytes\":%u,"
+            "\"snapshot_bytes\":%" PRIu64
+            ",\"registers\":%u,"
             "\"native_events\":%u,\"shadow_events\":%u,"
             "\"footprint_miss\":%s,\"snapshot_error\":%s,"
             "\"restore_error\":%s,\"access_match\":%s,"
             "\"register_match\":%s,\"memory_match\":%s}\n",
             complete ? "true" : "false",
             pass ? "PASS_IDENTICAL_NATIVE_SHADOW" : "FAIL",
-            discovery_events, bytes->len, registers->len,
+            discovery_calls, stable_discovery_calls, required_stable_calls,
+            discovery_events, pages->len, g_hash_table_size(touched_bytes),
+            (uint64_t)pages->len * page_size, registers->len,
             native_accesses->len, shadow_accesses->len,
             footprint_miss ? "true" : "false",
             snapshot_error ? "true" : "false",
@@ -294,7 +329,7 @@ static void memory_access(unsigned int cpu_index, qemu_plugin_meminfo_t info,
         return;
     }
     if (phase == PHASE_DISCOVERY) {
-        add_footprint(address, size);
+        footprint_grew |= add_footprint(address, size);
         discovery_events++;
     } else if (phase == PHASE_NATIVE || phase == PHASE_SHADOW) {
         Access access = {
@@ -322,6 +357,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
     g_mutex_lock(&lock);
     if (pc == start_pc) {
         if (phase == PHASE_DISCOVERY) {
+            footprint_grew = false;
             active = true;
         } else if (phase == PHASE_WAIT_NATIVE) {
             snapshot_error |= !snapshot_memory(true);
@@ -341,7 +377,15 @@ static void boundary(unsigned int cpu_index, void *userdata)
 
     active = false;
     if (phase == PHASE_DISCOVERY) {
-        phase = PHASE_WAIT_NATIVE;
+        discovery_calls++;
+        if (footprint_grew) {
+            stable_discovery_calls = 0;
+        } else {
+            stable_discovery_calls++;
+        }
+        if (stable_discovery_calls >= required_stable_calls) {
+            phase = PHASE_WAIT_NATIVE;
+        }
         g_mutex_unlock(&lock);
         return;
     }
@@ -434,7 +478,8 @@ static void at_exit(void *userdata)
     g_mutex_unlock(&lock);
     g_ptr_array_free(registers, true);
     g_hash_table_destroy(footprint);
-    g_ptr_array_free(bytes, true);
+    g_hash_table_destroy(touched_bytes);
+    g_ptr_array_free(pages, true);
     g_array_free(native_accesses, true);
     g_array_free(shadow_accesses, true);
 }
@@ -455,12 +500,15 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             end_pc = g_ascii_strtoull(argv[i] + 4, NULL, 0);
         } else if (g_str_has_prefix(argv[i], "exit=")) {
             exit_pc = g_ascii_strtoull(argv[i] + 5, NULL, 0);
+        } else if (g_str_has_prefix(argv[i], "stable=")) {
+            required_stable_calls = g_ascii_strtoull(argv[i] + 7, NULL, 0);
         } else {
             fprintf(stderr, "unknown audio-shadow option: %s\n", argv[i]);
             return -1;
         }
     }
-    if (!out_path || !*out_path || !start_pc || end_pc < start_pc || !exit_pc) {
+    if (!out_path || !*out_path || !start_pc || end_pc < start_pc || !exit_pc ||
+        !required_stable_calls) {
         fprintf(stderr, "audio-shadow requires out=PATH and valid PCs\n");
         return -1;
     }
@@ -471,7 +519,9 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
     }
     registers = g_ptr_array_new_with_free_func(register_state_free);
     footprint = g_hash_table_new(g_int64_hash, g_int64_equal);
-    bytes = g_ptr_array_new_with_free_func(byte_state_free);
+    touched_bytes = g_hash_table_new_full(g_int64_hash, g_int64_equal,
+                                         g_free, NULL);
+    pages = g_ptr_array_new_with_free_func(page_state_free);
     native_accesses = g_array_new(false, false, sizeof(Access));
     shadow_accesses = g_array_new(false, false, sizeof(Access));
     qemu_plugin_register_vcpu_init_cb(id, vcpu_init, NULL);

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_AUDIO_INNER_LOOP_SHADOW_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_INNER_MAC_LOOP_IDENTICAL_NATIVE_SHADOW",
+  "implementation": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "method": "Same-process identical-entry-state native replay with page-granular snapshots and touched-byte exit comparison."
+  },
+  "candidate": {
+    "description": "64-iteration fractional MAC/MSAC core",
+    "entry_pc": "0x401185EC",
+    "inclusive_instruction_window": "0x401185EC..0x40118668",
+    "exit_pc": "0x4011866C",
+    "replacement_implemented": false
+  },
+  "stock_audio_target": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "discovery_calls": 9,
+    "stable_discovery_calls": 8,
+    "required_stable_calls": 8,
+    "discovery_events": 3042,
+    "footprint_pages": 2,
+    "touched_bytes": 552,
+    "snapshot_bytes": 8192,
+    "registers": 29,
+    "native_events": 338,
+    "shadow_events": 338,
+    "footprint_miss": false,
+    "snapshot_error": false,
+    "restore_error": false,
+    "access_match": true,
+    "exit_register_match": true,
+    "touched_memory_match": true
+  },
+  "conclusion": "The inner loop is a bounded replayable accelerator candidate. These results prove identical native replay at the boundary, not replacement correctness or speedup.",
+  "next_gate": "Implement an optional QEMU whole-loop helper and require identical access, exit-register, and touched-memory results against the native oracle before measuring throughput.",
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {"touched": false},
+  "safety": "Only aggregate counts and instruction-boundary addresses are committed. No Elektron firmware, project data, sample names, PCM, runtime values, or runtime trace is committed."
+}

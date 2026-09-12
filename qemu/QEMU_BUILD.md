@@ -196,12 +196,14 @@ address values. The committed gate stores aggregate counts only.
 ### Identical-state shadow replay
 
 `ar_audio_shadow.c` closes the independent-boot state gap without exporting
-runtime values. Its first natural kernel call discovers the accessed-byte
-footprint. At the next entry it snapshots that memory and all exposed
-registers, records the native execution, restores the entry state, and redirects
-the same vCPU through the kernel once more. It compares the complete ordered
-access stream, exit registers, and final footprint, then restores the native
-exit state before the caller continues.
+runtime values. It accumulates touched 4 KiB RAM pages until eight consecutive
+natural calls add no new page. At the next entry it snapshots those pages and
+all exposed registers, records the native execution, restores the
+entry state, and redirects the same vCPU through the kernel once more. It
+compares the complete ordered access stream, exit registers, and every byte
+actually touched by the kernel, then restores the native exit state before the
+caller continues. Untouched bytes that merely share a snapshot page are not
+part of the kernel's output contract.
 
 Build and run the non-proprietary control fixture:
 
@@ -220,10 +222,22 @@ start=0x40000020,end=0x4000002f,exit=0x4000000c
 The control must report `PASS_IDENTICAL_NATIVE_SHADOW`. For stock MAIN, omit
 the three PC overrides to use the audio-kernel defaults and pass the plugin to
 the held-audio smoke runner. The plugin fails closed if the second or shadow
-native call touches a byte absent from discovery, any state operation fails, or
+native call touches a page absent from discovery, any state operation fails, or
 any access/exit value diverges. A native footprint miss or snapshot error aborts
 before replay. It emits aggregate results only; use it in a disposable research
 run, as required for all accelerator experiments.
+
+The first accelerator boundary is the stock 64-iteration fractional MAC/MSAC
+core. It can be replayed independently with:
+
+```bash
+-plugin /tmp/ar_audio_shadow.so,out=/tmp/audio-inner-shadow.json,\
+start=0x401185ec,end=0x40118668,exit=0x4011866c
+```
+
+The validated run matched 338 ordered accesses, all 29 exit registers, and 552
+touched bytes. This proves the boundary is replayable; it does not yet claim a
+replacement implementation or speedup.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

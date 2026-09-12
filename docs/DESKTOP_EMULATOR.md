@@ -138,16 +138,26 @@ snapshot or same-process shadow execution followed by strict native/candidate
 comparison. Runtime traces remain local and were deleted after aggregation.
 
 The identical-state mechanism is now implemented and proven against an
-original, non-proprietary ColdFire control fixture. `ar_audio_shadow.c` uses one
-call for footprint discovery, snapshots the next call at entry, executes it,
-restores the state in-process, and repeats the same kernel on the same vCPU. The
-control matched all 29 registers, three ordered accesses, and all eight touched
-bytes at exit. It then restored the native exit state before resuming normal
-guest execution.
+original, non-proprietary ColdFire control fixture. `ar_audio_shadow.c`
+accumulates touched 4 KiB pages until eight consecutive calls add no new page,
+snapshots the next call at entry, executes it, restores the state in-process,
+and repeats the same kernel on the same vCPU. The control matched all 29
+registers, three ordered accesses, and both touched pages at exit. It then
+restored the native exit state before resuming normal guest execution.
 
-This proves the shadow harness, not the stock audio kernel: the latter remains
-`READY_PENDING_LOCAL_MAIN_RUN`. A stock run must pass the same fail-closed
-checks before this boundary can validate an accelerator.
+The stock 1.72 kernel now passes the same gate. Nine discovery calls stabilized
+12 touched pages; the native and shadow passes then matched all 1,009 ordered
+accesses, all 29 exit registers, and all 4,695 actually touched bytes. The held
+audio smoke remained responsive and produced nonzero host audio. No live values
+or firmware bytes were retained. This closes the identical-entry-state gate and
+opens differential validation of the first accelerator candidate.
+
+The first bounded candidate is the 64-iteration fractional MAC/MSAC core at
+`0x401185EC..0x40118668`, returning at `0x4011866C`. An identical-state stock
+run stabilized two pages, then matched all 338 native and shadow accesses, all
+29 exit registers, and 552 touched bytes. The next gate is an optional QEMU
+whole-loop helper at this boundary, with the native implementation retained as
+the differential oracle and automatic fallback.
 
 `--mock-audio-service` enables a default-off research shim for the external
 audio-service clock. After the stock firmware installs INTC1 source 63 at

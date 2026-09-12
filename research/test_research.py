@@ -180,13 +180,33 @@ class QemuAudioEdmaTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        self.assertEqual(shadow["status"], "PASS_SAME_PROCESS_SHADOW_CONTROL")
+        self.assertEqual(
+            shadow["status"], "PASS_STOCK_AUDIO_IDENTICAL_NATIVE_SHADOW"
+        )
         self.assertEqual(
             shadow["non_proprietary_control"]["result"],
             "PASS_IDENTICAL_NATIVE_SHADOW",
         )
-        self.assertEqual(shadow["stock_audio_target"]["status"],
-                         "READY_PENDING_LOCAL_MAIN_RUN")
+        self.assertEqual(
+            shadow["stock_audio_target"]["status"],
+            "PASS_IDENTICAL_NATIVE_SHADOW",
+        )
+        self.assertEqual(shadow["stock_audio_target"]["native_events"], 1009)
+        self.assertEqual(shadow["stock_audio_target"]["shadow_events"], 1009)
+        self.assertTrue(shadow["stock_audio_target"]["nonzero_host_audio"])
+        inner = json.loads(
+            (HERE / "AR172_QEMU_AUDIO_INNER_LOOP_SHADOW_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            inner["status"], "PASS_INNER_MAC_LOOP_IDENTICAL_NATIVE_SHADOW"
+        )
+        self.assertEqual(inner["stock_audio_target"]["native_events"], 338)
+        self.assertEqual(inner["stock_audio_target"]["shadow_events"], 338)
+        self.assertTrue(inner["stock_audio_target"]["access_match"])
+        self.assertTrue(inner["stock_audio_target"]["exit_register_match"])
+        self.assertTrue(inner["stock_audio_target"]["touched_memory_match"])
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
