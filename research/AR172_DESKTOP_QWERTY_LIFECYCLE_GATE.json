@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_QWERTY_LIFECYCLE_GATE",
+  "recorded_at_utc": "2026-09-11",
+  "status": "PASS_REPEAT_SAFE_PRESS_RELEASE_AND_FOCUS_CLEANUP",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "production_path": {
+    "frontend": "qemu/desktop_panel.py PanelApp",
+    "event_transport": "JSONL",
+    "bridge": "qemu/panel_event_bridge.py follow_events",
+    "firmware_transport": "UART8 native panel frames",
+    "alternate_input_model_used": false
+  },
+  "keyboard_layout": {
+    "keys": "qwertyuiasdfghjk",
+    "trigs": "1..16",
+    "mapping_exact": true
+  },
+  "repeat_lifecycle": {
+    "jsonl_events": [
+      ["trig", "1", "press"],
+      ["trig", "1", "release"],
+      ["trig", "1", "press"],
+      ["trig", "1", "release"]
+    ],
+    "duplicate_presses": 0,
+    "premature_releases": 0,
+    "stuck_triggers": 0
+  },
+  "uart8_replay": {
+    "frames_hex": ["23 01", "23 00", "23 01", "23 00"],
+    "exact_match": true
+  },
+  "multi_source_ownership": {
+    "sources": ["mouse", "key:q"],
+    "keyboard_release_while_mouse_held_emits_release": false,
+    "last_source_release_emits_once": true
+  },
+  "focus_loss": {
+    "pending_release_cancelled": true,
+    "all_held_sources_cleared": true,
+    "one_release_per_active_trigger": true,
+    "late_duplicate_release": false
+  },
+  "validation": {
+    "focused_desktop_panel_tests": 8,
+    "full_research_tests": 47,
+    "expected_fixture_skips": 15,
+    "result": "PASS"
+  },
+  "downstream_live_evidence": [
+    "research/AR172_QEMU_DESKTOP_EVENT_RUNTIME_GATE.json",
+    "research/AR172_QEMU_LFO2_ACTIVE_RETRIGGER_GATE.json",
+    "research/AR172_QEMU_LFO2_RETRIGGER_MATRIX_GATE.json",
+    "research/AR172_QEMU_LFO2_RETRIGGER_NEGATIVE_GATE.json"
+  ],
+  "scope_limit": "This gate proves packaged host input ownership, repeat suppression, JSONL publication and exact UART8 frame replay. The cited live QEMU gates separately prove that those native frames reach the stock firmware note path.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

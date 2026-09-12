@@ -103,6 +103,9 @@ and reproducible tooling.
 - The desktop reset-generation matrix proves eight selective first-generation
   resets, unchanged-generation idempotence during an unrelated depth update,
   and a second lane-1 reset: 240 exact state comparisons with no false reset.
+- The packaged QWERTY lifecycle suppresses host key-repeat duplicates, preserves
+  mixed mouse/keyboard pad ownership, releases held pads on focus loss, and
+  replays two clean Trig-1 cycles as exact native UART8 frames.
 - The packaged macOS shell now uses a pixel-registered photographic Photon OS
   faceplate with a live firmware OLED, independent page/trigger illumination,
   invisible hardware hit regions, and keyboard-accessible A-I encoders. Its

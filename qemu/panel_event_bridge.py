@@ -213,7 +213,8 @@ def publish_runtime_controls(path: Path, controls: RuntimeControls) -> None:
 
 
 def follow_events(path: Path, link: PanelLink, start_at_end: bool,
-                  filter2_control_file: Path | None = None) -> None:
+                  filter2_control_file: Path | None = None,
+                  stop_event: threading.Event | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.touch(exist_ok=True)
     runtime_controls = RuntimeControls()
@@ -232,6 +233,8 @@ def follow_events(path: Path, link: PanelLink, start_at_end: bool,
         while True:
             line = f.readline()
             if not line:
+                if stop_event is not None and stop_event.is_set():
+                    return
                 time.sleep(0.025)
                 continue
             try:

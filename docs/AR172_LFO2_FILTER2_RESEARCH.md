@@ -712,6 +712,13 @@ generations clear the sentinels before the later SMP-page check. Renderer audio
 is retained as a separate fresh-runtime health control on the same candidate,
 because nonzero PCM is not an invariant of this free-mode reset scenario.
 Evidence is in `research/AR172_QEMU_LFO2_EXPLICIT_RESET_GATE.json`.
+The packaged QWERTY lifecycle now has a deterministic host-side gate around the
+actual `qemu/desktop_panel.py` methods. It proves duplicate key-down suppression,
+host-repeat release cancellation, one final release, a clean second press,
+mouse/keyboard co-ownership and focus-loss cleanup. The four resulting JSONL
+events replay through `panel_event_bridge.follow_events` as exact UART8 frames
+`23 01 / 23 00 / 23 01 / 23 00`. Evidence is in
+`research/AR172_DESKTOP_QWERTY_LIFECYCLE_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

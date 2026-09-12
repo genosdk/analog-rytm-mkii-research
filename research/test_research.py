@@ -5,6 +5,8 @@ import importlib.util
 import json
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
 
@@ -245,6 +247,63 @@ class QemuAudioEdmaTests(unittest.TestCase):
 
 
 class DesktopPanelInputTests(unittest.TestCase):
+    @staticmethod
+    def make_headless_panel(event_file):
+        from qemu.desktop_panel import PanelApp
+
+        class RootStub:
+            def __init__(self):
+                self.callbacks = {}
+                self.next_callback = 0
+
+            def after(self, _delay, callback):
+                self.next_callback += 1
+                token = f"after-{self.next_callback}"
+                self.callbacks[token] = callback
+                return token
+
+            def after_cancel(self, token):
+                self.callbacks.pop(token, None)
+
+            def after_idle(self, callback):
+                callback()
+
+            def focus_get(self):
+                return None
+
+            def run_pending(self):
+                callbacks = list(self.callbacks.values())
+                self.callbacks.clear()
+                for callback in callbacks:
+                    callback()
+
+        class StatusStub:
+            def set(self, value):
+                self.value = value
+
+        class TrigStub:
+            def __init__(self):
+                self.states = []
+
+            def set_active(self, active):
+                self.states.append(active)
+
+        panel = PanelApp.__new__(PanelApp)
+        panel.root = RootStub()
+        panel.event_file = event_file
+        panel.held_trigs = {}
+        panel.pending_key_releases = {}
+        panel.trig_widgets = {1: TrigStub()}
+        panel.encoder_values = {}
+        panel.status = StatusStub()
+        return panel
+
+    @staticmethod
+    def panel_events(event_file):
+        if not event_file.exists():
+            return []
+        return [json.loads(line) for line in event_file.read_text().splitlines()]
+
     def test_qwerty_layout_and_knob_clamp(self):
         from qemu.desktop_panel import (
             BUTTON_RECTS,
@@ -283,6 +342,112 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertGreater(OLED_RECT[3] - OLED_RECT[1], 100)
         self.assertTrue(skin_asset_path().is_file())
         self.assertTrue(skin_asset_path("photon_panel_active.png").is_file())
+
+    def test_qwerty_repeat_suppression_release_and_second_press(self):
+        class Event:
+            keysym = "q"
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_panel(event_file)
+
+            self.assertEqual(panel.key_press(Event()), "break")
+            self.assertEqual(panel.key_press(Event()), "break")
+            panel.key_release(Event())
+            self.assertEqual(panel.key_press(Event()), "break")
+            panel.root.run_pending()
+            self.assertEqual(len(self.panel_events(event_file)), 1)
+
+            panel.key_release(Event())
+            panel.root.run_pending()
+            panel.key_press(Event())
+            panel.key_release(Event())
+            panel.root.run_pending()
+
+            events = self.panel_events(event_file)
+            self.assertEqual(
+                [(event["kind"], event["name"], event["value"])
+                 for event in events],
+                [
+                    ("trig", "1", "press"),
+                    ("trig", "1", "release"),
+                    ("trig", "1", "press"),
+                    ("trig", "1", "release"),
+                ],
+            )
+            self.assertEqual(panel.trig_widgets[1].states,
+                             [True, False, True, False])
+            self.assertFalse(panel.held_trigs[1])
+            self.assertFalse(panel.pending_key_releases)
+
+    def test_mixed_source_ownership_and_focus_loss_release_once(self):
+        class Event:
+            keysym = "q"
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_panel(event_file)
+
+            panel.trig(1, True, "mouse")
+            panel.key_press(Event())
+            panel.key_release(Event())
+            panel.root.run_pending()
+            self.assertEqual(len(self.panel_events(event_file)), 1)
+            self.assertEqual(panel.held_trigs[1], {"mouse"})
+
+            panel.key_press(Event())
+            panel.key_release(Event())
+            panel.focus_lost()
+            panel.root.run_pending()
+            events = self.panel_events(event_file)
+            self.assertEqual(
+                [event["value"] for event in events], ["press", "release"]
+            )
+            self.assertEqual(panel.trig_widgets[1].states, [True, False])
+            self.assertFalse(panel.held_trigs[1])
+            self.assertFalse(panel.pending_key_releases)
+
+    def test_qwerty_lifecycle_replays_as_exact_uart8_frames(self):
+        from qemu.panel_event_bridge import PanelLink, follow_events
+
+        class Event:
+            keysym = "q"
+
+        class SocketStub:
+            def __init__(self):
+                self.frames = []
+
+            def sendall(self, data):
+                self.frames.append(data)
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_panel(event_file)
+            for _ in range(2):
+                panel.key_press(Event())
+                panel.key_press(Event())
+                panel.key_release(Event())
+                panel.root.run_pending()
+
+            sock = SocketStub()
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(sock, verbose=False), False,
+                      None, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            while len(sock.frames) < 4 and time.monotonic() < deadline:
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            self.assertFalse(follower.is_alive())
+            self.assertEqual(
+                sock.frames,
+                [b"\x23\x01", b"\x23\x00", b"\x23\x01", b"\x23\x00"],
+            )
 
     def test_knob_delta_uses_validated_signed_encoder_frame(self):
         from qemu.panel_event_bridge import PanelLink
