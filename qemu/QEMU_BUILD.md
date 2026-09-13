@@ -29,6 +29,8 @@ patch -p1 < /path/to/0005-m68k-add-ar-audio-inner-tcg-helper.patch
 patch -p1 < /path/to/0006-m68k-add-ar-audio-transform-tcg-helper.patch
 # Add the disabled-by-default 64-iteration outer-renderer helper.
 patch -p1 < /path/to/0007-m68k-add-ar-audio-outer-tcg-helper.patch
+# Add the disabled-by-default saturated-EMAC handoff helper.
+patch -p1 < /path/to/0008-m68k-add-ar-audio-emac32-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -47,7 +49,8 @@ it has no effect unless `AR_MK2_AUDIO_INNER_TCG` is set for the AR machine.
 The sixth patch similarly adds the independently controlled 572-word transform
 helper, enabled only by `AR_MK2_AUDIO_TRANSFORM_TCG=1`. The seventh adds the
 64-iteration outer renderer helper, enabled only by
-`AR_MK2_AUDIO_OUTER_TCG=1`.
+`AR_MK2_AUDIO_OUTER_TCG=1`. The eighth adds the 32-iteration handoff EMAC
+helper, enabled only by `AR_MK2_AUDIO_EMAC32_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -392,6 +395,15 @@ into ACC1, and queues all writes transactionally. Both `stable=8` and
 `stable=16` runs matched all 35 registers and 1,224 touched bytes across two
 pages, with zero candidate guest accesses and no fallback. The next gate is a
 direct-state helper and exact incremental profile.
+
+Patch 0008 promotes that candidate to the fourth direct-state helper. Two
+explicit-arm oracles (`AR_MK2_AUDIO_EMAC32_TCG_DEFER=1` with
+`candidate=tcg-emac32`) matched all 128 ordered access values and addresses,
+all 35 registers, and all 1,224 touched bytes. With all four helpers enabled,
+the exact 100-service ISR profile is 14,477,203 guest instructions: 680,043
+fewer than the three-helper profile and 11,300,943 fewer than native. Those are
+incremental and combined reductions of 4.49% and 43.84%. The held-audio
+lifecycle retained its exact eight-service release tail and responsive UI.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

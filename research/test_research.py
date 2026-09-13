@@ -420,6 +420,27 @@ class QemuAudioEdmaTests(unittest.TestCase):
             emac32["stock_audio_target"]["late_cursor_run"]
                   ["touched_memory_match"]
         )
+        emac32_tcg = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_EMAC32_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            emac32_tcg["status"], "PASS_CORRECT_43PCT_INSTRUCTION_REDUCTION"
+        )
+        self.assertEqual(emac32_tcg["same_process_oracle"]["registers"], 35)
+        self.assertEqual(
+            emac32_tcg["exact_vector_191_profile"]
+                       ["four_helpers_guest_instructions"],
+            14477203,
+        )
+        emac32_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0008-m68k-add-ar-audio-emac32-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DEF_HELPER_1(ar_audio_emac32, i32, env)", emac32_patch)
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -436,6 +457,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn('!strcmp(argv[i], "candidate=outer")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-outer")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=emac32")', shadow_plugin)
+        self.assertIn('!strcmp(argv[i], "candidate=tcg-emac32")', shadow_plugin)
         self.assertIn('g_str_has_prefix(argv[i], "mem-start=")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)
