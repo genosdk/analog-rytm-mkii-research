@@ -112,7 +112,10 @@ cutoff/rate/depth controls and one timed audition, and rejects residual trigger
 state. It then replays pointer presses at all eight button and sixteen Trig hit
 regions plus a drag on each encoder A-I, checks the corresponding illumination,
 and compares all 57 photographic JSONL records with the production bridge
-contract.
+contract. Workflow run 34741529181 passes this signed-app test, QEMU validation,
+packaging and artifact upload on both macOS 15 arm64 and macOS 15 Intel.
+Machine-readable job and artifact evidence is in
+`research/AR172_PACKAGED_NATIVE_TK_DRAWER_GATE.json`.
 
 The downstream photographic-control gate continues those same 57 interactions
 through `panel_event_bridge.follow_events`. It verifies exact UART8 bytes for

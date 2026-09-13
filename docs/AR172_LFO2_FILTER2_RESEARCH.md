@@ -725,6 +725,14 @@ combined group-3 masks `01 / 03 / 02 / 00`; live QEMU snapshots observe the two
 stock event-type words transition `on/sentinel / on/on / off/on / off/off`.
 All ten seeded-and-edge comparisons pass without cross-lane clobber. Evidence
 is in `research/AR172_QEMU_QWERTY_CHORD_GATE.json`.
+The expanded signed-app native Tk self-test is now proven on both supported
+macOS architectures. Workflow run 34741529181 builds and verifies the custom
+QEMU, freezes the frontend, embeds its dependencies, signs the app, opens the
+real Filter 2/LFO2 drawer, validates all ten knobs and bindings, exercises its
+seven representative runtime events including the timed audition release, and
+then completes the existing 57-event photographic replay. Both arm64 and
+x86_64 jobs package and upload their architecture-specific artifacts. Evidence
+is in `research/AR172_PACKAGED_NATIVE_TK_DRAWER_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

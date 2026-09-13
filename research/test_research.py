@@ -121,6 +121,33 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class MacosPackagingTests(unittest.TestCase):
+    def test_dual_arch_packaged_native_tk_drawer_gate(self):
+        report = json.loads(
+            (HERE / "AR172_PACKAGED_NATIVE_TK_DRAWER_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            report["status"], "PASS_DUAL_ARCH_PACKAGED_NATIVE_TK_DRAWER"
+        )
+        self.assertEqual(report["workflow"]["conclusion"], "success")
+        self.assertEqual(report["workflow"]["run_id"], 34741529181)
+        self.assertEqual(
+            {job["architecture"]: job["conclusion"] for job in report["jobs"]},
+            {"arm64": "success", "x86_64": "success"},
+        )
+        for job in report["jobs"]:
+            self.assertTrue(
+                all(value == "success" for value in job["required_steps"].values())
+            )
+            self.assertEqual(len(job["artifact"]["sha256"]), 64)
+        assertions = report["packaged_runtime_assertions"]
+        self.assertEqual(assertions["virtual_knob_count"], 10)
+        self.assertEqual(assertions["drawer_event_count"], 7)
+        self.assertEqual(assertions["photographic_event_count"], 57)
+        self.assertEqual(assertions["residual_held_triggers"], 0)
+        self.assertEqual(assertions["residual_pending_audition_callbacks"], 0)
+
     def test_factory_storage_device_is_included_in_qemu_build(self):
         workflow = (
             ROOT / ".github" / "workflows" / "package-macos-app.yml"

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_PACKAGED_NATIVE_TK_DRAWER_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_DUAL_ARCH_PACKAGED_NATIVE_TK_DRAWER",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "implementation": {
+    "commit": "536d1d5b86d1a02d799d376152bd27a10e11745d",
+    "commit_url": "https://github.com/genosdk/analog-rytm-mkii-research/commit/536d1d5b86d1a02d799d376152bd27a10e11745d",
+    "summary": "The signed-app self-test opens the real Filter 2/LFO2 drawer, verifies all ten native Tk knobs and their pointer/keyboard bindings, exercises representative cutoff, rate, depth, lane-selection and timed-audition events, and rejects residual audition state before replaying the complete 57-event photographic panel test."
+  },
+  "workflow": {
+    "name": "Package AR MKII Emulator macOS",
+    "run_id": 34741529181,
+    "run_number": 21,
+    "event": "workflow_dispatch",
+    "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34741529181",
+    "head_branch": "restore-filter2-controller",
+    "head_sha": "536d1d5b86d1a02d799d376152bd27a10e11745d",
+    "conclusion": "success"
+  },
+  "jobs": [
+    {
+      "job_id": 103681929029,
+      "runner": "macos-15",
+      "architecture": "arm64",
+      "started_at": "2026-09-13T05:56:46Z",
+      "completed_at": "2026-09-13T05:59:32Z",
+      "conclusion": "success",
+      "required_steps": {
+        "Build custom QEMU": "success",
+        "Verify custom QEMU": "success",
+        "Freeze desktop frontend": "success",
+        "Embed QEMU and dynamic libraries": "success",
+        "Sign and verify app": "success",
+        "Smoke-test packaged executable": "success",
+        "Package ZIP": "success",
+        "Upload standalone app": "success"
+      },
+      "artifact": {
+        "id": 10313020888,
+        "name": "AR-MKII-Emulator-macOS-arm64",
+        "size_in_bytes": 20637581,
+        "sha256": "77b422f908d4891a0bdeb4c901f568194e60e61c6aab67f96be5c430df759724",
+        "expires_at": "2026-10-13T05:59:25Z"
+      }
+    },
+    {
+      "job_id": 103681928911,
+      "runner": "macos-15-intel",
+      "architecture": "x86_64",
+      "started_at": "2026-09-13T05:56:45Z",
+      "completed_at": "2026-09-13T06:01:14Z",
+      "conclusion": "success",
+      "required_steps": {
+        "Build custom QEMU": "success",
+        "Verify custom QEMU": "success",
+        "Freeze desktop frontend": "success",
+        "Embed QEMU and dynamic libraries": "success",
+        "Sign and verify app": "success",
+        "Smoke-test packaged executable": "success",
+        "Package ZIP": "success",
+        "Upload standalone app": "success"
+      },
+      "artifact": {
+        "id": 10312745702,
+        "name": "AR-MKII-Emulator-macOS-x86_64",
+        "size_in_bytes": 21965426,
+        "sha256": "00b2df0db3db7357af23138bcf6b3e15d343dbabba3d717c9482036db1aa996a",
+        "expires_at": "2026-10-13T06:01:08Z"
+      }
+    }
+  ],
+  "packaged_runtime_assertions": {
+    "native_tk_drawer_opened": true,
+    "virtual_knob_count": 10,
+    "bindings_per_knob": [
+      "ButtonPress-1",
+      "B1-Motion",
+      "MouseWheel",
+      "Button-4",
+      "Button-5",
+      "Double-Button-1",
+      "KeyPress"
+    ],
+    "drawer_event_count": 7,
+    "timed_audition_hold_ms": 35,
+    "audition_release_wait_ms": 45,
+    "residual_held_triggers": 0,
+    "residual_pending_audition_callbacks": 0,
+    "photographic_event_count": 57
+  },
+  "scope_limit": "This gate proves the signed and frozen native-Tk frontend, bundled resources, drawer widget construction, representative host-only runtime controls, timed audition cleanup, photographic panel interactions, custom QEMU packaging and artifact upload on both supported macOS architectures. It does not claim physical hardware transport, realtime physical-device cadence, or recovered stock Filter 2/LFO2 panel semantics."
+}
