@@ -117,6 +117,13 @@ packaging and artifact upload on both macOS 15 arm64 and macOS 15 Intel.
 Machine-readable job and artifact evidence is in
 `research/AR172_PACKAGED_NATIVE_TK_DRAWER_GATE.json`.
 
+`research/macos_artifact_audit.py` independently opens the GitHub artifact and
+nested release ZIP, verifies both SHA-256 boundaries, checks the app identity
+and required resources, classifies every Mach-O payload by CPU type, scans
+embedded ZIPs, and rejects firmware-like `.syx`, `.ele3`, `.bin`, `.rom`, or
+`.fw` content. Packaging runs execute this audit before upload and include its
+JSON report with the downloadable artifact.
+
 The downstream photographic-control gate continues those same 57 interactions
 through `panel_event_bridge.follow_events`. It verifies exact UART8 bytes for
 all eight page/action buttons, all sixteen Trigs, and a +5 drag on every encoder

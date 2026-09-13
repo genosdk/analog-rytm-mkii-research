@@ -140,6 +140,10 @@ and reproducible tooling.
   macOS 15 arm64 and macOS 15 Intel; both jobs also verify the custom QEMU,
   package the app, and publish architecture-specific artifacts. Evidence is in
   `research/AR172_PACKAGED_NATIVE_TK_DRAWER_GATE.json`.
+- The release workflow now audits each nested artifact before upload: envelope
+  membership and checksums, app structure, bundle identity, both required
+  executables, native architecture across every Mach-O payload, photographic
+  resources, code-signature seal, and absence of firmware-like files.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to

@@ -2,12 +2,15 @@
 
 import hashlib
 import importlib.util
+import io
 import json
+import plistlib
 import sys
 import tempfile
 import threading
 import time
 import unittest
+import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -121,6 +124,85 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class MacosPackagingTests(unittest.TestCase):
+    @staticmethod
+    def synthetic_macos_artifact(
+        architecture="arm64", extra_inner=None, payload_architecture=None
+    ):
+        from macos_artifact_audit import APP_NAME, ARCH_CPU_TYPES, REQUIRED_APP_FILES
+
+        prefix = f"{APP_NAME}/"
+        plist = plistlib.dumps(
+            {
+                "CFBundleIdentifier": "org.photonos.armk2emulator",
+                "CFBundleExecutable": "AR MKII Emulator",
+                "CFBundleShortVersionString": "0.0.0",
+            }
+        )
+        payload_architecture = payload_architecture or architecture
+        macho = b"\xcf\xfa\xed\xfe" + ARCH_CPU_TYPES[payload_architecture].to_bytes(
+            4, "little"
+        )
+        payloads = {prefix + name: b"fixture" for name in REQUIRED_APP_FILES}
+        payloads[prefix + "Contents/Info.plist"] = plist
+        payloads[prefix + "Contents/MacOS/AR MKII Emulator"] = macho
+        payloads[prefix + "Contents/MacOS/qemu-system-m68k"] = macho
+        payloads.update(extra_inner or {})
+
+        inner_buffer = io.BytesIO()
+        with zipfile.ZipFile(inner_buffer, "w") as inner:
+            for name, data in payloads.items():
+                inner.writestr(name, data)
+        inner_bytes = inner_buffer.getvalue()
+
+        stem = f"AR-MKII-Emulator-{architecture}"
+        inner_name = f"{stem}.zip"
+        outer_buffer = io.BytesIO()
+        with zipfile.ZipFile(outer_buffer, "w") as outer:
+            outer.writestr(inner_name, inner_bytes)
+            outer.writestr(
+                f"{inner_name}.sha256",
+                f"{hashlib.sha256(inner_bytes).hexdigest()}  {inner_name}\n",
+            )
+            outer.writestr(
+                f"{stem}.architecture.txt",
+                f"frontend: Mach-O {architecture}\nqemu: Mach-O {architecture}\n",
+            )
+        return outer_buffer.getvalue()
+
+    def test_macos_artifact_auditor_validates_architecture_and_firmware_boundary(self):
+        from macos_artifact_audit import APP_NAME, audit
+
+        artifact = self.synthetic_macos_artifact()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "artifact.zip"
+            path.write_bytes(artifact)
+            report = audit(path, "arm64", hashlib.sha256(artifact).hexdigest())
+            self.assertEqual(report["status"], "PASS_MACOS_ARTIFACT_INTEGRITY")
+            self.assertEqual(report["bundle"]["macho_file_count"], 2)
+            self.assertTrue(report["bundle"]["all_macho_files_match_architecture"])
+
+            foreign = self.synthetic_macos_artifact(
+                "x86_64", payload_architecture="arm64"
+            )
+            path.write_bytes(foreign)
+            with self.assertRaisesRegex(ValueError, "foreign Mach-O payloads"):
+                audit(path, "x86_64", hashlib.sha256(foreign).hexdigest())
+
+            forbidden = self.synthetic_macos_artifact(
+                extra_inner={f"{APP_NAME}/Contents/Resources/stock.syx": b"fixture"}
+            )
+            path.write_bytes(forbidden)
+            with self.assertRaisesRegex(ValueError, "firmware-like payload"):
+                audit(path, "arm64", hashlib.sha256(forbidden).hexdigest())
+
+    def test_packaging_workflow_runs_and_uploads_artifact_audit(self):
+        workflow = (
+            ROOT / ".github" / "workflows" / "package-macos-app.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Audit packaged artifact", workflow)
+        self.assertIn("macos_artifact_audit.py", workflow)
+        self.assertIn('AR-MKII-Emulator-${{ matrix.arch }}.audit.json', workflow)
+
     def test_dual_arch_packaged_native_tk_drawer_gate(self):
         report = json.loads(
             (HERE / "AR172_PACKAGED_NATIVE_TK_DRAWER_GATE.json").read_text(

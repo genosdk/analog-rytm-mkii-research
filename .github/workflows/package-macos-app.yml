@@ -158,6 +158,20 @@ jobs:
           file "$APP/Contents/MacOS/AR MKII Emulator" > "AR-MKII-Emulator-${{ matrix.arch }}.architecture.txt"
           file "$APP/Contents/MacOS/qemu-system-m68k" >> "AR-MKII-Emulator-${{ matrix.arch }}.architecture.txt"
 
+      - name: Audit packaged artifact
+        run: |
+          OUT="AR-MKII-Emulator-${{ matrix.arch }}.zip"
+          ENVELOPE="AR-MKII-Emulator-${{ matrix.arch }}-artifact.zip"
+          zip -q "$ENVELOPE" \
+            "$OUT" \
+            "${OUT}.sha256" \
+            "AR-MKII-Emulator-${{ matrix.arch }}.architecture.txt"
+          python research/research/macos_artifact_audit.py \
+            "$ENVELOPE" \
+            --architecture "${{ matrix.arch }}" \
+            --output "AR-MKII-Emulator-${{ matrix.arch }}.audit.json"
+          rm "$ENVELOPE"
+
       - name: Upload standalone app
         uses: actions/upload-artifact@v4
         with:
@@ -166,4 +180,5 @@ jobs:
             AR-MKII-Emulator-${{ matrix.arch }}.zip
             AR-MKII-Emulator-${{ matrix.arch }}.zip.sha256
             AR-MKII-Emulator-${{ matrix.arch }}.architecture.txt
+            AR-MKII-Emulator-${{ matrix.arch }}.audit.json
           retention-days: 30
