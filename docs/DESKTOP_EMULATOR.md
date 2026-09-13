@@ -63,6 +63,13 @@ double-click reset. The drawer is explicitly labeled as an emulator extension,
 not a recovered physical-panel page. This mode requires the verified OS 1.72
 MAIN; `--no-filter2` boots the selected MAIN untouched and disables the drawer.
 
+The drawer-composition gate drives the production Filter 2 and LFO2 callbacks
+for lanes 1, 4 and 8 through 32 JSONL events. The bridge produces an exact
+108-byte version-1 snapshot with independent cutoff, rate, depth, waveform,
+mode, enable, note-retrigger and reset-generation state. All five untouched
+lanes retain their defaults and no drawer event leaks into UART. Evidence is in
+`research/AR172_DESKTOP_RUNTIME_DRAWER_COMPOSITION_GATE.json`.
+
 ## Display
 
 The firmware stores its presented 1 KiB OLED framebuffer as 64x128 row-major MSB data. The desktop frontend rotates that buffer 90 degrees into the physical 128x64 display orientation.

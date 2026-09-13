@@ -371,6 +371,46 @@ class DesktopPanelInputTests(unittest.TestCase):
         panel.redraw_skin_overlays = lambda: None
         return panel
 
+    @staticmethod
+    def make_headless_runtime_panel(event_file):
+        from qemu.desktop_panel import PanelApp
+
+        class WidgetStub:
+            def __init__(self, value=64):
+                self.value = value
+                self.configurations = []
+
+            def configure(self, **values):
+                self.configurations.append(values)
+
+            def redraw(self):
+                pass
+
+        class StatusStub:
+            def set(self, value):
+                self.value = value
+
+        panel = PanelApp.__new__(PanelApp)
+        panel.event_file = event_file
+        panel.status = StatusStub()
+        panel.filter2_values = [64] * 8
+        panel.lfo2_rate_values = [64] * 8
+        panel.lfo2_depth_values = [64] * 8
+        panel.lfo2_waveforms = [0] * 8
+        panel.lfo2_modes = [0] * 8
+        panel.lfo2_enabled = [False] * 8
+        panel.lfo2_triggered = [False] * 8
+        panel.lfo2_lane = 0
+        panel.lfo2_lane_buttons = [WidgetStub() for _ in range(8)]
+        panel.lfo2_rate_knob = WidgetStub()
+        panel.lfo2_depth_knob = WidgetStub()
+        panel.lfo2_wave_button = WidgetStub()
+        panel.lfo2_mode_button = WidgetStub()
+        panel.lfo2_enable_button = WidgetStub()
+        panel.lfo2_trigger_button = WidgetStub()
+        panel.lfo2_audition_button = WidgetStub()
+        return panel
+
     def test_qwerty_layout_and_knob_clamp(self):
         from qemu.desktop_panel import (
             BUTTON_RECTS,
@@ -911,6 +951,106 @@ class DesktopPanelInputTests(unittest.TestCase):
             self.assertEqual(restored.depth[2], 32)
             self.assertEqual(restored.enable_mask, 1 << 2)
             self.assertFalse(path.with_suffix(".bin.tmp").exists())
+
+    def test_runtime_drawer_callbacks_publish_exact_isolated_snapshot(self):
+        from qemu.panel_event_bridge import (
+            PanelLink,
+            RuntimeControls,
+            follow_events,
+        )
+
+        class SocketStub:
+            def sendall(self, _data):
+                raise AssertionError("runtime drawer events must not emit UART frames")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            event_file = root / "panel-events.jsonl"
+            control_file = root / "filter2-controls.bin"
+            panel = self.make_headless_runtime_panel(event_file)
+
+            panel.select_lfo2_lane(-4)
+            self.assertEqual(panel.lfo2_lane, 0)
+            panel.filter2(0, 63, 127, True)
+            panel.lfo2_knob("rate", -64, 0)
+            panel.lfo2_knob("depth", 63, 127)
+            panel.cycle_lfo2("waveform")
+            panel.toggle_lfo2_flag("enable")
+            panel.toggle_lfo2_flag("trigger")
+            panel.reset_lfo2()
+
+            panel.select_lfo2_lane(3)
+            panel.filter2(3, 32, 96, True)
+            panel.lfo2_knob("rate", -48, 16)
+            panel.lfo2_knob("depth", -32, 32)
+            panel.cycle_lfo2("waveform")
+            panel.cycle_lfo2("mode")
+            panel.cycle_lfo2("mode")
+            panel.toggle_lfo2_flag("enable")
+            panel.toggle_lfo2_flag("trigger")
+            panel.reset_lfo2()
+            panel.reset_lfo2()
+
+            panel.select_lfo2_lane(99)
+            self.assertEqual(panel.lfo2_lane, 7)
+            panel.filter2(7, -64, 0, True)
+            panel.lfo2_knob("rate", 63, 127)
+            panel.lfo2_knob("depth", -64, 0)
+            for _ in range(6):
+                panel.cycle_lfo2("waveform")
+            for _ in range(3):
+                panel.cycle_lfo2("mode")
+            panel.toggle_lfo2_flag("enable")
+            panel.toggle_lfo2_flag("trigger")
+            panel.reset_lfo2()
+
+            expected = RuntimeControls()
+            expected.filter2[0], expected.filter2[3], expected.filter2[7] = (
+                127, 96, 0
+            )
+            expected.rate[0], expected.rate[3], expected.rate[7] = 0, 16, 127
+            expected.depth[0], expected.depth[3], expected.depth[7] = 127, 32, 0
+            expected.waveform[0], expected.waveform[3], expected.waveform[7] = (
+                1, 1, 6
+            )
+            expected.mode[3], expected.mode[7] = 2, 3
+            expected.enable_mask = 0x89
+            expected.trigger_mask = 0x89
+            expected.reset_generation[0] = 1
+            expected.reset_generation[3] = 2
+            expected.reset_generation[7] = 1
+            expected_snapshot = expected.encode()
+
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(SocketStub(), verbose=False), False,
+                      control_file, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            actual_snapshot = b""
+            while time.monotonic() < deadline:
+                if control_file.is_file():
+                    actual_snapshot = control_file.read_bytes()
+                    if actual_snapshot == expected_snapshot:
+                        break
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            self.assertFalse(follower.is_alive())
+            self.assertEqual(actual_snapshot, expected_snapshot)
+            self.assertEqual(len(actual_snapshot), 108)
+            self.assertEqual(len(self.panel_events(event_file)), 32)
+            self.assertFalse(control_file.with_suffix(".bin.tmp").exists())
+            for lane in (1, 2, 4, 5, 6):
+                self.assertEqual(expected.filter2[lane], 64)
+                self.assertEqual(expected.rate[lane], 64)
+                self.assertEqual(expected.depth[lane], 64)
+                self.assertEqual(expected.waveform[lane], 0)
+                self.assertEqual(expected.mode[lane], 0)
+                self.assertEqual(expected.reset_generation[lane], 0)
 
     def test_qemu_machine_imports_live_filter2_targets(self):
         source = (

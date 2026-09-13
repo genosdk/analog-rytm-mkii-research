@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_RUNTIME_DRAWER_COMPOSITION_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_GUI_CALLBACKS_TO_EXACT_ATOMIC_SNAPSHOT",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "production_path": {
+    "frontend": "qemu/desktop_panel.py PanelApp",
+    "callbacks": [
+      "PanelApp.filter2",
+      "PanelApp.select_lfo2_lane",
+      "PanelApp.lfo2_knob",
+      "PanelApp.cycle_lfo2",
+      "PanelApp.toggle_lfo2_flag",
+      "PanelApp.reset_lfo2"
+    ],
+    "event_transport": "JSONL",
+    "bridge": "qemu/panel_event_bridge.py follow_events",
+    "publication": "atomic 108-byte F2L2 version-1 snapshot",
+    "alternate_control_model_used": false
+  },
+  "selected_lane_states": [
+    {
+      "display_lane": 1,
+      "snapshot_lane": 0,
+      "filter2": 127,
+      "rate": 0,
+      "depth": 127,
+      "waveform": 1,
+      "mode": 0,
+      "enabled": true,
+      "note_retrigger": true,
+      "reset_generation": 1
+    },
+    {
+      "display_lane": 4,
+      "snapshot_lane": 3,
+      "filter2": 96,
+      "rate": 16,
+      "depth": 32,
+      "waveform": 1,
+      "mode": 2,
+      "enabled": true,
+      "note_retrigger": true,
+      "reset_generation": 2
+    },
+    {
+      "display_lane": 8,
+      "snapshot_lane": 7,
+      "filter2": 0,
+      "rate": 127,
+      "depth": 0,
+      "waveform": 6,
+      "mode": 3,
+      "enabled": true,
+      "note_retrigger": true,
+      "reset_generation": 1
+    }
+  ],
+  "lane_selection_bounds": {
+    "negative_lane_clamped_to": 0,
+    "oversized_lane_clamped_to": 7
+  },
+  "isolation": {
+    "untouched_snapshot_lanes": [1, 2, 4, 5, 6],
+    "untouched_filter2_rate_depth": 64,
+    "untouched_waveform_mode_reset_generation": 0,
+    "enable_mask_hex": "0x0089",
+    "trigger_mask_hex": "0x0089",
+    "cross_lane_clobbers": 0
+  },
+  "publication": {
+    "gui_jsonl_records": 32,
+    "snapshot_bytes": 108,
+    "snapshot_sha256": "04354d916a96d6fd6e1ba3a087b03fa0c6510d61a825c0e62444fdb2e8de7f81",
+    "exact_runtime_controls_encode_match": true,
+    "temporary_file_remaining": false,
+    "uart_frames_emitted": 0
+  },
+  "validation": {
+    "focused_desktop_panel_tests": 15,
+    "full_research_tests": 55,
+    "expected_fixture_skips": 15,
+    "result": "PASS"
+  },
+  "related_live_evidence": [
+    "research/AR172_QEMU_LFO2_RUNTIME_CONTROL_GATE.json",
+    "research/AR172_QEMU_LFO2_EXPLICIT_RESET_GATE.json"
+  ],
+  "scope_limit": "This host-side composition gate proves that the production drawer callbacks and bridge construct the exact isolated atomic snapshot. The cited live QEMU gates separately prove import and execution of the runtime controls. This gate does not claim physical hardware control transport or recovered stock UI semantics for the emulator-only drawer.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

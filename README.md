@@ -122,6 +122,9 @@ and reproducible tooling.
 - Wheel, arrow, Page Up/Down, Home/End, double-click and extreme-drag encoder
   inputs are boundary-gated at `0..127` and replayed as exact signed UART8
   deltas without duplicate endpoint events.
+- Production Filter 2/LFO2 drawer callbacks compose independent lane 1/4/8
+  settings into an exact atomic 108-byte runtime snapshot while preserving all
+  untouched lanes and emitting no UART traffic.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
