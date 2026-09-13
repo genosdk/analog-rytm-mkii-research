@@ -119,6 +119,9 @@ and reproducible tooling.
 - A complete photographic-control replay now carries all 57 pixel-dispatched
   button, Trig and encoder interactions through JSONL to exact native UART8
   frames, with no held controls after release.
+- Wheel, arrow, Page Up/Down, Home/End, double-click and extreme-drag encoder
+  inputs are boundary-gated at `0..127` and replayed as exact signed UART8
+  deltas without duplicate endpoint events.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to

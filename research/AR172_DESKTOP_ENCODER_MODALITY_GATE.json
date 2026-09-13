@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_ENCODER_MODALITY_GATE",
+  "recorded_at_utc": "2026-09-12",
+  "status": "PASS_ALL_INPUT_MODALITIES_CLAMP_AND_SIGNED_UART8",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "production_path": {
+    "frontend": "qemu/desktop_panel.py PanelApp",
+    "coordinate_source": "KNOB_CENTERS[A]",
+    "handlers": [
+      "PanelApp.skin_wheel",
+      "PanelApp.key_press",
+      "PanelApp.skin_double_click",
+      "PanelApp.skin_press",
+      "PanelApp.skin_drag",
+      "PanelApp.skin_release"
+    ],
+    "clamp": "qemu/desktop_panel.py clamp_panel_value",
+    "event_transport": "JSONL",
+    "bridge": "qemu/panel_event_bridge.py follow_events",
+    "firmware_transport": "UART8 native encoder frames",
+    "alternate_input_model_used": false
+  },
+  "sequence": [
+    {"input": "wheel up", "value": 65, "delta": 1, "frame": "30 01"},
+    {"input": "wheel down", "value": 64, "delta": -1, "frame": "30 FF"},
+    {"input": "Up", "value": 65, "delta": 1, "frame": "30 01"},
+    {"input": "Right", "value": 66, "delta": 1, "frame": "30 01"},
+    {"input": "Down", "value": 65, "delta": -1, "frame": "30 FF"},
+    {"input": "Left", "value": 64, "delta": -1, "frame": "30 FF"},
+    {"input": "Page Up", "value": 72, "delta": 8, "frame": "30 08"},
+    {"input": "Page Down", "value": 64, "delta": -8, "frame": "30 F8"},
+    {"input": "Home", "value": 0, "delta": -64, "frame": "30 C0"},
+    {"input": "End", "value": 127, "delta": 127, "frame": "30 7F"},
+    {"input": "double-click reset", "value": 64, "delta": -63, "frame": "30 C1"},
+    {"input": "oversized upward drag", "value": 127, "delta": 63, "frame": "30 3F"},
+    {"input": "oversized downward drag", "value": 0, "delta": -127, "frame": "30 81"},
+    {"input": "double-click reset", "value": 64, "delta": 64, "frame": "30 40"}
+  ],
+  "negative_controls": {
+    "second_home_at_zero_emitted_frame": false,
+    "second_end_at_127_emitted_frame": false,
+    "unknown_key_emitted_frame": false,
+    "wheel_outside_encoder_emitted_frame": false,
+    "double_click_outside_encoder_emitted_frame": false
+  },
+  "boundary_proof": {
+    "minimum": 0,
+    "maximum": 127,
+    "published_records": 14,
+    "uart8_frames": 14,
+    "exact_order_and_bytes": true,
+    "final_value": 64,
+    "focused_encoder": "A"
+  },
+  "mapping_precondition": "research/AR172_DESKTOP_PHOTOGRAPHIC_UART_GATE.json separately proves the same production path and +5 drag mapping for all encoders A..I.",
+  "validation": {
+    "focused_desktop_panel_tests": 14,
+    "full_research_tests": 54,
+    "expected_fixture_skips": 15,
+    "result": "PASS"
+  },
+  "scope_limit": "This host/bridge gate proves every advertised input modality and endpoint behavior on encoder A. The cited photographic UART gate separately proves A-I coordinate and frame-index coverage. It does not claim physical encoder timing or live stock-firmware observation of every delta.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

@@ -769,6 +769,86 @@ class DesktopPanelInputTests(unittest.TestCase):
             self.assertFalse(panel.button_held)
             self.assertTrue(all(not owners for owners in panel.held_trigs.values()))
 
+    def test_photographic_encoder_modalities_clamp_and_replay_exactly(self):
+        from qemu.desktop_panel import KNOB_CENTERS
+        from qemu.panel_event_bridge import PanelLink, follow_events
+
+        class PointerEvent:
+            def __init__(self, x, y, y_root=500, delta=0):
+                self.x = x
+                self.y = y
+                self.y_root = y_root
+                self.delta = delta
+
+        class KeyEvent:
+            def __init__(self, keysym):
+                self.keysym = keysym
+
+        class SocketStub:
+            def __init__(self):
+                self.frames = []
+
+            def sendall(self, data):
+                self.frames.append(data)
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_skin_panel(event_file)
+            x, y = KNOB_CENTERS["A"]
+
+            self.assertEqual(panel.skin_wheel(PointerEvent(x, y, delta=120)), "break")
+            self.assertEqual(panel.skin_wheel(PointerEvent(x, y, delta=-120)), "break")
+            for key in ("Up", "Right", "Down", "Left", "Prior", "Next"):
+                self.assertEqual(panel.key_press(KeyEvent(key)), "break")
+            self.assertEqual(panel.key_press(KeyEvent("Home")), "break")
+            self.assertEqual(panel.key_press(KeyEvent("Home")), "break")
+            self.assertEqual(panel.key_press(KeyEvent("End")), "break")
+            self.assertEqual(panel.key_press(KeyEvent("End")), "break")
+            self.assertIsNone(panel.key_press(KeyEvent("Escape")))
+            self.assertEqual(panel.skin_double_click(PointerEvent(x, y)), "break")
+
+            press = PointerEvent(x, y)
+            panel.skin_press(press)
+            panel.skin_drag(PointerEvent(x, y - 1000, y_root=-500))
+            panel.skin_release(press)
+            panel.skin_press(press)
+            panel.skin_drag(PointerEvent(x, y + 1000, y_root=1500))
+            panel.skin_release(press)
+            panel.skin_double_click(PointerEvent(x, y))
+
+            before_miss = len(self.panel_events(event_file))
+            panel.skin_wheel(PointerEvent(0, 0, delta=120))
+            panel.skin_double_click(PointerEvent(0, 0))
+            self.assertEqual(len(self.panel_events(event_file)), before_miss)
+
+            sock = SocketStub()
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(sock, verbose=False), False,
+                      None, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            while len(sock.frames) < 14 and time.monotonic() < deadline:
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            deltas = [1, -1, 1, 1, -1, -1, 8, -8,
+                      -64, 127, -63, 63, -127, 64]
+            self.assertFalse(follower.is_alive())
+            self.assertEqual(
+                sock.frames,
+                [bytes((0x30, delta & 0xFF)) for delta in deltas],
+            )
+            self.assertEqual(
+                [event["value"] for event in self.panel_events(event_file)],
+                deltas,
+            )
+            self.assertEqual(panel.encoder_values["A"], 64)
+            self.assertEqual(panel.focused_encoder, "A")
+
     def test_knob_delta_uses_validated_signed_encoder_frame(self):
         from qemu.panel_event_bridge import PanelLink
 

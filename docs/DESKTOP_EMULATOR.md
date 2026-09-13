@@ -93,6 +93,13 @@ all eight page/action buttons, all sixteen Trigs, and a +5 drag on every encoder
 A–I. The replay ends with no held buttons or Trigs. Evidence is in
 `research/AR172_DESKTOP_PHOTOGRAPHIC_UART_GATE.json`.
 
+Encoder A then serves as the modality and boundary representative for the
+already-complete A–I mapping. Wheel, arrows, Page Up/Down, Home/End,
+double-click reset and deliberately oversized drags produce 14 exact signed
+UART8 deltas. Values clamp to `0..127`; repeated endpoint commands, unknown
+keys and off-control pointer actions emit nothing. Evidence is in
+`research/AR172_DESKTOP_ENCODER_MODALITY_GATE.json`.
+
 By default, the launcher derives a temporary, non-flashable Filter 2 + LFO2
 runtime candidate from the caller-supplied, hash-verified OS 1.72 MAIN. One
 versioned 108-byte snapshot atomically publishes eight lanes of Filter 2,
