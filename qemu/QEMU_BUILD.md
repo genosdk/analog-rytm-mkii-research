@@ -382,6 +382,17 @@ replays at `stable=8` and `stable=16` matched all 3,309 ordered accesses, all 35
 registers, and every touched byte; the later footprint reached ten pages and
 4,114 bytes. This leaf is the next verifier-only reconstruction target.
 
+The leaf's dominant bounded core is entered eight times per vector-191 service.
+Each call runs 32 iterations at `0x40108E2C..0x40108E48` and exits at
+`0x40108E4A`; every iteration has two accumulator-output stores and two
+postincrement stream loads. Its long fractional arithmetic runs with overflow
+saturation enabled. The verifier-only `candidate=emac32` reconstruction seeds
+ACC0 from the current stream word, accumulates one product into ACC0 and two
+into ACC1, and queues all writes transactionally. Both `stable=8` and
+`stable=16` runs matched all 35 registers and 1,224 touched bytes across two
+pages, with zero candidate guest accesses and no fallback. The next gate is a
+direct-state helper and exact incremental profile.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

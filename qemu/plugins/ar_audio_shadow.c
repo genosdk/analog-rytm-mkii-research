@@ -90,6 +90,7 @@ static bool candidate_transform;
 static bool candidate_tcg_transform;
 static bool candidate_outer;
 static bool candidate_tcg_outer;
+static bool candidate_emac32;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -107,6 +108,9 @@ static uint64_t runtime_fallbacks;
 #define OUTER_START_PC 0x401184c4
 #define OUTER_END_PC   0x401184f6
 #define OUTER_EXIT_PC  0x401184f8
+#define EMAC32_START_PC 0x40108e2c
+#define EMAC32_END_PC   0x40108e48
+#define EMAC32_EXIT_PC  0x40108e4a
 #define MACSR_PAV0     0x100
 #define MACSR_OMC      0x080
 #define MACSR_SU       0x040
@@ -884,6 +888,71 @@ static bool accelerate_outer(void)
     return true;
 }
 
+static bool accelerate_emac32(void)
+{
+    InnerState s;
+    InnerState entry;
+    InnerWrites writes = { 0 };
+    size_t applied = 0;
+
+    if (!read_inner_state(&s) ||
+        (s.macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
+            (MACSR_OMC | MACSR_FI) ||
+        s.mask != UINT32_MAX || s.d[0] != 32) {
+        return false;
+    }
+    entry = s;
+
+    for (unsigned iteration = 0; iteration < 32; iteration++) {
+        uint32_t loaded;
+
+        s.d[4] = inner_movclr(&s, 0);
+        if (!inner_queue_write(&writes, s.a[1] - 8, s.d[4])) {
+            return false;
+        }
+
+        s.macc[0] = (uint64_t)((int64_t)(int32_t)s.d[1] * 256);
+        s.macsr &= ~MACSR_PAV0;
+        inner_mac_clear_flags(&s);
+        inner_mac_set_flags(&s, 0);
+        transform_mac(&s, 0, s.d[2], s.d[6]);
+
+        s.d[4] = inner_movclr(&s, 1);
+        if (!inner_queue_write(&writes, s.a[0] - 8, s.d[4])) {
+            return false;
+        }
+
+        if (!inner_read_memory(&writes, s.a[0] & s.mask, &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 1, s.d[1], s.d[6]);
+        s.d[1] = loaded;
+        s.a[0] += 4;
+
+        if (!inner_read_memory(&writes, s.a[1] & s.mask, &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 1, s.d[2], s.d[7]);
+        s.d[2] = loaded;
+        s.a[1] += 4;
+        s.d[0]--;
+    }
+    s.ps = (s.ps & ~0x1fU) | CCF_Z;
+
+    if (!inner_apply_writes(&writes, &applied)) {
+        inner_rollback_writes(&writes, applied);
+        return false;
+    }
+    if (!write_inner_state(&s)) {
+        bool rollback_ok = inner_rollback_writes(&writes, applied);
+
+        rollback_ok &= write_inner_state(&entry);
+        (void)rollback_ok;
+        return false;
+    }
+    return true;
+}
+
 static void page_state_free(gpointer data)
 {
     PageState *page = data;
@@ -1115,7 +1184,8 @@ static void write_report(bool complete)
     }
     bool candidate_ok = (!candidate_inner && !candidate_tcg &&
                          !candidate_transform && !candidate_tcg_transform &&
-                         !candidate_outer && !candidate_tcg_outer) ||
+                         !candidate_outer && !candidate_tcg_outer &&
+                         !candidate_emac32) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -1127,6 +1197,7 @@ static void write_report(bool complete)
          candidate_tcg_transform ? "PASS_NATIVE_TRANSFORM_TCG" :
          candidate_outer ? "PASS_NATIVE_OUTER_CANDIDATE" :
          candidate_tcg_outer ? "PASS_NATIVE_OUTER_TCG" :
+         candidate_emac32 ? "PASS_NATIVE_EMAC32_CANDIDATE" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -1156,11 +1227,13 @@ static void write_report(bool complete)
             candidate_transform ? "transform" :
             candidate_tcg_transform ? "tcg-transform" :
             candidate_outer ? "outer" :
-            candidate_tcg_outer ? "tcg-outer" : "native-shadow",
+            candidate_tcg_outer ? "tcg-outer" :
+            candidate_emac32 ? "emac32" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
-            (candidate_inner || candidate_transform || candidate_outer) &&
+            (candidate_inner || candidate_transform || candidate_outer ||
+             candidate_emac32) &&
             candidate_executed ?
             "false" : "true",
             footprint_miss ? "true" : "false",
@@ -1243,12 +1316,14 @@ static void boundary(unsigned int cpu_index, void *userdata)
             active = true;
         } else if (phase == PHASE_SHADOW) {
             active = true;
-            if (candidate_inner || candidate_transform || candidate_outer) {
+            if (candidate_inner || candidate_transform || candidate_outer ||
+                candidate_emac32) {
                 candidate_attempted = true;
                 candidate_executed = candidate_inner ? accelerate_inner() :
                                      candidate_transform ?
                                      accelerate_transform() :
-                                     accelerate_outer();
+                                     candidate_outer ? accelerate_outer() :
+                                     accelerate_emac32();
                 if (candidate_executed) {
                     redirect_candidate = true;
                 } else {
@@ -1335,7 +1410,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
             candidate_fallback = !candidate_executed;
         }
         access_match = ((candidate_inner || candidate_transform ||
-                         candidate_outer) &&
+                         candidate_outer || candidate_emac32) &&
                        candidate_executed ?
                         true : compare_accesses());
         register_match = compare_registers();
@@ -1459,6 +1534,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_outer = true;
         } else if (!strcmp(argv[i], "candidate=tcg-outer")) {
             candidate_tcg_outer = true;
+        } else if (!strcmp(argv[i], "candidate=emac32")) {
+            candidate_emac32 = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -1479,7 +1556,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
     }
     if ((candidate_inner + candidate_tcg + candidate_transform +
          candidate_tcg_transform + candidate_outer + candidate_tcg_outer +
-         runtime_inner) > 1) {
+         candidate_emac32 + runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
     }
@@ -1511,6 +1588,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != OUTER_START_PC || end_pc != OUTER_END_PC ||
          exit_pc != OUTER_EXIT_PC)) {
         fprintf(stderr, "outer TCG candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_emac32 &&
+        (start_pc != EMAC32_START_PC || end_pc != EMAC32_END_PC ||
+         exit_pc != EMAC32_EXIT_PC)) {
+        fprintf(stderr, "EMAC32 candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

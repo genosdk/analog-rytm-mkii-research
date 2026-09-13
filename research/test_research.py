@@ -406,6 +406,20 @@ class QemuAudioEdmaTests(unittest.TestCase):
             handoff_leaf["same_process_replay"]["native_events_per_call"],
             3309,
         )
+        emac32 = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_EMAC32_ACCELERATOR_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            emac32["status"], "PASS_NATIVE_HANDOFF_EMAC32_CANDIDATE"
+        )
+        self.assertEqual(emac32["candidate"]["iterations_per_call"], 32)
+        self.assertEqual(emac32["stock_audio_target"]["native_events"], 128)
+        self.assertTrue(
+            emac32["stock_audio_target"]["late_cursor_run"]
+                  ["touched_memory_match"]
+        )
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -421,6 +435,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         )
         self.assertIn('!strcmp(argv[i], "candidate=outer")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-outer")', shadow_plugin)
+        self.assertIn('!strcmp(argv[i], "candidate=emac32")', shadow_plugin)
         self.assertIn('g_str_has_prefix(argv[i], "mem-start=")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)

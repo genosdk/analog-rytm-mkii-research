@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_EMAC32_ACCELERATOR_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_NATIVE_HANDOFF_EMAC32_CANDIDATE",
+  "candidate": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "mode": "candidate=emac32",
+    "scope": "same-process verifier candidate",
+    "production_enabled": false,
+    "entry_pc": "0x40108E2C",
+    "inclusive_native_window": "0x40108E2C..0x40108E48",
+    "exit_pc": "0x40108E4A",
+    "iterations_per_call": 32,
+    "calls_per_vector_191_service": 8,
+    "memory_events_per_iteration": 4,
+    "memory_roles": [
+      "previous ACC0 output store",
+      "previous ACC1 output store",
+      "stream-A postincrement load",
+      "stream-B postincrement load"
+    ],
+    "arithmetic": "Seed ACC0 from the current stream-A word, accumulate one long fractional product, and accumulate two long fractional products into ACC1.",
+    "emac_mode": "fractional with overflow saturation enabled",
+    "transactional_writes": true
+  },
+  "stock_audio_target": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all three prior TCG helpers enabled",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "registers": 35,
+    "footprint_pages": 2,
+    "native_events": 128,
+    "candidate_guest_events": 0,
+    "candidate_attempted": true,
+    "candidate_executed": true,
+    "candidate_fallback": false,
+    "validation_runs": 2,
+    "first_run": {
+      "required_stable_calls": 8,
+      "discovery_calls": 8,
+      "touched_bytes": 1224,
+      "exit_register_match": true,
+      "touched_memory_match": true
+    },
+    "late_cursor_run": {
+      "required_stable_calls": 16,
+      "discovery_calls": 16,
+      "touched_bytes": 1224,
+      "exit_register_match": true,
+      "touched_memory_match": true
+    }
+  },
+  "guard_correction": {
+    "initial_assumption": "fractional mode without overflow saturation",
+    "observed_native_mode": "fractional mode with overflow saturation",
+    "resolution": "Require both FI and OMC while rejecting signed-integer and rounding modes."
+  },
+  "conclusion": "The clean-room 32-iteration candidate reproduces the complete architectural and touched-memory exit state at two cursor positions. Its containing 30,001-instruction leaf remains native outside this bounded loop.",
+  "next_gate": "Promote the candidate to a disabled-by-default direct-state TCG helper, repeat the explicit-arm oracle, and measure its exact incremental ISR reduction.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "The implementation and evidence contain clean-room arithmetic and aggregate results only. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}
