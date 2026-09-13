@@ -385,6 +385,7 @@ class PanelApp:
         self.photo = None
         self.held_trigs: dict[int, set[str]] = {}
         self.pending_key_releases: dict[str, str] = {}
+        self.pending_audition_releases: dict[int, str] = {}
         self.page_widgets: dict[str, PanelButton | SkinState] = {}
         self.trig_widgets: dict[int, TrigPad | SkinState] = {}
         self.active_page: str | None = None
@@ -907,8 +908,17 @@ class PanelApp:
         if not self.audio_enabled:
             return
         trig = self.lfo2_lane + 1
+        pending = self.pending_audition_releases.pop(trig, None)
+        if pending is not None:
+            self.root.after_cancel(pending)
         self.trig(trig, True, "audition")
-        self.root.after(35, lambda: self.trig(trig, False, "audition"))
+        self.pending_audition_releases[trig] = self.root.after(
+            35, lambda trig=trig: self.finish_audition(trig)
+        )
+
+    def finish_audition(self, trig: int) -> None:
+        self.pending_audition_releases.pop(trig, None)
+        self.trig(trig, False, "audition")
 
     def key_press(self, event) -> str | None:
         key = event.keysym.lower()
@@ -956,6 +966,9 @@ class PanelApp:
         for callback in self.pending_key_releases.values():
             self.root.after_cancel(callback)
         self.pending_key_releases.clear()
+        for callback in self.pending_audition_releases.values():
+            self.root.after_cancel(callback)
+        self.pending_audition_releases.clear()
         for trig, sources in list(self.held_trigs.items()):
             if sources:
                 sources.clear()

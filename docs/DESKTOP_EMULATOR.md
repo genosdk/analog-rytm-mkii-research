@@ -77,6 +77,15 @@ no-op. All eight Filter 2 knobs and lane-switched LFO2 rate/depth knobs produce
 24 JSONL records and the exact expected 108-byte snapshot without UART output.
 Evidence is in `research/AR172_DESKTOP_VIRTUAL_KNOB_GATE.json`.
 
+The selected-lane audition gate covers the drawer's complete temporary-trigger
+lifecycle. With audio disabled the action is inert. With audio enabled, lanes
+1–8 emit the corresponding Trigs 1–8 for exactly one scheduled 35 ms hold;
+repeating an audition replaces its timer rather than releasing early. Mouse
+and QWERTY ownership of the same Trig survives the audition release, while
+focus loss and window close cancel pending releases and clear the held state.
+The resulting 24 frontend events replay as 24 exact native UART8 group-3 frames.
+Evidence is in `research/AR172_DESKTOP_LFO2_AUDITION_LIFECYCLE_GATE.json`.
+
 ## Display
 
 The firmware stores its presented 1 KiB OLED framebuffer as 64x128 row-major MSB data. The desktop frontend rotates that buffer 90 degrees into the physical 128x64 display orientation.

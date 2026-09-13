@@ -283,16 +283,20 @@ class DesktopPanelInputTests(unittest.TestCase):
         class RootStub:
             def __init__(self):
                 self.callbacks = {}
+                self.delays = {}
                 self.next_callback = 0
+                self.destroyed = False
 
-            def after(self, _delay, callback):
+            def after(self, delay, callback):
                 self.next_callback += 1
                 token = f"after-{self.next_callback}"
                 self.callbacks[token] = callback
+                self.delays[token] = delay
                 return token
 
             def after_cancel(self, token):
                 self.callbacks.pop(token, None)
+                self.delays.pop(token, None)
 
             def after_idle(self, callback):
                 callback()
@@ -303,8 +307,12 @@ class DesktopPanelInputTests(unittest.TestCase):
             def run_pending(self):
                 callbacks = list(self.callbacks.values())
                 self.callbacks.clear()
+                self.delays.clear()
                 for callback in callbacks:
                     callback()
+
+            def destroy(self):
+                self.destroyed = True
 
         class StatusStub:
             def set(self, value):
@@ -322,6 +330,7 @@ class DesktopPanelInputTests(unittest.TestCase):
         panel.event_file = event_file
         panel.held_trigs = {}
         panel.pending_key_releases = {}
+        panel.pending_audition_releases = {}
         panel.trig_widgets = {1: TrigStub()}
         panel.encoder_values = {}
         panel.status = StatusStub()
@@ -366,6 +375,8 @@ class DesktopPanelInputTests(unittest.TestCase):
         panel.active_page = "TRIG"
         panel.page_widgets = {name: StateStub() for name in PAGE_BUTTONS}
         panel.held_trigs = {}
+        panel.pending_key_releases = {}
+        panel.pending_audition_releases = {}
         panel.trig_widgets = {trig: StateStub() for trig in range(1, 17)}
         panel.status = StatusStub()
         panel.redraw_skin_overlays = lambda: None
@@ -687,6 +698,110 @@ class DesktopPanelInputTests(unittest.TestCase):
             self.assertEqual(len(self.panel_events(event_file)), 32)
             self.assertTrue(all(not owners for owners in panel.held_trigs.values()))
             self.assertFalse(panel.pending_key_releases)
+
+    def test_selected_lane_audition_lifecycle_and_exact_uart_frames(self):
+        from qemu.panel_event_bridge import PanelLink, follow_events
+
+        class KeyEvent:
+            keysym = "q"
+
+        class SocketStub:
+            def __init__(self):
+                self.frames = []
+
+            def sendall(self, data):
+                self.frames.append(data)
+
+        with tempfile.TemporaryDirectory() as directory:
+            event_file = Path(directory) / "panel-events.jsonl"
+            panel = self.make_headless_panel(event_file)
+            panel.audio_enabled = False
+            panel.lfo2_lane = 4
+            panel.audition_lfo2()
+            self.assertEqual(self.panel_events(event_file), [])
+            self.assertFalse(panel.root.callbacks)
+
+            panel.audio_enabled = True
+            expected_frames = []
+            for lane in range(8):
+                panel.lfo2_lane = lane
+                panel.audition_lfo2()
+                first_token = panel.pending_audition_releases[lane + 1]
+                self.assertEqual(panel.root.delays[first_token], 35)
+                self.assertEqual(panel.held_trigs[lane + 1], {"audition"})
+                if lane == 0:
+                    panel.audition_lfo2()
+                    self.assertNotIn(first_token, panel.root.callbacks)
+                    self.assertEqual(len(panel.pending_audition_releases), 1)
+                panel.root.run_pending()
+                self.assertFalse(panel.held_trigs[lane + 1])
+                self.assertFalse(panel.pending_audition_releases)
+                expected_frames.extend(
+                    (bytes((0x23, 1 << lane)), bytes((0x23, 0)))
+                )
+
+            panel.trig(1, True, "mouse")
+            panel.lfo2_lane = 0
+            panel.audition_lfo2()
+            panel.root.run_pending()
+            self.assertEqual(panel.held_trigs[1], {"mouse"})
+            panel.trig(1, False, "mouse")
+            expected_frames.extend((b"\x23\x01", b"\x23\x00"))
+
+            panel.key_press(KeyEvent())
+            panel.audition_lfo2()
+            panel.key_release(KeyEvent())
+            self.assertEqual(sorted(panel.root.delays.values()), [12, 35])
+            panel.root.run_pending()
+            self.assertFalse(panel.held_trigs[1])
+            self.assertFalse(panel.pending_key_releases)
+            self.assertFalse(panel.pending_audition_releases)
+            expected_frames.extend((b"\x23\x01", b"\x23\x00"))
+
+            panel.lfo2_lane = 3
+            panel.audition_lfo2()
+            self.assertTrue(panel.pending_audition_releases)
+            panel.focus_lost()
+            self.assertFalse(panel.held_trigs[4])
+            self.assertFalse(panel.pending_audition_releases)
+            self.assertFalse(panel.root.callbacks)
+            expected_frames.extend((b"\x23\x08", b"\x23\x00"))
+
+            panel.lfo2_lane = 7
+            panel.audition_lfo2()
+            panel.close()
+            self.assertTrue(panel.root.destroyed)
+            self.assertFalse(panel.held_trigs[8])
+            self.assertFalse(panel.pending_audition_releases)
+            self.assertFalse(panel.root.callbacks)
+            expected_frames.extend((b"\x23\x80", b"\x23\x00"))
+
+            events = self.panel_events(event_file)
+            self.assertEqual(len(events), 24)
+            self.assertEqual(
+                [(event["value"], int(event["name"])) for event in events[:16]],
+                [
+                    (state, lane)
+                    for lane in range(1, 9)
+                    for state in ("press", "release")
+                ],
+            )
+
+            sock = SocketStub()
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(sock, verbose=False), False, None, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            while time.monotonic() < deadline and len(sock.frames) < len(expected_frames):
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            self.assertFalse(follower.is_alive())
+            self.assertEqual(sock.frames, expected_frames)
 
     def test_cross_group_qwerty_chord_keeps_masks_independent(self):
         from qemu.panel_event_bridge import PanelLink, follow_events

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_LFO2_AUDITION_LIFECYCLE_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_SELECTED_LANE_AUDITION_LIFECYCLE_TO_EXACT_UART8",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "production_path": {
+    "frontend": "qemu/desktop_panel.py PanelApp",
+    "methods": [
+      "PanelApp.audition_lfo2",
+      "PanelApp.finish_audition",
+      "PanelApp.trig",
+      "PanelApp.release_all_trigs",
+      "PanelApp.focus_lost",
+      "PanelApp.close"
+    ],
+    "event_transport": "JSONL",
+    "bridge": "qemu/panel_event_bridge.py follow_events",
+    "wire_protocol": "native UART8 group-3 trigger bitmap"
+  },
+  "lane_mapping": [
+    {"selected_lane": 1, "trig": 1, "press_frame_hex": "23 01"},
+    {"selected_lane": 2, "trig": 2, "press_frame_hex": "23 02"},
+    {"selected_lane": 3, "trig": 3, "press_frame_hex": "23 04"},
+    {"selected_lane": 4, "trig": 4, "press_frame_hex": "23 08"},
+    {"selected_lane": 5, "trig": 5, "press_frame_hex": "23 10"},
+    {"selected_lane": 6, "trig": 6, "press_frame_hex": "23 20"},
+    {"selected_lane": 7, "trig": 7, "press_frame_hex": "23 40"},
+    {"selected_lane": 8, "trig": 8, "press_frame_hex": "23 80"}
+  ],
+  "lifecycle": {
+    "audio_disabled_events": 0,
+    "release_delay_ms": 35,
+    "repeated_audition_replaces_pending_timer": true,
+    "repeated_audition_duplicate_press_events": 0,
+    "mouse_owner_survives_audition_release": true,
+    "qwerty_owner_survives_audition_release": true,
+    "qwerty_release_delay_ms": 12,
+    "focus_loss_cancels_pending_audition": true,
+    "close_cancels_pending_audition": true,
+    "held_triggers_after_cleanup": 0,
+    "pending_callbacks_after_cleanup": 0
+  },
+  "publication": {
+    "frontend_jsonl_records": 24,
+    "uart8_frames": 24,
+    "uart8_bytes": 48,
+    "uart8_sha256": "faf9d97e925e91645ce8c8fe2e31cccd329c4291d2053088b19fe357dd34ac64",
+    "exact_expected_frame_sequence_match": true
+  },
+  "validation": {
+    "focused_audition_tests": 1,
+    "full_research_tests": 57,
+    "expected_fixture_skips": 15,
+    "result": "PASS"
+  },
+  "scope_limit": "This host-side gate proves selected-lane audition timing, trigger-source ownership, cleanup and exact bridge output. It does not claim physical hardware transport, live QEMU audio output, or recovered stock UI semantics for the emulator-only drawer.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

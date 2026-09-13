@@ -129,6 +129,10 @@ and reproducible tooling.
   drag, wheel, arrows, Page Up/Down, Home/End and double-click reset drive all
   eight Filter 2 controls plus lane-switched LFO2 rate/depth into an exact
   108-byte snapshot, with clamping, duplicate endpoint suppression and no UART.
+- Selected-lane LFO2 audition now has a complete input lifecycle: lanes 1–8
+  map exactly to Trigs 1–8, repeated audition restarts the 35 ms release timer,
+  mouse/QWERTY ownership is preserved, and focus loss or close cancels pending
+  releases so no trigger can remain held.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
