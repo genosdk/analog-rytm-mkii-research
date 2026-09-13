@@ -140,6 +140,15 @@ class MacosPackagingTests(unittest.TestCase):
         self.assertIn("--hidden-import audio_callback_probe", workflow)
         self.assertIn("--hidden-import lfo2_extended_waveform_probe", workflow)
 
+    def test_packaged_native_tk_self_test_covers_runtime_drawer(self):
+        source = (ROOT / "qemu" / "desktop_panel.py").read_text(encoding="utf-8")
+        self.assertIn("filter2_enabled=True", source)
+        self.assertIn("audio_enabled=True", source)
+        self.assertIn("expected_knobs", source)
+        self.assertIn("expected_drawer_events", source)
+        self.assertIn('root.tk.call("after", 45)', source)
+        self.assertIn("native Tk drawer left an audition trigger pending", source)
+
     def test_first_launch_diagnostic_is_sanitized_and_reproducible(self):
         sys.path.insert(0, str(ROOT / "qemu"))
         try:

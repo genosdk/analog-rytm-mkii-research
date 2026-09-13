@@ -105,10 +105,14 @@ self-test. It loads both photographic rasters, constructs all 36 active crops,
 composes every control state simultaneously, renders a patterned firmware OLED
 surface, clears the overlays, and rejects incomplete or out-of-bounds geometry.
 This runs from the signed `.app`, so it validates the same frozen resources and
-Tk image path used at launch rather than only inspecting PNG headers. It then
-replays pointer presses at all eight button and sixteen Trig hit regions plus a
-drag on each encoder A-I, checks the corresponding illumination, and compares
-all 57 emitted JSONL records with the production bridge contract.
+Tk image path used at launch rather than only inspecting PNG headers. It also
+opens the Filter 2/LFO2 drawer, requires all eight cutoff knobs plus rate/depth,
+verifies each native pointer and keyboard binding, replays representative
+cutoff/rate/depth controls and one timed audition, and rejects residual trigger
+state. It then replays pointer presses at all eight button and sixteen Trig hit
+regions plus a drag on each encoder A-I, checks the corresponding illumination,
+and compares all 57 photographic JSONL records with the production bridge
+contract.
 
 The downstream photographic-control gate continues those same 57 interactions
 through `panel_event_bridge.follow_events`. It verifies exact UART8 bytes for

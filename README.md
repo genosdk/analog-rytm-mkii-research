@@ -133,6 +133,9 @@ and reproducible tooling.
   map exactly to Trigs 1–8, repeated audition restarts the 35 ms release timer,
   mouse/QWERTY ownership is preserved, and focus loss or close cancels pending
   releases so no trigger can remain held.
+- The signed-app native Tk self-test now opens the Filter 2/LFO2 drawer,
+  requires all ten knobs and their pointer/keyboard bindings, exercises cutoff,
+  rate, depth and audition events, and rejects pending trigger state at teardown.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to

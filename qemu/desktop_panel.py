@@ -1054,12 +1054,18 @@ class PanelApp:
 
 
 def skin_runtime_self_test(frame_file: Path, event_file: Path) -> None:
-    """Exercise Tk loading, crop composition, stacking, and OLED rendering."""
+    """Exercise native Tk panel/drawer construction, input, and rendering."""
     validate_skin_geometry()
     root = tk.Tk()
     root.withdraw()
     try:
-        panel = PanelApp(root, frame_file, event_file, filter2_enabled=False)
+        panel = PanelApp(
+            root,
+            frame_file,
+            event_file,
+            filter2_enabled=True,
+            audio_enabled=True,
+        )
         root.update_idletasks()
 
         specs = active_crop_specs()
@@ -1103,6 +1109,84 @@ def skin_runtime_self_test(frame_file: Path, event_file: Path) -> None:
             for item_id in panel.active_image_ids.values()
         ):
             raise RuntimeError("Tk failed to clear photographic overlays")
+
+        # Construct the real extension drawer inside the same frozen Tk runtime
+        # used by the packaged app. Verify every VirtualKnob and binding before
+        # exercising representative controls through the production methods.
+        panel.toggle_filter2()
+        drawer = panel.filter2_window
+        if drawer is None or not drawer.winfo_exists():
+            raise RuntimeError("Tk did not construct the Filter 2/LFO2 drawer")
+        drawer.withdraw()
+        root.update_idletasks()
+
+        descendants = list(drawer.winfo_children())
+        for widget in descendants:
+            descendants.extend(widget.winfo_children())
+        knobs = {
+            widget.name: widget
+            for widget in descendants
+            if isinstance(widget, VirtualKnob)
+        }
+        expected_knobs = {str(lane) for lane in range(1, 9)} | {"RATE", "DEPTH"}
+        if set(knobs) != expected_knobs:
+            raise RuntimeError("Tk did not construct all ten drawer knobs")
+        for name, knob in knobs.items():
+            for sequence in (
+                "<ButtonPress-1>",
+                "<B1-Motion>",
+                "<MouseWheel>",
+                "<Button-4>",
+                "<Button-5>",
+                "<Double-Button-1>",
+                "<KeyPress>",
+            ):
+                if not knob.bind(sequence):
+                    raise RuntimeError(f"drawer knob {name} lacks {sequence}")
+
+        class DrawerEvent:
+            def __init__(self, *, delta=0, keysym="", y_root=500) -> None:
+                self.delta = delta
+                self.keysym = keysym
+                self.y_root = y_root
+
+        event_file.unlink(missing_ok=True)
+        knobs["1"].begin_drag(DrawerEvent(y_root=500))
+        knobs["1"].drag(DrawerEvent(y_root=490))
+        knobs["8"].key_press(DrawerEvent(keysym="End"))
+        knobs["8"].reset(DrawerEvent())
+        knobs["RATE"].key_press(DrawerEvent(keysym="Home"))
+        panel.select_lfo2_lane(3)
+        knobs["DEPTH"].key_press(DrawerEvent(keysym="End"))
+        if panel.lfo2_audition_button.cget("state") != "normal":
+            raise RuntimeError("audio-enabled drawer audition is disabled")
+        panel.lfo2_audition_button.invoke()
+        root.tk.call("after", 45)
+        root.update()
+
+        drawer_events = [
+            (record["kind"], record["name"], record["value"])
+            for record in (
+                json.loads(line)
+                for line in event_file.read_text(encoding="utf-8").splitlines()
+            )
+        ]
+        expected_drawer_events = [
+            ("filter2", "0", 69),
+            ("filter2", "7", 127),
+            ("filter2", "7", 64),
+            ("lfo2", "7:rate", 0),
+            ("lfo2", "3:depth", 127),
+            ("trig", "4", "press"),
+            ("trig", "4", "release"),
+        ]
+        if drawer_events != expected_drawer_events:
+            raise RuntimeError("native Tk drawer emitted invalid panel events")
+        if panel.pending_audition_releases or panel.held_trigs.get(4):
+            raise RuntimeError("native Tk drawer left an audition trigger pending")
+        panel.toggle_filter2()
+        if panel.filter2_window is not None:
+            raise RuntimeError("Tk did not close the Filter 2/LFO2 drawer")
 
         # Replay pointer input through the production coordinate dispatcher.
         # The emitted JSONL is the exact handoff consumed by panel_event_bridge.
