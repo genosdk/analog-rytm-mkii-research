@@ -412,7 +412,12 @@ polyphase stage at `0x40109202..0x40109260`, exiting at `0x40109262`. Each
 iteration performs four stream loads and four output stores. Native/native
 shadow replay at both `stable=8` and `stable=16` matched all 256 ordered
 accesses, all 36 exposed registers, and all 1,020 touched bytes across two
-pages. The next gate is its verifier-only transactional reconstruction.
+pages. The verifier-only `candidate=polyphase32` reconstruction models its
+four-by-four add/subtract sign matrix, displacement stream loads, accumulator
+clears, and four output lanes with transactional stores. Both cursor horizons
+matched all 35 candidate-visible registers and every touched byte, with zero
+candidate guest accesses and no fallback. The next gate is a fifth guarded
+direct-state helper and exact incremental profile.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

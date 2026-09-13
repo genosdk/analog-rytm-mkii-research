@@ -93,6 +93,7 @@ static bool candidate_outer;
 static bool candidate_tcg_outer;
 static bool candidate_emac32;
 static bool candidate_tcg_emac32;
+static bool candidate_polyphase32;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -113,6 +114,9 @@ static uint64_t runtime_fallbacks;
 #define EMAC32_START_PC 0x40108e2c
 #define EMAC32_END_PC   0x40108e48
 #define EMAC32_EXIT_PC  0x40108e4a
+#define POLYPHASE32_START_PC 0x40109202
+#define POLYPHASE32_END_PC   0x40109260
+#define POLYPHASE32_EXIT_PC  0x40109262
 #define MACSR_PAV0     0x100
 #define MACSR_OMC      0x080
 #define MACSR_SU       0x040
@@ -982,6 +986,97 @@ static bool accelerate_emac32(void)
     return true;
 }
 
+static void polyphase_mac(InnerState *s, unsigned acc, uint32_t left,
+                          uint32_t right, bool subtract)
+{
+    uint64_t product;
+
+    inner_mac_clear_flags(s);
+    product = (uint64_t)(((int64_t)(int32_t)left * (int32_t)right) >> 23);
+    if (subtract) {
+        s->macc[acc] -= product;
+    } else {
+        s->macc[acc] += product;
+    }
+    inner_mac_saturate_fractional(s, acc);
+    inner_mac_set_flags(s, acc);
+}
+
+static bool accelerate_polyphase32(void)
+{
+    static const bool subtract[4][4] = {
+        { false, true,  true,  true  },
+        { true,  false, true,  true  },
+        { true,  true,  false, true  },
+        { true,  true,  true,  false },
+    };
+    static const uint32_t displacement[4] = { 124, 252, 380, 0 };
+    InnerState s;
+    InnerState entry;
+    InnerWrites writes = { 0 };
+    size_t applied = 0;
+
+    if (!read_inner_state(&s) ||
+        (s.macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
+            (MACSR_OMC | MACSR_FI) ||
+        s.mask != UINT32_MAX || s.d[0] != 32) {
+        return false;
+    }
+    entry = s;
+
+    for (unsigned iteration = 0; iteration < 32; iteration++) {
+        for (unsigned coefficient = 0; coefficient < 4; coefficient++) {
+            uint32_t loaded;
+            uint32_t address = s.a[0] + displacement[coefficient];
+
+            for (unsigned acc = 0; acc < 4; acc++) {
+                polyphase_mac(&s, acc, s.d[3 + coefficient], s.d[1],
+                              subtract[coefficient][acc]);
+            }
+            if (!inner_read_memory(&writes, address & s.mask, &loaded)) {
+                return false;
+            }
+            s.d[1] = loaded;
+            if (coefficient == 3) {
+                s.a[0] += 4;
+            }
+        }
+
+        s.d[2] = inner_movclr(&s, 0);
+        if (!inner_queue_write(&writes, s.a[1] - 528, s.d[2])) {
+            return false;
+        }
+        s.d[2] = inner_movclr(&s, 1);
+        if (!inner_queue_write(&writes, s.a[1] - 352, s.d[2])) {
+            return false;
+        }
+        s.d[2] = inner_movclr(&s, 2);
+        if (!inner_queue_write(&writes, s.a[1] - 176, s.d[2])) {
+            return false;
+        }
+        s.d[2] = inner_movclr(&s, 3);
+        if (!inner_queue_write(&writes, s.a[1], s.d[2])) {
+            return false;
+        }
+        s.a[1] += 4;
+        s.d[0]--;
+    }
+    s.ps = (s.ps & ~0x1fU) | CCF_Z;
+
+    if (!inner_apply_writes(&writes, &applied)) {
+        inner_rollback_writes(&writes, applied);
+        return false;
+    }
+    if (!write_inner_state(&s)) {
+        bool rollback_ok = inner_rollback_writes(&writes, applied);
+
+        rollback_ok &= write_inner_state(&entry);
+        (void)rollback_ok;
+        return false;
+    }
+    return true;
+}
+
 static void page_state_free(gpointer data)
 {
     PageState *page = data;
@@ -1215,7 +1310,8 @@ static void write_report(bool complete)
     bool candidate_ok = (!candidate_inner && !candidate_tcg &&
                          !candidate_transform && !candidate_tcg_transform &&
                          !candidate_outer && !candidate_tcg_outer &&
-                         !candidate_emac32 && !candidate_tcg_emac32) ||
+                         !candidate_emac32 && !candidate_tcg_emac32 &&
+                         !candidate_polyphase32) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -1229,6 +1325,7 @@ static void write_report(bool complete)
          candidate_tcg_outer ? "PASS_NATIVE_OUTER_TCG" :
          candidate_emac32 ? "PASS_NATIVE_EMAC32_CANDIDATE" :
          candidate_tcg_emac32 ? "PASS_NATIVE_EMAC32_TCG" :
+         candidate_polyphase32 ? "PASS_NATIVE_POLYPHASE32_CANDIDATE" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -1260,12 +1357,13 @@ static void write_report(bool complete)
             candidate_outer ? "outer" :
             candidate_tcg_outer ? "tcg-outer" :
             candidate_emac32 ? "emac32" :
-            candidate_tcg_emac32 ? "tcg-emac32" : "native-shadow",
+            candidate_tcg_emac32 ? "tcg-emac32" :
+            candidate_polyphase32 ? "polyphase32" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
             (candidate_inner || candidate_transform || candidate_outer ||
-             candidate_emac32) &&
+             candidate_emac32 || candidate_polyphase32) &&
             candidate_executed ?
             "false" : "true",
             footprint_miss ? "true" : "false",
@@ -1349,13 +1447,14 @@ static void boundary(unsigned int cpu_index, void *userdata)
         } else if (phase == PHASE_SHADOW) {
             active = true;
             if (candidate_inner || candidate_transform || candidate_outer ||
-                candidate_emac32) {
+                candidate_emac32 || candidate_polyphase32) {
                 candidate_attempted = true;
                 candidate_executed = candidate_inner ? accelerate_inner() :
                                      candidate_transform ?
                                      accelerate_transform() :
                                      candidate_outer ? accelerate_outer() :
-                                     accelerate_emac32();
+                                     candidate_emac32 ? accelerate_emac32() :
+                                     accelerate_polyphase32();
                 if (candidate_executed) {
                     redirect_candidate = true;
                 } else {
@@ -1446,7 +1545,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
             candidate_fallback = !candidate_executed;
         }
         access_match = ((candidate_inner || candidate_transform ||
-                         candidate_outer || candidate_emac32) &&
+                         candidate_outer || candidate_emac32 ||
+                         candidate_polyphase32) &&
                        candidate_executed ?
                         true : compare_accesses());
         register_match = compare_registers();
@@ -1579,6 +1679,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_emac32 = true;
         } else if (!strcmp(argv[i], "candidate=tcg-emac32")) {
             candidate_tcg_emac32 = true;
+        } else if (!strcmp(argv[i], "candidate=polyphase32")) {
+            candidate_polyphase32 = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -1599,7 +1701,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
     }
     if ((candidate_inner + candidate_tcg + candidate_transform +
          candidate_tcg_transform + candidate_outer + candidate_tcg_outer +
-         candidate_emac32 + candidate_tcg_emac32 + runtime_inner) > 1) {
+         candidate_emac32 + candidate_tcg_emac32 + candidate_polyphase32 +
+         runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
     }
@@ -1643,6 +1746,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != EMAC32_START_PC || end_pc != EMAC32_END_PC ||
          exit_pc != EMAC32_EXIT_PC)) {
         fprintf(stderr, "EMAC32 TCG candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_polyphase32 &&
+        (start_pc != POLYPHASE32_START_PC || end_pc != POLYPHASE32_END_PC ||
+         exit_pc != POLYPHASE32_EXIT_PC)) {
+        fprintf(stderr, "polyphase32 candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

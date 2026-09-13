@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_HANDOFF_POLYPHASE32_GATE",
   "recorded_at_utc": "2026-09-13",
-  "status": "PASS_HANDOFF_POLYPHASE32_IDENTICAL_NATIVE_SHADOW",
+  "status": "PASS_NATIVE_HANDOFF_POLYPHASE32_CANDIDATE",
   "profile": {
     "firmware_version": "1.72",
     "workload": "generated slot-1 sample with held Trig 1 and all four TCG helpers enabled",
@@ -50,8 +50,25 @@
       "touched_memory_match": true
     }
   },
-  "conclusion": "After the fourth helper, the deterministic handoff leaf retains 2,316,900 profiled guest instructions per 100 services. Its next fixed 32-iteration polyphase loop is independently replayable at two cursor positions with exact access, register, and touched-memory equality.",
-  "next_gate": "Implement a verifier-only clean-room polyphase32 candidate and compare it transactionally against native execution.",
+  "transactional_candidate": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "selector": "candidate=polyphase32",
+    "validation_runs": 2,
+    "early_cursor_required_stable_calls": 8,
+    "late_cursor_required_stable_calls": 16,
+    "native_events": 256,
+    "candidate_guest_events": 0,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 2,
+    "touched_bytes": 1020,
+    "touched_memory_match": true,
+    "candidate_executed": true,
+    "candidate_fallback": false,
+    "transactional_stores": true
+  },
+  "conclusion": "After the fourth helper, the deterministic handoff leaf retains 2,316,900 profiled guest instructions per 100 services. Its next fixed 32-iteration four-output polyphase loop passes transactional clean-room reconstruction at two cursor positions with exact register and touched-memory equality.",
+  "next_gate": "Promote the validated polyphase32 candidate to a fifth guarded direct-state TCG helper and measure its exact incremental reduction.",
   "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
   "railway": {"touched": false},
   "safety": "Only clean-room topology and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
