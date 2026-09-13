@@ -70,6 +70,13 @@ mode, enable, note-retrigger and reset-generation state. All five untouched
 lanes retain their defaults and no drawer event leaks into UART. Evidence is in
 `research/AR172_DESKTOP_RUNTIME_DRAWER_COMPOSITION_GATE.json`.
 
+The complementary widget gate starts one level higher, at the drawer's
+`VirtualKnob` handlers. It exercises drag, wheel, arrows, Page Up/Down,
+Home/End and double-click reset, including both limits and a repeated-value
+no-op. All eight Filter 2 knobs and lane-switched LFO2 rate/depth knobs produce
+24 JSONL records and the exact expected 108-byte snapshot without UART output.
+Evidence is in `research/AR172_DESKTOP_VIRTUAL_KNOB_GATE.json`.
+
 ## Display
 
 The firmware stores its presented 1 KiB OLED framebuffer as 64x128 row-major MSB data. The desktop frontend rotates that buffer 90 degrees into the physical 128x64 display orientation.

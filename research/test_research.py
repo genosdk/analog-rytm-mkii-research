@@ -1052,6 +1052,127 @@ class DesktopPanelInputTests(unittest.TestCase):
                 self.assertEqual(expected.mode[lane], 0)
                 self.assertEqual(expected.reset_generation[lane], 0)
 
+    def test_virtual_knob_events_publish_exact_runtime_snapshot(self):
+        from qemu.desktop_panel import VirtualKnob
+        from qemu.panel_event_bridge import (
+            PanelLink,
+            RuntimeControls,
+            follow_events,
+        )
+
+        class Event:
+            def __init__(self, *, delta=0, keysym="", y_root=500):
+                self.delta = delta
+                self.keysym = keysym
+                self.y_root = y_root
+
+        class SocketStub:
+            def sendall(self, _data):
+                raise AssertionError("runtime drawer events must not emit UART frames")
+
+        def headless_knob(name, callback, value=64):
+            knob = VirtualKnob.__new__(VirtualKnob)
+            knob.name = name
+            knob.callback = callback
+            knob.value = value
+            knob.drag_y = 0
+            knob.drag_value = value
+            knob.redraw = lambda: None
+            knob.focus_set = lambda: None
+            return knob
+
+        def drag_to(knob, value):
+            knob.begin_drag(Event(y_root=500))
+            knob.drag(Event(y_root=500 - 2 * (value - knob.drag_value)))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            event_file = root / "panel-events.jsonl"
+            control_file = root / "filter2-controls.bin"
+            panel = self.make_headless_runtime_panel(event_file)
+
+            filter2_targets = [0, 16, 32, 48, 80, 96, 112, 127]
+            filter2_knobs = []
+            for lane in range(8):
+                knob = headless_knob(
+                    f"F2 {lane + 1}",
+                    lambda _name, delta, value, lane=lane:
+                        panel.filter2(lane, delta, value, True),
+                )
+                filter2_knobs.append(knob)
+
+            first = filter2_knobs[0]
+            self.assertEqual(first.wheel(Event(delta=120)), "break")
+            for keysym in (
+                "Up", "Right", "Down", "Left", "Prior", "Next", "Home", "End"
+            ):
+                self.assertEqual(first.key_press(Event(keysym=keysym)), "break")
+            self.assertIsNone(first.key_press(Event(keysym="Escape")))
+            self.assertEqual(first.reset(Event()), "break")
+            first.set_value(64)
+            drag_to(first, filter2_targets[0])
+            for lane in range(1, 8):
+                drag_to(filter2_knobs[lane], filter2_targets[lane])
+
+            panel.lfo2_rate_knob = headless_knob(
+                "RATE",
+                lambda _name, delta, value: panel.lfo2_knob("rate", delta, value),
+            )
+            panel.lfo2_depth_knob = headless_knob(
+                "DEPTH",
+                lambda _name, delta, value: panel.lfo2_knob("depth", delta, value),
+            )
+
+            panel.select_lfo2_lane(0)
+            panel.lfo2_rate_knob.key_press(Event(keysym="Home"))
+            panel.lfo2_depth_knob.key_press(Event(keysym="End"))
+            panel.select_lfo2_lane(3)
+            panel.lfo2_rate_knob.wheel(Event(delta=120))
+            panel.lfo2_depth_knob.wheel(Event(delta=-120))
+            panel.select_lfo2_lane(7)
+            drag_to(panel.lfo2_rate_knob, 127)
+            drag_to(panel.lfo2_depth_knob, 0)
+            panel.select_lfo2_lane(0)
+            self.assertEqual(
+                (panel.lfo2_rate_knob.value, panel.lfo2_depth_knob.value),
+                (0, 127),
+            )
+            panel.select_lfo2_lane(7)
+            self.assertEqual(
+                (panel.lfo2_rate_knob.value, panel.lfo2_depth_knob.value),
+                (127, 0),
+            )
+
+            expected = RuntimeControls()
+            expected.filter2[:] = filter2_targets
+            expected.rate[0], expected.rate[3], expected.rate[7] = 0, 65, 127
+            expected.depth[0], expected.depth[3], expected.depth[7] = 127, 63, 0
+            expected_snapshot = expected.encode()
+
+            stop = threading.Event()
+            follower = threading.Thread(
+                target=follow_events,
+                args=(event_file, PanelLink(SocketStub(), verbose=False), False,
+                      control_file, stop),
+            )
+            follower.start()
+            deadline = time.monotonic() + 1.0
+            actual_snapshot = b""
+            while time.monotonic() < deadline:
+                if control_file.is_file():
+                    actual_snapshot = control_file.read_bytes()
+                    if actual_snapshot == expected_snapshot:
+                        break
+                time.sleep(0.01)
+            stop.set()
+            follower.join(timeout=1.0)
+
+            self.assertFalse(follower.is_alive())
+            self.assertEqual(actual_snapshot, expected_snapshot)
+            self.assertEqual(len(actual_snapshot), 108)
+            self.assertEqual(len(self.panel_events(event_file)), 24)
+            self.assertFalse(control_file.with_suffix(".bin.tmp").exists())
+
     def test_qemu_machine_imports_live_filter2_targets(self):
         source = (
             ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"

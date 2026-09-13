@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_VIRTUAL_KNOB_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_VIRTUAL_KNOB_EVENTS_TO_EXACT_ATOMIC_SNAPSHOT",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "production_path": {
+    "widget": "qemu/desktop_panel.py VirtualKnob",
+    "handlers": [
+      "VirtualKnob.begin_drag",
+      "VirtualKnob.drag",
+      "VirtualKnob.wheel",
+      "VirtualKnob.key_press",
+      "VirtualKnob.reset",
+      "VirtualKnob.set_value"
+    ],
+    "callbacks": [
+      "PanelApp.filter2",
+      "PanelApp.select_lfo2_lane",
+      "PanelApp.lfo2_knob"
+    ],
+    "event_transport": "JSONL",
+    "bridge": "qemu/panel_event_bridge.py follow_events",
+    "publication": "atomic 108-byte F2L2 version-1 snapshot",
+    "alternate_control_model_used": false
+  },
+  "modalities": {
+    "drag": true,
+    "mouse_wheel": true,
+    "arrow_keys": ["Up", "Right", "Down", "Left"],
+    "page_keys": ["Prior", "Next"],
+    "boundary_keys": ["Home", "End"],
+    "double_click_reset": 64,
+    "unhandled_key_returns_none": true,
+    "repeated_value_event_suppressed": true,
+    "clamp_range": [0, 127]
+  },
+  "final_state": {
+    "filter2": [0, 16, 32, 48, 80, 96, 112, 127],
+    "lfo2_rate": [0, 64, 64, 65, 64, 64, 64, 127],
+    "lfo2_depth": [127, 64, 64, 63, 64, 64, 64, 0],
+    "waveform": [0, 0, 0, 0, 0, 0, 0, 0],
+    "mode": [0, 0, 0, 0, 0, 0, 0, 0],
+    "enable_mask_hex": "0x0000",
+    "trigger_mask_hex": "0x0000",
+    "reset_generation": [0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  "lane_switch_checks": [
+    {
+      "display_lane": 1,
+      "rate_widget": 0,
+      "depth_widget": 127
+    },
+    {
+      "display_lane": 8,
+      "rate_widget": 127,
+      "depth_widget": 0
+    }
+  ],
+  "publication": {
+    "gui_jsonl_records": 24,
+    "snapshot_bytes": 108,
+    "snapshot_sha256": "7853a40a8bdcd14e05b9595036ccce3462370803fd14dc3b1e0e47502b0ae881",
+    "exact_runtime_controls_encode_match": true,
+    "temporary_file_remaining": false,
+    "uart_frames_emitted": 0
+  },
+  "validation": {
+    "focused_virtual_knob_tests": 1,
+    "full_research_tests": 56,
+    "expected_fixture_skips": 15,
+    "result": "PASS"
+  },
+  "scope_limit": "This host-side gate proves the production VirtualKnob event methods, drawer callbacks, JSONL bridge and exact atomic runtime snapshot. Tk drawing is covered separately by the packaged skin self-test, and live QEMU import/execution is covered by the cited runtime gates. It does not claim physical hardware control transport or recovered stock UI semantics for the emulator-only drawer.",
+  "safety": "No firmware, generated candidate, extracted MAIN, project data, or PCM is committed."
+}

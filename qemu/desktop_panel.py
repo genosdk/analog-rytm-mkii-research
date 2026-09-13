@@ -293,7 +293,7 @@ class VirtualKnob(tk.Canvas):
         self.bind("<MouseWheel>", self.wheel)
         self.bind("<Button-4>", lambda _event: self.adjust(1))
         self.bind("<Button-5>", lambda _event: self.adjust(-1))
-        self.bind("<Double-Button-1>", lambda _event: self.set_value(64))
+        self.bind("<Double-Button-1>", self.reset)
         self.bind("<KeyPress>", self.key_press)
         self.bind("<FocusIn>", lambda _event: self.redraw())
         self.bind("<FocusOut>", lambda _event: self.redraw())
@@ -328,6 +328,10 @@ class VirtualKnob(tk.Canvas):
             self.set_value(127)
         else:
             return None
+        return "break"
+
+    def reset(self, _event=None) -> str:
+        self.set_value(64)
         return "break"
 
     def adjust(self, delta: int) -> None:
