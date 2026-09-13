@@ -405,6 +405,15 @@ fewer than the three-helper profile and 11,300,943 fewer than native. Those are
 incremental and combined reductions of 4.49% and 43.84%. The held-audio
 lifecycle retained its exact eight-service release tail and responsive UI.
 
+Reprofiling the deterministic handoff leaf with all four helpers enabled leaves
+2,316,900 guest instructions per 100 services, down from 3,000,100 before the
+EMAC32 helper. The next bounded core is a single 32-iteration four-accumulator
+polyphase stage at `0x40109202..0x40109260`, exiting at `0x40109262`. Each
+iteration performs four stream loads and four output stores. Native/native
+shadow replay at both `stable=8` and `stable=16` matched all 256 ordered
+accesses, all 36 exposed registers, and all 1,020 touched bytes across two
+pages. The next gate is its verifier-only transactional reconstruction.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

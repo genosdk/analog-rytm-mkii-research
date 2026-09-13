@@ -441,6 +441,20 @@ class QemuAudioEdmaTests(unittest.TestCase):
             / "0008-m68k-add-ar-audio-emac32-tcg-helper.patch"
         ).read_text(encoding="utf-8")
         self.assertIn("DEF_HELPER_1(ar_audio_emac32, i32, env)", emac32_patch)
+
+        polyphase32 = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_POLYPHASE32_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            polyphase32["status"],
+            "PASS_HANDOFF_POLYPHASE32_IDENTICAL_NATIVE_SHADOW",
+        )
+        self.assertEqual(polyphase32["selected_loop"]["iterations_per_call"], 32)
+        self.assertEqual(polyphase32["selected_loop"]["native_events_per_call"], 256)
+        self.assertEqual(polyphase32["same_process_replay"]["registers"], 36)
+        self.assertTrue(polyphase32["same_process_replay"]["late_cursor"]["touched_memory_match"])
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
