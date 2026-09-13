@@ -457,6 +457,30 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertTrue(polyphase32["same_process_replay"]["late_cursor"]["touched_memory_match"])
         self.assertEqual(polyphase32["transactional_candidate"]["registers"], 35)
         self.assertFalse(polyphase32["transactional_candidate"]["candidate_fallback"])
+        polyphase32_tcg = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_POLYPHASE32_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            polyphase32_tcg["status"],
+            "PASS_CORRECT_45PCT_INSTRUCTION_REDUCTION",
+        )
+        self.assertEqual(polyphase32_tcg["same_process_oracle"]["native_events"], 256)
+        self.assertEqual(
+            polyphase32_tcg["exact_vector_191_profile"]
+                           ["five_helpers_guest_instructions"],
+            14127803,
+        )
+        polyphase32_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0009-m68k-add-ar-audio-polyphase32-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "DEF_HELPER_1(ar_audio_polyphase32, i32, env)", polyphase32_patch
+        )
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
@@ -475,6 +499,9 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn('!strcmp(argv[i], "candidate=emac32")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-emac32")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=polyphase32")', shadow_plugin)
+        self.assertIn(
+            '!strcmp(argv[i], "candidate=tcg-polyphase32")', shadow_plugin
+        )
         self.assertIn('g_str_has_prefix(argv[i], "mem-start=")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)

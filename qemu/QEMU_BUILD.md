@@ -31,6 +31,8 @@ patch -p1 < /path/to/0006-m68k-add-ar-audio-transform-tcg-helper.patch
 patch -p1 < /path/to/0007-m68k-add-ar-audio-outer-tcg-helper.patch
 # Add the disabled-by-default saturated-EMAC handoff helper.
 patch -p1 < /path/to/0008-m68k-add-ar-audio-emac32-tcg-helper.patch
+# Add the disabled-by-default four-output polyphase helper.
+patch -p1 < /path/to/0009-m68k-add-ar-audio-polyphase32-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -51,6 +53,8 @@ helper, enabled only by `AR_MK2_AUDIO_TRANSFORM_TCG=1`. The seventh adds the
 64-iteration outer renderer helper, enabled only by
 `AR_MK2_AUDIO_OUTER_TCG=1`. The eighth adds the 32-iteration handoff EMAC
 helper, enabled only by `AR_MK2_AUDIO_EMAC32_TCG=1`.
+The ninth adds the four-output polyphase helper, enabled only by
+`AR_MK2_AUDIO_POLYPHASE32_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -418,6 +422,15 @@ clears, and four output lanes with transactional stores. Both cursor horizons
 matched all 35 candidate-visible registers and every touched byte, with zero
 candidate guest accesses and no fallback. The next gate is a fifth guarded
 direct-state helper and exact incremental profile.
+
+Patch 0009 promotes the polyphase32 candidate to the fifth direct-state
+helper. Explicit-arm oracles at `stable=8` and `stable=16` matched all 256
+ordered access values and addresses, all 35 registers, and all 1,020 touched
+bytes, with no fallback. The exact 100-service ISR profile with all five
+helpers is 14,127,803 guest instructions: 349,400 fewer than four helpers and
+11,650,343 fewer than native. Those are incremental and combined reductions of
+2.41% and 45.19%. Held-audio release retained its exact eight-service tail and
+responsive UI.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

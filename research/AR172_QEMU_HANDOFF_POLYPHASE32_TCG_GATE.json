@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_POLYPHASE32_TCG_GATE",
+  "recorded_at_utc": "2026-09-13",
+  "status": "PASS_CORRECT_45PCT_INSTRUCTION_REDUCTION",
+  "implementation": {
+    "patch": "qemu/patches/0009-m68k-add-ar-audio-polyphase32-tcg-helper.patch",
+    "machine_source": "qemu/hw/m68k/elektron_ar_mk2.c",
+    "mode": "AR_MK2_AUDIO_POLYPHASE32_TCG=1",
+    "default_enabled": false,
+    "transport": "target/m68k TCG helper with direct CPU-state and guest-memory access",
+    "fallback": "Execute the native translated loop unless the control, D0=32 loop count, saturated fractional EMAC mode, and full-mask guards all pass."
+  },
+  "same_process_oracle": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all four prior TCG helpers enabled",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "late_cursor_required_stable_calls": 16,
+    "native_events": 256,
+    "accelerated_events": 256,
+    "access_address_type_value_match": true,
+    "access_pc_comparison_applicable": false,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 2,
+    "touched_bytes": 1020,
+    "touched_memory_match": true,
+    "candidate_fallback": false
+  },
+  "exact_vector_191_profile": {
+    "completed_services": 100,
+    "native_guest_instructions": 25778146,
+    "four_helpers_guest_instructions": 14477203,
+    "five_helpers_guest_instructions": 14127803,
+    "polyphase32_incremental_removed_instructions": 349400,
+    "polyphase32_incremental_reduction_percent": 2.413,
+    "combined_removed_instructions": 11650343,
+    "combined_reduction_percent": 45.195,
+    "release_tail_services": 8,
+    "stopped_after_release": true,
+    "ui_responsive": true
+  },
+  "conclusion": "The fifth guarded direct-state helper matches the native four-output polyphase loop at two cursor positions and lowers the exact 100-service ISR profile by 45.19% relative to native execution.",
+  "next_gate": "Reprofile the remaining handoff leaf with all five helpers and select its next bounded deterministic loop.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room bounded arithmetic and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}
