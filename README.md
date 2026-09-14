@@ -146,6 +146,11 @@ and reproducible tooling.
   resources, code-signature seal, and absence of firmware-like files. The
   enforced check and an independent post-download replay pass on both arm64 and
   x86_64 in `research/AR172_MACOS_ARTIFACT_INTEGRITY_GATE.json`.
+- The Finder firmware fallback is now exercised inside both frozen macOS apps:
+  exact OS 1.72 retains Filter 2/LFO2, while an accepted unverified interactive
+  MAIN switches to unchanged stock boot with the extension disabled. Workflow
+  run 34874555771 and both uploaded artifacts are recorded in
+  `research/AR172_DESKTOP_FIRMWARE_FALLBACK_GATE.json`.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to

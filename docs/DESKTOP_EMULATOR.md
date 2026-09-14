@@ -133,6 +133,14 @@ enforced check on both architectures; downloading those uploaded envelopes and
 replaying the same auditor also passes all 68 arm64 and 69 x86_64 Mach-O files.
 Evidence is in `research/AR172_MACOS_ARTIFACT_INTEGRITY_GATE.json`.
 
+The first-launch compatibility decision is also part of the frozen executable
+self-test. Workflow run 34874555771 proves on macOS 15 arm64 and Intel that the
+exact OS 1.72 digest keeps Filter 2/LFO2 enabled, while an accepted unverified
+interactive MAIN takes the unchanged-stock fallback with the extension
+disabled. The same packages pass the enforced artifact audit and firmware
+exclusion boundary. Evidence is in
+`research/AR172_DESKTOP_FIRMWARE_FALLBACK_GATE.json`.
+
 The downstream photographic-control gate continues those same 57 interactions
 through `panel_event_bridge.follow_events`. It verifies exact UART8 bytes for
 all eight page/action buttons, all sixteen Trigs, and a +5 drag on every encoder

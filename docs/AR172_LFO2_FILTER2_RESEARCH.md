@@ -741,6 +741,14 @@ published envelopes are then downloaded and independently replayed against the
 same auditor: all 68 arm64 and 69 x86_64 native payloads match, both checksum
 layers verify, and no firmware-like payload exists. Evidence is in
 `research/AR172_MACOS_ARTIFACT_INTEGRITY_GATE.json`.
+
+The following compatibility gate executes the firmware-selection decision
+inside both frozen architectures. Workflow run 34874555771 confirms that the
+exact verified OS 1.72 MAIN keeps Filter 2/LFO2, while an accepted unverified
+interactive MAIN disables the extension and remains unchanged. Both packages
+also pass the enforced artifact audit and upload successfully. Evidence is in
+`research/AR172_DESKTOP_FIRMWARE_FALLBACK_GATE.json`.
+
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

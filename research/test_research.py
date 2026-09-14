@@ -124,6 +124,37 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class MacosPackagingTests(unittest.TestCase):
+    def test_dual_arch_packaged_firmware_fallback_gate(self):
+        report = json.loads(
+            (HERE / "AR172_DESKTOP_FIRMWARE_FALLBACK_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            report["status"], "PASS_DUAL_ARCH_PACKAGED_FIRMWARE_FALLBACK"
+        )
+        self.assertEqual(report["workflow_run"]["id"], 34874555771)
+        self.assertEqual(report["workflow_run"]["conclusion"], "success")
+        self.assertEqual(
+            report["workflow_run"]["head_sha"],
+            report["implementation"]["commit"],
+        )
+        jobs = report["jobs"]
+        self.assertEqual({job["architecture"] for job in jobs}, {"arm64", "x86_64"})
+        for job in jobs:
+            self.assertEqual(job["conclusion"], "success")
+            self.assertEqual(job["packaged_fallback_smoke_test"], "success")
+            self.assertEqual(job["enforced_artifact_audit"], "success")
+            self.assertEqual(job["artifact_upload"], "success")
+        artifacts = report["artifacts"]
+        self.assertEqual(set(artifacts), {"arm64", "x86_64"})
+        for architecture, artifact in artifacts.items():
+            self.assertIn(architecture, artifact["name"])
+            self.assertRegex(artifact["digest"], r"^sha256:[0-9a-f]{64}$")
+            self.assertGreater(artifact["size_in_bytes"], 20_000_000)
+        self.assertIn("exact verified OS 1.72", report["safety_boundary"])
+        self.assertIn("unchanged", report["safety_boundary"])
+
     def test_first_launch_can_fall_back_to_untouched_stock_firmware(self):
         sys.path.insert(0, str(ROOT / "qemu"))
         try:
