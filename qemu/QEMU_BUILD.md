@@ -35,6 +35,8 @@ patch -p1 < /path/to/0008-m68k-add-ar-audio-emac32-tcg-helper.patch
 patch -p1 < /path/to/0009-m68k-add-ar-audio-polyphase32-tcg-helper.patch
 # Add the disabled-by-default saturated mix helper.
 patch -p1 < /path/to/0010-m68k-add-ar-audio-mix32-tcg-helper.patch
+# Add the disabled-by-default register-swapped polyphase helper.
+patch -p1 < /path/to/0011-m68k-add-ar-audio-polyphase32b-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -59,6 +61,8 @@ The ninth adds the four-output polyphase helper, enabled only by
 `AR_MK2_AUDIO_POLYPHASE32_TCG=1`.
 The tenth adds the saturated 32-iteration mix helper, enabled only by
 `AR_MK2_AUDIO_MIX32_TCG=1`.
+The eleventh adds the register-swapped polyphase helper, enabled only by
+`AR_MK2_AUDIO_POLYPHASE32B_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -471,6 +475,14 @@ both passed at `stable=8` and `stable=16`. The candidate reuses the proven
 polyphase sign matrix with input/output address registers changed from
 `A0/A1` to `A1/A0`; all 35 registers and touched bytes match without fallback.
 Promoting this register-swapped candidate is the seventh-helper gate.
+
+Patch 0011 promotes `polyphase32b` to the seventh guarded direct-state helper.
+Explicit-arm oracles at `stable=8` and `stable=16` matched all 256 ordered
+accesses, all 35 registers, and all 1,020 touched bytes, with no fallback. The
+exact 100-service ISR profile with all seven helpers is 13,453,024 guest
+instructions: 223,679 fewer than six helpers and 12,325,122 fewer than native,
+for a combined reduction of 47.81%. Held-audio release retained its exact
+eight-service tail and responsive UI.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
