@@ -157,6 +157,9 @@ and reproducible tooling.
   explicit `--keep-runtime` retention have independent cleanup assertions.
   The frozen-app self-test exercises accepted unchanged-stock fallback plus
   cancellation and malformed-update rollback using non-proprietary fixtures.
+  Workflow run 34885169534 passes that expanded signed-app test and the enforced
+  artifact audit on both macOS architectures; exact evidence is in
+  `research/AR172_DESKTOP_FIRMWARE_TRANSACTION_GATE.json`.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to

@@ -756,6 +756,9 @@ accepted unchanged-stock fallback, clean cancellation, malformed-update and
 strict command-line rollback, plus explicit `--keep-runtime` retention. The
 frozen executable's self-test now repeats the accepted, cancelled and malformed
 transaction paths without carrying proprietary firmware.
+Workflow run 34885169534 passes that frozen transaction test, enforced artifact
+audit and upload on both macOS 15 arm64 and Intel. Evidence is in
+`research/AR172_DESKTOP_FIRMWARE_TRANSACTION_GATE.json`.
 
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger

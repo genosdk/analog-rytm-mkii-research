@@ -125,6 +125,39 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class MacosPackagingTests(unittest.TestCase):
+    def test_dual_arch_packaged_firmware_transaction_gate(self):
+        report = json.loads(
+            (HERE / "AR172_DESKTOP_FIRMWARE_TRANSACTION_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            report["status"], "PASS_DUAL_ARCH_PACKAGED_FIRMWARE_TRANSACTION"
+        )
+        self.assertEqual(report["workflow_run"]["id"], 34885169534)
+        self.assertEqual(report["workflow_run"]["conclusion"], "success")
+        self.assertEqual(
+            report["workflow_run"]["head_sha"],
+            report["implementation"]["commit"],
+        )
+        self.assertEqual(
+            {job["architecture"] for job in report["jobs"]},
+            {"arm64", "x86_64"},
+        )
+        for job in report["jobs"]:
+            self.assertEqual(job["conclusion"], "success")
+            self.assertEqual(job["packaged_transaction_smoke_test"], "success")
+            self.assertEqual(job["enforced_artifact_audit"], "success")
+            self.assertEqual(job["artifact_upload"], "success")
+        for architecture, artifact in report["artifacts"].items():
+            self.assertIn(architecture, artifact["name"])
+            self.assertRegex(artifact["digest"], r"^sha256:[0-9a-f]{64}$")
+            self.assertGreater(artifact["size_in_bytes"], 20_000_000)
+        assertions = " ".join(report["packaged_transaction_assertions"])
+        self.assertIn("preserves its bytes unchanged", assertions)
+        self.assertIn("status zero", assertions)
+        self.assertIn("malformed update", assertions)
+
     @staticmethod
     def import_desktop_launcher():
         sys.path.insert(0, str(ROOT / "qemu"))

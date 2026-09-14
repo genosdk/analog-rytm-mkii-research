@@ -149,6 +149,10 @@ failure rolls the runtime back; `--keep-runtime` is the sole explicit retention
 override. The signed-app self-test uses synthetic firmware markers to exercise
 accepted fallback, clean cancellation and malformed-update rollback without
 embedding Elektron content.
+Workflow run 34885169534 passes this expanded signed-app transaction test,
+artifact audit and upload on macOS 15 arm64 and Intel. Machine-readable job and
+artifact evidence is in
+`research/AR172_DESKTOP_FIRMWARE_TRANSACTION_GATE.json`.
 
 The downstream photographic-control gate continues those same 57 interactions
 through `panel_event_bridge.follow_events`. It verifies exact UART8 bytes for

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_FIRMWARE_TRANSACTION_GATE",
+  "recorded_at_utc": "2026-09-14",
+  "status": "PASS_DUAL_ARCH_PACKAGED_FIRMWARE_TRANSACTION",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "implementation": {
+    "commit": "8baafeba452536866fd38d84fcbf93a112103fd1",
+    "commit_url": "https://github.com/genosdk/analog-rytm-mkii-research/commit/8baafeba452536866fd38d84fcbf93a112103fd1",
+    "launcher": "qemu/run_desktop_emulator.py",
+    "workflow": ".github/workflows/package-macos-app.yml"
+  },
+  "workflow_run": {
+    "id": 34885169534,
+    "number": 24,
+    "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34885169534",
+    "event": "workflow_dispatch",
+    "head_branch": "restore-filter2-controller",
+    "head_sha": "8baafeba452536866fd38d84fcbf93a112103fd1",
+    "conclusion": "success"
+  },
+  "jobs": [
+    {
+      "id": 104113919282,
+      "runner": "macos-15",
+      "architecture": "arm64",
+      "started_at": "2026-09-14T19:09:32Z",
+      "completed_at": "2026-09-14T19:11:29Z",
+      "conclusion": "success",
+      "packaged_transaction_smoke_test": "success",
+      "enforced_artifact_audit": "success",
+      "artifact_upload": "success"
+    },
+    {
+      "id": 104113919488,
+      "runner": "macos-15-intel",
+      "architecture": "x86_64",
+      "started_at": "2026-09-14T19:09:30Z",
+      "completed_at": "2026-09-14T19:16:42Z",
+      "conclusion": "success",
+      "packaged_transaction_smoke_test": "success",
+      "enforced_artifact_audit": "success",
+      "artifact_upload": "success"
+    }
+  ],
+  "artifacts": {
+    "arm64": {
+      "id": 10364737101,
+      "name": "AR-MKII-Emulator-macOS-arm64",
+      "size_in_bytes": 20642376,
+      "digest": "sha256:db6d92c0fa868f9f3d92ec12dee65e16d7403e14abaf510d5454f53c31c014fb",
+      "expires_at": "2026-10-14T19:11:23Z"
+    },
+    "x86_64": {
+      "id": 10363619306,
+      "name": "AR-MKII-Emulator-macOS-x86_64",
+      "size_in_bytes": 21972178,
+      "digest": "sha256:b8881e40ac537e89259d62a2dbb6b49ed0e85193edca3913fca5039fa5d38681",
+      "expires_at": "2026-10-14T19:16:30Z"
+    }
+  },
+  "packaged_transaction_assertions": [
+    "an accepted unverified interactive update extracts a synthetic MAIN and preserves its bytes unchanged",
+    "accepted unchanged-stock fallback creates no Filter 2 runtime-control snapshot",
+    "successful shutdown removes the temporary preparation runtime",
+    "declining unchanged-stock fallback exits with status zero and removes the temporary runtime",
+    "a malformed update fails extraction and removes the temporary runtime",
+    "the exact verified OS 1.72 digest still enables Filter 2/LFO2",
+    "the bundled QEMU, photographic native-Tk UI, runtime drawer, and diagnostic path remain valid"
+  ],
+  "local_transaction_assertions": [
+    "missing sources are rejected before temporary-directory allocation",
+    "the verified-digest path creates the runtime-only candidate and exact 108-byte control snapshot",
+    "an explicit command-line digest mismatch remains strict and rolls the runtime back",
+    "--keep-runtime is the only tested preparation-failure retention override"
+  ],
+  "safety_boundary": "All transaction fixtures are synthetic and non-proprietary. The packages contain no Elektron firmware. Filter 2/LFO2 remains restricted to the exact verified OS 1.72 MAIN digest; other valid updates can only take an explicitly confirmed unchanged-stock path.",
+  "scope_limit": "This gate proves first-launch preparation and rollback logic executes inside both frozen macOS architectures and that both resulting artifacts pass the existing structure, architecture, signature-seal, and firmware-exclusion audit. It does not boot a proprietary update during CI, prove compatibility with every Elektron release, provide Apple Developer ID notarization, or validate physical hardware."
+}
