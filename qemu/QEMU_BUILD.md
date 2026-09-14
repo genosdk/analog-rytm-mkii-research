@@ -484,6 +484,17 @@ instructions: 223,679 fewer than six helpers and 12,325,122 fewer than native,
 for a combined reduction of 47.81%. Held-audio release retained its exact
 eight-service tail and responsive UI.
 
+With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
+instructions per 100 services, 223,700 fewer than the six-helper residual. Its
+largest remaining coherent fixed kernel is the 32-iteration mix stage at
+`0x40108F60..0x40108FA4`, exiting at `0x40108FA6`. Native replay at
+`stable=8` and `stable=16` matched 320 ordered memory events, all 35 registers,
+and 896 touched bytes on three pages. The verifier-only `candidate=mix32b`
+models ten saturated fractional MAC operations and four transactional
+accumulator-output stores per iteration. It matches the same registers and
+touched memory at both cursor horizons with zero candidate guest accesses and
+no fallback. Promoting this candidate is the eighth-helper gate.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

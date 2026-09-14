@@ -553,6 +553,22 @@ class QemuAudioEdmaTests(unittest.TestCase):
                             ["seven_helpers_guest_instructions"],
             13453024,
         )
+        mix32b = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_MIX32B_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            mix32b["status"], "PASS_NATIVE_HANDOFF_MIX32B_CANDIDATE"
+        )
+        self.assertEqual(
+            mix32b["profile"]["remaining_handoff_leaf_guest_instructions"],
+            1292700,
+        )
+        self.assertEqual(mix32b["selected_loop"]["native_events_per_call"], 320)
+        self.assertEqual(mix32b["same_process_replay"]["registers"], 35)
+        self.assertTrue(mix32b["transactional_candidate"]["candidate_executed"])
+        self.assertFalse(mix32b["transactional_candidate"]["candidate_fallback"])
         polyphase32b_patch = (
             ROOT
             / "qemu"
