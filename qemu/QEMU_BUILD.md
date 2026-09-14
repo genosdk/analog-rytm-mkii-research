@@ -37,6 +37,8 @@ patch -p1 < /path/to/0009-m68k-add-ar-audio-polyphase32-tcg-helper.patch
 patch -p1 < /path/to/0010-m68k-add-ar-audio-mix32-tcg-helper.patch
 # Add the disabled-by-default register-swapped polyphase helper.
 patch -p1 < /path/to/0011-m68k-add-ar-audio-polyphase32b-tcg-helper.patch
+# Add the disabled-by-default second saturated mix helper.
+patch -p1 < /path/to/0012-m68k-add-ar-audio-mix32b-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -63,6 +65,8 @@ The tenth adds the saturated 32-iteration mix helper, enabled only by
 `AR_MK2_AUDIO_MIX32_TCG=1`.
 The eleventh adds the register-swapped polyphase helper, enabled only by
 `AR_MK2_AUDIO_POLYPHASE32B_TCG=1`.
+The twelfth adds the second saturated 32-iteration mix helper, enabled only by
+`AR_MK2_AUDIO_MIX32B_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -487,13 +491,23 @@ eight-service tail and responsive UI.
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its
 largest remaining coherent fixed kernel is the 32-iteration mix stage at
-`0x40108F60..0x40108FA4`, exiting at `0x40108FA6`. Native replay at
+`0x40108F60..0x40108FA4`, exiting at `0x40108FA6`; promotion removes 339,100
+instructions per 100 services from this nested profile. Native replay at
 `stable=8` and `stable=16` matched 320 ordered memory events, all 35 registers,
 and 896 touched bytes on three pages. The verifier-only `candidate=mix32b`
 models ten saturated fractional MAC operations and four transactional
 accumulator-output stores per iteration. It matches the same registers and
 touched memory at both cursor horizons with zero candidate guest accesses and
 no fallback. Promoting this candidate is the eighth-helper gate.
+
+Patch 0012 promotes `mix32b` to the eighth guarded direct-state helper.
+Explicit-arm oracles at `stable=8` and `stable=16` matched all 320 ordered
+accesses, all 35 registers, and all 896 touched bytes, with no fallback. The
+exact 100-service ISR profile with all eight helpers is 13,113,903 guest
+instructions: 339,121 fewer than seven helpers and 12,664,243 fewer than
+native, for a combined reduction of 49.13%. The nested handoff leaf is now
+953,600 instructions per 100 services. Held-audio release retained its exact
+eight-service tail and responsive UI.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

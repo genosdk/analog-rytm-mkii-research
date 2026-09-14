@@ -68,6 +68,7 @@ static struct qemu_plugin_register *tcg_emac32_control_register;
 static struct qemu_plugin_register *tcg_polyphase32_control_register;
 static struct qemu_plugin_register *tcg_mix32_control_register;
 static struct qemu_plugin_register *tcg_polyphase32b_control_register;
+static struct qemu_plugin_register *tcg_mix32b_control_register;
 static GHashTable *footprint;
 static GHashTable *touched_bytes;
 static GPtrArray *pages;
@@ -103,6 +104,7 @@ static bool candidate_tcg_polyphase32b;
 static bool candidate_mix32;
 static bool candidate_tcg_mix32;
 static bool candidate_mix32b;
+static bool candidate_tcg_mix32b;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -347,6 +349,18 @@ static bool write_tcg_polyphase32b_control(uint32_t raw)
     return qemu_plugin_write_register(tcg_polyphase32b_control_register, value);
 }
 
+static bool write_tcg_mix32b_control(uint32_t raw)
+{
+    g_autoptr(GByteArray) value = g_byte_array_sized_new(4);
+    uint32_t be = GUINT32_TO_BE(raw);
+
+    if (!tcg_mix32b_control_register) {
+        return false;
+    }
+    g_byte_array_append(value, (uint8_t *)&be, sizeof(be));
+    return qemu_plugin_write_register(tcg_mix32b_control_register, value);
+}
+
 static bool read_tcg_control(uint32_t *result)
 {
     g_autoptr(GByteArray) value = g_byte_array_new();
@@ -444,6 +458,21 @@ static bool read_tcg_polyphase32b_control(uint32_t *result)
 
     if (!tcg_polyphase32b_control_register ||
         !qemu_plugin_read_register(tcg_polyphase32b_control_register, value) ||
+        value->len != sizeof(raw)) {
+        return false;
+    }
+    memcpy(&raw, value->data, sizeof(raw));
+    *result = GUINT32_FROM_BE(raw);
+    return true;
+}
+
+static bool read_tcg_mix32b_control(uint32_t *result)
+{
+    g_autoptr(GByteArray) value = g_byte_array_new();
+    uint32_t raw;
+
+    if (!tcg_mix32b_control_register ||
+        !qemu_plugin_read_register(tcg_mix32b_control_register, value) ||
         value->len != sizeof(raw)) {
         return false;
     }
@@ -1571,7 +1600,8 @@ static void write_report(bool complete)
                          !candidate_polyphase32 && !candidate_tcg_polyphase32 &&
                          !candidate_polyphase32b &&
                          !candidate_tcg_polyphase32b && !candidate_mix32 &&
-                         !candidate_tcg_mix32 && !candidate_mix32b) ||
+                         !candidate_tcg_mix32 && !candidate_mix32b &&
+                         !candidate_tcg_mix32b) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -1592,6 +1622,7 @@ static void write_report(bool complete)
          candidate_mix32 ? "PASS_NATIVE_MIX32_CANDIDATE" :
          candidate_tcg_mix32 ? "PASS_NATIVE_MIX32_TCG" :
          candidate_mix32b ? "PASS_NATIVE_MIX32B_CANDIDATE" :
+         candidate_tcg_mix32b ? "PASS_NATIVE_MIX32B_TCG" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -1630,7 +1661,8 @@ static void write_report(bool complete)
             candidate_tcg_polyphase32b ? "tcg-polyphase32b" :
             candidate_mix32 ? "mix32" :
             candidate_tcg_mix32 ? "tcg-mix32" :
-            candidate_mix32b ? "mix32b" : "native-shadow",
+            candidate_mix32b ? "mix32b" :
+            candidate_tcg_mix32b ? "tcg-mix32b" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
@@ -1744,7 +1776,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
             } else if (candidate_tcg || candidate_tcg_transform ||
                        candidate_tcg_outer || candidate_tcg_emac32 ||
                        candidate_tcg_polyphase32 || candidate_tcg_mix32 ||
-                       candidate_tcg_polyphase32b) {
+                       candidate_tcg_polyphase32b || candidate_tcg_mix32b) {
                 candidate_attempted = true;
             }
         }
@@ -1801,7 +1833,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
              !write_tcg_polyphase32_control(2)) ||
             (candidate_tcg_mix32 && !write_tcg_mix32_control(2)) ||
             (candidate_tcg_polyphase32b &&
-             !write_tcg_polyphase32b_control(2))) {
+             !write_tcg_polyphase32b_control(2)) ||
+            (candidate_tcg_mix32b && !write_tcg_mix32b_control(2))) {
             candidate_fallback = true;
             phase = PHASE_DONE;
             write_report(true);
@@ -1810,7 +1843,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
         }
         if (candidate_tcg || candidate_tcg_transform || candidate_tcg_outer ||
             candidate_tcg_emac32 || candidate_tcg_polyphase32 ||
-            candidate_tcg_mix32 || candidate_tcg_polyphase32b) {
+            candidate_tcg_mix32 || candidate_tcg_polyphase32b ||
+            candidate_tcg_mix32b) {
             candidate_attempted = true;
             active = true;
         }
@@ -1821,7 +1855,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
     if (phase == PHASE_SHADOW) {
         if (candidate_tcg || candidate_tcg_transform || candidate_tcg_outer ||
             candidate_tcg_emac32 || candidate_tcg_polyphase32 ||
-            candidate_tcg_mix32 || candidate_tcg_polyphase32b) {
+            candidate_tcg_mix32 || candidate_tcg_polyphase32b ||
+            candidate_tcg_mix32b) {
             uint32_t control;
 
             candidate_executed =
@@ -1833,7 +1868,9 @@ static void boundary(unsigned int cpu_index, void *userdata)
                  candidate_tcg_polyphase32 ?
                  read_tcg_polyphase32_control(&control) :
                  candidate_tcg_mix32 ? read_tcg_mix32_control(&control) :
-                 read_tcg_polyphase32b_control(&control)) && control == 0;
+                 candidate_tcg_polyphase32b ?
+                 read_tcg_polyphase32b_control(&control) :
+                 read_tcg_mix32b_control(&control)) && control == 0;
             candidate_fallback = !candidate_executed;
         }
         access_match = ((candidate_inner || candidate_transform ||
@@ -1923,6 +1960,11 @@ static void vcpu_init(unsigned int cpu_index, void *userdata)
             g_free(reg);
             continue;
         }
+        if (!strcmp(desc->name, "ar_audio_mix32b_control")) {
+            tcg_mix32b_control_register = desc->handle;
+            g_free(reg);
+            continue;
+        }
         reg->handle = desc->handle;
         reg->name = g_strdup(desc->name);
         reg->readonly = desc->is_readonly;
@@ -2001,6 +2043,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_tcg_mix32 = true;
         } else if (!strcmp(argv[i], "candidate=mix32b")) {
             candidate_mix32b = true;
+        } else if (!strcmp(argv[i], "candidate=tcg-mix32b")) {
+            candidate_tcg_mix32b = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -2024,7 +2068,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
          candidate_emac32 + candidate_tcg_emac32 + candidate_polyphase32 +
          candidate_tcg_polyphase32 + candidate_polyphase32b +
          candidate_tcg_polyphase32b + candidate_mix32 + candidate_tcg_mix32 +
-         candidate_mix32b + runtime_inner) > 1) {
+         candidate_mix32b + candidate_tcg_mix32b + runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
     }
@@ -2110,6 +2154,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != MIX32B_START_PC || end_pc != MIX32B_END_PC ||
          exit_pc != MIX32B_EXIT_PC)) {
         fprintf(stderr, "mix32b candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_tcg_mix32b &&
+        (start_pc != MIX32B_START_PC || end_pc != MIX32B_END_PC ||
+         exit_pc != MIX32B_EXIT_PC)) {
+        fprintf(stderr, "mix32b TCG candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

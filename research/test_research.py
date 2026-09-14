@@ -569,6 +569,30 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertEqual(mix32b["same_process_replay"]["registers"], 35)
         self.assertTrue(mix32b["transactional_candidate"]["candidate_executed"])
         self.assertFalse(mix32b["transactional_candidate"]["candidate_fallback"])
+        mix32b_tcg = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_MIX32B_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            mix32b_tcg["status"],
+            "PASS_CORRECT_49PCT_INSTRUCTION_REDUCTION",
+        )
+        self.assertEqual(
+            mix32b_tcg["same_process_oracle"]["native_events"], 320
+        )
+        self.assertEqual(
+            mix32b_tcg["exact_vector_191_profile"]
+                      ["eight_helpers_guest_instructions"],
+            13113903,
+        )
+        mix32b_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0012-m68k-add-ar-audio-mix32b-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DEF_HELPER_1(ar_audio_mix32b, i32, env)", mix32b_patch)
         polyphase32b_patch = (
             ROOT
             / "qemu"
