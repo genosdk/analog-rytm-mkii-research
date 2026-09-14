@@ -151,6 +151,12 @@ and reproducible tooling.
   MAIN switches to unchanged stock boot with the extension disabled. Workflow
   run 34874555771 and both uploaded artifacts are recorded in
   `research/AR172_DESKTOP_FIRMWARE_FALLBACK_GATE.json`.
+- First-launch preparation is now one testable transaction: source-file
+  validation precedes temporary-directory creation, and malformed updates,
+  declined fallback, strict command-line mismatch, successful shutdown and
+  explicit `--keep-runtime` retention have independent cleanup assertions.
+  The frozen-app self-test exercises accepted unchanged-stock fallback plus
+  cancellation and malformed-update rollback using non-proprietary fixtures.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
@@ -286,7 +292,9 @@ The standalone macOS app accepts an official Elektron update through its native
 file picker. Exact OS 1.72 enables the verified emulator-only Filter 2/LFO2
 candidate. Selecting another valid update offers a Finder-usable fallback that
 boots its MAIN unchanged with the extension disabled; cancellation and failed
-preparation remove the temporary runtime directory.
+preparation remove the temporary runtime directory. Preparation is isolated as
+one transaction, so the verified candidate, unchanged-stock fallback and every
+pre-QEMU failure share the same cleanup policy.
 
 ## Railway dashboard
 

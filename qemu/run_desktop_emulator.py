@@ -10,6 +10,7 @@ only this executable plus the custom qemu-system-m68k backend.
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -50,6 +51,15 @@ from desktop_panel import (
 )
 
 DIAGNOSTIC_SCHEMA = 1
+
+
+@dataclass(frozen=True)
+class FirmwarePreparation:
+    runtime: Path
+    main_image: Path
+    filter2_controls: Path
+    metadata: dict[str, object]
+    filter2_enabled: bool
 
 
 def file_identity(path: Path) -> dict[str, object]:
@@ -233,6 +243,79 @@ def resolve_filter2_mode(
     )
 
 
+def finish_runtime(runtime: Path, keep_runtime: bool) -> None:
+    if keep_runtime:
+        if sys.stderr is not None:
+            print(f"Runtime retained at: {runtime}", file=sys.stderr)
+    else:
+        shutil.rmtree(runtime, ignore_errors=True)
+
+
+def prepare_firmware(
+    selected_main: Path | None,
+    selected_syx: Path | None,
+    *,
+    filter2_requested: bool,
+    selected_interactively: bool,
+    keep_runtime: bool,
+    confirm=confirm_stock_boot,
+    runtime_factory=tempfile.mkdtemp,
+    extractor=extract_main,
+    candidate_builder=build_filter2_candidate,
+    controls_publisher=publish_runtime_controls,
+) -> FirmwarePreparation:
+    """Prepare one temporary launch transaction or leave no runtime behind."""
+    if (selected_main is None) == (selected_syx is None):
+        raise ValueError("select exactly one MAIN image or firmware update")
+    selected = selected_main if selected_main is not None else selected_syx
+    assert selected is not None
+    if not selected.is_file():
+        label = "MAIN image" if selected_main is not None else "firmware file"
+        raise SystemExit(f"{label} not found: {selected}")
+
+    runtime = Path(runtime_factory(prefix="ar-mk2-emulator-"))
+    filter2_controls = runtime / "filter2-controls.bin"
+    try:
+        metadata: dict[str, object] = {}
+        if selected_main is not None:
+            main_image = selected_main
+        else:
+            assert selected_syx is not None
+            main_image = runtime / "main.bin"
+            metadata = extractor(selected_syx, main_image)
+            if sys.stderr is not None:
+                print(
+                    f"Extracted OS {metadata['version']} MAIN: "
+                    f"{metadata['size']} bytes, sha256={metadata['sha256']}",
+                    file=sys.stderr,
+                )
+
+        stock = main_image.read_bytes()
+        digest = hashlib.sha256(stock).hexdigest()
+        filter2_enabled = resolve_filter2_mode(
+            filter2_requested,
+            digest,
+            selected_interactively=selected_interactively,
+            version=str(metadata["version"]) if "version" in metadata else None,
+            confirm=confirm,
+        )
+        if filter2_enabled:
+            candidate, _ = candidate_builder(stock, True)
+            main_image = runtime / "main-filter2-runtime.bin"
+            main_image.write_bytes(candidate)
+            controls_publisher(filter2_controls, RuntimeControls())
+        return FirmwarePreparation(
+            runtime=runtime,
+            main_image=main_image,
+            filter2_controls=filter2_controls,
+            metadata=metadata,
+            filter2_enabled=filter2_enabled,
+        )
+    except BaseException:
+        finish_runtime(runtime, keep_runtime)
+        raise
+
+
 def bundle_dir() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent
@@ -285,7 +368,8 @@ def self_test(qemu: Path) -> None:
         "self-test-unverified-main",
         selected_interactively=True,
         version="self-test",
-        confirm=lambda version, digest: fallback_calls.append((version, digest)) or True,
+        confirm=lambda version, digest: fallback_calls.append((version, digest))
+        or True,
     ):
         raise RuntimeError("unverified MAIN incorrectly retained Filter 2")
     if fallback_calls != [("self-test", "self-test-unverified-main")]:
@@ -299,6 +383,79 @@ def self_test(qemu: Path) -> None:
         raise RuntimeError("verified OS 1.72 MAIN incorrectly disabled Filter 2")
     with tempfile.TemporaryDirectory(prefix="ar-mk2-skin-test-") as directory:
         runtime = Path(directory)
+        update = runtime / "synthetic-update.syx"
+        update.write_bytes(b"synthetic update marker")
+        transaction_runtimes: list[Path] = []
+
+        def transaction_runtime_factory(*, prefix: str) -> str:
+            transaction = runtime / f"{prefix}{len(transaction_runtimes)}"
+            transaction.mkdir()
+            transaction_runtimes.append(transaction)
+            return str(transaction)
+
+        def extract_transaction_fixture(_source: Path, destination: Path) -> dict:
+            main = b"synthetic unverified MAIN"
+            destination.write_bytes(main)
+            return {
+                "hardware": "0162",
+                "version": "self-test",
+                "size": len(main),
+                "sha256": hashlib.sha256(main).hexdigest(),
+            }
+
+        prepared = prepare_firmware(
+            None,
+            update,
+            filter2_requested=True,
+            selected_interactively=True,
+            keep_runtime=False,
+            confirm=lambda _version, _digest: True,
+            runtime_factory=transaction_runtime_factory,
+            extractor=extract_transaction_fixture,
+        )
+        if prepared.filter2_enabled or prepared.filter2_controls.exists():
+            raise RuntimeError("stock fallback transaction enabled Filter 2")
+        if prepared.main_image.read_bytes() != b"synthetic unverified MAIN":
+            raise RuntimeError("stock fallback transaction changed MAIN")
+        finish_runtime(prepared.runtime, False)
+        if prepared.runtime.exists():
+            raise RuntimeError("successful transaction runtime was not removed")
+
+        try:
+            prepare_firmware(
+                None,
+                update,
+                filter2_requested=True,
+                selected_interactively=True,
+                keep_runtime=False,
+                confirm=lambda _version, _digest: False,
+                runtime_factory=transaction_runtime_factory,
+                extractor=extract_transaction_fixture,
+            )
+        except SystemExit as error:
+            if error.code != 0:
+                raise RuntimeError("fallback cancellation did not exit cleanly")
+        else:
+            raise RuntimeError("fallback cancellation did not stop preparation")
+        if transaction_runtimes[-1].exists():
+            raise RuntimeError("cancelled transaction runtime was not removed")
+
+        try:
+            prepare_firmware(
+                None,
+                update,
+                filter2_requested=True,
+                selected_interactively=True,
+                keep_runtime=False,
+                runtime_factory=transaction_runtime_factory,
+            )
+        except ValueError:
+            pass
+        else:
+            raise RuntimeError("malformed update passed preparation")
+        if transaction_runtimes[-1].exists():
+            raise RuntimeError("failed transaction runtime was not removed")
+
         skin_runtime_self_test(runtime / "frame.bin", runtime / "events.jsonl")
         diagnostic = write_diagnostic_report(
             RuntimeError("packaged diagnostic probe"),
@@ -401,60 +558,29 @@ def main() -> None:
     selected_syx: Path | None = None
     if args.main:
         selected_main = args.main.expanduser().resolve()
-        if not selected_main.is_file():
-            raise SystemExit(f"MAIN image not found: {selected_main}")
     else:
         selected_syx = (
             args.firmware.expanduser().resolve()
             if args.firmware
             else choose_firmware()
         )
-        if not selected_syx.is_file():
-            raise SystemExit(f"firmware file not found: {selected_syx}")
 
-    runtime = Path(tempfile.mkdtemp(prefix="ar-mk2-emulator-"))
+    prepared = prepare_firmware(
+        selected_main,
+        selected_syx,
+        filter2_requested=not args.no_filter2,
+        selected_interactively=selected_interactively,
+        keep_runtime=args.keep_runtime,
+    )
+    runtime = prepared.runtime
     uart = runtime / "panel.sock"
     monitor = runtime / "monitor.sock"
     frame = runtime / "front-buffer.bin"
     events = runtime / "panel-events.jsonl"
-    filter2_controls = runtime / "filter2-controls.bin"
+    filter2_controls = prepared.filter2_controls
     log = runtime / "qemu.log"
-
-    try:
-        metadata: dict[str, object] = {}
-        if selected_main is not None:
-            main_image = selected_main
-        else:
-            assert selected_syx is not None
-            main_image = runtime / "main.bin"
-            metadata = extract_main(selected_syx, main_image)
-            if sys.stderr is not None:
-                print(
-                    f"Extracted OS {metadata['version']} MAIN: "
-                    f"{metadata['size']} bytes, sha256={metadata['sha256']}",
-                    file=sys.stderr,
-                )
-
-        stock = main_image.read_bytes()
-        digest = hashlib.sha256(stock).hexdigest()
-        filter2_enabled = resolve_filter2_mode(
-            not args.no_filter2,
-            digest,
-            selected_interactively=selected_interactively,
-            version=str(metadata["version"]) if "version" in metadata else None,
-        )
-        if filter2_enabled:
-            candidate, _ = build_filter2_candidate(stock, True)
-            main_image = runtime / "main-filter2-runtime.bin"
-            main_image.write_bytes(candidate)
-            publish_runtime_controls(filter2_controls, RuntimeControls())
-    except BaseException:
-        if args.keep_runtime:
-            if sys.stderr is not None:
-                print(f"Runtime retained at: {runtime}", file=sys.stderr)
-        else:
-            shutil.rmtree(runtime, ignore_errors=True)
-        raise
+    main_image = prepared.main_image
+    filter2_enabled = prepared.filter2_enabled
 
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
@@ -541,11 +667,7 @@ def main() -> None:
                 qemu_proc.wait(2.0)
             except subprocess.TimeoutExpired:
                 qemu_proc.kill()
-        if args.keep_runtime:
-            if sys.stderr is not None:
-                print(f"Runtime retained at: {runtime}", file=sys.stderr)
-        else:
-            shutil.rmtree(runtime, ignore_errors=True)
+        finish_runtime(runtime, args.keep_runtime)
 
 
 def guarded_main() -> None:

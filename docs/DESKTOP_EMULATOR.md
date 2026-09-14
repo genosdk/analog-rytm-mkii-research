@@ -141,6 +141,15 @@ disabled. The same packages pass the enforced artifact audit and firmware
 exclusion boundary. Evidence is in
 `research/AR172_DESKTOP_FIRMWARE_FALLBACK_GATE.json`.
 
+Firmware preparation is isolated as a single transaction before QEMU starts.
+It validates the selected source before allocating a runtime, extracts MAIN,
+chooses verified Filter 2 or unchanged-stock mode, and creates controls only
+for the verified candidate. Any extraction, compatibility or candidate-build
+failure rolls the runtime back; `--keep-runtime` is the sole explicit retention
+override. The signed-app self-test uses synthetic firmware markers to exercise
+accepted fallback, clean cancellation and malformed-update rollback without
+embedding Elektron content.
+
 The downstream photographic-control gate continues those same 57 interactions
 through `panel_event_bridge.follow_events`. It verifies exact UART8 bytes for
 all eight page/action buttons, all sixteen Trigs, and a +5 drag on every encoder

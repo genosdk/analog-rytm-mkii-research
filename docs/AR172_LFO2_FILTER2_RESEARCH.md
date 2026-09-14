@@ -749,6 +749,14 @@ interactive MAIN disables the extension and remains unchanged. Both packages
 also pass the enforced artifact audit and upload successfully. Evidence is in
 `research/AR172_DESKTOP_FIRMWARE_FALLBACK_GATE.json`.
 
+The next release-hardening step isolates source validation, extraction, mode
+selection, runtime-candidate creation and control publication into one
+pre-QEMU transaction. Synthetic tests prove exact-digest candidate creation,
+accepted unchanged-stock fallback, clean cancellation, malformed-update and
+strict command-line rollback, plus explicit `--keep-runtime` retention. The
+frozen executable's self-test now repeats the accepted, cancelled and malformed
+transaction paths without carrying proprietary firmware.
+
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

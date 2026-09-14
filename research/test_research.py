@@ -10,6 +10,7 @@ import tempfile
 import threading
 import time
 import unittest
+import unittest.mock
 import zipfile
 from pathlib import Path
 
@@ -124,6 +125,202 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class MacosPackagingTests(unittest.TestCase):
+    @staticmethod
+    def import_desktop_launcher():
+        sys.path.insert(0, str(ROOT / "qemu"))
+        try:
+            import run_desktop_emulator
+        finally:
+            sys.path.pop(0)
+        return run_desktop_emulator
+
+    def test_firmware_preparation_exact_and_stock_fallback_transactions(self):
+        launcher = self.import_desktop_launcher()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            verified = root / "verified-main.bin"
+            verified.write_bytes(b"synthetic verified MAIN")
+            fallback = root / "synthetic-1.73.syx"
+            fallback.write_bytes(b"synthetic update marker")
+            runtimes = []
+
+            def runtime_factory(*, prefix):
+                runtime = root / f"{prefix}{len(runtimes)}"
+                runtime.mkdir()
+                runtimes.append(runtime)
+                return str(runtime)
+
+            original_digest = launcher.EXPECTED_MAIN_SHA256
+            launcher.EXPECTED_MAIN_SHA256 = hashlib.sha256(
+                verified.read_bytes()
+            ).hexdigest()
+            try:
+                prepared = launcher.prepare_firmware(
+                    verified,
+                    None,
+                    filter2_requested=True,
+                    selected_interactively=False,
+                    keep_runtime=False,
+                    confirm=lambda _version, _digest: self.fail(
+                        "verified MAIN requested confirmation"
+                    ),
+                    runtime_factory=runtime_factory,
+                    candidate_builder=lambda stock, enabled: (
+                        stock + b"-filter2",
+                        {"enabled": enabled},
+                    ),
+                    controls_publisher=lambda path, controls: path.write_bytes(
+                        controls.encode()
+                    ),
+                )
+                self.assertTrue(prepared.filter2_enabled)
+                self.assertEqual(
+                    prepared.main_image.read_bytes(),
+                    b"synthetic verified MAIN-filter2",
+                )
+                self.assertEqual(prepared.filter2_controls.stat().st_size, 108)
+
+                confirmations = []
+
+                def extract_fixture(_source, destination):
+                    main = b"synthetic unverified MAIN"
+                    destination.write_bytes(main)
+                    return {
+                        "hardware": "0162",
+                        "version": "1.73",
+                        "size": len(main),
+                        "sha256": hashlib.sha256(main).hexdigest(),
+                    }
+
+                stock_prepared = launcher.prepare_firmware(
+                    None,
+                    fallback,
+                    filter2_requested=True,
+                    selected_interactively=True,
+                    keep_runtime=False,
+                    confirm=lambda version, digest: confirmations.append(
+                        (version, digest)
+                    )
+                    or True,
+                    runtime_factory=runtime_factory,
+                    extractor=extract_fixture,
+                    candidate_builder=lambda _stock, _enabled: self.fail(
+                        "stock fallback built a Filter 2 candidate"
+                    ),
+                    controls_publisher=lambda _path, _controls: self.fail(
+                        "stock fallback published Filter 2 controls"
+                    ),
+                )
+                self.assertFalse(stock_prepared.filter2_enabled)
+                self.assertEqual(
+                    stock_prepared.main_image.read_bytes(),
+                    b"synthetic unverified MAIN",
+                )
+                self.assertFalse(stock_prepared.filter2_controls.exists())
+                self.assertEqual(confirmations[0][0], "1.73")
+            finally:
+                launcher.EXPECTED_MAIN_SHA256 = original_digest
+
+    def test_firmware_preparation_failures_are_transactional(self):
+        launcher = self.import_desktop_launcher()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            update = root / "synthetic.syx"
+            update.write_bytes(b"not a valid Elektron update")
+            created = []
+
+            def runtime_factory(*, prefix):
+                runtime = root / f"{prefix}{len(created)}"
+                runtime.mkdir()
+                created.append(runtime)
+                return str(runtime)
+
+            with self.assertRaisesRegex(SystemExit, "firmware file not found"):
+                launcher.prepare_firmware(
+                    None,
+                    root / "missing.syx",
+                    filter2_requested=True,
+                    selected_interactively=True,
+                    keep_runtime=False,
+                    runtime_factory=lambda **_kwargs: self.fail(
+                        "missing source allocated a runtime"
+                    ),
+                )
+            self.assertEqual(created, [])
+
+            with self.assertRaisesRegex(ValueError, "not an Elektron"):
+                launcher.prepare_firmware(
+                    None,
+                    update,
+                    filter2_requested=True,
+                    selected_interactively=True,
+                    keep_runtime=False,
+                    runtime_factory=runtime_factory,
+                )
+            self.assertFalse(created[0].exists())
+
+            def extract_unverified(_source, destination):
+                main = b"unverified"
+                destination.write_bytes(main)
+                return {
+                    "version": "1.73",
+                    "size": len(main),
+                    "sha256": hashlib.sha256(main).hexdigest(),
+                }
+
+            with self.assertRaises(SystemExit) as cancelled:
+                launcher.prepare_firmware(
+                    None,
+                    update,
+                    filter2_requested=True,
+                    selected_interactively=True,
+                    keep_runtime=False,
+                    confirm=lambda _version, _digest: False,
+                    runtime_factory=runtime_factory,
+                    extractor=extract_unverified,
+                )
+            self.assertEqual(cancelled.exception.code, 0)
+            self.assertFalse(created[1].exists())
+
+            with self.assertRaisesRegex(SystemExit, "Use --no-filter2"):
+                launcher.prepare_firmware(
+                    None,
+                    update,
+                    filter2_requested=True,
+                    selected_interactively=False,
+                    keep_runtime=False,
+                    runtime_factory=runtime_factory,
+                    extractor=extract_unverified,
+                )
+            self.assertFalse(created[2].exists())
+
+    def test_firmware_preparation_can_retain_failed_runtime_explicitly(self):
+        launcher = self.import_desktop_launcher()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            update = root / "synthetic.syx"
+            update.write_bytes(b"not a valid Elektron update")
+            runtime = root / "retained-runtime"
+
+            def runtime_factory(*, prefix):
+                self.assertEqual(prefix, "ar-mk2-emulator-")
+                runtime.mkdir()
+                return str(runtime)
+
+            stderr = io.StringIO()
+            with self.assertRaisesRegex(ValueError, "not an Elektron"):
+                with unittest.mock.patch("sys.stderr", stderr):
+                    launcher.prepare_firmware(
+                        None,
+                        update,
+                        filter2_requested=True,
+                        selected_interactively=True,
+                        keep_runtime=True,
+                        runtime_factory=runtime_factory,
+                    )
+            self.assertTrue(runtime.is_dir())
+            self.assertIn("Runtime retained at:", stderr.getvalue())
+
     def test_dual_arch_packaged_firmware_fallback_gate(self):
         report = json.loads(
             (HERE / "AR172_DESKTOP_FIRMWARE_FALLBACK_GATE.json").read_text(
@@ -372,6 +569,15 @@ class MacosPackagingTests(unittest.TestCase):
         self.assertIn("expected_drawer_events", source)
         self.assertIn('root.tk.call("after", 45)', source)
         self.assertIn("native Tk drawer left an audition trigger pending", source)
+
+    def test_packaged_self_test_covers_firmware_preparation_transaction(self):
+        source = (ROOT / "qemu" / "run_desktop_emulator.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("transaction_runtime_factory", source)
+        self.assertIn("stock fallback transaction changed MAIN", source)
+        self.assertIn("cancelled transaction runtime was not removed", source)
+        self.assertIn("failed transaction runtime was not removed", source)
 
     def test_first_launch_diagnostic_is_sanitized_and_reproducible(self):
         sys.path.insert(0, str(ROOT / "qemu"))
