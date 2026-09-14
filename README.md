@@ -143,7 +143,9 @@ and reproducible tooling.
 - The release workflow now audits each nested artifact before upload: envelope
   membership and checksums, app structure, bundle identity, both required
   executables, native architecture across every Mach-O payload, photographic
-  resources, code-signature seal, and absence of firmware-like files.
+  resources, code-signature seal, and absence of firmware-like files. The
+  enforced check and an independent post-download replay pass on both arm64 and
+  x86_64 in `research/AR172_MACOS_ARTIFACT_INTEGRITY_GATE.json`.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to

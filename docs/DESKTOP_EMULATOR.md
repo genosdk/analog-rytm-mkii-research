@@ -122,7 +122,10 @@ nested release ZIP, verifies both SHA-256 boundaries, checks the app identity
 and required resources, classifies every Mach-O payload by CPU type, scans
 embedded ZIPs, and rejects firmware-like `.syx`, `.ele3`, `.bin`, `.rom`, or
 `.fw` content. Packaging runs execute this audit before upload and include its
-JSON report with the downloadable artifact.
+JSON report with the downloadable artifact. Workflow run 34808064720 passes the
+enforced check on both architectures; downloading those uploaded envelopes and
+replaying the same auditor also passes all 68 arm64 and 69 x86_64 Mach-O files.
+Evidence is in `research/AR172_MACOS_ARTIFACT_INTEGRITY_GATE.json`.
 
 The downstream photographic-control gate continues those same 57 interactions
 through `panel_event_bridge.follow_events`. It verifies exact UART8 bytes for

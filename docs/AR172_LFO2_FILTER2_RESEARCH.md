@@ -733,6 +733,14 @@ seven representative runtime events including the timed audition release, and
 then completes the existing 57-event photographic replay. Both arm64 and
 x86_64 jobs package and upload their architecture-specific artifacts. Evidence
 is in `research/AR172_PACKAGED_NATIVE_TK_DRAWER_GATE.json`.
+The following integrity gate moves release inspection into the packaging
+workflow itself. Both macOS jobs validate the exact envelope members, nested
+release checksum, app identity and required resources, every Mach-O CPU type,
+embedded ZIP names, and the firmware-exclusion boundary before upload. The two
+published envelopes are then downloaded and independently replayed against the
+same auditor: all 68 arm64 and 69 x86_64 native payloads match, both checksum
+layers verify, and no firmware-like payload exists. Evidence is in
+`research/AR172_MACOS_ARTIFACT_INTEGRITY_GATE.json`.
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic

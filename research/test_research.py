@@ -124,6 +124,30 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class MacosPackagingTests(unittest.TestCase):
+    def test_dual_arch_macos_artifact_integrity_gate(self):
+        report = json.loads(
+            (HERE / "AR172_MACOS_ARTIFACT_INTEGRITY_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            report["status"],
+            "PASS_DUAL_ARCH_ENFORCED_AND_DOWNLOADED_ARTIFACT_AUDIT",
+        )
+        self.assertEqual(report["workflow_run"]["conclusion"], "success")
+        self.assertEqual(report["workflow_run"]["id"], 34808064720)
+        audits = report["downloaded_artifact_audits"]
+        self.assertEqual(set(audits), {"arm64", "x86_64"})
+        for architecture, audit in audits.items():
+            self.assertEqual(audit["result"], "PASS_MACOS_ARTIFACT_INTEGRITY")
+            self.assertEqual(audit["outer_member_count"], 4)
+            self.assertEqual(len(audit["outer_sha256"]), 64)
+            self.assertEqual(len(audit["release_zip_sha256"]), 64)
+            self.assertTrue(audit["all_macho_files_match_architecture"])
+            self.assertTrue(audit["required_members_present"])
+            self.assertEqual(audit["firmware_like_payload_count"], 0)
+            self.assertGreater(audit["macho_file_count"], 60, architecture)
+
     @staticmethod
     def synthetic_macos_artifact(
         architecture="arm64", extra_inner=None, payload_architecture=None

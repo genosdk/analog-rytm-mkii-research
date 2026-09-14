@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_MACOS_ARTIFACT_INTEGRITY_GATE",
+  "recorded_at_utc": "2026-09-14",
+  "status": "PASS_DUAL_ARCH_ENFORCED_AND_DOWNLOADED_ARTIFACT_AUDIT",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "implementation": {
+    "commit": "f6da976160c73b73609d3132bdd556d4fe8aa6f1",
+    "commit_url": "https://github.com/genosdk/analog-rytm-mkii-research/commit/f6da976160c73b73609d3132bdd556d4fe8aa6f1",
+    "auditor": "research/macos_artifact_audit.py",
+    "workflow": ".github/workflows/package-macos-app.yml"
+  },
+  "workflow_run": {
+    "id": 34808064720,
+    "number": 22,
+    "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/34808064720",
+    "event": "workflow_dispatch",
+    "head_branch": "restore-filter2-controller",
+    "head_sha": "f6da976160c73b73609d3132bdd556d4fe8aa6f1",
+    "conclusion": "success"
+  },
+  "jobs": [
+    {
+      "id": 103863743494,
+      "runner": "macos-15",
+      "architecture": "arm64",
+      "started_at": "2026-09-14T05:00:47Z",
+      "completed_at": "2026-09-14T05:03:21Z",
+      "conclusion": "success",
+      "packaged_smoke_test": "success",
+      "enforced_artifact_audit": "success",
+      "artifact_upload": "success"
+    },
+    {
+      "id": 103863743349,
+      "runner": "macos-15-intel",
+      "architecture": "x86_64",
+      "started_at": "2026-09-14T05:00:45Z",
+      "completed_at": "2026-09-14T05:06:57Z",
+      "conclusion": "success",
+      "packaged_smoke_test": "success",
+      "enforced_artifact_audit": "success",
+      "artifact_upload": "success"
+    }
+  ],
+  "downloaded_artifact_audits": {
+    "arm64": {
+      "artifact_id": 10333612926,
+      "artifact_name": "AR-MKII-Emulator-macOS-arm64",
+      "expires_at": "2026-10-14T05:03:15Z",
+      "outer_size_in_bytes": 20636240,
+      "outer_sha256": "2fab227cd9f91f3b1213f9cbb4ff5a9d9a362d1f6537f1263881d05f853ce747",
+      "outer_member_count": 4,
+      "release_zip_size_in_bytes": 20937462,
+      "release_zip_sha256": "0a3ea1840caf1221e886cc0ea93e34c1767e673ca24b9f7f3cfdfece7ee704d9",
+      "app_file_count": 413,
+      "app_uncompressed_bytes": 56034774,
+      "macho_file_count": 68,
+      "all_macho_files_match_architecture": true,
+      "required_members_present": true,
+      "firmware_like_payload_count": 0,
+      "result": "PASS_MACOS_ARTIFACT_INTEGRITY"
+    },
+    "x86_64": {
+      "artifact_id": 10333483598,
+      "artifact_name": "AR-MKII-Emulator-macOS-x86_64",
+      "expires_at": "2026-10-14T05:06:48Z",
+      "outer_size_in_bytes": 21966948,
+      "outer_sha256": "afe7666a19701832e9e3e1276177044aa2ffbfc61a8f2ae89ad771c4a52f44cf",
+      "outer_member_count": 4,
+      "release_zip_size_in_bytes": 22247158,
+      "release_zip_sha256": "94f99e365cc878373e44870e1b924e2ae0ccb5ae268155448c94c07b911b81c1",
+      "app_file_count": 414,
+      "app_uncompressed_bytes": 55593928,
+      "macho_file_count": 69,
+      "all_macho_files_match_architecture": true,
+      "required_members_present": true,
+      "firmware_like_payload_count": 0,
+      "result": "PASS_MACOS_ARTIFACT_INTEGRITY"
+    }
+  },
+  "audited_boundaries": [
+    "GitHub artifact envelope SHA-256",
+    "exact envelope membership with uploaded JSON audit report",
+    "nested release ZIP SHA-256 manifest",
+    "single expected app-bundle root and safe ZIP paths",
+    "bundle identifier and executable identity",
+    "frontend and custom QEMU executables",
+    "photographic neutral and active panel resources",
+    "outer code-signature resource seal",
+    "CPU type of every Mach-O payload",
+    "firmware-like file names in the app and embedded ZIPs"
+  ],
+  "scope_limit": "This gate proves deterministic packaging structure, nested checksums, architecture purity, required resources, the presence of the signed resource seal, packaged native-Tk execution, and the absence of firmware-like payloads in the two uploaded artifacts. Ad-hoc codesigning is verified by the macOS workflow, but this is not Apple Developer ID signing, notarization, physical hardware validation, or a promise of compatibility with macOS versions older than the build runners."
+}
