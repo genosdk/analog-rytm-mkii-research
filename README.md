@@ -277,6 +277,12 @@ are audited on every preview callback; other stock source planes remain
 fixture-dependent. The service never writes an ELE3 container, SysEx package,
 or flashable image.
 
+The standalone macOS app accepts an official Elektron update through its native
+file picker. Exact OS 1.72 enables the verified emulator-only Filter 2/LFO2
+candidate. Selecting another valid update offers a Finder-usable fallback that
+boots its MAIN unchanged with the extension disabled; cancellation and failed
+preparation remove the temporary runtime directory.
+
 ## Railway dashboard
 
 The included `app.py` is a zero-dependency read-only status dashboard suitable for a

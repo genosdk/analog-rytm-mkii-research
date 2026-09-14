@@ -189,6 +189,50 @@ def choose_firmware() -> Path:
     return Path(selected).expanduser().resolve()
 
 
+def confirm_stock_boot(version: str | None, digest: str) -> bool:
+    """Offer a Finder-usable fallback when Filter 2 has no verified patch base."""
+    root = tk.Tk()
+    root.withdraw()
+    label = f"OS {version}" if version else "this firmware"
+    try:
+        return messagebox.askyesno(
+            "Filter 2 compatibility",
+            (
+                f"{label} is a valid Analog Rytm MKII update, but the emulator-only "
+                "Filter 2/LFO2 extension has only been verified against OS 1.72.\n\n"
+                "Boot the selected firmware unchanged with Filter 2/LFO2 disabled?\n\n"
+                f"MAIN SHA-256: {digest}"
+            ),
+            parent=root,
+        )
+    finally:
+        root.destroy()
+
+
+def resolve_filter2_mode(
+    requested: bool,
+    digest: str,
+    *,
+    selected_interactively: bool,
+    version: str | None = None,
+    confirm=confirm_stock_boot,
+) -> bool:
+    """Return whether Filter 2 can run, or stop before altering an unknown MAIN."""
+    if not requested:
+        return False
+    if digest == EXPECTED_MAIN_SHA256:
+        return True
+    if selected_interactively:
+        if confirm(version, digest):
+            return False
+        raise SystemExit(0)
+    raise SystemExit(
+        "The live Filter 2 extension currently requires official OS 1.72 "
+        f"MAIN ({EXPECTED_MAIN_SHA256}); selected MAIN is {digest}. "
+        "Use --no-filter2 to boot it untouched."
+    )
+
+
 def bundle_dir() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent
@@ -235,6 +279,24 @@ def self_test(qemu: Path) -> None:
                 f"bundled photographic skin is invalid: {filename}"
             )
     validate_skin_geometry()
+    fallback_calls: list[tuple[str | None, str]] = []
+    if resolve_filter2_mode(
+        True,
+        "self-test-unverified-main",
+        selected_interactively=True,
+        version="self-test",
+        confirm=lambda version, digest: fallback_calls.append((version, digest)) or True,
+    ):
+        raise RuntimeError("unverified MAIN incorrectly retained Filter 2")
+    if fallback_calls != [("self-test", "self-test-unverified-main")]:
+        raise RuntimeError("stock-firmware fallback confirmation was not exercised")
+    if not resolve_filter2_mode(
+        True,
+        EXPECTED_MAIN_SHA256,
+        selected_interactively=True,
+        confirm=lambda _version, _digest: False,
+    ):
+        raise RuntimeError("verified OS 1.72 MAIN incorrectly disabled Filter 2")
     with tempfile.TemporaryDirectory(prefix="ar-mk2-skin-test-") as directory:
         runtime = Path(directory)
         skin_runtime_self_test(runtime / "frame.bin", runtime / "events.jsonl")
@@ -334,6 +396,22 @@ def main() -> None:
         self_test(qemu)
         return
 
+    selected_interactively = args.main is None and args.firmware is None
+    selected_main: Path | None = None
+    selected_syx: Path | None = None
+    if args.main:
+        selected_main = args.main.expanduser().resolve()
+        if not selected_main.is_file():
+            raise SystemExit(f"MAIN image not found: {selected_main}")
+    else:
+        selected_syx = (
+            args.firmware.expanduser().resolve()
+            if args.firmware
+            else choose_firmware()
+        )
+        if not selected_syx.is_file():
+            raise SystemExit(f"firmware file not found: {selected_syx}")
+
     runtime = Path(tempfile.mkdtemp(prefix="ar-mk2-emulator-"))
     uart = runtime / "panel.sock"
     monitor = runtime / "monitor.sock"
@@ -342,38 +420,41 @@ def main() -> None:
     filter2_controls = runtime / "filter2-controls.bin"
     log = runtime / "qemu.log"
 
-    if args.main:
-        main_image = args.main.expanduser().resolve()
-        if not main_image.is_file():
-            raise SystemExit(f"MAIN image not found: {main_image}")
-    else:
-        syx = (args.firmware.expanduser().resolve()
-               if args.firmware else choose_firmware())
-        if not syx.is_file():
-            raise SystemExit(f"firmware file not found: {syx}")
-        main_image = runtime / "main.bin"
-        metadata = extract_main(syx, main_image)
-        if sys.stderr is not None:
-            print(
-                f"Extracted MAIN: {metadata['size']} bytes, "
-                f"sha256={metadata['sha256']}",
-                file=sys.stderr,
-            )
+    try:
+        metadata: dict[str, object] = {}
+        if selected_main is not None:
+            main_image = selected_main
+        else:
+            assert selected_syx is not None
+            main_image = runtime / "main.bin"
+            metadata = extract_main(selected_syx, main_image)
+            if sys.stderr is not None:
+                print(
+                    f"Extracted OS {metadata['version']} MAIN: "
+                    f"{metadata['size']} bytes, sha256={metadata['sha256']}",
+                    file=sys.stderr,
+                )
 
-    filter2_enabled = not args.no_filter2
-    if filter2_enabled:
         stock = main_image.read_bytes()
         digest = hashlib.sha256(stock).hexdigest()
-        if digest != EXPECTED_MAIN_SHA256:
-            raise SystemExit(
-                "The live Filter 2 extension currently requires official OS 1.72 "
-                f"MAIN ({EXPECTED_MAIN_SHA256}); selected MAIN is {digest}. "
-                "Use --no-filter2 to boot it untouched."
-            )
-        candidate, _ = build_filter2_candidate(stock, True)
-        main_image = runtime / "main-filter2-runtime.bin"
-        main_image.write_bytes(candidate)
-        publish_runtime_controls(filter2_controls, RuntimeControls())
+        filter2_enabled = resolve_filter2_mode(
+            not args.no_filter2,
+            digest,
+            selected_interactively=selected_interactively,
+            version=str(metadata["version"]) if "version" in metadata else None,
+        )
+        if filter2_enabled:
+            candidate, _ = build_filter2_candidate(stock, True)
+            main_image = runtime / "main-filter2-runtime.bin"
+            main_image.write_bytes(candidate)
+            publish_runtime_controls(filter2_controls, RuntimeControls())
+    except BaseException:
+        if args.keep_runtime:
+            if sys.stderr is not None:
+                print(f"Runtime retained at: {runtime}", file=sys.stderr)
+        else:
+            shutil.rmtree(runtime, ignore_errors=True)
+        raise
 
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)

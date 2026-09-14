@@ -132,6 +132,8 @@ def iter_sections(container: bytes):
 
 def extract_main(syx: Path, destination: Path) -> dict:
     container = decode_ele3(syx)
+    hardware = container[8:0x14].decode("ascii").rstrip(" \0")
+    version = container[0x14:0x18].decode("ascii").rstrip("\0")
     for index, section_id, load_address, data in iter_sections(container):
         if load_address != AR_MAIN_LOAD_ADDRESS:
             continue
@@ -145,6 +147,8 @@ def extract_main(syx: Path, destination: Path) -> dict:
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(main)
         return {
+            "hardware": hardware,
+            "version": version,
             "section_index": index,
             "section_id": section_id,
             "load_address": load_address,

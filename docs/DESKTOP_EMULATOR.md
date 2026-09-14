@@ -8,8 +8,14 @@ The desktop emulator runs the unmodified Analog Rytm MKII OS 1.72 MAIN image in 
 
 1. Open `AR MKII Emulator.app`.
 2. Choose an official Analog Rytm MKII firmware `.syx` file when prompted.
-3. The app extracts/decompresses MAIN locally and boots it in the embedded custom QEMU backend.
-4. The emulated firmware presents one dismissible startup modal. Press **NO**
+3. The app identifies the update version and extracts/decompresses MAIN locally.
+   Verified OS 1.72 enables the emulator-only Filter 2/LFO2 extension. For a
+   different valid update, a native dialog can instead boot its MAIN untouched
+   with that extension disabled; declining the fallback cancels launch cleanly.
+4. MAIN boots in the embedded custom QEMU backend. Extracted files and any
+   runtime-only candidate remain temporary and are removed when the app exits
+   or preparation fails.
+5. The emulated firmware presents one dismissible startup modal. Press **NO**
    once to continue to the normal parameter UI.
 
 Finder-launched startup and Tk callback failures are shown in a native dialog.

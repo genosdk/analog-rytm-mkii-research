@@ -124,6 +124,66 @@ class QemuEmacPatchTests(unittest.TestCase):
 
 
 class MacosPackagingTests(unittest.TestCase):
+    def test_first_launch_can_fall_back_to_untouched_stock_firmware(self):
+        sys.path.insert(0, str(ROOT / "qemu"))
+        try:
+            from run_desktop_emulator import (
+                EXPECTED_MAIN_SHA256,
+                resolve_filter2_mode,
+            )
+        finally:
+            sys.path.pop(0)
+
+        confirmations = []
+
+        def confirm(version, digest):
+            confirmations.append((version, digest))
+            return True
+
+        self.assertTrue(
+            resolve_filter2_mode(
+                True,
+                EXPECTED_MAIN_SHA256,
+                selected_interactively=True,
+                confirm=confirm,
+            )
+        )
+        self.assertFalse(
+            resolve_filter2_mode(
+                False,
+                "unverified",
+                selected_interactively=True,
+                confirm=confirm,
+            )
+        )
+        self.assertFalse(
+            resolve_filter2_mode(
+                True,
+                "unverified",
+                selected_interactively=True,
+                version="1.73",
+                confirm=confirm,
+            )
+        )
+        self.assertEqual(confirmations, [("1.73", "unverified")])
+        with self.assertRaisesRegex(SystemExit, "Use --no-filter2"):
+            resolve_filter2_mode(
+                True,
+                "unverified",
+                selected_interactively=False,
+                version="1.73",
+                confirm=confirm,
+            )
+        with self.assertRaises(SystemExit) as cancelled:
+            resolve_filter2_mode(
+                True,
+                "cancelled",
+                selected_interactively=True,
+                version="1.73",
+                confirm=lambda _version, _digest: False,
+            )
+        self.assertEqual(cancelled.exception.code, 0)
+
     def test_dual_arch_macos_artifact_integrity_gate(self):
         report = json.loads(
             (HERE / "AR172_MACOS_ARTIFACT_INTEGRITY_GATE.json").read_text(
