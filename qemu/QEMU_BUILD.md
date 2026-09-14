@@ -432,6 +432,16 @@ helpers is 14,127,803 guest instructions: 349,400 fewer than four helpers and
 2.41% and 45.19%. Held-audio release retained its exact eight-service tail and
 responsive UI.
 
+Reprofiling the deterministic handoff leaf with all five helpers enabled leaves
+1,967,500 guest instructions per 100 services, 349,400 fewer than the
+four-helper residual. Its largest remaining bounded core is the single
+32-iteration stage at `0x4010918A..0x401091D8`, exiting at `0x401091DA`. It
+accounts for 451,100 instructions per 100 services and issues 384 ordered
+memory events per call over 896 touched bytes on three pages. Native/native
+shadow replay at both `stable=8` and `stable=16` matched every access, all 35
+registers, and every touched byte. This mix32 stage is the next transactional
+clean-room reconstruction target.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,

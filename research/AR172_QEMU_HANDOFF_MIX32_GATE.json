@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_MIX32_GATE",
+  "recorded_at_utc": "2026-09-14",
+  "status": "PASS_HANDOFF_MIX32_IDENTICAL_NATIVE_SHADOW",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all five TCG helpers enabled",
+    "completed_services": 100,
+    "five_helper_isr_guest_instructions": 14127803,
+    "remaining_handoff_leaf_guest_instructions": 1967500,
+    "previous_handoff_leaf_guest_instructions": 2316900,
+    "removed_by_polyphase32_helper": 349400,
+    "residual_leaf_reduction_percent": 15.081
+  },
+  "selected_loop": {
+    "entry_pc": "0x4010918A",
+    "inclusive_native_window": "0x4010918A..0x401091D8",
+    "exit_pc": "0x401091DA",
+    "iterations_per_call": 32,
+    "calls_per_vector_191_service": 1,
+    "guest_instructions_per_100_services": 451100,
+    "residual_leaf_share_percent": 22.928,
+    "native_events_per_call": 384,
+    "native_events_per_iteration": 12,
+    "footprint_pages": 3,
+    "touched_bytes": 896,
+    "role": "bounded saturated-fractional multi-lane handoff mix stage"
+  },
+  "same_process_replay": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "native_events_per_call": 384,
+    "shadow_events_per_call": 384,
+    "registers": 35,
+    "access_address_type_value_match": true,
+    "exit_register_match": true,
+    "candidate_fallback": false,
+    "early_cursor": {
+      "required_stable_calls": 8,
+      "discovery_calls": 8,
+      "footprint_pages": 3,
+      "touched_bytes": 896,
+      "touched_memory_match": true
+    },
+    "late_cursor": {
+      "required_stable_calls": 16,
+      "discovery_calls": 16,
+      "footprint_pages": 3,
+      "touched_bytes": 896,
+      "touched_memory_match": true
+    }
+  },
+  "conclusion": "With all five helpers enabled, the deterministic handoff leaf retains 1,967,500 guest instructions per 100 services. Its largest remaining fixed loop accounts for 451,100 instructions and is independently replayable at two cursor positions with exact access, register, and touched-memory equality.",
+  "next_gate": "Map the selected mix32 loop's accumulator and memory topology, then implement a verifier-only transactional clean-room candidate.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room topology and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}

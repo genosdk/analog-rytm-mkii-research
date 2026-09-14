@@ -481,6 +481,23 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn(
             "DEF_HELPER_1(ar_audio_polyphase32, i32, env)", polyphase32_patch
         )
+        mix32 = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_MIX32_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            mix32["status"], "PASS_HANDOFF_MIX32_IDENTICAL_NATIVE_SHADOW"
+        )
+        self.assertEqual(
+            mix32["profile"]["remaining_handoff_leaf_guest_instructions"],
+            1967500,
+        )
+        self.assertEqual(mix32["selected_loop"]["iterations_per_call"], 32)
+        self.assertEqual(mix32["selected_loop"]["native_events_per_call"], 384)
+        self.assertTrue(
+            mix32["same_process_replay"]["late_cursor"]["touched_memory_match"]
+        )
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
         ).read_text(encoding="utf-8")
