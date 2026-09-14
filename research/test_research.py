@@ -487,7 +487,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
             )
         )
         self.assertEqual(
-            mix32["status"], "PASS_HANDOFF_MIX32_IDENTICAL_NATIVE_SHADOW"
+            mix32["status"], "PASS_NATIVE_HANDOFF_MIX32_CANDIDATE"
         )
         self.assertEqual(
             mix32["profile"]["remaining_handoff_leaf_guest_instructions"],
@@ -497,6 +497,10 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertEqual(mix32["selected_loop"]["native_events_per_call"], 384)
         self.assertTrue(
             mix32["same_process_replay"]["late_cursor"]["touched_memory_match"]
+        )
+        self.assertEqual(mix32["transactional_candidate"]["registers"], 35)
+        self.assertFalse(
+            mix32["transactional_candidate"]["candidate_fallback"]
         )
         shadow_plugin = (
             ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
@@ -519,6 +523,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn(
             '!strcmp(argv[i], "candidate=tcg-polyphase32")', shadow_plugin
         )
+        self.assertIn('!strcmp(argv[i], "candidate=mix32")', shadow_plugin)
         self.assertIn('g_str_has_prefix(argv[i], "mem-start=")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "runtime=inner")', shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(exit_pc)", shadow_plugin)

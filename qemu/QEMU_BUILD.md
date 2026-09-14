@@ -440,7 +440,12 @@ accounts for 451,100 instructions per 100 services and issues 384 ordered
 memory events per call over 896 touched bytes on three pages. Native/native
 shadow replay at both `stable=8` and `stable=16` matched every access, all 35
 registers, and every touched byte. This mix32 stage is the next transactional
-clean-room reconstruction target.
+clean-room reconstruction target. Its verifier-only `candidate=mix32`
+reconstruction models twelve saturated fractional MAC operations and four
+accumulator-output stores per iteration. Both cursor horizons matched all 35
+registers and 896 touched bytes with zero candidate guest accesses and no
+fallback. The next gate is a sixth guarded direct-state helper and exact
+incremental profile.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then

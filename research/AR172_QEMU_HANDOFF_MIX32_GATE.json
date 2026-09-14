@@ -2,7 +2,7 @@
   "schema_version": 1,
   "gate": "AR172_QEMU_HANDOFF_MIX32_GATE",
   "recorded_at_utc": "2026-09-14",
-  "status": "PASS_HANDOFF_MIX32_IDENTICAL_NATIVE_SHADOW",
+  "status": "PASS_NATIVE_HANDOFF_MIX32_CANDIDATE",
   "profile": {
     "firmware_version": "1.72",
     "workload": "generated slot-1 sample with held Trig 1 and all five TCG helpers enabled",
@@ -23,6 +23,9 @@
     "residual_leaf_share_percent": 22.928,
     "native_events_per_call": 384,
     "native_events_per_iteration": 12,
+    "mac_operations_per_iteration": 12,
+    "accumulator_output_stores_per_iteration": 4,
+    "transactional_writes_per_call": 128,
     "footprint_pages": 3,
     "touched_bytes": 896,
     "role": "bounded saturated-fractional multi-lane handoff mix stage"
@@ -52,8 +55,25 @@
       "touched_memory_match": true
     }
   },
-  "conclusion": "With all five helpers enabled, the deterministic handoff leaf retains 1,967,500 guest instructions per 100 services. Its largest remaining fixed loop accounts for 451,100 instructions and is independently replayable at two cursor positions with exact access, register, and touched-memory equality.",
-  "next_gate": "Map the selected mix32 loop's accumulator and memory topology, then implement a verifier-only transactional clean-room candidate.",
+  "transactional_candidate": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "selector": "candidate=mix32",
+    "validation_runs": 2,
+    "early_cursor_required_stable_calls": 8,
+    "late_cursor_required_stable_calls": 16,
+    "native_events": 384,
+    "candidate_guest_events": 0,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 3,
+    "touched_bytes": 896,
+    "touched_memory_match": true,
+    "candidate_executed": true,
+    "candidate_fallback": false,
+    "transactional_stores": true
+  },
+  "conclusion": "With all five helpers enabled, the deterministic handoff leaf retains 1,967,500 guest instructions per 100 services. Its largest remaining fixed loop accounts for 451,100 instructions, and its transactional clean-room reconstruction matches all 35 registers and 896 touched bytes at two cursor positions without fallback.",
+  "next_gate": "Promote the validated mix32 candidate to a sixth guarded direct-state TCG helper and measure its exact incremental reduction.",
   "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
   "railway": {"touched": false},
   "safety": "Only clean-room topology and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
