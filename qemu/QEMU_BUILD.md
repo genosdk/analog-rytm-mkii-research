@@ -461,6 +461,17 @@ its exact eight-service tail and responsive UI. Reprofiling the deterministic
 handoff leaf leaves 1,516,400 guest instructions per 100 services; selecting
 its next bounded loop is the next gate.
 
+With all six helpers enabled, the remaining handoff leaf is 1,516,400 guest
+instructions per 100 services. Its largest single fixed kernel is the
+32-iteration four-accumulator stage at `0x40108FD6..0x40109034`, exiting at
+`0x40109036`. The loop executes 26 instructions per iteration, or 83,200 per
+100 services, with 256 ordered memory events and 1,020 touched bytes on two
+pages per call. Native replay and the verifier-only `candidate=polyphase32b`
+both passed at `stable=8` and `stable=16`. The candidate reuses the proven
+polyphase sign matrix with input/output address registers changed from
+`A0/A1` to `A1/A0`; all 35 registers and touched bytes match without fallback.
+Promoting this register-swapped candidate is the seventh-helper gate.
+
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
 opens `SMP`. It requires distinct stable framebuffer hashes for the modal,
