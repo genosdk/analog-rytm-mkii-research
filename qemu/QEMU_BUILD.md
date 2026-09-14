@@ -33,6 +33,8 @@ patch -p1 < /path/to/0007-m68k-add-ar-audio-outer-tcg-helper.patch
 patch -p1 < /path/to/0008-m68k-add-ar-audio-emac32-tcg-helper.patch
 # Add the disabled-by-default four-output polyphase helper.
 patch -p1 < /path/to/0009-m68k-add-ar-audio-polyphase32-tcg-helper.patch
+# Add the disabled-by-default saturated mix helper.
+patch -p1 < /path/to/0010-m68k-add-ar-audio-mix32-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -55,6 +57,8 @@ helper, enabled only by `AR_MK2_AUDIO_TRANSFORM_TCG=1`. The seventh adds the
 helper, enabled only by `AR_MK2_AUDIO_EMAC32_TCG=1`.
 The ninth adds the four-output polyphase helper, enabled only by
 `AR_MK2_AUDIO_POLYPHASE32_TCG=1`.
+The tenth adds the saturated 32-iteration mix helper, enabled only by
+`AR_MK2_AUDIO_MIX32_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -446,6 +450,16 @@ accumulator-output stores per iteration. Both cursor horizons matched all 35
 registers and 896 touched bytes with zero candidate guest accesses and no
 fallback. The next gate is a sixth guarded direct-state helper and exact
 incremental profile.
+
+Patch 0010 promotes the mix32 candidate to the sixth direct-state helper.
+Explicit-arm oracles at `stable=8` and `stable=16` matched all 384 ordered
+access values and addresses, all 35 registers, and all 896 touched bytes, with
+no fallback. The exact 100-service ISR profile with all six helpers is
+13,676,703 guest instructions: 451,100 fewer than five helpers and 12,101,443
+fewer than native. The combined reduction is 46.94%. Held-audio release kept
+its exact eight-service tail and responsive UI. Reprofiling the deterministic
+handoff leaf leaves 1,516,400 guest instructions per 100 services; selecting
+its next bounded loop is the next gate.
 
 The smoke test boots with the two emulator-only profiles, completes the panel
 identity exchange, dismisses the remaining startup modal with `NO`, then
