@@ -854,6 +854,14 @@ static void elektron_ar_mk2_init(MachineState *machine)
         env->ar_audio_mix32b_control = env->ar_audio_mix32b_accel &&
             !(defer && *defer && strcmp(defer, "0"));
     }
+    {
+        const char *accel = g_getenv("AR_MK2_AUDIO_MIX32C_TCG");
+        const char *defer = g_getenv("AR_MK2_AUDIO_MIX32C_TCG_DEFER");
+
+        env->ar_audio_mix32c_accel = accel && *accel && strcmp(accel, "0");
+        env->ar_audio_mix32c_control = env->ar_audio_mix32c_accel &&
+            !(defer && *defer && strcmp(defer, "0"));
+    }
 
     /* External SDRAM. */
     memory_region_add_subregion(sysmem, AR_SDRAM_BASE, machine->ram);
