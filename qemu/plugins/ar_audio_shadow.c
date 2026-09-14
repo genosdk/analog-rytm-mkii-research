@@ -105,6 +105,7 @@ static bool candidate_mix32;
 static bool candidate_tcg_mix32;
 static bool candidate_mix32b;
 static bool candidate_tcg_mix32b;
+static bool candidate_mix32c;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -137,6 +138,9 @@ static uint64_t runtime_fallbacks;
 #define MIX32B_START_PC 0x40108f60
 #define MIX32B_END_PC   0x40108fa4
 #define MIX32B_EXIT_PC  0x40108fa6
+#define MIX32C_START_PC 0x401090b6
+#define MIX32C_END_PC   0x401090e4
+#define MIX32C_EXIT_PC  0x401090e6
 #define MACSR_PAV0     0x100
 #define MACSR_OMC      0x080
 #define MACSR_SU       0x040
@@ -1363,6 +1367,69 @@ static bool accelerate_mix32b(void)
     return true;
 }
 
+static bool accelerate_mix32c(void)
+{
+    static const InnerMac before_acc2[] = {
+        { 0xa298, 0x1804, 0 },
+        { 0xa8db, 0x1817, 0 },
+        { 0xa847, 0x0810, 0 },
+        { 0xa41a, 0x2804, 0 },
+        { 0xa483, 0x0800, 0 },
+        { 0xaac5, 0x0900, 0 },
+        { 0xac05, 0x0900, 0 },
+    };
+    static const InnerMac after_acc2 = { 0xa203, 0x0800, 0 };
+    InnerState s;
+    InnerState entry;
+    InnerWrites writes = { 0 };
+    size_t applied = 0;
+
+    if (!read_inner_state(&s) ||
+        (s.macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
+            (MACSR_OMC | MACSR_FI) ||
+        s.mask != UINT32_MAX || s.d[0] != 32) {
+        return false;
+    }
+    entry = s;
+
+    for (unsigned iteration = 0; iteration < 32; iteration++) {
+        for (size_t operation = 0; operation < G_N_ELEMENTS(before_acc2);
+             operation++) {
+            if (!inner_mac(&s, &writes, &before_acc2[operation])) {
+                return false;
+            }
+        }
+        s.d[1] = inner_movclr(&s, 2);
+        if (!inner_mac(&s, &writes, &after_acc2)) {
+            return false;
+        }
+        s.a[5] = inner_movclr(&s, 1);
+        if (!inner_queue_write(&writes, s.a[1] + 128, s.a[5])) {
+            return false;
+        }
+        s.d[6] = inner_movclr(&s, 0);
+        if (!inner_queue_write(&writes, s.a[1], s.d[6])) {
+            return false;
+        }
+        s.a[1] += 4;
+        s.d[0]--;
+    }
+    s.ps = (s.ps & ~0x1fU) | CCF_Z;
+
+    if (!inner_apply_writes(&writes, &applied)) {
+        inner_rollback_writes(&writes, applied);
+        return false;
+    }
+    if (!write_inner_state(&s)) {
+        bool rollback_ok = inner_rollback_writes(&writes, applied);
+
+        rollback_ok &= write_inner_state(&entry);
+        (void)rollback_ok;
+        return false;
+    }
+    return true;
+}
+
 static void page_state_free(gpointer data)
 {
     PageState *page = data;
@@ -1601,7 +1668,7 @@ static void write_report(bool complete)
                          !candidate_polyphase32b &&
                          !candidate_tcg_polyphase32b && !candidate_mix32 &&
                          !candidate_tcg_mix32 && !candidate_mix32b &&
-                         !candidate_tcg_mix32b) ||
+                         !candidate_tcg_mix32b && !candidate_mix32c) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -1623,6 +1690,7 @@ static void write_report(bool complete)
          candidate_tcg_mix32 ? "PASS_NATIVE_MIX32_TCG" :
          candidate_mix32b ? "PASS_NATIVE_MIX32B_CANDIDATE" :
          candidate_tcg_mix32b ? "PASS_NATIVE_MIX32B_TCG" :
+         candidate_mix32c ? "PASS_NATIVE_MIX32C_CANDIDATE" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -1662,13 +1730,15 @@ static void write_report(bool complete)
             candidate_mix32 ? "mix32" :
             candidate_tcg_mix32 ? "tcg-mix32" :
             candidate_mix32b ? "mix32b" :
-            candidate_tcg_mix32b ? "tcg-mix32b" : "native-shadow",
+            candidate_tcg_mix32b ? "tcg-mix32b" :
+            candidate_mix32c ? "mix32c" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
             (candidate_inner || candidate_transform || candidate_outer ||
              candidate_emac32 || candidate_polyphase32 ||
-             candidate_polyphase32b || candidate_mix32 || candidate_mix32b) &&
+             candidate_polyphase32b || candidate_mix32 || candidate_mix32b ||
+             candidate_mix32c) &&
             candidate_executed ?
             "false" : "true",
             footprint_miss ? "true" : "false",
@@ -1753,7 +1823,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
             active = true;
             if (candidate_inner || candidate_transform || candidate_outer ||
                 candidate_emac32 || candidate_polyphase32 ||
-                candidate_polyphase32b || candidate_mix32 || candidate_mix32b) {
+                candidate_polyphase32b || candidate_mix32 || candidate_mix32b ||
+                candidate_mix32c) {
                 candidate_attempted = true;
                 candidate_executed = candidate_inner ? accelerate_inner() :
                                      candidate_transform ?
@@ -1765,7 +1836,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
                                      candidate_polyphase32b ?
                                      accelerate_polyphase32b() :
                                      candidate_mix32 ? accelerate_mix32() :
-                                     accelerate_mix32b();
+                                     candidate_mix32b ? accelerate_mix32b() :
+                                     accelerate_mix32c();
                 if (candidate_executed) {
                     redirect_candidate = true;
                 } else {
@@ -1876,7 +1948,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
         access_match = ((candidate_inner || candidate_transform ||
                          candidate_outer || candidate_emac32 ||
                          candidate_polyphase32 || candidate_polyphase32b ||
-                         candidate_mix32 || candidate_mix32b) &&
+                         candidate_mix32 || candidate_mix32b ||
+                         candidate_mix32c) &&
                        candidate_executed ?
                         true : compare_accesses());
         register_match = compare_registers();
@@ -2045,6 +2118,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_mix32b = true;
         } else if (!strcmp(argv[i], "candidate=tcg-mix32b")) {
             candidate_tcg_mix32b = true;
+        } else if (!strcmp(argv[i], "candidate=mix32c")) {
+            candidate_mix32c = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -2068,7 +2143,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
          candidate_emac32 + candidate_tcg_emac32 + candidate_polyphase32 +
          candidate_tcg_polyphase32 + candidate_polyphase32b +
          candidate_tcg_polyphase32b + candidate_mix32 + candidate_tcg_mix32 +
-         candidate_mix32b + candidate_tcg_mix32b + runtime_inner) > 1) {
+         candidate_mix32b + candidate_tcg_mix32b + candidate_mix32c +
+         runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
     }
@@ -2160,6 +2236,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != MIX32B_START_PC || end_pc != MIX32B_END_PC ||
          exit_pc != MIX32B_EXIT_PC)) {
         fprintf(stderr, "mix32b TCG candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_mix32c &&
+        (start_pc != MIX32C_START_PC || end_pc != MIX32C_END_PC ||
+         exit_pc != MIX32C_EXIT_PC)) {
+        fprintf(stderr, "mix32c candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

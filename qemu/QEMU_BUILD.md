@@ -488,6 +488,16 @@ instructions: 223,679 fewer than six helpers and 12,325,122 fewer than native,
 for a combined reduction of 47.81%. Held-audio release retained its exact
 eight-service tail and responsive UI.
 
+With all eight helpers enabled, the remaining handoff leaf is 953,600 guest
+instructions per 100 services. A largest remaining fixed kernel is the
+32-iteration two-output mix stage at `0x401090B6..0x401090E4`, exiting at
+`0x401090E6`, with 160 ordered memory events per call and 640 touched bytes on
+two pages. Native replay and the verifier-only `candidate=mix32c` both pass at
+`stable=8` and `stable=16`. The candidate models eight saturated fractional
+MAC operations, one intermediate accumulator clear, and two transactional
+output stores per iteration; all 35 registers and touched bytes match without
+fallback. Promotion is the ninth-helper gate.
+
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its
 largest remaining coherent fixed kernel is the 32-iteration mix stage at
