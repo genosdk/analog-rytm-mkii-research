@@ -511,6 +511,15 @@ native, for a combined reduction of 49.70%. The nested handoff leaf is now
 809,700 instructions per 100 services. Held-audio release retained its exact
 eight-service tail and responsive UI.
 
+With all nine helpers enabled, the remaining handoff leaf is 809,700 guest
+instructions per 100 services. Its largest fixed kernel is another instance of
+the verified 32-iteration two-output mix stage, at
+`0x40108E8C..0x40108EBA`, exiting at `0x40108EBC`. Native replay and the
+verifier-only `candidate=mix32d` both pass at `stable=8` and `stable=16`,
+matching all 160 ordered accesses, all 35 registers, and all 640 touched bytes
+on two pages without fallback. Promoting this candidate is the tenth-helper
+gate.
+
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its
 largest remaining coherent fixed kernel is the 32-iteration mix stage at

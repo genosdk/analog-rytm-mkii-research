@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_MIX32D_GATE",
+  "recorded_at_utc": "2026-09-15",
+  "status": "PASS_NATIVE_HANDOFF_MIX32D_CANDIDATE",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all nine TCG helpers enabled",
+    "completed_services": 100,
+    "nine_helper_isr_guest_instructions": 12966846,
+    "remaining_handoff_leaf_guest_instructions": 809700,
+    "previous_handoff_leaf_guest_instructions": 953600,
+    "removed_by_mix32c_helper": 143900,
+    "residual_leaf_reduction_percent": 15.09
+  },
+  "selected_loop": {
+    "entry_pc": "0x40108E8C",
+    "inclusive_native_window": "0x40108E8C..0x40108EBA",
+    "exit_pc": "0x40108EBC",
+    "iterations_per_call": 32,
+    "calls_per_vector_191_service": 1,
+    "profiled_guest_instructions_per_100_services": 143900,
+    "residual_leaf_share_percent": 17.772,
+    "native_events_per_call": 160,
+    "native_events_per_iteration": 5,
+    "mac_operations_per_iteration": 8,
+    "accumulator_output_stores_per_iteration": 2,
+    "transactional_writes_per_call": 64,
+    "footprint_pages": 2,
+    "touched_bytes": 640,
+    "role": "second instance of the bounded saturated-fractional two-output handoff mix stage"
+  },
+  "same_process_replay": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "native_events_per_call": 160,
+    "shadow_events_per_call": 160,
+    "registers": 35,
+    "access_address_type_value_match": true,
+    "exit_register_match": true,
+    "early_cursor_required_stable_calls": 8,
+    "late_cursor_required_stable_calls": 16,
+    "footprint_pages": 2,
+    "touched_bytes": 640,
+    "touched_memory_match": true,
+    "candidate_fallback": false
+  },
+  "transactional_candidate": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "selector": "candidate=mix32d",
+    "implementation": "Reuses the independently verified eight-MAC, two-output transactional reconstruction for an instruction-identical loop instance at a distinct native address.",
+    "validation_runs": 2,
+    "early_cursor_required_stable_calls": 8,
+    "late_cursor_required_stable_calls": 16,
+    "native_events": 160,
+    "candidate_guest_events": 0,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 2,
+    "touched_bytes": 640,
+    "touched_memory_match": true,
+    "candidate_executed": true,
+    "candidate_fallback": false,
+    "transactional_stores": true
+  },
+  "conclusion": "With all nine helpers enabled, the handoff leaf is 809,700 guest instructions per 100 services. The selected fixed loop contributes 143,900 instructions, has the same bounded operation topology as the verified mix32c stage, and matches all 35 registers and 640 touched bytes at both cursor horizons without fallback.",
+  "next_gate": "Promote mix32d to a tenth guarded direct-state TCG helper and measure its exact incremental reduction.",
+  "github_actions": {
+    "policy": "Validate locally and publish with [skip ci]."
+  },
+  "railway": {
+    "touched": false
+  },
+  "safety": "Only clean-room topology and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}

@@ -108,6 +108,7 @@ static bool candidate_mix32b;
 static bool candidate_tcg_mix32b;
 static bool candidate_mix32c;
 static bool candidate_tcg_mix32c;
+static bool candidate_mix32d;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -143,6 +144,9 @@ static uint64_t runtime_fallbacks;
 #define MIX32C_START_PC 0x401090b6
 #define MIX32C_END_PC   0x401090e4
 #define MIX32C_EXIT_PC  0x401090e6
+#define MIX32D_START_PC 0x40108e8c
+#define MIX32D_END_PC   0x40108eba
+#define MIX32D_EXIT_PC  0x40108ebc
 #define MACSR_PAV0     0x100
 #define MACSR_OMC      0x080
 #define MACSR_SU       0x040
@@ -1698,7 +1702,7 @@ static void write_report(bool complete)
                          !candidate_tcg_polyphase32b && !candidate_mix32 &&
                          !candidate_tcg_mix32 && !candidate_mix32b &&
                          !candidate_tcg_mix32b && !candidate_mix32c &&
-                         !candidate_tcg_mix32c) ||
+                         !candidate_tcg_mix32c && !candidate_mix32d) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -1722,6 +1726,7 @@ static void write_report(bool complete)
          candidate_tcg_mix32b ? "PASS_NATIVE_MIX32B_TCG" :
          candidate_mix32c ? "PASS_NATIVE_MIX32C_CANDIDATE" :
          candidate_tcg_mix32c ? "PASS_NATIVE_MIX32C_TCG" :
+         candidate_mix32d ? "PASS_NATIVE_MIX32D_CANDIDATE" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -1763,14 +1768,15 @@ static void write_report(bool complete)
             candidate_mix32b ? "mix32b" :
             candidate_tcg_mix32b ? "tcg-mix32b" :
             candidate_mix32c ? "mix32c" :
-            candidate_tcg_mix32c ? "tcg-mix32c" : "native-shadow",
+            candidate_tcg_mix32c ? "tcg-mix32c" :
+            candidate_mix32d ? "mix32d" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
             (candidate_inner || candidate_transform || candidate_outer ||
              candidate_emac32 || candidate_polyphase32 ||
              candidate_polyphase32b || candidate_mix32 || candidate_mix32b ||
-             candidate_mix32c) &&
+             candidate_mix32c || candidate_mix32d) &&
             candidate_executed ?
             "false" : "true",
             footprint_miss ? "true" : "false",
@@ -1856,7 +1862,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
             if (candidate_inner || candidate_transform || candidate_outer ||
                 candidate_emac32 || candidate_polyphase32 ||
                 candidate_polyphase32b || candidate_mix32 || candidate_mix32b ||
-                candidate_mix32c) {
+                candidate_mix32c || candidate_mix32d) {
                 candidate_attempted = true;
                 candidate_executed = candidate_inner ? accelerate_inner() :
                                      candidate_transform ?
@@ -1984,7 +1990,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
                          candidate_outer || candidate_emac32 ||
                          candidate_polyphase32 || candidate_polyphase32b ||
                          candidate_mix32 || candidate_mix32b ||
-                         candidate_mix32c) &&
+                         candidate_mix32c || candidate_mix32d) &&
                        candidate_executed ?
                         true : compare_accesses());
         register_match = compare_registers();
@@ -2162,6 +2168,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_mix32c = true;
         } else if (!strcmp(argv[i], "candidate=tcg-mix32c")) {
             candidate_tcg_mix32c = true;
+        } else if (!strcmp(argv[i], "candidate=mix32d")) {
+            candidate_mix32d = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -2186,7 +2194,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
          candidate_tcg_polyphase32 + candidate_polyphase32b +
          candidate_tcg_polyphase32b + candidate_mix32 + candidate_tcg_mix32 +
          candidate_mix32b + candidate_tcg_mix32b + candidate_mix32c +
-         candidate_tcg_mix32c +
+         candidate_tcg_mix32c + candidate_mix32d +
          runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
@@ -2291,6 +2299,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != MIX32C_START_PC || end_pc != MIX32C_END_PC ||
          exit_pc != MIX32C_EXIT_PC)) {
         fprintf(stderr, "mix32c TCG candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_mix32d &&
+        (start_pc != MIX32D_START_PC || end_pc != MIX32D_END_PC ||
+         exit_pc != MIX32D_EXIT_PC)) {
+        fprintf(stderr, "mix32d candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");
