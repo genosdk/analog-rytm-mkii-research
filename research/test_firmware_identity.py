@@ -61,6 +61,20 @@ class FirmwareIdentityTests(unittest.TestCase):
         source = (ROOT / "qemu" / "desktop_panel.py").read_text(encoding="utf-8")
         self.assertIn("Tk did not preserve firmware identity", source)
         self.assertIn("Tk title omitted firmware compatibility mode", source)
+        self.assertIn("drawer button text does not match native contrast", source)
+
+    def test_macos_aqua_button_contrast(self):
+        sys.path.insert(0, str(ROOT))
+        try:
+            from qemu.desktop_panel import (
+                LIGHT_TEXT,
+                TEXT,
+                native_button_text_color,
+            )
+        finally:
+            sys.path.pop(0)
+        self.assertEqual(native_button_text_color("darwin"), TEXT)
+        self.assertEqual(native_button_text_color("linux"), LIGHT_TEXT)
 
     def test_finder_audio_choice_and_explicit_overrides(self):
         launcher = self.import_launcher()

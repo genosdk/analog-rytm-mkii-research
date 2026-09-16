@@ -82,6 +82,9 @@ one audio lane using drag, wheel, arrows, Page Up/Down, Home/End, and
 double-click reset. The drawer is explicitly labeled as an emulator extension,
 not a recovered physical-panel page. This mode requires the verified OS 1.72
 MAIN; `--no-filter2` boots the selected MAIN untouched and disables the drawer.
+On macOS, drawer buttons use dark idle labels because the native Aqua theme can
+replace Tk's requested dark button face with white. Active states remain orange
+and pressed-state feedback remains native.
 
 The drawer-composition gate drives the production Filter 2 and LFO2 callbacks
 for lanes 1, 4 and 8 through 32 JSONL events. The bridge produces an exact

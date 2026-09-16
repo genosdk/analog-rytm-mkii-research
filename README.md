@@ -309,6 +309,8 @@ Finder launch also offers bounded experimental audio as a native yes/no choice,
 so a double-clicked review session can enable pad/QWERTY sound and the drawer
 audition control without Terminal arguments. Explicit `--audio` and
 `--no-audio` remain available for deterministic command-line launches.
+Native macOS buttons use dark idle labels so Aqua's white button face cannot
+hide the Filter 2/LFO2 control text.
 The dual-architecture packaged proof is recorded in
 `research/AR172_DESKTOP_FIRMWARE_IDENTITY_GATE.json`.
 

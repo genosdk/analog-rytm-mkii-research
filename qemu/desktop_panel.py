@@ -45,6 +45,15 @@ LFO2_WAVEFORMS = ("TRI", "SQR", "SAW", "RAMP", "SINE", "EXP", "RAND")
 LFO2_MODES = ("LOOP", "ONE", "HALF", "HOLD")
 
 
+def native_button_text_color(platform_name: str | None = None) -> str:
+    """Keep labels legible when macOS Aqua ignores a Tk button background."""
+    platform_name = sys.platform if platform_name is None else platform_name
+    return TEXT if platform_name == "darwin" else LIGHT_TEXT
+
+
+BUTTON_TEXT = native_button_text_color()
+
+
 def skin_point(x: int, y: int) -> tuple[int, int]:
     """Project approved-source coordinates onto the checked-in skin raster."""
     return round(x * SKIN_W / SKIN_DESIGN_W), round(y * SKIN_H / SKIN_DESIGN_H)
@@ -472,7 +481,7 @@ class PanelApp:
         self.filter2_button = tk.Button(
             status_bar, text="FILTER 2", command=self.toggle_filter2,
             state="normal" if filter2_enabled else "disabled",
-            fg=LIGHT_TEXT, bg=CONTROL_FACE, activeforeground=LIGHT_TEXT,
+            fg=BUTTON_TEXT, bg=CONTROL_FACE, activeforeground=LIGHT_TEXT,
             activebackground="#353936", disabledforeground="#5d625e",
             relief="flat", font=("TkDefaultFont", 8, "bold"), padx=10,
         )
@@ -763,7 +772,7 @@ class PanelApp:
             button = tk.Button(
                 lane_bar, text=str(lane + 1),
                 command=lambda lane=lane: self.select_lfo2_lane(lane),
-                width=3, relief="flat", fg=LIGHT_TEXT, bg=CONTROL_FACE,
+                width=3, relief="flat", fg=BUTTON_TEXT, bg=CONTROL_FACE,
                 activeforeground=LIGHT_TEXT, activebackground="#353936",
                 font=("TkDefaultFont", 8, "bold"),
             )
@@ -823,7 +832,7 @@ class PanelApp:
     def drawer_button(parent, text: str, command, width: int) -> tk.Button:
         return tk.Button(
             parent, text=text, command=command, width=width, relief="flat",
-            fg=LIGHT_TEXT, bg=CONTROL_FACE, activeforeground=LIGHT_TEXT,
+            fg=BUTTON_TEXT, bg=CONTROL_FACE, activeforeground=LIGHT_TEXT,
             activebackground="#353936", disabledforeground="#5d625e",
             font=("TkDefaultFont", 8, "bold"), padx=4, pady=5,
         )
@@ -845,7 +854,7 @@ class PanelApp:
         for index, button in enumerate(self.lfo2_lane_buttons):
             selected = index == self.lfo2_lane
             button.configure(bg="#5a3022" if selected else CONTROL_FACE,
-                             fg=LED_ORANGE if selected else LIGHT_TEXT)
+                             fg=LED_ORANGE if selected else BUTTON_TEXT)
         for knob, values in (
             (self.lfo2_rate_knob, self.lfo2_rate_values),
             (self.lfo2_depth_knob, self.lfo2_depth_values),
@@ -865,13 +874,13 @@ class PanelApp:
             enabled = self.lfo2_enabled[self.lfo2_lane]
             self.lfo2_enable_button.configure(
                 text="LFO ON" if enabled else "LFO OFF",
-                fg=LED_ORANGE if enabled else LIGHT_TEXT,
+                fg=LED_ORANGE if enabled else BUTTON_TEXT,
             )
         if self.lfo2_trigger_button is not None:
             triggered = self.lfo2_triggered[self.lfo2_lane]
             self.lfo2_trigger_button.configure(
                 text="NOTE RETRIG" if triggered else "FREE RUN",
-                fg=LED_ORANGE if triggered else LIGHT_TEXT,
+                fg=LED_ORANGE if triggered else BUTTON_TEXT,
             )
         if self.lfo2_audition_button is not None:
             self.lfo2_audition_button.configure(
@@ -1081,6 +1090,10 @@ def skin_runtime_self_test(frame_file: Path, event_file: Path) -> None:
             raise RuntimeError("Tk did not preserve firmware identity")
         if "OS 1.72" not in root.title() or "FILTER 2 + LFO2" not in root.title():
             raise RuntimeError("Tk title omitted firmware compatibility mode")
+        if panel.lfo2_wave_button.cget("foreground") != BUTTON_TEXT:
+            raise RuntimeError("drawer button text does not match native contrast")
+        if panel.lfo2_lane_buttons[1].cget("foreground") != BUTTON_TEXT:
+            raise RuntimeError("drawer lane text does not match native contrast")
 
         specs = active_crop_specs()
         if set(panel.active_photos) != {key for key, _rect, _margin in specs}:
