@@ -43,6 +43,8 @@ patch -p1 < /path/to/0012-m68k-add-ar-audio-mix32b-tcg-helper.patch
 patch -p1 < /path/to/0013-m68k-add-ar-audio-mix32c-tcg-helper.patch
 # Add the disabled-by-default fourth saturated mix helper.
 patch -p1 < /path/to/0014-m68k-add-ar-audio-mix32d-tcg-helper.patch
+# Add the disabled-by-default pipelined saturated mix helper.
+patch -p1 < /path/to/0015-m68k-add-ar-audio-mix32e-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -75,6 +77,8 @@ The thirteenth adds the third saturated 32-iteration mix helper, enabled only
 by `AR_MK2_AUDIO_MIX32C_TCG=1`.
 The fourteenth adds the fourth saturated 32-iteration mix helper, enabled only
 by `AR_MK2_AUDIO_MIX32D_TCG=1`.
+The fifteenth adds the pipelined single-output saturated 32-iteration mix
+helper, enabled only by `AR_MK2_AUDIO_MIX32E_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -541,6 +545,15 @@ verifier-only `candidate=mix32e` both pass at `stable=8` and `stable=16`,
 matching all 192 ordered accesses, all 35 registers, and all 300 touched bytes
 on two pages without fallback. Promoting this candidate is the eleventh-helper
 gate.
+
+Patch 0015 promotes `mix32e` to the eleventh guarded direct-state helper.
+Explicit-arm oracles at `stable=8` and `stable=16` matched all 192 ordered
+accesses, all 35 registers, and all 300 touched bytes, with no fallback. The
+exact 100-service ISR profile with all eleven helpers is 12,672,603 guest
+instructions: 153,500 fewer than ten helpers and 13,105,543 fewer than native,
+for a combined reduction of 50.84%. The nested handoff leaf is now 512,300
+instructions per 100 services. Held-audio release retained its exact
+eight-service tail and responsive UI.
 
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its

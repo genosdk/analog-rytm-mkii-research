@@ -689,6 +689,30 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertEqual(mix32e["same_process_replay"]["registers"], 35)
         self.assertTrue(mix32e["transactional_candidate"]["candidate_executed"])
         self.assertFalse(mix32e["transactional_candidate"]["candidate_fallback"])
+        mix32e_tcg = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_MIX32E_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            mix32e_tcg["status"],
+            "PASS_CORRECT_50PCT_INSTRUCTION_REDUCTION",
+        )
+        self.assertEqual(
+            mix32e_tcg["same_process_oracle"]["native_events"], 192
+        )
+        self.assertEqual(
+            mix32e_tcg["exact_vector_191_profile"]
+                      ["eleven_helpers_guest_instructions"],
+            12672603,
+        )
+        mix32e_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0015-m68k-add-ar-audio-mix32e-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DEF_HELPER_1(ar_audio_mix32e, i32, env)", mix32e_patch)
         polyphase32b_patch = (
             ROOT
             / "qemu"
@@ -725,6 +749,7 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn('!strcmp(argv[i], "candidate=mix32d")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-mix32d")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=mix32e")', shadow_plugin)
+        self.assertIn('!strcmp(argv[i], "candidate=tcg-mix32e")', shadow_plugin)
         self.assertIn(
             '!strcmp(argv[i], "candidate=polyphase32b")', shadow_plugin
         )
