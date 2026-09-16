@@ -47,6 +47,8 @@ patch -p1 < /path/to/0014-m68k-add-ar-audio-mix32d-tcg-helper.patch
 patch -p1 < /path/to/0015-m68k-add-ar-audio-mix32e-tcg-helper.patch
 # Add the disabled-by-default pipelined two-output mix helper.
 patch -p1 < /path/to/0016-m68k-add-ar-audio-mix32f-tcg-helper.patch
+# Add the disabled-by-default second pipelined single-output mix helper.
+patch -p1 < /path/to/0017-m68k-add-ar-audio-mix32g-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -83,6 +85,8 @@ The fifteenth adds the pipelined single-output saturated 32-iteration mix
 helper, enabled only by `AR_MK2_AUDIO_MIX32E_TCG=1`.
 The sixteenth adds the pipelined two-output saturated 32-iteration mix helper,
 enabled only by `AR_MK2_AUDIO_MIX32F_TCG=1`.
+The seventeenth adds the second pipelined single-output saturated mix helper,
+enabled only by `AR_MK2_AUDIO_MIX32G_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -585,6 +589,15 @@ at `stable=8` and `stable=16`, matching all 192 ordered accesses, all 35
 registers, and all 268 touched bytes on two pages without fallback. The loop
 contributes 153,500 instructions per 100 services. Promoting this candidate is
 the thirteenth-helper gate.
+
+Patch 0017 promotes `mix32g` to the thirteenth guarded direct-state helper.
+Explicit-arm oracles at `stable=8` and `stable=16` matched all 192 ordered
+accesses, all 35 registers, and all 268 touched bytes, with no fallback. The
+exact 100-service ISR profile with all thirteen helpers is 12,366,946 guest
+instructions: 156,657 fewer than twelve helpers and 13,411,200 fewer than
+native, for a combined reduction of 52.03%. The nested handoff leaf is now
+209,800 instructions per 100 services. Held-audio release retained its exact
+eight-service tail and responsive UI.
 
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its

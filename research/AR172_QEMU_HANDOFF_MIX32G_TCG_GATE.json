@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_MIX32G_TCG_GATE",
+  "recorded_at_utc": "2026-09-16",
+  "status": "PASS_CORRECT_52PCT_INSTRUCTION_REDUCTION",
+  "implementation": {
+    "patch": "qemu/patches/0017-m68k-add-ar-audio-mix32g-tcg-helper.patch",
+    "machine_source": "qemu/hw/m68k/elektron_ar_mk2.c",
+    "mode": "AR_MK2_AUDIO_MIX32G_TCG=1",
+    "default_enabled": false,
+    "transport": "second bounded pipelined single-output saturated fractional mix helper with direct CPU-state and guest-memory access",
+    "fallback": "Execute the native translated loop unless the control, D0=32 loop count, saturated fractional EMAC mode, and full-mask guards all pass."
+  },
+  "same_process_oracle": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all twelve prior TCG helpers enabled",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "early_cursor_required_stable_calls": 8,
+    "late_cursor_required_stable_calls": 16,
+    "native_events": 192,
+    "accelerated_events": 192,
+    "access_address_type_value_match": true,
+    "access_pc_comparison_applicable": true,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 2,
+    "touched_bytes": 268,
+    "touched_memory_match": true,
+    "candidate_fallback": false
+  },
+  "exact_vector_191_profile": {
+    "completed_services": 100,
+    "native_guest_instructions": 25778146,
+    "twelve_helpers_guest_instructions": 12523603,
+    "thirteen_helpers_guest_instructions": 12366946,
+    "mix32g_incremental_removed_instructions": 156657,
+    "mix32g_incremental_reduction_percent": 1.251,
+    "combined_removed_instructions": 13411200,
+    "combined_reduction_percent": 52.025,
+    "release_tail_services": 8,
+    "stopped_after_release": true,
+    "ui_responsive": true
+  },
+  "nested_handoff_profile": {
+    "twelve_helpers_guest_instructions": 363300,
+    "thirteen_helpers_guest_instructions": 209800,
+    "incremental_removed_instructions": 153500,
+    "incremental_reduction_percent": 42.252
+  },
+  "conclusion": "The thirteenth guarded direct-state helper matches the second native pipelined single-output saturated mix loop at two cursor positions and lowers the exact 100-service ISR profile by 52.03% relative to native execution.",
+  "next_gate": "Reprofile the remaining 209,800-instruction handoff leaf with all thirteen helpers and select its next bounded deterministic loop.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room bounded arithmetic and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}
