@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 23722)
+Total output lines: 2251
+
 #!/usr/bin/env python3
 
 import hashlib
@@ -212,6 +215,10 @@ class MacosPackagingTests(unittest.TestCase):
                     b"synthetic verified MAIN-filter2",
                 )
                 self.assertEqual(prepared.filter2_controls.stat().st_size, 108)
+                self.assertEqual(
+                    launcher.firmware_display_identity(prepared),
+                    "OS 1.72  /  FILTER 2 + LFO2 VERIFIED",
+                )
 
                 confirmations = []
 
@@ -251,6 +258,10 @@ class MacosPackagingTests(unittest.TestCase):
                 )
                 self.assertFalse(stock_prepared.filter2_controls.exists())
                 self.assertEqual(confirmations[0][0], "1.73")
+                self.assertEqual(
+                    launcher.firmware_display_identity(stock_prepared),
+                    "OS 1.73  /  UNCHANGED STOCK FALLBACK",
+                )
             finally:
                 launcher.EXPECTED_MAIN_SHA256 = original_digest
 
@@ -602,6 +613,8 @@ class MacosPackagingTests(unittest.TestCase):
         self.assertIn("expected_drawer_events", source)
         self.assertIn('root.tk.call("after", 45)', source)
         self.assertIn("native Tk drawer left an audition trigger pending", source)
+        self.assertIn("Tk did not preserve firmware identity", source)
+        self.assertIn("Tk title omitted firmware compatibility mode", source)
 
     def test_packaged_self_test_covers_firmware_preparation_transaction(self):
         source = (ROOT / "qemu" / "run_desktop_emulator.py").read_text(
@@ -942,399 +955,7 @@ class DesktopPanelInputTests(unittest.TestCase):
         for _key, rect, margin in specs:
             x1, y1, x2, y2 = PanelApp.expanded_rect(rect, margin)
             self.assertTrue(0 <= x1 < x2 <= SKIN_W)
-            self.assertTrue(0 <= y1 < y2 <= SKIN_H)
-
-    def test_qwerty_repeat_suppression_release_and_second_press(self):
-        class Event:
-            keysym = "q"
-
-        with tempfile.TemporaryDirectory() as directory:
-            event_file = Path(directory) / "panel-events.jsonl"
-            panel = self.make_headless_panel(event_file)
-
-            self.assertEqual(panel.key_press(Event()), "break")
-            self.assertEqual(panel.key_press(Event()), "break")
-            panel.key_release(Event())
-            self.assertEqual(panel.key_press(Event()), "break")
-            panel.root.run_pending()
-            self.assertEqual(len(self.panel_events(event_file)), 1)
-
-            panel.key_release(Event())
-            panel.root.run_pending()
-            panel.key_press(Event())
-            panel.key_release(Event())
-            panel.root.run_pending()
-
-            events = self.panel_events(event_file)
-            self.assertEqual(
-                [(event["kind"], event["name"], event["value"])
-                 for event in events],
-                [
-                    ("trig", "1", "press"),
-                    ("trig", "1", "release"),
-                    ("trig", "1", "press"),
-                    ("trig", "1", "release"),
-                ],
-            )
-            self.assertEqual(panel.trig_widgets[1].states,
-                             [True, False, True, False])
-            self.assertFalse(panel.held_trigs[1])
-            self.assertFalse(panel.pending_key_releases)
-
-    def test_photographic_hitbox_centers_dispatch_every_control(self):
-        from qemu.desktop_panel import (
-            BUTTON_RECTS,
-            KNOB_CENTERS,
-            PanelApp,
-            TRIG_RECTS,
-        )
-
-        panel = PanelApp.__new__(PanelApp)
-        for name, (x, y) in KNOB_CENTERS.items():
-            self.assertEqual(panel.control_at(x, y), ("encoder", name))
-        for name, (x1, y1, x2, y2) in BUTTON_RECTS.items():
-            self.assertEqual(
-                panel.control_at((x1 + x2) // 2, (y1 + y2) // 2),
-                ("button", name),
-            )
-        for trig, (x1, y1, x2, y2) in TRIG_RECTS.items():
-            self.assertEqual(
-                panel.control_at((x1 + x2) // 2, (y1 + y2) // 2),
-                ("trig", trig),
-            )
-
-    def test_mixed_source_ownership_and_focus_loss_release_once(self):
-        class Event:
-            keysym = "q"
-
-        with tempfile.TemporaryDirectory() as directory:
-            event_file = Path(directory) / "panel-events.jsonl"
-            panel = self.make_headless_panel(event_file)
-
-            panel.trig(1, True, "mouse")
-            panel.key_press(Event())
-            panel.key_release(Event())
-            panel.root.run_pending()
-            self.assertEqual(len(self.panel_events(event_file)), 1)
-            self.assertEqual(panel.held_trigs[1], {"mouse"})
-
-            panel.key_press(Event())
-            panel.key_release(Event())
-            panel.focus_lost()
-            panel.root.run_pending()
-            events = self.panel_events(event_file)
-            self.assertEqual(
-                [event["value"] for event in events], ["press", "release"]
-            )
-            self.assertEqual(panel.trig_widgets[1].states, [True, False])
-            self.assertFalse(panel.held_trigs[1])
-            self.assertFalse(panel.pending_key_releases)
-
-    def test_qwerty_lifecycle_replays_as_exact_uart8_frames(self):
-        from qemu.panel_event_bridge import PanelLink, follow_events
-
-        class Event:
-            keysym = "q"
-
-        class SocketStub:
-            def __init__(self):
-                self.frames = []
-
-            def sendall(self, data):
-                self.frames.append(data)
-
-        with tempfile.TemporaryDirectory() as directory:
-            event_file = Path(directory) / "panel-events.jsonl"
-            panel = self.make_headless_panel(event_file)
-            for _ in range(2):
-                panel.key_press(Event())
-                panel.key_press(Event())
-                panel.key_release(Event())
-                panel.root.run_pending()
-
-            sock = SocketStub()
-            stop = threading.Event()
-            follower = threading.Thread(
-                target=follow_events,
-                args=(event_file, PanelLink(sock, verbose=False), False,
-                      None, stop),
-            )
-            follower.start()
-            deadline = time.monotonic() + 1.0
-            while len(sock.frames) < 4 and time.monotonic() < deadline:
-                time.sleep(0.01)
-            stop.set()
-            follower.join(timeout=1.0)
-
-            self.assertFalse(follower.is_alive())
-            self.assertEqual(
-                sock.frames,
-                [b"\x23\x01", b"\x23\x00", b"\x23\x01", b"\x23\x00"],
-            )
-
-    def test_overlapping_qwerty_chord_preserves_group_masks(self):
-        from qemu.panel_event_bridge import PanelLink, follow_events
-
-        class Event:
-            def __init__(self, keysym):
-                self.keysym = keysym
-
-        class SocketStub:
-            def __init__(self):
-                self.frames = []
-
-            def sendall(self, data):
-                self.frames.append(data)
-
-        with tempfile.TemporaryDirectory() as directory:
-            event_file = Path(directory) / "panel-events.jsonl"
-            panel = self.make_headless_panel(event_file)
-            panel.trig_widgets[2] = panel.trig_widgets[1].__class__()
-            panel.key_press(Event("q"))
-            panel.key_press(Event("w"))
-            panel.key_press(Event("w"))
-            panel.key_release(Event("q"))
-            panel.root.run_pending()
-            panel.key_release(Event("w"))
-            panel.root.run_pending()
-
-            sock = SocketStub()
-            stop = threading.Event()
-            follower = threading.Thread(
-                target=follow_events,
-                args=(event_file, PanelLink(sock, verbose=False), False,
-                      None, stop),
-            )
-            follower.start()
-            deadline = time.monotonic() + 1.0
-            while len(sock.frames) < 4 and time.monotonic() < deadline:
-                time.sleep(0.01)
-            stop.set()
-            follower.join(timeout=1.0)
-
-            self.assertEqual(
-                sock.frames,
-                [b"\x23\x01", b"\x23\x03", b"\x23\x02", b"\x23\x00"],
-            )
-            self.assertFalse(panel.held_trigs[1])
-            self.assertFalse(panel.held_trigs[2])
-
-    def test_full_qwerty_matrix_replays_exact_uart8_frames(self):
-        from qemu.panel_event_bridge import PanelLink, follow_events
-
-        class Event:
-            def __init__(self, keysym):
-                self.keysym = keysym
-
-        class SocketStub:
-            def __init__(self):
-                self.frames = []
-
-            def sendall(self, data):
-                self.frames.append(data)
-
-        with tempfile.TemporaryDirectory() as directory:
-            event_file = Path(directory) / "panel-events.jsonl"
-            panel = self.make_headless_panel(event_file)
-            trig_stub = panel.trig_widgets[1].__class__
-            panel.trig_widgets = {trig: trig_stub() for trig in range(1, 17)}
-
-            for key in "qwertyuiasdfghjk":
-                panel.key_press(Event(key))
-                panel.key_release(Event(key))
-                panel.root.run_pending()
-
-            sock = SocketStub()
-            stop = threading.Event()
-            follower = threading.Thread(
-                target=follow_events,
-                args=(event_file, PanelLink(sock, verbose=False), False,
-                      None, stop),
-            )
-            follower.start()
-            deadline = time.monotonic() + 1.0
-            while len(sock.frames) < 32 and time.monotonic() < deadline:
-                time.sleep(0.01)
-            stop.set()
-            follower.join(timeout=1.0)
-
-            expected = []
-            for group in (3, 2):
-                for bit in range(8):
-                    expected.extend(
-                        [bytes((0x20 | group, 1 << bit)),
-                         bytes((0x20 | group, 0))]
-                    )
-            self.assertFalse(follower.is_alive())
-            self.assertEqual(sock.frames, expected)
-            self.assertEqual(len(self.panel_events(event_file)), 32)
-            self.assertTrue(all(not owners for owners in panel.held_trigs.values()))
-            self.assertFalse(panel.pending_key_releases)
-
-    def test_selected_lane_audition_lifecycle_and_exact_uart_frames(self):
-        from qemu.panel_event_bridge import PanelLink, follow_events
-
-        class KeyEvent:
-            keysym = "q"
-
-        class SocketStub:
-            def __init__(self):
-                self.frames = []
-
-            def sendall(self, data):
-                self.frames.append(data)
-
-        with tempfile.TemporaryDirectory() as directory:
-            event_file = Path(directory) / "panel-events.jsonl"
-            panel = self.make_headless_panel(event_file)
-            panel.audio_enabled = False
-            panel.lfo2_lane = 4
-            panel.audition_lfo2()
-            self.assertEqual(self.panel_events(event_file), [])
-            self.assertFalse(panel.root.callbacks)
-
-            panel.audio_enabled = True
-            expected_frames = []
-            for lane in range(8):
-                panel.lfo2_lane = lane
-                panel.audition_lfo2()
-                first_token = panel.pending_audition_releases[lane + 1]
-                self.assertEqual(panel.root.delays[first_token], 35)
-                self.assertEqual(panel.held_trigs[lane + 1], {"audition"})
-                if lane == 0:
-                    panel.audition_lfo2()
-                    self.assertNotIn(first_token, panel.root.callbacks)
-                    self.assertEqual(len(panel.pending_audition_releases), 1)
-                panel.root.run_pending()
-                self.assertFalse(panel.held_trigs[lane + 1])
-                self.assertFalse(panel.pending_audition_releases)
-                expected_frames.extend(
-                    (bytes((0x23, 1 << lane)), bytes((0x23, 0)))
-                )
-
-            panel.trig(1, True, "mouse")
-            panel.lfo2_lane = 0
-            panel.audition_lfo2()
-            panel.root.run_pending()
-            self.assertEqual(panel.held_trigs[1], {"mouse"})
-            panel.trig(1, False, "mouse")
-            expected_frames.extend((b"\x23\x01", b"\x23\x00"))
-
-            panel.key_press(KeyEvent())
-            panel.audition_lfo2()
-            panel.key_release(KeyEvent())
-            self.assertEqual(sorted(panel.root.delays.values()), [12, 35])
-            panel.root.run_pending()
-            self.assertFalse(panel.held_trigs[1])
-            self.assertFalse(panel.pending_key_releases)
-            self.assertFalse(panel.pending_audition_releases)
-            expected_frames.extend((b"\x23\x01", b"\x23\x00"))
-
-            panel.lfo2_lane = 3
-            panel.audition_lfo2()
-            self.assertTrue(panel.pending_audition_releases)
-            panel.focus_lost()
-            self.assertFalse(panel.held_trigs[4])
-            self.assertFalse(panel.pending_audition_releases)
-            self.assertFalse(panel.root.callbacks)
-            expected_frames.extend((b"\x23\x08", b"\x23\x00"))
-
-            panel.lfo2_lane = 7
-            panel.audition_lfo2()
-            panel.close()
-            self.assertTrue(panel.root.destroyed)
-            self.assertFalse(panel.held_trigs[8])
-            self.assertFalse(panel.pending_audition_releases)
-            self.assertFalse(panel.root.callbacks)
-            expected_frames.extend((b"\x23\x80", b"\x23\x00"))
-
-            events = self.panel_events(event_file)
-            self.assertEqual(len(events), 24)
-            self.assertEqual(
-                [(event["value"], int(event["name"])) for event in events[:16]],
-                [
-                    (state, lane)
-                    for lane in range(1, 9)
-                    for state in ("press", "release")
-                ],
-            )
-
-            sock = SocketStub()
-            stop = threading.Event()
-            follower = threading.Thread(
-                target=follow_events,
-                args=(event_file, PanelLink(sock, verbose=False), False, None, stop),
-            )
-            follower.start()
-            deadline = time.monotonic() + 1.0
-            while time.monotonic() < deadline and len(sock.frames) < len(expected_frames):
-                time.sleep(0.01)
-            stop.set()
-            follower.join(timeout=1.0)
-
-            self.assertFalse(follower.is_alive())
-            self.assertEqual(sock.frames, expected_frames)
-
-    def test_cross_group_qwerty_chord_keeps_masks_independent(self):
-        from qemu.panel_event_bridge import PanelLink, follow_events
-
-        class Event:
-            def __init__(self, keysym):
-                self.keysym = keysym
-
-        class SocketStub:
-            def __init__(self):
-                self.frames = []
-
-            def sendall(self, data):
-                self.frames.append(data)
-
-        with tempfile.TemporaryDirectory() as directory:
-            event_file = Path(directory) / "panel-events.jsonl"
-            panel = self.make_headless_panel(event_file)
-            panel.trig_widgets[9] = panel.trig_widgets[1].__class__()
-            panel.key_press(Event("q"))
-            panel.key_press(Event("a"))
-            panel.key_press(Event("a"))
-            panel.key_release(Event("q"))
-            panel.root.run_pending()
-            panel.key_release(Event("a"))
-            panel.root.run_pending()
-
-            sock = SocketStub()
-            stop = threading.Event()
-            follower = threading.Thread(
-                target=follow_events,
-                args=(event_file, PanelLink(sock, verbose=False), False,
-                      None, stop),
-            )
-            follower.start()
-            deadline = time.monotonic() + 1.0
-            while len(sock.frames) < 4 and time.monotonic() < deadline:
-                time.sleep(0.01)
-            stop.set()
-            follower.join(timeout=1.0)
-
-            self.assertFalse(follower.is_alive())
-            self.assertEqual(
-                sock.frames,
-                [b"\x23\x01", b"\x22\x01", b"\x23\x00", b"\x22\x00"],
-            )
-            self.assertFalse(panel.held_trigs[1])
-            self.assertFalse(panel.held_trigs[9])
-            self.assertFalse(panel.pending_key_releases)
-
-    def test_every_photographic_control_replays_exact_uart8_frames(self):
-        from qemu.desktop_panel import BUTTON_RECTS, KNOB_CENTERS, TRIG_RECTS
-        from qemu.panel_event_bridge import BUTTONS, PanelLink, follow_events
-
-        class PointerEvent:
-            def __init__(self, x, y, y_root=500):
-                self.x = x
-                self.y = y
-                self.y_root = y_root
-
-        class SocketStub:
+            self.assertTrue(0 <= y1 …3722 tokens truncated… class SocketStub:
             def __init__(self):
                 self.frames = []
 

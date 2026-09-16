@@ -18,6 +18,12 @@ The desktop emulator runs the unmodified Analog Rytm MKII OS 1.72 MAIN image in 
 5. The emulated firmware presents one dismissible startup modal. Press **NO**
    once to continue to the normal parameter UI.
 
+The native window title and permanent host status strip identify the selected
+firmware and compatibility mode. OS 1.72 with the extension enabled reads
+`FILTER 2 + LFO2 VERIFIED`; explicit `--no-filter2` on that same image reads
+`STOCK MODE / EXTENSION OFF`; another valid update reads `UNCHANGED STOCK
+FALLBACK` beside the version extracted from its ELE3 header.
+
 Finder-launched startup and Tk callback failures are shown in a native dialog.
 The app also writes a diagnostic JSON file under
 `~/Library/Logs/Photon OS/AR MKII Emulator/`. It records macOS/architecture,

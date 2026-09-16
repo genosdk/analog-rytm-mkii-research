@@ -59,6 +59,7 @@ class FirmwarePreparation:
     main_image: Path
     filter2_controls: Path
     metadata: dict[str, object]
+    main_sha256: str
     filter2_enabled: bool
 
 
@@ -309,11 +310,29 @@ def prepare_firmware(
             main_image=main_image,
             filter2_controls=filter2_controls,
             metadata=metadata,
+            main_sha256=digest,
             filter2_enabled=filter2_enabled,
         )
     except BaseException:
         finish_runtime(runtime, keep_runtime)
         raise
+
+
+def firmware_display_identity(prepared: FirmwarePreparation) -> str:
+    version = prepared.metadata.get("version")
+    if version:
+        firmware = f"OS {version}"
+    elif prepared.main_sha256 == EXPECTED_MAIN_SHA256:
+        firmware = "OS 1.72"
+    else:
+        firmware = f"MAIN {prepared.main_sha256[:8].upper()}"
+    if prepared.filter2_enabled:
+        mode = "FILTER 2 + LFO2 VERIFIED"
+    elif prepared.main_sha256 == EXPECTED_MAIN_SHA256:
+        mode = "STOCK MODE / EXTENSION OFF"
+    else:
+        mode = "UNCHANGED STOCK FALLBACK"
+    return f"{firmware}  /  {mode}"
 
 
 def bundle_dir() -> Path:
@@ -581,6 +600,7 @@ def main() -> None:
     log = runtime / "qemu.log"
     main_image = prepared.main_image
     filter2_enabled = prepared.filter2_enabled
+    firmware_identity = firmware_display_identity(prepared)
 
     env = os.environ.copy()
     env["AR_MK2_FRAMEBUFFER_OUT"] = str(frame)
@@ -648,7 +668,15 @@ def main() -> None:
 
         root = tk.Tk()
         install_callback_reporter(root)
-        PanelApp(root, frame, events, args.scale, filter2_enabled, args.audio)
+        PanelApp(
+            root,
+            frame,
+            events,
+            args.scale,
+            filter2_enabled,
+            args.audio,
+            firmware_identity,
+        )
         root.mainloop()
 
         if qemu_proc.poll() is not None and qemu_proc.returncode:

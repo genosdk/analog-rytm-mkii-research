@@ -375,7 +375,8 @@ class VirtualKnob(tk.Canvas):
 class PanelApp:
     def __init__(self, root: tk.Tk, frame_file: Path, event_file: Path,
                  scale: int = 6, filter2_enabled: bool = False,
-                 audio_enabled: bool = False) -> None:
+                 audio_enabled: bool = False,
+                 firmware_identity: str = "OS UNKNOWN  /  STOCK MODE") -> None:
         validate_skin_geometry()
         self.root = root
         self.frame_file = frame_file
@@ -391,6 +392,7 @@ class PanelApp:
         self.active_page: str | None = None
         self.filter2_enabled = filter2_enabled
         self.audio_enabled = audio_enabled
+        self.firmware_identity_text = firmware_identity
         self.filter2_values = [64] * 8
         self.lfo2_rate_values = [64] * 8
         self.lfo2_depth_values = [64] * 8
@@ -415,7 +417,7 @@ class PanelApp:
         self.drag_y = 0
         self.drag_value = 64
 
-        root.title("Analog Rytm MKII — Firmware Emulator")
+        root.title(f"Analog Rytm MKII — {firmware_identity.replace('  /  ', ' — ')}")
         root.configure(bg="#d2d3d1")
         window_w, window_h = panel_window_size(scale)
         root.geometry(f"{window_w}x{window_h}")
@@ -457,6 +459,7 @@ class PanelApp:
 
         self.status = tk.StringVar(value="STARTING FIRMWARE…")
         self.frame_status = tk.StringVar(value="WAITING FOR FIRMWARE OLED")
+        self.firmware_identity = tk.StringVar(value=firmware_identity)
         status_bar = tk.Frame(root, bg="#181a19", height=STATUS_H)
         status_bar.pack(fill="x")
         status_bar.pack_propagate(False)
@@ -475,6 +478,9 @@ class PanelApp:
         )
         self.filter2_button.pack(side="right", padx=(4, 0), pady=4)
         tk.Label(status_bar, text="LIVE PANEL BRIDGE", fg=LED_ORANGE,
+                 bg="#181a19", font=("TkFixedFont", 8, "bold")).pack(
+                     side="right", padx=(8, 4))
+        tk.Label(status_bar, textvariable=self.firmware_identity, fg=LIGHT_TEXT,
                  bg="#181a19", font=("TkFixedFont", 8, "bold")).pack(
                      side="right", padx=(8, 4))
 
@@ -1065,8 +1071,16 @@ def skin_runtime_self_test(frame_file: Path, event_file: Path) -> None:
             event_file,
             filter2_enabled=True,
             audio_enabled=True,
+            firmware_identity="OS 1.72  /  FILTER 2 + LFO2 VERIFIED",
         )
         root.update_idletasks()
+
+        if panel.firmware_identity.get() != (
+            "OS 1.72  /  FILTER 2 + LFO2 VERIFIED"
+        ):
+            raise RuntimeError("Tk did not preserve firmware identity")
+        if "OS 1.72" not in root.title() or "FILTER 2 + LFO2" not in root.title():
+            raise RuntimeError("Tk title omitted firmware compatibility mode")
 
         specs = active_crop_specs()
         if set(panel.active_photos) != {key for key, _rect, _margin in specs}:

@@ -160,6 +160,11 @@ and reproducible tooling.
   Workflow run 34885169534 passes that expanded signed-app test and the enforced
   artifact audit on both macOS architectures; exact evidence is in
   `research/AR172_DESKTOP_FIRMWARE_TRANSACTION_GATE.json`.
+- The desktop window now keeps firmware compatibility visible independently of
+  transient control status: verified 1.72 is labeled `FILTER 2 + LFO2 VERIFIED`,
+  exact 1.72 with the extension disabled is labeled `STOCK MODE / EXTENSION OFF`,
+  and another valid update is labeled `UNCHANGED STOCK FALLBACK` with its OS
+  version. The same identity is repeated in the native window title.
 - The default-disabled Filter 2 lab detour now has an eight-lane Q1.31 kernel,
   per-sample coefficient slew, one-hot lane isolation, and exact stock bypass.
   Virtual indices `0x7FF8..0x7FFF` publish mouse-friendly `0..127` controls to
@@ -297,7 +302,9 @@ candidate. Selecting another valid update offers a Finder-usable fallback that
 boots its MAIN unchanged with the extension disabled; cancellation and failed
 preparation remove the temporary runtime directory. Preparation is isolated as
 one transaction, so the verified candidate, unchanged-stock fallback and every
-pre-QEMU failure share the same cleanup policy.
+pre-QEMU failure share the same cleanup policy. The permanent host status strip
+and window title show the loaded OS identity and whether the session is the
+verified extension, explicit stock mode, or unchanged-stock fallback.
 
 ## Railway dashboard
 

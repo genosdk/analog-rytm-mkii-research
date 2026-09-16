@@ -760,6 +760,13 @@ Workflow run 34885169534 passes that frozen transaction test, enforced artifact
 audit and upload on both macOS 15 arm64 and Intel. Evidence is in
 `research/AR172_DESKTOP_FIRMWARE_TRANSACTION_GATE.json`.
 
+Firmware identity is now an explicit presentation contract rather than an
+inference from whether the drawer button is enabled. The launcher passes the
+ELE3 version and resolved compatibility mode into the native panel; a permanent
+status-strip label and the window title distinguish verified 1.72 extension,
+exact-1.72 stock mode, and versioned unchanged-stock fallback. Native Tk
+self-test assertions cover both label storage and title composition.
+
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
 masks. The offline `POST /api/step` diagnostic now advances 1..32 authentic
