@@ -12,10 +12,13 @@ The desktop emulator runs the unmodified Analog Rytm MKII OS 1.72 MAIN image in 
    Verified OS 1.72 enables the emulator-only Filter 2/LFO2 extension. For a
    different valid update, a native dialog can instead boot its MAIN untouched
    with that extension disabled; declining the fallback cancels launch cleanly.
-4. MAIN boots in the embedded custom QEMU backend. Extracted files and any
+4. A Finder-launched session asks whether to enable bounded experimental audio.
+   Enabling it activates eight renderer blocks per pad/QWERTY press and the
+   Filter 2 drawer audition control. Declining keeps the session silent.
+5. MAIN boots in the embedded custom QEMU backend. Extracted files and any
    runtime-only candidate remain temporary and are removed when the app exits
    or preparation fails.
-5. The emulated firmware presents one dismissible startup modal. Press **NO**
+6. The emulated firmware presents one dismissible startup modal. Press **NO**
    once to continue to the normal parameter UI.
 
 The native window title and permanent host status strip identify the selected
@@ -23,6 +26,11 @@ firmware and compatibility mode. OS 1.72 with the extension enabled reads
 `FILTER 2 + LFO2 VERIFIED`; explicit `--no-filter2` on that same image reads
 `STOCK MODE / EXTENSION OFF`; another valid update reads `UNCHANGED STOCK
 FALLBACK` beside the version extracted from its ELE3 header.
+
+The Finder audio dialog is the graphical equivalent of `--audio` for the
+current launch. `--no-audio` suppresses the dialog and guarantees a silent
+session; non-Finder development launches remain silent unless `--audio` is
+given explicitly.
 
 Finder-launched startup and Tk callback failures are shown in a native dialog.
 The app also writes a diagnostic JSON file under

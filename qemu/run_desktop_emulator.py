@@ -220,6 +220,41 @@ def confirm_stock_boot(version: str | None, digest: str) -> bool:
         root.destroy()
 
 
+def confirm_audio_enable() -> bool:
+    """Offer bounded emulator audio to a Finder-launched review session."""
+    root = tk.Tk()
+    root.withdraw()
+    try:
+        return messagebox.askyesno(
+            "Audio audition",
+            (
+                "Enable experimental bounded audio for this session?\n\n"
+                "Pad and QWERTY presses will run eight stock renderer blocks, "
+                "and the Filter 2 drawer audition control will be available. "
+                "The current output is mono on both channels and is intended "
+                "for emulator review, not physical-hardware validation."
+            ),
+            parent=root,
+        )
+    finally:
+        root.destroy()
+
+
+def resolve_audio_mode(
+    explicit: bool | None,
+    *,
+    selected_interactively: bool,
+    frozen: bool,
+    confirm=confirm_audio_enable,
+) -> bool:
+    """Resolve audio without making command-line or development runs prompt."""
+    if explicit is not None:
+        return explicit
+    if selected_interactively and frozen:
+        return bool(confirm())
+    return False
+
+
 def resolve_filter2_mode(
     requested: bool,
     digest: str,
@@ -400,6 +435,23 @@ def self_test(qemu: Path) -> None:
         confirm=lambda _version, _digest: False,
     ):
         raise RuntimeError("verified OS 1.72 MAIN incorrectly disabled Filter 2")
+    audio_calls: list[str] = []
+    if not resolve_audio_mode(
+        None,
+        selected_interactively=True,
+        frozen=True,
+        confirm=lambda: audio_calls.append("enable") or True,
+    ):
+        raise RuntimeError("Finder audio confirmation did not enable audio")
+    if audio_calls != ["enable"]:
+        raise RuntimeError("Finder audio confirmation was not exercised once")
+    if resolve_audio_mode(
+        None,
+        selected_interactively=True,
+        frozen=True,
+        confirm=lambda: False,
+    ):
+        raise RuntimeError("declined Finder audio confirmation enabled audio")
     with tempfile.TemporaryDirectory(prefix="ar-mk2-skin-test-") as directory:
         runtime = Path(directory)
         update = runtime / "synthetic-update.syx"
@@ -539,13 +591,22 @@ def main() -> None:
             "the firmware's physical-storage startup path"
         ),
     )
-    ap.add_argument(
+    audio = ap.add_mutually_exclusive_group()
+    audio.add_argument(
         "--audio",
+        dest="audio",
         action="store_true",
+        default=None,
         help=(
             "enable the 48 kHz stereo renderer tap and eight bounded stock audio "
             "service passes per rising pad/QWERTY edge"
         ),
+    )
+    audio.add_argument(
+        "--no-audio",
+        dest="audio",
+        action="store_false",
+        help="disable audio without showing the Finder launch prompt",
     )
     ap.add_argument(
         "--no-filter2",
@@ -583,7 +644,6 @@ def main() -> None:
             if args.firmware
             else choose_firmware()
         )
-
     prepared = prepare_firmware(
         selected_main,
         selected_syx,
@@ -591,6 +651,15 @@ def main() -> None:
         selected_interactively=selected_interactively,
         keep_runtime=args.keep_runtime,
     )
+    try:
+        audio_enabled = resolve_audio_mode(
+            args.audio,
+            selected_interactively=selected_interactively,
+            frozen=bool(getattr(sys, "frozen", False)),
+        )
+    except BaseException:
+        finish_runtime(prepared.runtime, args.keep_runtime)
+        raise
     runtime = prepared.runtime
     uart = runtime / "panel.sock"
     monitor = runtime / "monitor.sock"
@@ -626,7 +695,7 @@ def main() -> None:
         env["AR_MK2_MOCK_AUDIO_SERVICE"] = "1"
     else:
         env.pop("AR_MK2_MOCK_AUDIO_SERVICE", None)
-    if args.audio:
+    if audio_enabled:
         env["AR_MK2_AUDIO_TAP"] = "1"
         env["AR_MK2_AUDIO_TRIGGER_SERVICE"] = "1"
     else:
@@ -674,7 +743,7 @@ def main() -> None:
             events,
             args.scale,
             filter2_enabled,
-            args.audio,
+            audio_enabled,
             firmware_identity,
         )
         root.mainloop()

@@ -62,6 +62,63 @@ class FirmwareIdentityTests(unittest.TestCase):
         self.assertIn("Tk did not preserve firmware identity", source)
         self.assertIn("Tk title omitted firmware compatibility mode", source)
 
+    def test_finder_audio_choice_and_explicit_overrides(self):
+        launcher = self.import_launcher()
+        prompts = []
+
+        def confirm():
+            prompts.append("prompted")
+            return True
+
+        self.assertTrue(
+            launcher.resolve_audio_mode(
+                None,
+                selected_interactively=True,
+                frozen=True,
+                confirm=confirm,
+            )
+        )
+        self.assertEqual(prompts, ["prompted"])
+        self.assertFalse(
+            launcher.resolve_audio_mode(
+                None,
+                selected_interactively=False,
+                frozen=True,
+                confirm=confirm,
+            )
+        )
+        self.assertFalse(
+            launcher.resolve_audio_mode(
+                None,
+                selected_interactively=True,
+                frozen=False,
+                confirm=confirm,
+            )
+        )
+        self.assertTrue(
+            launcher.resolve_audio_mode(
+                True,
+                selected_interactively=True,
+                frozen=True,
+                confirm=confirm,
+            )
+        )
+        self.assertFalse(
+            launcher.resolve_audio_mode(
+                False,
+                selected_interactively=True,
+                frozen=True,
+                confirm=confirm,
+            )
+        )
+        self.assertEqual(prompts, ["prompted"])
+
+        source = (ROOT / "qemu" / "run_desktop_emulator.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('"--no-audio"', source)
+        self.assertIn("audio_enabled = resolve_audio_mode", source)
+
     def test_dual_arch_packaged_firmware_identity_gate(self):
         report = json.loads(
             (HERE / "AR172_DESKTOP_FIRMWARE_IDENTITY_GATE.json").read_text(
