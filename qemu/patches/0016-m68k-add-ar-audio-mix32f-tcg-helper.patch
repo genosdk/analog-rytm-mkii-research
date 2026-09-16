@@ -1,0 +1,132 @@
+From: AR MKII clean-room research
+Subject: [PATCH 16/16] m68k: add guarded pipelined two-output mix helper
+
+---
+ gdbstub/gdb-xml/cf-emac.xml |  1 +
+ target/m68k/cpu.h           |  2 ++
+ target/m68k/helper.c        | 55 +++++++++++++++++++++++++++++++++++++++++++++
+ target/m68k/helper.h        |  1 +
+ target/m68k/translate.c     | 10 +++++++
+ 5 files changed, 69 insertions(+)
+
+diff --git a/gdbstub/gdb-xml/cf-emac.xml b/gdbstub/gdb-xml/cf-emac.xml
+--- a/gdbstub/gdb-xml/cf-emac.xml
++++ b/gdbstub/gdb-xml/cf-emac.xml
+@@ -18,4 +18,5 @@
+   <reg name="ar_audio_mix32c_control" bitsize="32" type="uint32" group="system"/>
+   <reg name="ar_audio_mix32d_control" bitsize="32" type="uint32" group="system"/>
+   <reg name="ar_audio_mix32e_control" bitsize="32" type="uint32" group="system"/>
++  <reg name="ar_audio_mix32f_control" bitsize="32" type="uint32" group="system"/>
+ </feature>
+diff --git a/target/m68k/cpu.h b/target/m68k/cpu.h
+--- a/target/m68k/cpu.h
++++ b/target/m68k/cpu.h
+@@ -176,4 +176,6 @@ typedef struct CPUArchState {
+     uint32_t ar_audio_mix32d_control;
+     bool ar_audio_mix32e_accel;
+     uint32_t ar_audio_mix32e_control;
++    bool ar_audio_mix32f_accel;
++    uint32_t ar_audio_mix32f_control;
+ } CPUM68KState;
+diff --git a/target/m68k/helper.c b/target/m68k/helper.c
+--- a/target/m68k/helper.c
++++ b/target/m68k/helper.c
+@@ -159,4 +159,6 @@ static int cf_emac_gdb_get_reg(CPUState *cs, GByteArray *mem_buf, int n)
+         return gdb_get_reg32(mem_buf, env->ar_audio_mix32d_control);
+     case 16:
+         return gdb_get_reg32(mem_buf, env->ar_audio_mix32e_control);
++    case 17:
++        return gdb_get_reg32(mem_buf, env->ar_audio_mix32f_control);
+     }
+@@ -207,4 +209,7 @@ static int cf_emac_gdb_set_reg(CPUState *cs, uint8_t *mem_buf, int n)
+     case 16:
+         env->ar_audio_mix32e_control = ldl_be_p(mem_buf);
+         return 4;
++    case 17:
++        env->ar_audio_mix32f_control = ldl_be_p(mem_buf);
++        return 4;
+     }
+@@ -2177,5 +2182,55 @@ uint32_t HELPER(ar_audio_mix32e)(CPUM68KState *env)
+         env->dregs[0]--;
+     }
+     cpu_m68k_set_ccr(env, CCF_Z);
++    return 1;
++}
++
++uint32_t HELPER(ar_audio_mix32f)(CPUM68KState *env)
++{
++    if (!env->ar_audio_mix32f_control || env->dregs[0] != 32 ||
++        (env->macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
++            (MACSR_OMC | MACSR_FI) || env->mac_mask != UINT32_MAX) {
++        return 0;
++    }
++    if (env->ar_audio_mix32f_control == 2) {
++        env->ar_audio_mix32f_control = 0;
++    }
++
++    for (unsigned iteration = 0; iteration < 32; iteration++) {
++        uint32_t loaded;
++
++        ar_audio_polyphase_mac(env, 0, env->dregs[5], env->aregs[3], true);
++        ar_audio_polyphase_mac(env, 2, env->dregs[6], env->dregs[2], true);
++
++        loaded = cpu_ldl_data_ra(env,
++            env->aregs[6] & env->mac_mask, GETPC());
++        ar_audio_polyphase_mac(env, 2, env->aregs[1], env->dregs[3], false);
++        env->dregs[1] = loaded;
++        env->aregs[6] += 4;
++
++        loaded = cpu_ldl_data_ra(env,
++            env->aregs[6] & env->mac_mask, GETPC());
++        ar_audio_polyphase_mac(env, 1, env->dregs[4], env->dregs[1], false);
++        env->dregs[1] = loaded;
++        env->aregs[6] += 4;
++        ar_audio_polyphase_mac(env, 1, env->dregs[4], env->dregs[1], false);
++
++        env->dregs[2] = ar_audio_inner_movclr(env, 0);
++        ar_audio_polyphase_mac(env, 2, env->dregs[6], env->dregs[2], false);
++
++        loaded = cpu_ldl_data_ra(env,
++            (env->aregs[5] + 4) & env->mac_mask, GETPC());
++        ar_audio_polyphase_mac(env, 0, env->aregs[4], env->dregs[2], false);
++        env->aregs[3] = loaded;
++
++        env->dregs[1] = ar_audio_inner_movclr(env, 1);
++        cpu_stl_data_ra(env, env->aregs[5], env->dregs[1], GETPC());
++        env->aregs[5] += 4;
++        env->dregs[3] = ar_audio_inner_movclr(env, 2);
++        cpu_stl_data_ra(env, env->aregs[2], env->dregs[3], GETPC());
++        env->aregs[2] += 4;
++        env->dregs[0]--;
++    }
++    cpu_m68k_set_ccr(env, CCF_Z);
+     return 1;
+ }
+diff --git a/target/m68k/helper.h b/target/m68k/helper.h
+--- a/target/m68k/helper.h
++++ b/target/m68k/helper.h
+@@ -119,2 +119,3 @@
+ DEF_HELPER_1(ar_audio_mix32d, i32, env)
+ DEF_HELPER_1(ar_audio_mix32e, i32, env)
++DEF_HELPER_1(ar_audio_mix32f, i32, env)
+diff --git a/target/m68k/translate.c b/target/m68k/translate.c
+--- a/target/m68k/translate.c
++++ b/target/m68k/translate.c
+@@ -6161,5 +6161,15 @@ static void m68k_tr_translate_insn(DisasContextBase *dcbase, CPUState *cpu)
+         tcg_gen_exit_tb(NULL, 0);
+         gen_set_label(native);
+     }
++    if (env->ar_audio_mix32f_accel && dc->base.pc_next == 0x40108dd0) {
++        TCGLabel *native = gen_new_label();
++        TCGv_i32 accelerated = tcg_temp_new_i32();
++
++        gen_helper_ar_audio_mix32f(accelerated, tcg_env);
++        tcg_gen_brcondi_i32(TCG_COND_EQ, accelerated, 0, native);
++        tcg_gen_movi_i32(QREG_PC, 0x40108dfc);
++        tcg_gen_exit_tb(NULL, 0);
++        gen_set_label(native);
++    }
+ 
+     insn = read_im16(env, dc);
+-- 
+2.43.0
