@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_SCALAR49_GATE",
+  "recorded_at_utc": "2026-09-16",
+  "status": "PASS_NATIVE_HANDOFF_SCALAR49_CANDIDATE",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all fourteen prior TCG helpers enabled",
+    "completed_services": 100,
+    "remaining_handoff_leaf_guest_instructions": 154800,
+    "parent_translation_block_attributed_instructions": 4900,
+    "parent_translation_block_share_percent": 3.165
+  },
+  "selected_boundary": {
+    "entry_pc": "0x40109036",
+    "inclusive_native_window": "0x40109036..0x401090B4",
+    "exit_pc": "0x401090B6",
+    "calls_per_vector_191_service": 1,
+    "executed_native_instructions_per_call": 34,
+    "native_events_per_call": 14,
+    "footprint_pages": 2,
+    "touched_bytes": 52,
+    "role": "bounded scalar setup and coefficient-state transform between the validated polyphase32b and mix32c kernels"
+  },
+  "translation_block_accounting": {
+    "reported_instructions_per_call": 49,
+    "executed_candidate_window_instructions_per_call": 34,
+    "decoded_successor_instructions_not_executed_on_accelerated_path": 15,
+    "reason": "The translation block continues through the guarded mix32c native body even though its accelerated branch exits at the successor entry. A TB-entry counter therefore overattributes those decoded instructions.",
+    "promotion_measurement_requirement": "Use instruction-execution callbacks or a separately split translation boundary for the fifteenth-helper delta."
+  },
+  "transactional_candidate": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "mode": "candidate=scalar49",
+    "candidate_guest_accesses": 0,
+    "candidate_fallback": false,
+    "modeled_operations": [
+      "fractional saturated ACC0 multiply-accumulate and clear",
+      "signed coefficient scaling and lane packing",
+      "four transactional state stores",
+      "ten coefficient and stream-state loads",
+      "register setup for the following mix32c kernel",
+      "final ColdFire condition-code state"
+    ]
+  },
+  "same_process_oracle": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "native_events": 14,
+    "candidate_events": 0,
+    "access_comparison_applicable": false,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 2,
+    "touched_bytes": 52,
+    "touched_memory_match": true,
+    "early_cursor": {
+      "required_stable_calls": 8,
+      "discovery_calls": 9
+    },
+    "late_cursor": {
+      "required_stable_calls": 40,
+      "discovery_calls": 41
+    }
+  },
+  "conclusion": "The hottest residual scalar boundary has a transactional clean-room reconstruction that matches all 35 registers and all 52 touched bytes at early and late cursor horizons without fallback.",
+  "next_gate": "Promote the scalar49 candidate to a fifteenth guarded direct-state helper, add execution-accurate instruction accounting for this same-TB boundary, and measure its incremental reduction.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room topology and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}

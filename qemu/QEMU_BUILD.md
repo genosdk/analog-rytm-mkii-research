@@ -632,6 +632,25 @@ uses `stable=40`; `stable=16` now arms before a later footprint transition and
 correctly reports a footprint miss. The next gate is a verifier-only composite
 candidate for the scalar glue around the fourteen established kernels.
 
+The largest coherent scalar segment in that residual begins at
+`0x40109036`, ends at `0x401090B4`, and hands off to the established
+`mix32c` helper at `0x401090B6`. It executes 34 native instructions and 14
+ordered memory operations per service, touching 52 bytes on two pages. The
+verifier-only `candidate=scalar49` reconstruction models its saturated
+fractional accumulator operation, signed coefficient scaling, lane packing,
+transactional state stores, coefficient loads, successor-register setup, and
+final condition codes. Both `stable=8` and the extended `stable=40` horizons
+match all 35 registers and every touched byte with zero candidate guest
+accesses and no fallback.
+
+The window's parent translation block is reported as 49 instructions because
+it also decodes 15 instructions from the guarded native `mix32c` successor
+that the accelerated branch does not execute. A fifteenth-helper profile must
+therefore use instruction-execution callbacks or split that translation
+boundary instead of treating all 4,900 TB-attributed instructions as removable.
+Promotion of this scalar candidate with execution-accurate accounting is the
+next gate.
+
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its
 largest remaining coherent fixed kernel is the 32-iteration mix stage at

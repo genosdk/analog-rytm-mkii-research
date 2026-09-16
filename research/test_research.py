@@ -848,6 +848,22 @@ class QemuAudioEdmaTests(unittest.TestCase):
                     ["touched_memory_match"]
         )
         self.assertTrue(residual["cursor_calibration"]["stable_16_rejected"])
+        scalar49 = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_SCALAR49_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            scalar49["status"],
+            "PASS_NATIVE_HANDOFF_SCALAR49_CANDIDATE",
+        )
+        self.assertEqual(
+            scalar49["selected_boundary"]["executed_native_instructions_per_call"],
+            34,
+        )
+        self.assertEqual(scalar49["same_process_oracle"]["native_events"], 14)
+        self.assertEqual(scalar49["same_process_oracle"]["registers"], 35)
+        self.assertTrue(scalar49["same_process_oracle"]["touched_memory_match"])
         polyphase32b_patch = (
             ROOT
             / "qemu"
@@ -865,6 +881,9 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("qemu_plugin_write_memory_vaddr", shadow_plugin)
         self.assertIn("qemu_plugin_write_register", shadow_plugin)
         self.assertIn("qemu_plugin_set_pc(start_pc)", shadow_plugin)
+        self.assertIn(
+            '!strcmp(argv[i], "candidate=scalar49")', shadow_plugin
+        )
         self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-inner")', shadow_plugin)
         self.assertIn(
