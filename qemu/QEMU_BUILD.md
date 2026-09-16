@@ -620,6 +620,18 @@ reduction of 52.23%. Held-audio release retained its exact eight-service tail,
 nonzero host audio, and responsive UI. The next gate is a fresh bounded profile
 of the remaining handoff leaf with all fourteen helpers enabled.
 
+That fresh bounded profile leaves 154,800 guest instructions per 100 services,
+3,157 below the earlier 157,957-instruction upper bound. No remaining
+unpromoted high-trip fixed loop dominates the result: the hottest translated
+block contributes only 4,900 instructions, or 3.17% of the residual. The
+complete deterministic leaf at `0x40108C7C..0x4010926A`, exiting at
+`0x4010A06A`, remains the next coherent composite boundary. Native replay with
+all fourteen helpers enabled matched all 3,309 ordered accesses, all 35
+registers, and every touched byte at early and late horizons. The late horizon
+uses `stable=40`; `stable=16` now arms before a later footprint transition and
+correctly reports a footprint miss. The next gate is a verifier-only composite
+candidate for the scalar glue around the fourteen established kernels.
+
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its
 largest remaining coherent fixed kernel is the 32-iteration mix stage at

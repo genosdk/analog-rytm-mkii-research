@@ -826,6 +826,28 @@ class QemuAudioEdmaTests(unittest.TestCase):
             / "0018-m68k-add-ar-audio-emac256-tcg-helper.patch"
         ).read_text(encoding="utf-8")
         self.assertIn("DEF_HELPER_1(ar_audio_emac256, i32, env)", emac256_patch)
+        residual = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_RESIDUAL_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            residual["status"],
+            "PASS_HANDOFF_RESIDUAL_COMPOSITE_BOUNDARY",
+        )
+        self.assertEqual(
+            residual["profile"]["remaining_handoff_leaf_guest_instructions"],
+            154800,
+        )
+        self.assertEqual(
+            residual["same_process_replay"]["native_events_per_call"],
+            3309,
+        )
+        self.assertTrue(
+            residual["same_process_replay"]["late_cursor"]
+                    ["touched_memory_match"]
+        )
+        self.assertTrue(residual["cursor_calibration"]["stable_16_rejected"])
         polyphase32b_patch = (
             ROOT
             / "qemu"

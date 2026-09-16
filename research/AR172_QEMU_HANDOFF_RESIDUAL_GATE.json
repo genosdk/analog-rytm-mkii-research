@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_RESIDUAL_GATE",
+  "recorded_at_utc": "2026-09-16",
+  "status": "PASS_HANDOFF_RESIDUAL_COMPOSITE_BOUNDARY",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all fourteen prior TCG helpers enabled",
+    "completed_services": 100,
+    "fourteen_helper_isr_guest_instructions": 12315103,
+    "remaining_handoff_leaf_guest_instructions": 154800,
+    "remaining_handoff_leaf_guest_instructions_per_call": 1548,
+    "derived_upper_bound": 157957,
+    "observed_below_upper_bound_by": 3157
+  },
+  "selected_boundary": {
+    "entry_pc": "0x40108C7C",
+    "inclusive_native_window": "0x40108C7C..0x4010926A",
+    "exit_pc": "0x4010A06A",
+    "calls_per_vector_191_service": 1,
+    "nested_calls_on_stock_fixture_path": 0,
+    "role": "composite deterministic DSP leaf containing the fourteen validated helper boundaries and their remaining scalar glue"
+  },
+  "translation_block_profile": {
+    "completed_services": 100,
+    "profiled_guest_instructions": 154800,
+    "largest_single_block_guest_instructions": 4900,
+    "largest_single_block_share_percent": 3.165,
+    "remaining_unpromoted_high_trip_fixed_loop": false
+  },
+  "same_process_replay": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "native_events_per_call": 3309,
+    "shadow_events_per_call": 3309,
+    "registers": 35,
+    "access_address_type_value_match": true,
+    "exit_register_match": true,
+    "early_cursor": {
+      "required_stable_calls": 8,
+      "discovery_calls": 10,
+      "footprint_pages": 10,
+      "touched_bytes": 3886,
+      "touched_memory_match": true
+    },
+    "late_cursor": {
+      "required_stable_calls": 40,
+      "discovery_calls": 42,
+      "footprint_pages": 10,
+      "touched_bytes": 3978,
+      "touched_memory_match": true
+    }
+  },
+  "cursor_calibration": {
+    "stable_16_rejected": true,
+    "reason": "With direct-state helpers enabled, arming at discovery call 18 precedes a later footprint transition and correctly produces a footprint miss. The late oracle therefore extends through 40 stable calls."
+  },
+  "conclusion": "With all fourteen helpers enabled, the deterministic handoff leaf is 154,800 guest instructions per 100 services. No remaining fixed loop dominates the residual, while the complete composite leaf still replays exactly at early and late cursor horizons.",
+  "next_gate": "Build a verifier-only composite candidate for the residual scalar glue around the fourteen established kernels, then compare the complete architectural and touched-memory exit state before considering a fifteenth direct-state helper.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room topology and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}
