@@ -74,6 +74,7 @@ static struct qemu_plugin_register *tcg_mix32d_control_register;
 static struct qemu_plugin_register *tcg_mix32e_control_register;
 static struct qemu_plugin_register *tcg_mix32f_control_register;
 static struct qemu_plugin_register *tcg_mix32g_control_register;
+static struct qemu_plugin_register *tcg_emac256_control_register;
 static GHashTable *footprint;
 static GHashTable *touched_bytes;
 static GPtrArray *pages;
@@ -120,6 +121,7 @@ static bool candidate_mix32f;
 static bool candidate_tcg_mix32f;
 static bool candidate_mix32g;
 static bool candidate_tcg_mix32g;
+static bool candidate_tcg_emac256;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -167,6 +169,9 @@ static uint64_t runtime_fallbacks;
 #define MIX32G_START_PC 0x40108ef8
 #define MIX32G_END_PC   0x40108f2a
 #define MIX32G_EXIT_PC  0x40108f2c
+#define EMAC256_START_PC 0x40108e10
+#define EMAC256_END_PC   0x40108e58
+#define EMAC256_EXIT_PC  0x40108e5a
 #define MACSR_PAV0     0x100
 #define MACSR_OMC      0x080
 #define MACSR_SU       0x040
@@ -451,6 +456,18 @@ static bool write_tcg_mix32g_control(uint32_t raw)
     return qemu_plugin_write_register(tcg_mix32g_control_register, value);
 }
 
+static bool write_tcg_emac256_control(uint32_t raw)
+{
+    g_autoptr(GByteArray) value = g_byte_array_sized_new(4);
+    uint32_t be = GUINT32_TO_BE(raw);
+
+    if (!tcg_emac256_control_register) {
+        return false;
+    }
+    g_byte_array_append(value, (uint8_t *)&be, sizeof(be));
+    return qemu_plugin_write_register(tcg_emac256_control_register, value);
+}
+
 static bool read_tcg_control(uint32_t *result)
 {
     g_autoptr(GByteArray) value = g_byte_array_new();
@@ -638,6 +655,21 @@ static bool read_tcg_mix32g_control(uint32_t *result)
 
     if (!tcg_mix32g_control_register ||
         !qemu_plugin_read_register(tcg_mix32g_control_register, value) ||
+        value->len != sizeof(raw)) {
+        return false;
+    }
+    memcpy(&raw, value->data, sizeof(raw));
+    *result = GUINT32_FROM_BE(raw);
+    return true;
+}
+
+static bool read_tcg_emac256_control(uint32_t *result)
+{
+    g_autoptr(GByteArray) value = g_byte_array_new();
+    uint32_t raw;
+
+    if (!tcg_emac256_control_register ||
+        !qemu_plugin_read_register(tcg_emac256_control_register, value) ||
         value->len != sizeof(raw)) {
         return false;
     }
@@ -1900,6 +1932,7 @@ static bool access_equal(const Access *a, const Access *b)
 {
     if ((!candidate_tcg && !candidate_tcg_transform && !candidate_tcg_outer &&
          !candidate_tcg_emac32 && !candidate_tcg_polyphase32 &&
+         !candidate_tcg_emac256 &&
          a->pc != b->pc) ||
         a->address != b->address ||
         a->size != b->size || a->store != b->store ||
@@ -1967,7 +2000,7 @@ static void write_report(bool complete)
                          !candidate_tcg_mix32d && !candidate_mix32e &&
                          !candidate_tcg_mix32e && !candidate_mix32f &&
                          !candidate_tcg_mix32f && !candidate_mix32g &&
-                         !candidate_tcg_mix32g) ||
+                         !candidate_tcg_mix32g && !candidate_tcg_emac256) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -1999,6 +2032,7 @@ static void write_report(bool complete)
          candidate_tcg_mix32f ? "PASS_NATIVE_MIX32F_TCG" :
          candidate_mix32g ? "PASS_NATIVE_MIX32G_CANDIDATE" :
          candidate_tcg_mix32g ? "PASS_NATIVE_MIX32G_TCG" :
+         candidate_tcg_emac256 ? "PASS_NATIVE_EMAC256_TCG" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -2048,7 +2082,8 @@ static void write_report(bool complete)
             candidate_mix32f ? "mix32f" :
             candidate_tcg_mix32f ? "tcg-mix32f" :
             candidate_mix32g ? "mix32g" :
-            candidate_tcg_mix32g ? "tcg-mix32g" : "native-shadow",
+            candidate_tcg_mix32g ? "tcg-mix32g" :
+            candidate_tcg_emac256 ? "tcg-emac256" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
@@ -2174,7 +2209,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
                        candidate_tcg_polyphase32b || candidate_tcg_mix32b ||
                        candidate_tcg_mix32c || candidate_tcg_mix32d ||
                        candidate_tcg_mix32e || candidate_tcg_mix32f ||
-                       candidate_tcg_mix32g) {
+                       candidate_tcg_mix32g || candidate_tcg_emac256) {
                 candidate_attempted = true;
             }
         }
@@ -2237,7 +2272,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
             (candidate_tcg_mix32d && !write_tcg_mix32d_control(2)) ||
             (candidate_tcg_mix32e && !write_tcg_mix32e_control(2)) ||
             (candidate_tcg_mix32f && !write_tcg_mix32f_control(2)) ||
-            (candidate_tcg_mix32g && !write_tcg_mix32g_control(2))) {
+            (candidate_tcg_mix32g && !write_tcg_mix32g_control(2)) ||
+            (candidate_tcg_emac256 && !write_tcg_emac256_control(2))) {
             candidate_fallback = true;
             phase = PHASE_DONE;
             write_report(true);
@@ -2249,7 +2285,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
             candidate_tcg_mix32 || candidate_tcg_polyphase32b ||
             candidate_tcg_mix32b || candidate_tcg_mix32c ||
             candidate_tcg_mix32d || candidate_tcg_mix32e ||
-            candidate_tcg_mix32f || candidate_tcg_mix32g) {
+            candidate_tcg_mix32f || candidate_tcg_mix32g ||
+            candidate_tcg_emac256) {
             candidate_attempted = true;
             active = true;
         }
@@ -2263,7 +2300,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
             candidate_tcg_mix32 || candidate_tcg_polyphase32b ||
             candidate_tcg_mix32b || candidate_tcg_mix32c ||
             candidate_tcg_mix32d || candidate_tcg_mix32e ||
-            candidate_tcg_mix32f || candidate_tcg_mix32g) {
+            candidate_tcg_mix32f || candidate_tcg_mix32g ||
+            candidate_tcg_emac256) {
             uint32_t control;
 
             candidate_executed =
@@ -2282,7 +2320,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
                  candidate_tcg_mix32d ? read_tcg_mix32d_control(&control) :
                  candidate_tcg_mix32e ? read_tcg_mix32e_control(&control) :
                  candidate_tcg_mix32f ? read_tcg_mix32f_control(&control) :
-                 read_tcg_mix32g_control(&control)) && control == 0;
+                 candidate_tcg_mix32g ? read_tcg_mix32g_control(&control) :
+                 read_tcg_emac256_control(&control)) && control == 0;
             candidate_fallback = !candidate_executed;
         }
         access_match = ((candidate_inner || candidate_transform ||
@@ -2405,6 +2444,11 @@ static void vcpu_init(unsigned int cpu_index, void *userdata)
             g_free(reg);
             continue;
         }
+        if (!strcmp(desc->name, "ar_audio_emac256_control")) {
+            tcg_emac256_control_register = desc->handle;
+            g_free(reg);
+            continue;
+        }
         reg->handle = desc->handle;
         reg->name = g_strdup(desc->name);
         reg->readonly = desc->is_readonly;
@@ -2505,6 +2549,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_mix32g = true;
         } else if (!strcmp(argv[i], "candidate=tcg-mix32g")) {
             candidate_tcg_mix32g = true;
+        } else if (!strcmp(argv[i], "candidate=tcg-emac256")) {
+            candidate_tcg_emac256 = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -2532,6 +2578,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
          candidate_tcg_mix32c + candidate_mix32d + candidate_tcg_mix32d +
          candidate_mix32e + candidate_tcg_mix32e + candidate_mix32f +
          candidate_tcg_mix32f + candidate_mix32g + candidate_tcg_mix32g +
+         candidate_tcg_emac256 +
          runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
@@ -2684,6 +2731,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != MIX32G_START_PC || end_pc != MIX32G_END_PC ||
          exit_pc != MIX32G_EXIT_PC)) {
         fprintf(stderr, "mix32g TCG candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_tcg_emac256 &&
+        (start_pc != EMAC256_START_PC || end_pc != EMAC256_END_PC ||
+         exit_pc != EMAC256_EXIT_PC)) {
+        fprintf(stderr, "EMAC256 TCG candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

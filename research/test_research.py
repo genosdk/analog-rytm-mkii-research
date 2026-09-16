@@ -793,6 +793,39 @@ class QemuAudioEdmaTests(unittest.TestCase):
             / "0017-m68k-add-ar-audio-mix32g-tcg-helper.patch"
         ).read_text(encoding="utf-8")
         self.assertIn("DEF_HELPER_1(ar_audio_mix32g, i32, env)", mix32g_patch)
+        emac256 = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_EMAC256_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            emac256["status"], "PASS_NATIVE_HANDOFF_EMAC256_BOUNDARY"
+        )
+        self.assertEqual(emac256["selected_loop"]["native_events_per_call"], 1064)
+        self.assertEqual(emac256["same_process_replay"]["registers"], 35)
+        self.assertTrue(emac256["same_process_replay"]["touched_memory_match"])
+        emac256_tcg = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_EMAC256_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            emac256_tcg["status"],
+            "PASS_CORRECT_52PCT_INSTRUCTION_REDUCTION",
+        )
+        self.assertEqual(emac256_tcg["same_process_oracle"]["native_events"], 1064)
+        self.assertEqual(
+            emac256_tcg["exact_vector_191_profile"]
+                       ["fourteen_helpers_guest_instructions"],
+            12315103,
+        )
+        emac256_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0018-m68k-add-ar-audio-emac256-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DEF_HELPER_1(ar_audio_emac256, i32, env)", emac256_patch)
         polyphase32b_patch = (
             ROOT
             / "qemu"
@@ -812,6 +845,9 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("qemu_plugin_set_pc(start_pc)", shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-inner")', shadow_plugin)
+        self.assertIn(
+            '!strcmp(argv[i], "candidate=tcg-emac256")', shadow_plugin
+        )
         self.assertIn('!strcmp(argv[i], "candidate=transform")', shadow_plugin)
         self.assertIn(
             '!strcmp(argv[i], "candidate=tcg-transform")', shadow_plugin

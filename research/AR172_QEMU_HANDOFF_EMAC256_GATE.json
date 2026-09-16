@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_EMAC256_GATE",
+  "recorded_at_utc": "2026-09-16",
+  "status": "PASS_NATIVE_HANDOFF_EMAC256_BOUNDARY",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all thirteen prior TCG helpers enabled",
+    "completed_services": 100,
+    "thirteen_helper_isr_guest_instructions": 12366946,
+    "remaining_handoff_leaf_guest_instructions": 209800
+  },
+  "selected_loop": {
+    "entry_pc": "0x40108E10",
+    "inclusive_native_window": "0x40108E10..0x40108E58",
+    "exit_pc": "0x40108E5A",
+    "outer_iterations_per_call": 8,
+    "inner_iterations_per_outer_iteration": 32,
+    "calls_per_vector_191_service": 1,
+    "native_events_per_call": 1064,
+    "native_events_per_outer_iteration": 133,
+    "footprint_pages": 2,
+    "touched_bytes": 1256,
+    "role": "eight-pass saturated-fractional EMAC wrapper around the previously validated 32-iteration core"
+  },
+  "same_process_replay": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "native_events_per_call": 1064,
+    "shadow_events_per_call": 1064,
+    "registers": 35,
+    "access_address_type_value_match": true,
+    "exit_register_match": true,
+    "early_cursor_required_stable_calls": 8,
+    "late_cursor_required_stable_calls": 16,
+    "footprint_pages": 2,
+    "touched_bytes": 1256,
+    "touched_memory_match": true
+  },
+  "event_accounting": {
+    "setup_loads_per_outer_iteration": 3,
+    "inner_accesses_per_outer_iteration": 128,
+    "final_stores_per_outer_iteration": 2,
+    "formula": "8 * (3 + 128 + 2) = 1064"
+  },
+  "conclusion": "The remaining handoff leaf contains a replayable eight-pass EMAC wrapper. Native replay matches its complete ordered memory stream, all 35 registers, and every touched byte at two cursor horizons.",
+  "next_gate": "Promote the wrapper to a fourteenth guarded direct-state TCG helper and measure its exact incremental reduction.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room topology and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}

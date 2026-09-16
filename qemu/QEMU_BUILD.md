@@ -49,6 +49,8 @@ patch -p1 < /path/to/0015-m68k-add-ar-audio-mix32e-tcg-helper.patch
 patch -p1 < /path/to/0016-m68k-add-ar-audio-mix32f-tcg-helper.patch
 # Add the disabled-by-default second pipelined single-output mix helper.
 patch -p1 < /path/to/0017-m68k-add-ar-audio-mix32g-tcg-helper.patch
+# Add the disabled-by-default eight-pass EMAC wrapper helper.
+patch -p1 < /path/to/0018-m68k-add-ar-audio-emac256-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -87,6 +89,8 @@ The sixteenth adds the pipelined two-output saturated 32-iteration mix helper,
 enabled only by `AR_MK2_AUDIO_MIX32F_TCG=1`.
 The seventeenth adds the second pipelined single-output saturated mix helper,
 enabled only by `AR_MK2_AUDIO_MIX32G_TCG=1`.
+The eighteenth adds the eight-pass saturated fractional EMAC wrapper helper,
+enabled only by `AR_MK2_AUDIO_EMAC256_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -598,6 +602,23 @@ instructions: 156,657 fewer than twelve helpers and 13,411,200 fewer than
 native, for a combined reduction of 52.03%. The nested handoff leaf is now
 209,800 instructions per 100 services. Held-audio release retained its exact
 eight-service tail and responsive UI.
+
+With all thirteen helpers enabled, the remaining handoff leaf is 209,800 guest
+instructions per 100 services. Its largest independently replayable boundary
+is the eight-pass saturated-fractional EMAC wrapper at
+`0x40108E10..0x40108E58`, exiting at `0x40108E5A`. Each pass performs three
+setup loads, the previously validated 32-iteration EMAC core, and two final
+stores. Native replay at `stable=8` and `stable=16` matched all 1,064 ordered
+accesses, all 35 registers, and all 1,256 touched bytes on two pages.
+
+Patch 0018 promotes that wrapper to the fourteenth guarded direct-state helper.
+Explicit-arm oracles at both cursor horizons matched every ordered access, all
+35 registers, and every touched byte without fallback. The exact 100-service
+ISR profile with all fourteen helpers is 12,315,103 guest instructions: 51,843
+fewer than thirteen helpers and 13,463,043 fewer than native, for a combined
+reduction of 52.23%. Held-audio release retained its exact eight-service tail,
+nonzero host audio, and responsive UI. The next gate is a fresh bounded profile
+of the remaining handoff leaf with all fourteen helpers enabled.
 
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_EMAC256_TCG_GATE",
+  "recorded_at_utc": "2026-09-16",
+  "status": "PASS_CORRECT_52PCT_INSTRUCTION_REDUCTION",
+  "implementation": {
+    "patch": "qemu/patches/0018-m68k-add-ar-audio-emac256-tcg-helper.patch",
+    "machine_source": "qemu/hw/m68k/elektron_ar_mk2.c",
+    "mode": "AR_MK2_AUDIO_EMAC256_TCG=1",
+    "default_enabled": false,
+    "transport": "eight-pass saturated-fractional EMAC helper with direct CPU-state and guest-memory access",
+    "fallback": "Execute the native translated wrapper unless the control, D3=8 outer count, saturated fractional EMAC mode, and full-mask guards all pass."
+  },
+  "same_process_oracle": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all thirteen prior TCG helpers enabled",
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "early_cursor_required_stable_calls": 8,
+    "late_cursor_required_stable_calls": 16,
+    "native_events": 1064,
+    "accelerated_events": 1064,
+    "access_address_type_value_match": true,
+    "access_pc_comparison_applicable": false,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 2,
+    "touched_bytes": 1256,
+    "touched_memory_match": true,
+    "candidate_fallback": false
+  },
+  "exact_vector_191_profile": {
+    "completed_services": 100,
+    "native_guest_instructions": 25778146,
+    "thirteen_helpers_guest_instructions": 12366946,
+    "fourteen_helpers_guest_instructions": 12315103,
+    "emac256_incremental_removed_instructions": 51843,
+    "emac256_incremental_reduction_percent": 0.419,
+    "combined_removed_instructions": 13463043,
+    "combined_reduction_percent": 52.227,
+    "release_tail_services": 8,
+    "stopped_after_release": true,
+    "nonzero_host_audio": true,
+    "ui_responsive": true
+  },
+  "handoff_residual": {
+    "thirteen_helpers_guest_instructions": 209800,
+    "derived_fourteen_helper_upper_bound": 157957,
+    "note": "The exact full-ISR delta is entirely inside this leaf; a fresh bounded leaf profile remains the next selection gate."
+  },
+  "conclusion": "The fourteenth guarded direct-state helper matches the native eight-pass EMAC wrapper at two cursor positions and lowers the exact 100-service ISR profile by 52.23% relative to native execution.",
+  "next_gate": "Reprofile the remaining handoff leaf with all fourteen helpers and select the next independently replayable deterministic boundary.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room bounded arithmetic and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}
