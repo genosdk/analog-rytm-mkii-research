@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_DESKTOP_FIRMWARE_IDENTITY_GATE",
+  "recorded_at_utc": "2026-09-16",
+  "status": "PASS_DUAL_ARCH_PACKAGED_FIRMWARE_IDENTITY",
+  "repository": "genosdk/analog-rytm-mkii-research",
+  "implementation": {
+    "commit": "cff8498700549039a8d555cdc360e655993d0378",
+    "commit_url": "https://github.com/genosdk/analog-rytm-mkii-research/commit/cff8498700549039a8d555cdc360e655993d0378",
+    "launcher": "qemu/run_desktop_emulator.py",
+    "panel": "qemu/desktop_panel.py",
+    "workflow": ".github/workflows/package-macos-app.yml"
+  },
+  "workflow_run": {
+    "id": 35057744335,
+    "number": 25,
+    "url": "https://github.com/genosdk/analog-rytm-mkii-research/actions/runs/35057744335",
+    "event": "workflow_dispatch",
+    "head_branch": "restore-filter2-controller",
+    "head_sha": "cff8498700549039a8d555cdc360e655993d0378",
+    "conclusion": "success"
+  },
+  "jobs": [
+    {
+      "id": 104671355639,
+      "runner": "macos-15",
+      "architecture": "arm64",
+      "started_at": "2026-09-16T04:59:49Z",
+      "completed_at": "2026-09-16T05:02:19Z",
+      "conclusion": "success",
+      "packaged_identity_smoke_test": "success",
+      "enforced_artifact_audit": "success",
+      "artifact_upload": "success"
+    },
+    {
+      "id": 104671355748,
+      "runner": "macos-15-intel",
+      "architecture": "x86_64",
+      "started_at": "2026-09-16T04:59:47Z",
+      "completed_at": "2026-09-16T05:05:27Z",
+      "conclusion": "success",
+      "packaged_identity_smoke_test": "success",
+      "enforced_artifact_audit": "success",
+      "artifact_upload": "success"
+    }
+  ],
+  "artifacts": {
+    "arm64": {
+      "id": 10431142683,
+      "name": "AR-MKII-Emulator-macOS-arm64",
+      "size_in_bytes": 20642383,
+      "digest": "sha256:32292c76f92a94397a2732438b4e0616017044b57fa7afe071f81732bbddc9bc",
+      "expires_at": "2026-10-16T05:02:12Z"
+    },
+    "x86_64": {
+      "id": 10430404772,
+      "name": "AR-MKII-Emulator-macOS-x86_64",
+      "size_in_bytes": 21972394,
+      "digest": "sha256:1140e87969f3d225e1b239f1dbf85cd326199902a7bbb2e2012db12ed5d76fda",
+      "expires_at": "2026-10-16T05:05:18Z"
+    }
+  },
+  "packaged_identity_assertions": [
+    "the permanent status-strip identity is independent of transient control status",
+    "the native window title repeats the resolved firmware identity",
+    "exact verified OS 1.72 displays OS 1.72 / FILTER 2 + LFO2 VERIFIED",
+    "exact OS 1.72 with the extension disabled displays OS 1.72 / STOCK MODE / EXTENSION OFF",
+    "an accepted versioned unverified update displays OS 1.73 / UNCHANGED STOCK FALLBACK",
+    "the frozen native-Tk self-test validates identity storage and window-title composition",
+    "both uploaded packages pass the architecture, signature-seal and firmware-exclusion audit"
+  ],
+  "safety_boundary": "The packages contain no Elektron firmware. Identity is derived only after the existing transactional preparation and compatibility decision; it does not relax exact-digest extension gating or modify an accepted unchanged-stock MAIN.",
+  "scope_limit": "This gate proves the firmware identity presentation contract executes in the frozen native-Tk frontend on both supported macOS architectures and that both packages pass the existing artifact audit. Synthetic CI fixtures do not boot proprietary firmware, and this gate does not claim physical-hardware compatibility, Apple Developer ID notarization, or recovered FPGA pin routing."
+}

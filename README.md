@@ -305,6 +305,8 @@ one transaction, so the verified candidate, unchanged-stock fallback and every
 pre-QEMU failure share the same cleanup policy. The permanent host status strip
 and window title show the loaded OS identity and whether the session is the
 verified extension, explicit stock mode, or unchanged-stock fallback.
+The dual-architecture packaged proof is recorded in
+`research/AR172_DESKTOP_FIRMWARE_IDENTITY_GATE.json`.
 
 ## Railway dashboard
 

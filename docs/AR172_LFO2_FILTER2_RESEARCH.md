@@ -766,6 +766,9 @@ ELE3 version and resolved compatibility mode into the native panel; a permanent
 status-strip label and the window title distinguish verified 1.72 extension,
 exact-1.72 stock mode, and versioned unchanged-stock fallback. Native Tk
 self-test assertions cover both label storage and title composition.
+Workflow run 35057744335 passes that frozen identity test, enforced artifact
+audit and upload on both macOS 15 arm64 and Intel. Evidence is in
+`research/AR172_DESKTOP_FIRMWARE_IDENTITY_GATE.json`.
 
 The desktop state endpoint now reports actual per-lane emulator phase,
 increment, depth, modulation, effective target, random index and enable/trigger
