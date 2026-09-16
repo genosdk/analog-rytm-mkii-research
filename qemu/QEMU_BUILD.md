@@ -51,6 +51,8 @@ patch -p1 < /path/to/0016-m68k-add-ar-audio-mix32f-tcg-helper.patch
 patch -p1 < /path/to/0017-m68k-add-ar-audio-mix32g-tcg-helper.patch
 # Add the disabled-by-default eight-pass EMAC wrapper helper.
 patch -p1 < /path/to/0018-m68k-add-ar-audio-emac256-tcg-helper.patch
+# Add the disabled-by-default scalar handoff helper.
+patch -p1 < /path/to/0019-m68k-add-ar-audio-scalar49-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -91,6 +93,8 @@ The seventeenth adds the second pipelined single-output saturated mix helper,
 enabled only by `AR_MK2_AUDIO_MIX32G_TCG=1`.
 The eighteenth adds the eight-pass saturated fractional EMAC wrapper helper,
 enabled only by `AR_MK2_AUDIO_EMAC256_TCG=1`.
+The nineteenth adds the scalar handoff helper, enabled only by
+`AR_MK2_AUDIO_SCALAR49_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -211,6 +215,12 @@ plugin reports the 100 hottest translated blocks after 100 completed
 entry/stop windows. Override `start` and `stop` to measure a nested routine;
 set `stop=0` to let the following entry close a continuous window. It records
 addresses and counts only; it never reads guest memory.
+
+Add `exact=1` when a guarded helper branches out of the middle of a translated
+block. Exact mode attaches execution callbacks to individual guest
+instructions and reports the executed count without a hottest-block table.
+This avoids charging decoded but unexecuted successor instructions to the
+accelerated boundary.
 
 For whole-kernel differential work, build the contract plugin against the same
 pinned QEMU tree:
@@ -650,6 +660,18 @@ therefore use instruction-execution callbacks or split that translation
 boundary instead of treating all 4,900 TB-attributed instructions as removable.
 Promotion of this scalar candidate with execution-accurate accounting is the
 next gate.
+
+Patch 0019 promotes the scalar boundary to the fifteenth guarded direct-state
+helper. Explicit-arm oracles at `stable=8` and `stable=40` matched all 14
+ordered accesses, all 35 registers, and all 52 touched bytes without fallback.
+Execution-accurate profiles over 100 services count 4,182,994 instructions
+with fourteen helpers and 4,179,694 with all fifteen, removing exactly 3,300
+executed instructions (33 per call). The corresponding nested handoff leaf
+drops from 24,100 to 20,800 instructions. An execution-accurate native ISR
+baseline is 6,486,425 instructions, so the fifteen helpers remove 2,306,731
+instructions, or 35.56%. Held-audio release retained its exact eight-service
+tail, nonzero host audio, and responsive UI. The next gate is a fresh exact
+profile of the remaining 20,800-instruction handoff leaf.
 
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its

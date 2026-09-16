@@ -902,6 +902,14 @@ static void elektron_ar_mk2_init(MachineState *machine)
         env->ar_audio_emac256_control = env->ar_audio_emac256_accel &&
             !(defer && *defer && strcmp(defer, "0"));
     }
+    {
+        const char *accel = g_getenv("AR_MK2_AUDIO_SCALAR49_TCG");
+        const char *defer = g_getenv("AR_MK2_AUDIO_SCALAR49_TCG_DEFER");
+
+        env->ar_audio_scalar49_accel = accel && *accel && strcmp(accel, "0");
+        env->ar_audio_scalar49_control = env->ar_audio_scalar49_accel &&
+            !(defer && *defer && strcmp(defer, "0"));
+    }
 
     /* External SDRAM. */
     memory_region_add_subregion(sysmem, AR_SDRAM_BASE, machine->ram);

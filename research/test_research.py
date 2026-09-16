@@ -864,6 +864,35 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertEqual(scalar49["same_process_oracle"]["native_events"], 14)
         self.assertEqual(scalar49["same_process_oracle"]["registers"], 35)
         self.assertTrue(scalar49["same_process_oracle"]["touched_memory_match"])
+        scalar49_tcg = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_SCALAR49_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            scalar49_tcg["status"],
+            "PASS_CORRECT_EXECUTION_ACCURATE_REDUCTION",
+        )
+        self.assertEqual(
+            scalar49_tcg["same_process_oracle"]["native_events"], 14
+        )
+        self.assertEqual(
+            scalar49_tcg["exact_instruction_profile"]
+                        ["scalar49_incremental_removed_instructions"],
+            3300,
+        )
+        self.assertEqual(
+            scalar49_tcg["exact_instruction_profile"]
+                        ["fifteen_helpers_guest_instructions"],
+            4179694,
+        )
+        scalar49_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0019-m68k-add-ar-audio-scalar49-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DEF_HELPER_1(ar_audio_scalar49, i32, env)", scalar49_patch)
         polyphase32b_patch = (
             ROOT
             / "qemu"
@@ -883,6 +912,9 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertIn("qemu_plugin_set_pc(start_pc)", shadow_plugin)
         self.assertIn(
             '!strcmp(argv[i], "candidate=scalar49")', shadow_plugin
+        )
+        self.assertIn(
+            '!strcmp(argv[i], "candidate=tcg-scalar49")', shadow_plugin
         )
         self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-inner")', shadow_plugin)
@@ -1289,6 +1321,8 @@ class DesktopPanelInputTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("qemu_plugin_tb_vaddr", plugin)
+        self.assertIn("qemu_plugin_register_vcpu_insn_exec_cb", plugin)
+        self.assertIn('!strcmp(argv[i], "exact=1")', plugin)
         self.assertNotIn("qemu_plugin_read_memory", plugin)
 
 

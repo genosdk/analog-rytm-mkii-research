@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <qemu-plugin.h>
 #include <stdio.h>
+#include <string.h>
 
 QEMU_PLUGIN_EXPORT int qemu_plugin_version = QEMU_PLUGIN_VERSION;
 
@@ -26,6 +27,7 @@ static uint64_t services;
 static uint64_t completed;
 static uint64_t total_insns;
 static bool reported;
+static bool exact_mode;
 
 static gint compare_blocks(gconstpointer a, gconstpointer b)
 {
@@ -45,11 +47,13 @@ static void report(void)
 
     values = g_list_sort(values, compare_blocks);
     g_string_append_printf(out,
-                           "audio-window services=%" PRIu64
+                           "audio-window mode=%s services=%" PRIu64
                            " completed=%" PRIu64 " counted=%" PRIu64
                            " instructions=%" PRIu64 "\n",
-                           services, completed, service_limit, total_insns);
-    for (GList *it = values; it && n < 100; it = it->next, n++) {
+                           exact_mode ? "exact" : "tb", services, completed,
+                           service_limit, total_insns);
+    for (GList *it = exact_mode ? NULL : values;
+         it && n < 100; it = it->next, n++) {
         Block *block = it->data;
 
         if (!block->count) {
@@ -64,6 +68,32 @@ static void report(void)
     qemu_plugin_outs(out->str);
     g_list_free(values);
     reported = true;
+}
+
+static void count_exact(unsigned int cpu_index, void *userdata)
+{
+    uint64_t pc = (uintptr_t)userdata;
+
+    if (stop_pc && pc == stop_pc &&
+        qemu_plugin_u64_get(active_score, cpu_index)) {
+        qemu_plugin_u64_set(active_score, cpu_index, 0);
+        completed++;
+        if (completed == service_limit && !reported) {
+            report();
+        }
+        return;
+    }
+    if (pc == start_pc) {
+        services++;
+        qemu_plugin_u64_set(active_score, cpu_index,
+                            services <= service_limit);
+        if (!stop_pc && services > service_limit && !reported) {
+            report();
+        }
+    }
+    if (qemu_plugin_u64_get(active_score, cpu_index)) {
+        total_insns++;
+    }
 }
 
 static void count_block(unsigned int cpu_index, void *userdata)
@@ -106,9 +136,23 @@ static void boundary(unsigned int cpu_index, void *userdata)
 static void translate(struct qemu_plugin_tb *tb, void *userdata)
 {
     uint64_t pc = qemu_plugin_tb_vaddr(tb);
-    Block *block = g_hash_table_lookup(blocks, &pc);
+    Block *block;
 
     (void)userdata;
+    if (exact_mode) {
+        size_t count = qemu_plugin_tb_n_insns(tb);
+
+        for (size_t i = 0; i < count; i++) {
+            struct qemu_plugin_insn *insn = qemu_plugin_tb_get_insn(tb, i);
+            uint64_t insn_pc = qemu_plugin_insn_vaddr(insn);
+
+            qemu_plugin_register_vcpu_insn_exec_cb(
+                insn, count_exact, QEMU_PLUGIN_CB_NO_REGS,
+                (void *)(uintptr_t)insn_pc);
+        }
+        return;
+    }
+    block = g_hash_table_lookup(blocks, &pc);
     if (!block) {
         block = g_new0(Block, 1);
         block->pc = pc;
@@ -147,6 +191,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             stop_pc = g_ascii_strtoull(argv[i] + 5, NULL, 0);
         } else if (g_str_has_prefix(argv[i], "services=")) {
             service_limit = g_ascii_strtoull(argv[i] + 9, NULL, 0);
+        } else if (!strcmp(argv[i], "exact=1")) {
+            exact_mode = true;
         } else {
             fprintf(stderr, "unknown audio-window option: %s\n", argv[i]);
             return -1;
