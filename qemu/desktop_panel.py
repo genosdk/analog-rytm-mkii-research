@@ -1090,11 +1090,6 @@ def skin_runtime_self_test(frame_file: Path, event_file: Path) -> None:
             raise RuntimeError("Tk did not preserve firmware identity")
         if "OS 1.72" not in root.title() or "FILTER 2 + LFO2" not in root.title():
             raise RuntimeError("Tk title omitted firmware compatibility mode")
-        if panel.lfo2_wave_button.cget("foreground") != BUTTON_TEXT:
-            raise RuntimeError("drawer button text does not match native contrast")
-        if panel.lfo2_lane_buttons[1].cget("foreground") != BUTTON_TEXT:
-            raise RuntimeError("drawer lane text does not match native contrast")
-
         specs = active_crop_specs()
         if set(panel.active_photos) != {key for key, _rect, _margin in specs}:
             raise RuntimeError("Tk did not construct every photographic overlay")
@@ -1146,6 +1141,16 @@ def skin_runtime_self_test(frame_file: Path, event_file: Path) -> None:
             raise RuntimeError("Tk did not construct the Filter 2/LFO2 drawer")
         drawer.withdraw()
         root.update_idletasks()
+        if (
+            panel.lfo2_wave_button is None
+            or panel.lfo2_wave_button.cget("foreground") != BUTTON_TEXT
+        ):
+            raise RuntimeError("drawer button text does not match native contrast")
+        if (
+            len(panel.lfo2_lane_buttons) < 2
+            or panel.lfo2_lane_buttons[1].cget("foreground") != BUTTON_TEXT
+        ):
+            raise RuntimeError("drawer lane text does not match native contrast")
 
         descendants = list(drawer.winfo_children())
         for widget in descendants:
