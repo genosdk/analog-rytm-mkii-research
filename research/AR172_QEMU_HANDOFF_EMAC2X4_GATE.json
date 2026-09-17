@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_EMAC2X4_GATE",
+  "recorded_at_utc": "2026-09-17",
+  "status": "PASS_NATIVE_HANDOFF_EMAC2X4_CANDIDATE",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all fifteen prior TCG helpers enabled",
+    "completed_services": 100,
+    "remaining_handoff_leaf_guest_instructions": 20800,
+    "unique_executed_instruction_pcs": 194,
+    "only_repeated_segment": "0x40108D68..0x40108D8A",
+    "segment_executions_per_service": 2
+  },
+  "selected_boundary": {
+    "entry_pc": "0x40108D68",
+    "inclusive_native_window": "0x40108D68..0x40108D8A",
+    "exit_pc": "0x40108D8C",
+    "calls_per_vector_191_service": 1,
+    "loop_iterations_per_call": 2,
+    "executed_native_instructions_per_call": 28,
+    "native_events_per_call": 16,
+    "footprint_pages": 1,
+    "touched_bytes": 60,
+    "role": "two-iteration four-lane EMAC handoff loop"
+  },
+  "transactional_candidate": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "mode": "candidate=emac2x4",
+    "candidate_guest_accesses": 0,
+    "candidate_fallback": false,
+    "modeled_operations": [
+      "eight ordered input loads and post-increment updates",
+      "four fractional saturated accumulators per iteration",
+      "QEMU-identical fractional accumulator extraction and clear",
+      "eight transactional output stores",
+      "loop-counter and final ColdFire condition-code state"
+    ]
+  },
+  "same_process_oracle": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "native_events": 16,
+    "candidate_events": 0,
+    "access_comparison_applicable": false,
+    "registers": 35,
+    "exit_register_match": true,
+    "footprint_pages": 1,
+    "touched_bytes": 60,
+    "touched_memory_match": true,
+    "early_cursor": {
+      "required_stable_calls": 8,
+      "discovery_calls": 8
+    },
+    "late_cursor": {
+      "required_stable_calls": 40,
+      "discovery_calls": 40
+    }
+  },
+  "verifier_correction": {
+    "primitive": "inner_movclr",
+    "finding": "The first candidate run exposed that the shared model truncated the accumulator directly instead of applying QEMU's fractional extraction, rounding, and OMC saturation semantics.",
+    "result": "Mirroring QEMU get_macf semantics makes both cursor horizons identical and strengthens every verifier candidate using the shared primitive."
+  },
+  "conclusion": "The exact per-PC profile isolated the residual leaf's only repeated segment, and its transactional clean-room reconstruction matches all 35 registers and all 60 touched bytes at early and late horizons without fallback.",
+  "next_gate": "Promote emac2x4 to a sixteenth guarded direct-state helper, then measure its exact 100-service reduction and held-audio behavior.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room topology and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}

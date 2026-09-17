@@ -218,9 +218,11 @@ addresses and counts only; it never reads guest memory.
 
 Add `exact=1` when a guarded helper branches out of the middle of a translated
 block. Exact mode attaches execution callbacks to individual guest
-instructions and reports the executed count without a hottest-block table.
-This avoids charging decoded but unexecuted successor instructions to the
-accelerated boundary.
+instructions and reports both the executed total and per-PC counts. Use
+`entries=N` to change the reported-PC limit from its default of 100. This
+avoids charging decoded but unexecuted successor instructions to the
+accelerated boundary and exposes short repeated segments inside an otherwise
+single-pass residual.
 
 For whole-kernel differential work, build the contract plugin against the same
 pinned QEMU tree:
@@ -672,6 +674,18 @@ baseline is 6,486,425 instructions, so the fifteen helpers remove 2,306,731
 instructions, or 35.56%. Held-audio release retained its exact eight-service
 tail, nonzero host audio, and responsive UI. The next gate is a fresh exact
 profile of the remaining 20,800-instruction handoff leaf.
+
+That exact per-PC profile contains 194 unique executed instruction addresses.
+Only the 14-instruction segment at `0x40108D68..0x40108D8A` repeats, running
+twice per service for 28 executed instructions and 16 ordered memory events.
+The verifier-only `candidate=emac2x4` reconstruction models its four fractional
+saturated accumulators, ordered loads, accumulator extraction and clearing,
+transactional stores, pointer updates, loop counter, and final condition codes.
+It also corrected the verifier's shared `inner_movclr` primitive to apply the
+same fractional extraction, rounding, and OMC saturation semantics as QEMU.
+Both `stable=8` and `stable=40` match all 35 registers and all 60 touched bytes
+on one page without fallback. Promotion to a sixteenth guarded direct-state
+helper is the next gate.
 
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its

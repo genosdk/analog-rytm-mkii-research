@@ -26,6 +26,7 @@ static uint64_t service_limit = 100;
 static uint64_t services;
 static uint64_t completed;
 static uint64_t total_insns;
+static uint64_t entry_limit = 100;
 static bool reported;
 static bool exact_mode;
 
@@ -36,7 +37,10 @@ static gint compare_blocks(gconstpointer a, gconstpointer b)
     uint64_t ia = ba->count * ba->insns;
     uint64_t ib = bb->count * bb->insns;
 
-    return ia < ib ? 1 : ia > ib ? -1 : 0;
+    if (ia != ib) {
+        return ia < ib ? 1 : -1;
+    }
+    return ba->pc > bb->pc ? 1 : ba->pc < bb->pc ? -1 : 0;
 }
 
 static void report(void)
@@ -52,8 +56,7 @@ static void report(void)
                            " instructions=%" PRIu64 "\n",
                            exact_mode ? "exact" : "tb", services, completed,
                            service_limit, total_insns);
-    for (GList *it = exact_mode ? NULL : values;
-         it && n < 100; it = it->next, n++) {
+    for (GList *it = values; it && n < entry_limit; it = it->next, n++) {
         Block *block = it->data;
 
         if (!block->count) {
@@ -72,7 +75,8 @@ static void report(void)
 
 static void count_exact(unsigned int cpu_index, void *userdata)
 {
-    uint64_t pc = (uintptr_t)userdata;
+    Block *block = userdata;
+    uint64_t pc = block->pc;
 
     if (stop_pc && pc == stop_pc &&
         qemu_plugin_u64_get(active_score, cpu_index)) {
@@ -92,6 +96,7 @@ static void count_exact(unsigned int cpu_index, void *userdata)
         }
     }
     if (qemu_plugin_u64_get(active_score, cpu_index)) {
+        block->count++;
         total_insns++;
     }
 }
@@ -146,9 +151,16 @@ static void translate(struct qemu_plugin_tb *tb, void *userdata)
             struct qemu_plugin_insn *insn = qemu_plugin_tb_get_insn(tb, i);
             uint64_t insn_pc = qemu_plugin_insn_vaddr(insn);
 
+            block = g_hash_table_lookup(blocks, &insn_pc);
+            if (!block) {
+                block = g_new0(Block, 1);
+                block->pc = insn_pc;
+                block->insns = 1;
+                g_hash_table_insert(blocks, &block->pc, block);
+            }
+
             qemu_plugin_register_vcpu_insn_exec_cb(
-                insn, count_exact, QEMU_PLUGIN_CB_NO_REGS,
-                (void *)(uintptr_t)insn_pc);
+                insn, count_exact, QEMU_PLUGIN_CB_NO_REGS, block);
         }
         return;
     }
@@ -191,6 +203,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             stop_pc = g_ascii_strtoull(argv[i] + 5, NULL, 0);
         } else if (g_str_has_prefix(argv[i], "services=")) {
             service_limit = g_ascii_strtoull(argv[i] + 9, NULL, 0);
+        } else if (g_str_has_prefix(argv[i], "entries=")) {
+            entry_limit = g_ascii_strtoull(argv[i] + 8, NULL, 0);
         } else if (!strcmp(argv[i], "exact=1")) {
             exact_mode = true;
         } else {
@@ -198,7 +212,7 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             return -1;
         }
     }
-    if (!start_pc || !service_limit) {
+    if (!start_pc || !service_limit || !entry_limit) {
         return -1;
     }
     blocks = g_hash_table_new_full(g_int64_hash, g_int64_equal, NULL, g_free);

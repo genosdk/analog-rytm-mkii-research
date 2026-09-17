@@ -886,6 +886,28 @@ class QemuAudioEdmaTests(unittest.TestCase):
                         ["fifteen_helpers_guest_instructions"],
             4179694,
         )
+        emac2x4 = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_EMAC2X4_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            emac2x4["status"], "PASS_NATIVE_HANDOFF_EMAC2X4_CANDIDATE"
+        )
+        self.assertEqual(
+            emac2x4["profile"]["remaining_handoff_leaf_guest_instructions"],
+            20800,
+        )
+        self.assertEqual(
+            emac2x4["selected_boundary"]
+                    ["executed_native_instructions_per_call"],
+            28,
+        )
+        self.assertEqual(emac2x4["same_process_oracle"]["native_events"], 16)
+        self.assertEqual(emac2x4["same_process_oracle"]["registers"], 35)
+        self.assertTrue(
+            emac2x4["same_process_oracle"]["touched_memory_match"]
+        )
         scalar49_patch = (
             ROOT
             / "qemu"
@@ -915,6 +937,9 @@ class QemuAudioEdmaTests(unittest.TestCase):
         )
         self.assertIn(
             '!strcmp(argv[i], "candidate=tcg-scalar49")', shadow_plugin
+        )
+        self.assertIn(
+            '!strcmp(argv[i], "candidate=emac2x4")', shadow_plugin
         )
         self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-inner")', shadow_plugin)
@@ -1323,6 +1348,8 @@ class DesktopPanelInputTests(unittest.TestCase):
         self.assertIn("qemu_plugin_tb_vaddr", plugin)
         self.assertIn("qemu_plugin_register_vcpu_insn_exec_cb", plugin)
         self.assertIn('!strcmp(argv[i], "exact=1")', plugin)
+        self.assertIn('g_str_has_prefix(argv[i], "entries=")', plugin)
+        self.assertIn("block->count++", plugin)
         self.assertNotIn("qemu_plugin_read_memory", plugin)
 
 
