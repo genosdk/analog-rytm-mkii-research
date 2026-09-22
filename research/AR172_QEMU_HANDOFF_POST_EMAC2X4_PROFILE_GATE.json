@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_POST_EMAC2X4_PROFILE_GATE",
+  "recorded_at_utc": "2026-09-22",
+  "status": "PASS_EXACT_UNIFORM_RESIDUAL_AND_COMPOSITE_SELECTION",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all sixteen prior TCG helpers enabled",
+    "counter": "per-instruction execution callbacks",
+    "completed_services": 100,
+    "remaining_handoff_leaf_guest_instructions": 18100,
+    "remaining_handoff_leaf_guest_instructions_per_service": 181,
+    "unique_executed_instruction_pcs": 181,
+    "executions_per_pc": 100,
+    "repeated_native_segments": 0,
+    "dominant_unpromoted_fixed_loop": false
+  },
+  "exact_accounting": {
+    "fifteen_helper_unique_pcs": 194,
+    "emac2x4_native_segment_unique_pcs": 14,
+    "emac2x4_native_executions_per_service": 28,
+    "emac2x4_dispatch_executions_per_service": 1,
+    "removed_distinct_native_pcs": 13,
+    "sixteen_helper_unique_pcs": 181,
+    "identity": "180 unaffected PCs * 100 services + one guarded dispatch PC * 100 services = 18,100 instructions",
+    "cross_check": "The derived uniform per-PC distribution exactly equals the independently measured sixteen-helper handoff total."
+  },
+  "selected_boundary": {
+    "entry_pc": "0x40108C7C",
+    "inclusive_native_window": "0x40108C7C..0x4010926A",
+    "exit_pc": "0x4010A06A",
+    "calls_per_vector_191_service": 1,
+    "executed_guest_instructions_per_call": 181,
+    "unique_executed_pcs_per_call": 181,
+    "role": "complete deterministic handoff composite containing sixteen validated helper dispatches and the remaining single-pass scalar spine",
+    "selection_reason": "Every remaining PC executes exactly once per service, so no smaller repeated native segment can produce a multiplicative reduction."
+  },
+  "compositional_replay_basis": {
+    "parent_boundary_gate": "AR172_QEMU_HANDOFF_RESIDUAL_GATE",
+    "parent_boundary_early_and_late_replay_match": true,
+    "parent_boundary_registers": 35,
+    "parent_boundary_late_stable_calls": 40,
+    "additional_replacements": [
+      {
+        "gate": "AR172_QEMU_HANDOFF_SCALAR49_TCG_GATE",
+        "exit_state_and_touched_memory_match": true,
+        "candidate_fallback": false
+      },
+      {
+        "gate": "AR172_QEMU_HANDOFF_EMAC2X4_TCG_GATE",
+        "exit_state_and_touched_memory_match": true,
+        "candidate_fallback": false
+      }
+    ],
+    "conclusion": "The complete leaf remains the independently replayable deterministic boundary: the parent composite replay is exact, and both later guarded substitutions preserve their validated entry-to-exit architectural and touched-memory contracts."
+  },
+  "firmware_version_control": {
+    "official_1_73_compatibility_probe_used_as_1_72_evidence": false,
+    "reason": "OS 1.73 did not reach the existing 1.72 framebuffer startup boundary under the 1.72 machine/address contract, so no 1.73 result is included in this gate."
+  },
+  "conclusion": "After the sixteenth helper, the exact 18,100-instruction handoff residual is a uniform 181-PC single-pass spine. No repeated micro-kernel remains; the complete composite leaf is the next bounded candidate.",
+  "next_gate": "Build a verifier-only candidate for the complete residual composite, reuse the sixteen established helper models, reconstruct only the remaining scalar spine, and require early/late complete-state and touched-memory equality before considering a consolidation helper.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room topology, aggregate counts, and compositional contract results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}

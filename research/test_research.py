@@ -930,6 +930,28 @@ class QemuAudioEdmaTests(unittest.TestCase):
                        ["sixteen_helpers_guest_instructions"],
             18100,
         )
+        post_emac2x4 = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_POST_EMAC2X4_PROFILE_GATE.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            post_emac2x4["status"],
+            "PASS_EXACT_UNIFORM_RESIDUAL_AND_COMPOSITE_SELECTION",
+        )
+        self.assertEqual(
+            post_emac2x4["profile"]["remaining_handoff_leaf_guest_instructions"],
+            18100,
+        )
+        self.assertEqual(
+            post_emac2x4["profile"]["unique_executed_instruction_pcs"], 181
+        )
+        self.assertEqual(post_emac2x4["profile"]["repeated_native_segments"], 0)
+        self.assertEqual(
+            post_emac2x4["selected_boundary"]["entry_pc"], "0x40108C7C"
+        )
+        self.assertEqual(
+            post_emac2x4["selected_boundary"]["exit_pc"], "0x4010A06A"
+        )
         emac2x4_patch = (
             ROOT
             / "qemu"

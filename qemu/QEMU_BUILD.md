@@ -701,6 +701,17 @@ Held-audio release retained its exact eight-service tail, nonzero host audio,
 and responsive UI. The next gate is a fresh exact per-PC profile of the
 remaining 18,100-instruction handoff leaf.
 
+The post-EMAC2X4 exact profile is uniform. Before promotion, the leaf contained
+194 unique executed PCs and only the 14-PC EMAC2X4 segment repeated. Replacing
+its 28 native executions with one guarded dispatch removes 13 distinct PCs and
+leaves 181 unique PCs. Each executes once per service, exactly accounting for
+the measured 18,100 instructions over 100 services. No repeated unpromoted
+micro-kernel remains. The complete deterministic leaf at
+`0x40108C7C..0x4010926A`, exiting at `0x4010A06A`, is therefore the next
+coherent boundary: a verifier-only consolidation candidate should reuse the
+sixteen established helper models and reconstruct only the remaining
+single-pass scalar spine before any direct-state promotion is considered.
+
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its
 largest remaining coherent fixed kernel is the 32-iteration mix stage at
