@@ -1,0 +1,111 @@
+From: AR MKII clean-room research
+Subject: [PATCH 20/20] m68k: add guarded two-pass four-lane EMAC helper
+
+---
+ gdbstub/gdb-xml/cf-emac.xml |  1 +
+ target/m68k/cpu.h           |  2 ++
+ target/m68k/helper.c        | 37 +++++++++++++++++++++++++++++++++++++
+ target/m68k/helper.h        |  1 +
+ target/m68k/translate.c     | 10 ++++++++++
+ 5 files changed, 51 insertions(+)
+
+diff --git a/gdbstub/gdb-xml/cf-emac.xml b/gdbstub/gdb-xml/cf-emac.xml
+--- a/gdbstub/gdb-xml/cf-emac.xml
++++ b/gdbstub/gdb-xml/cf-emac.xml
+@@ -22,4 +22,5 @@
+   <reg name="ar_audio_mix32g_control" bitsize="32" type="uint32" group="system"/>
+   <reg name="ar_audio_emac256_control" bitsize="32" type="uint32" group="system"/>
+   <reg name="ar_audio_scalar49_control" bitsize="32" type="uint32" group="system"/>
++  <reg name="ar_audio_emac2x4_control" bitsize="32" type="uint32" group="system"/>
+ </feature>
+diff --git a/target/m68k/cpu.h b/target/m68k/cpu.h
+--- a/target/m68k/cpu.h
++++ b/target/m68k/cpu.h
+@@ -184,4 +184,6 @@ typedef struct CPUArchState {
+     uint32_t ar_audio_emac256_control;
+     bool ar_audio_scalar49_accel;
+     uint32_t ar_audio_scalar49_control;
++    bool ar_audio_emac2x4_accel;
++    uint32_t ar_audio_emac2x4_control;
+ } CPUM68KState;
+diff --git a/target/m68k/helper.c b/target/m68k/helper.c
+--- a/target/m68k/helper.c
++++ b/target/m68k/helper.c
+@@ -167,3 +167,5 @@ static int cf_emac_gdb_get_reg(CPUState *cs, GByteArray *mem_buf, int n)
+     case 20:
+         return gdb_get_reg32(mem_buf, env->ar_audio_scalar49_control);
++    case 21:
++        return gdb_get_reg32(mem_buf, env->ar_audio_emac2x4_control);
+     }
+@@ -230,3 +232,6 @@ static int cf_emac_gdb_set_reg(CPUState *cs, uint8_t *mem_buf, int n)
+         env->ar_audio_scalar49_control = ldl_be_p(mem_buf);
+         return 4;
++    case 21:
++        env->ar_audio_emac2x4_control = ldl_be_p(mem_buf);
++        return 4;
+     }
+@@ -2434,4 +2439,36 @@ uint32_t HELPER(ar_audio_scalar49)(CPUM68KState *env)
+     cpu_m68k_set_ccr(env, cpu_m68k_get_ccr(env) & CCF_X);
+     return 1;
++}
++
++uint32_t HELPER(ar_audio_emac2x4)(CPUM68KState *env)
++{
++    if (!env->ar_audio_emac2x4_control || env->dregs[0] != 2 ||
++        (env->macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
++            (MACSR_OMC | MACSR_FI) || env->mac_mask != UINT32_MAX) {
++        return 0;
++    }
++    if (env->ar_audio_emac2x4_control == 2) {
++        env->ar_audio_emac2x4_control = 0;
++    }
++
++    for (unsigned iteration = 0; iteration < 2; iteration++) {
++        for (unsigned acc = 0; acc < 4; acc++) {
++            uint32_t loaded = cpu_ldl_data_ra(
++                env, env->aregs[0] & env->mac_mask, GETPC());
++
++            ar_audio_transform_mac(env, acc,
++                                   env->dregs[5], env->dregs[1]);
++            env->dregs[1] = loaded;
++            env->aregs[0] += 4;
++        }
++        for (unsigned acc = 0; acc < 4; acc++) {
++            env->dregs[2] = ar_audio_inner_movclr(env, acc);
++            cpu_stl_data_ra(env, env->aregs[1], env->dregs[2], GETPC());
++            env->aregs[1] += 4;
++        }
++        env->dregs[0]--;
++    }
++    cpu_m68k_set_ccr(env, CCF_Z);
++    return 1;
+ }
+ 
+diff --git a/target/m68k/helper.h b/target/m68k/helper.h
+--- a/target/m68k/helper.h
++++ b/target/m68k/helper.h
+@@ -123,2 +123,3 @@
+ DEF_HELPER_1(ar_audio_emac256, i32, env)
+ DEF_HELPER_1(ar_audio_scalar49, i32, env)
++DEF_HELPER_1(ar_audio_emac2x4, i32, env)
+diff --git a/target/m68k/translate.c b/target/m68k/translate.c
+--- a/target/m68k/translate.c
++++ b/target/m68k/translate.c
+@@ -6201,5 +6201,15 @@ static void m68k_tr_translate_insn(DisasContextBase *dcbase, CPUState *cpu)
+         tcg_gen_exit_tb(NULL, 0);
+         gen_set_label(native);
+     }
++    if (env->ar_audio_emac2x4_accel && dc->base.pc_next == 0x40108d68) {
++        TCGLabel *native = gen_new_label();
++        TCGv_i32 accelerated = tcg_temp_new_i32();
++
++        gen_helper_ar_audio_emac2x4(accelerated, tcg_env);
++        tcg_gen_brcondi_i32(TCG_COND_EQ, accelerated, 0, native);
++        tcg_gen_movi_i32(QREG_PC, 0x40108d8c);
++        tcg_gen_exit_tb(NULL, 0);
++        gen_set_label(native);
++    }
+ 
+     insn = read_im16(env, dc);
+-- 
+2.43.0

@@ -908,6 +908,40 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertTrue(
             emac2x4["same_process_oracle"]["touched_memory_match"]
         )
+        emac2x4_tcg = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_EMAC2X4_TCG_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            emac2x4_tcg["status"],
+            "PASS_CORRECT_BOUNDED_INSTRUCTION_REDUCTION",
+        )
+        self.assertEqual(
+            emac2x4_tcg["same_process_oracle"]["native_events"], 16
+        )
+        self.assertEqual(
+            emac2x4_tcg["exact_handoff_profile"]
+                       ["emac2x4_incremental_removed_instructions"],
+            2700,
+        )
+        self.assertEqual(
+            emac2x4_tcg["exact_handoff_profile"]
+                       ["sixteen_helpers_guest_instructions"],
+            18100,
+        )
+        emac2x4_patch = (
+            ROOT
+            / "qemu"
+            / "patches"
+            / "0020-m68k-add-ar-audio-emac2x4-tcg-helper.patch"
+        ).read_text(encoding="utf-8")
+        self.assertIn("DEF_HELPER_1(ar_audio_emac2x4, i32, env)", emac2x4_patch)
+        machine_source = (
+            ROOT / "qemu" / "hw" / "m68k" / "elektron_ar_mk2.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("AR_MK2_AUDIO_EMAC2X4_TCG", machine_source)
+        self.assertIn("AR_MK2_AUDIO_EMAC2X4_TCG_DEFER", machine_source)
         scalar49_patch = (
             ROOT
             / "qemu"
@@ -940,6 +974,9 @@ class QemuAudioEdmaTests(unittest.TestCase):
         )
         self.assertIn(
             '!strcmp(argv[i], "candidate=emac2x4")', shadow_plugin
+        )
+        self.assertIn(
+            '!strcmp(argv[i], "candidate=tcg-emac2x4")', shadow_plugin
         )
         self.assertIn('!strcmp(argv[i], "candidate=inner")', shadow_plugin)
         self.assertIn('!strcmp(argv[i], "candidate=tcg-inner")', shadow_plugin)

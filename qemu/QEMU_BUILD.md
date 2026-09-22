@@ -53,6 +53,8 @@ patch -p1 < /path/to/0017-m68k-add-ar-audio-mix32g-tcg-helper.patch
 patch -p1 < /path/to/0018-m68k-add-ar-audio-emac256-tcg-helper.patch
 # Add the disabled-by-default scalar handoff helper.
 patch -p1 < /path/to/0019-m68k-add-ar-audio-scalar49-tcg-helper.patch
+# Add the disabled-by-default two-pass four-lane EMAC helper.
+patch -p1 < /path/to/0020-m68k-add-ar-audio-emac2x4-tcg-helper.patch
 # Apply or manually reproduce meson.build.patch
 patch -p1 < /path/to/meson.build.patch
 ```
@@ -95,6 +97,8 @@ The eighteenth adds the eight-pass saturated fractional EMAC wrapper helper,
 enabled only by `AR_MK2_AUDIO_EMAC256_TCG=1`.
 The nineteenth adds the scalar handoff helper, enabled only by
 `AR_MK2_AUDIO_SCALAR49_TCG=1`.
+The twentieth adds the two-pass four-lane EMAC helper, enabled only by
+`AR_MK2_AUDIO_EMAC2X4_TCG=1`.
 
 The board eDMA model also implements ELINK count decoding, per-element
 SOFF/DOFF updates, software START requests, and ESG scatter/gather TCD loads.
@@ -686,6 +690,16 @@ same fractional extraction, rounding, and OMC saturation semantics as QEMU.
 Both `stable=8` and `stable=40` match all 35 registers and all 60 touched bytes
 on one page without fallback. Promotion to a sixteenth guarded direct-state
 helper is the next gate.
+
+Patch 0020 promotes that boundary to the sixteenth guarded direct-state helper.
+Explicit-arm oracles at `stable=8` and `stable=40` matched all 16 ordered
+accesses, all 35 registers, and all 60 touched bytes without fallback. The
+execution-accurate deterministic handoff window drops from 20,800 to 18,100
+instructions per 100 services: exactly 2,700 removed, or 27 per call, because
+the 28-instruction native loop becomes one guarded dispatch instruction.
+Held-audio release retained its exact eight-service tail, nonzero host audio,
+and responsive UI. The next gate is a fresh exact per-PC profile of the
+remaining 18,100-instruction handoff leaf.
 
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its
