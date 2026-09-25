@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "Analog Rytm MKII OS 1.72 research",
-  "updated_at_utc": "2026-09-24",
+  "updated_at_utc": "2026-09-25",
   "storage_policy": {
     "primary": "ChatGPT Library",
     "backup": "Git metadata and recovery instructions only",
@@ -17,15 +17,17 @@
     {
       "id": "official-ar-mkii-os-1.72",
       "required": true,
-      "status": "REQUIRED_PRIVATE_ARTIFACT_NOT_YET_VERIFIED_IN_LIBRARY",
+      "status": "VERIFIED_PRIVATE_ARTIFACT_IN_LIBRARY",
       "canonical_filename": "Analog-Rytm_MKII_OS1.72.syx",
       "repo_local_path": "imported/Analog-Rytm_MKII_OS1.72.syx",
       "source": {
         "publisher": "Elektron",
         "support_page": "https://www.elektron.se/support-downloads/analog-rytm-mkii",
+        "official_download": "https://www.elektron.se/wp-content/uploads/2025/01/Analog-Rytm_MKII_OS1.72_dist.zip",
+        "archived_support_page": "https://web.archive.org/web/20250525040052/https://www.elektron.se/support-downloads/analog-rytm-mkii",
         "release_date": "2025-01-30",
-        "verified_on": "2026-09-24",
-        "availability_observation": "Elektron's indexed support record confirms OS 1.72, but the live product download control currently exposes OS 1.73. Resolve the historical asset; do not treat the current download as 1.72."
+        "verified_on": "2026-09-25",
+        "availability_observation": "The historical OS 1.72 distribution was recovered from Elektron's official January 2025 asset URL. The extracted SysEx and decompressed MAIN both match the pinned hashes; do not substitute OS 1.73."
       },
       "sysex": {
         "sha256": "1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f"
@@ -37,11 +39,13 @@
       },
       "private_storage": {
         "preferred": "ChatGPT Library",
-        "library_file_id": null,
-        "library_version_id": null,
-        "verified_present": false
+        "library_file_id": "libfile_cc783b7c3be08191a68898dd79193d45",
+        "library_version_id": 0,
+        "verified_present": true,
+        "verified_on": "2026-09-25",
+        "verification": "Materialized from Library and byte-compared with the official Elektron download before both pinned hashes were rechecked."
       },
-      "recovery": "Recover from the private Library record. If unavailable, resolve the historical OS 1.72 asset through Elektron's official support/archive surface and require both hashes to match before use. The current product download may be newer; do not substitute OS 1.73."
+      "recovery": "Recover Library file libfile_cc783b7c3be08191a68898dd79193d45. If unavailable, fetch the official January 2025 Elektron distribution and require both hashes to match before use. Do not substitute OS 1.73."
     }
   ]
 }

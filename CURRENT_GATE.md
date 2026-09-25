@@ -1,12 +1,12 @@
 # Current gate
 
-Updated: 2026-09-24 UTC
+Updated: 2026-09-25 UTC
 
 ## Verified checkpoint
 
-- Branch: `reconstruct-audio-contract`
-- Last completed and remote-aligned commit at checkpoint creation: `0bc6bb5`
-- Commit: `research: select final handoff composite [skip ci]`
+- Branch: `main`
+- Last completed and remote-aligned commit before this checkpoint: `534a575`
+- Commit: `research: formalize durable project continuity [skip ci]`
 - Railway: untouched
 - GitHub Actions: intentionally not run (`[skip ci]` policy)
 - Authoritative result: `research/AR172_QEMU_HANDOFF_POST_EMAC2X4_PROFILE_GATE.json`
@@ -45,5 +45,8 @@ python3 research/verify_project_inputs.py
 python3 -m unittest research.test_research
 ```
 
-The official 1.72 firmware is a required private input. Its absence is a recoverable
-dependency failure, not permission to substitute 1.73.
+The official 1.72 firmware is verified in private ChatGPT Library storage as
+`libfile_cc783b7c3be08191a68898dd79193d45` (version 0). Its SysEx SHA-256 and
+decompressed MAIN size/SHA-256 exactly match `research/ARTIFACT_MANIFEST.json`.
+If the private input is ever unavailable locally, recover that Library record and rerun
+the verifier; absence is not permission to substitute 1.73.

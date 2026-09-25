@@ -53,14 +53,20 @@ class ProjectContinuityTests(unittest.TestCase):
             artifact["decompressed_main"]["sha256"],
             "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
         )
-        self.assertFalse(artifact["private_storage"]["verified_present"])
+        self.assertTrue(artifact["private_storage"]["verified_present"])
+        self.assertEqual(
+            artifact["private_storage"]["library_file_id"],
+            "libfile_cc783b7c3be08191a68898dd79193d45",
+        )
+        self.assertEqual(artifact["private_storage"]["library_version_id"], 0)
 
     def test_missing_private_firmware_fails_with_recovery_route(self):
         artifact = load_manifest()["artifacts"][0]
         with tempfile.TemporaryDirectory() as directory:
             result = verify_firmware(Path(directory) / "missing.syx", artifact)
         self.assertEqual(result["status"], "MISSING")
-        self.assertIn("official support/archive", result["recovery"])
+        self.assertIn("libfile_cc783b7c3be08191a68898dd79193d45", result["recovery"])
+        self.assertIn("official January 2025 Elektron distribution", result["recovery"])
 
 
 class FpgaIobGeometryTests(unittest.TestCase):
