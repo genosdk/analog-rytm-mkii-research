@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "project": "Analog Rytm MKII OS 1.72 research",
+  "updated_at_utc": "2026-09-24",
+  "storage_policy": {
+    "primary": "ChatGPT Library",
+    "backup": "Git metadata and recovery instructions only",
+    "never_commit": [
+      "stock or modified firmware bytes",
+      "decompressed proprietary sections",
+      "project data",
+      "sample names or PCM",
+      "runtime traces or instruction bytes"
+    ]
+  },
+  "artifacts": [
+    {
+      "id": "official-ar-mkii-os-1.72",
+      "required": true,
+      "status": "REQUIRED_PRIVATE_ARTIFACT_NOT_YET_VERIFIED_IN_LIBRARY",
+      "canonical_filename": "Analog-Rytm_MKII_OS1.72.syx",
+      "repo_local_path": "imported/Analog-Rytm_MKII_OS1.72.syx",
+      "source": {
+        "publisher": "Elektron",
+        "support_page": "https://www.elektron.se/support-downloads/analog-rytm-mkii",
+        "release_date": "2025-01-30",
+        "verified_on": "2026-09-24",
+        "availability_observation": "Elektron's indexed support record confirms OS 1.72, but the live product download control currently exposes OS 1.73. Resolve the historical asset; do not treat the current download as 1.72."
+      },
+      "sysex": {
+        "sha256": "1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f"
+      },
+      "decompressed_main": {
+        "load_address": "0x40000400",
+        "size_bytes": 2903032,
+        "sha256": "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772"
+      },
+      "private_storage": {
+        "preferred": "ChatGPT Library",
+        "library_file_id": null,
+        "library_version_id": null,
+        "verified_present": false
+      },
+      "recovery": "Recover from the private Library record. If unavailable, resolve the historical OS 1.72 asset through Elektron's official support/archive surface and require both hashes to match before use. The current product download may be newer; do not substitute OS 1.73."
+    }
+  ]
+}

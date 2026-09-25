@@ -36,6 +36,31 @@ from runtime_descriptor_probe import probe as probe_runtime_descriptors
 from sample_storage_trace import trace as trace_sample_storage
 from sample_slot_trace import trace as trace_sample_slot
 from ssi1_clock_input_trace import trace as trace_ssi1_clock_input
+from verify_project_inputs import load_manifest, verify_firmware
+
+
+class ProjectContinuityTests(unittest.TestCase):
+    def test_artifact_manifest_pins_exact_os_172_identity(self):
+        manifest = load_manifest()
+        artifact = manifest["artifacts"][0]
+        self.assertEqual(artifact["canonical_filename"], "Analog-Rytm_MKII_OS1.72.syx")
+        self.assertEqual(
+            artifact["sysex"]["sha256"],
+            "1ea60357abe8b876d8b9c52e6dcd988d833478a49d09e3cb22d42782ef822b2f",
+        )
+        self.assertEqual(artifact["decompressed_main"]["size_bytes"], 2_903_032)
+        self.assertEqual(
+            artifact["decompressed_main"]["sha256"],
+            "5d0b41eed77bb08b08be13ac63c6e8f0bb6a7334195436eb0ec6b5a5f26d6772",
+        )
+        self.assertFalse(artifact["private_storage"]["verified_present"])
+
+    def test_missing_private_firmware_fails_with_recovery_route(self):
+        artifact = load_manifest()["artifacts"][0]
+        with tempfile.TemporaryDirectory() as directory:
+            result = verify_firmware(Path(directory) / "missing.syx", artifact)
+        self.assertEqual(result["status"], "MISSING")
+        self.assertIn("official support/archive", result["recovery"])
 
 
 class FpgaIobGeometryTests(unittest.TestCase):

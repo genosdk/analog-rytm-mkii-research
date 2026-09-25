@@ -2,6 +2,18 @@
 
 Public reverse-engineering workspace for the Analog Rytm MKII OS 1.72 research project.
 
+## Continuity and required inputs
+
+Start or resume work from `PROJECT_CONTEXT.md`, `CURRENT_GATE.md`, and
+`research/ARTIFACT_MANIFEST.json`. Before firmware-dependent work, run:
+
+```bash
+python3 research/verify_project_inputs.py
+```
+
+The verifier accepts only the exact official OS 1.72 SysEx and decompressed MAIN hashes.
+OS 1.73 is not a substitute. Firmware bytes remain private and excluded from Git.
+
 ## Current milestone
 
 The firmware transport/container path is understood well enough to decode, modify,
