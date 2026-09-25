@@ -983,6 +983,33 @@ class QemuAudioEdmaTests(unittest.TestCase):
         self.assertEqual(
             post_emac2x4["selected_boundary"]["exit_pc"], "0x4010A06A"
         )
+        composite = json.loads(
+            (HERE / "AR172_QEMU_HANDOFF_COMPOSITE_GATE.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            composite["status"], "PASS_NATIVE_HANDOFF_COMPOSITE_CANDIDATE"
+        )
+        self.assertEqual(
+            composite["profile"]["remaining_handoff_leaf_guest_instructions"],
+            18100,
+        )
+        self.assertEqual(
+            composite["same_process_oracle"]["native_events_per_call"], 3309
+        )
+        self.assertEqual(composite["same_process_oracle"]["registers"], 35)
+        self.assertTrue(
+            composite["same_process_oracle"]["exit_register_match"]
+        )
+        self.assertTrue(
+            composite["same_process_oracle"]["touched_memory_match"]
+        )
+        shadow_source = (
+            ROOT / "qemu" / "plugins" / "ar_audio_shadow.c"
+        ).read_text(encoding="utf-8")
+        self.assertIn("candidate=handoff-composite", shadow_source)
+        self.assertIn("accelerate_composite", shadow_source)
         emac2x4_patch = (
             ROOT
             / "qemu"

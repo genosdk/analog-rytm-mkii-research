@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "gate": "AR172_QEMU_HANDOFF_COMPOSITE_GATE",
+  "recorded_at_utc": "2026-09-25",
+  "status": "PASS_NATIVE_HANDOFF_COMPOSITE_CANDIDATE",
+  "profile": {
+    "firmware_version": "1.72",
+    "workload": "generated slot-1 sample with held Trig 1 and all sixteen prior TCG helpers enabled",
+    "remaining_handoff_leaf_guest_instructions": 18100,
+    "remaining_handoff_leaf_guest_instructions_per_service": 181,
+    "calls_per_vector_191_service": 1
+  },
+  "selected_boundary": {
+    "entry_pc": "0x40108C7C",
+    "inclusive_native_window": "0x40108C7C..0x4010926A",
+    "exit_pc": "0x4010A06A",
+    "executed_guest_instructions_per_call": 181,
+    "role": "complete deterministic handoff composite"
+  },
+  "transactional_candidate": {
+    "plugin": "qemu/plugins/ar_audio_shadow.c",
+    "mode": "candidate=handoff-composite",
+    "candidate_guest_accesses": 0,
+    "candidate_fallback": false,
+    "implementation": "semantic scalar-spine reconstruction composed with the established helper models",
+    "modeled_operations": [
+      "entry stack frame and saved-register state",
+      "signed control and coefficient preparation",
+      "fractional saturated accumulator setup and extraction",
+      "twelve established helper dispatches",
+      "one verifier-local form of the established EMAC256 helper model",
+      "ordered state loads and transactional stores",
+      "final register restore, return-stack advance, and condition-code state"
+    ]
+  },
+  "same_process_oracle": {
+    "qemu_revision": "35500e5c41aec76cde59befe750600dac7a9e37a",
+    "qemu_version": "11.1.50",
+    "validation_runs": 2,
+    "native_events_per_call": 3309,
+    "candidate_events_per_call": 0,
+    "access_comparison_applicable": false,
+    "registers": 35,
+    "exit_register_match": true,
+    "touched_memory_match": true,
+    "early_cursor": {
+      "required_stable_calls": 8,
+      "discovery_calls": 13,
+      "footprint_pages": 10,
+      "touched_bytes": 3762
+    },
+    "late_cursor": {
+      "required_stable_calls": 40,
+      "discovery_calls": 78,
+      "footprint_pages": 12,
+      "touched_bytes": 4250
+    }
+  },
+  "conclusion": "The complete 181-instruction residual composite matches the native exit across all 35 registers and every touched byte at both cursor horizons without fallback. The final software-only consolidation boundary is therefore eligible for guarded direct-state promotion.",
+  "next_gate": "Promote the verified handoff composite to a seventeenth opt-in guarded direct-state TCG helper, then measure its exact bounded reduction and held-audio lifecycle behavior.",
+  "github_actions": {"policy": "Validate locally and publish with [skip ci]."},
+  "railway": {"touched": false},
+  "safety": "Only clean-room topology, semantic models, and aggregate results are committed. No Elektron firmware, project data, sample names, PCM, runtime values, runtime trace, or instruction bytes are committed."
+}

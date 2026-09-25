@@ -712,6 +712,14 @@ coherent boundary: a verifier-only consolidation candidate should reuse the
 sixteen established helper models and reconstruct only the remaining
 single-pass scalar spine before any direct-state promotion is considered.
 
+The verifier-only `candidate=handoff-composite` now reconstructs that complete
+single-pass spine and composes it with the established helper models. Same-process
+oracles at `stable=8` and `stable=40` both match all 35 registers and every touched
+byte with zero candidate guest accesses and no fallback. The implementation uses
+semantic operations only; proprietary firmware bytes and runtime traces remain outside
+the repository. Promotion to a seventeenth opt-in guarded direct-state helper, followed
+by exact bounded accounting and the held-audio lifecycle check, is the next gate.
+
 With all seven helpers enabled, the remaining handoff leaf is 1,292,700 guest
 instructions per 100 services, 223,700 fewer than the six-helper residual. Its
 largest remaining coherent fixed kernel is the 32-iteration mix stage at

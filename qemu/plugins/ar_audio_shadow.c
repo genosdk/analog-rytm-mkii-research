@@ -128,6 +128,7 @@ static bool candidate_scalar49;
 static bool candidate_tcg_scalar49;
 static bool candidate_emac2x4;
 static bool candidate_tcg_emac2x4;
+static bool candidate_composite;
 static bool candidate_attempted;
 static bool candidate_executed;
 static bool candidate_fallback;
@@ -184,6 +185,9 @@ static uint64_t runtime_fallbacks;
 #define EMAC2X4_START_PC 0x40108d68
 #define EMAC2X4_END_PC   0x40108d8a
 #define EMAC2X4_EXIT_PC  0x40108d8c
+#define COMPOSITE_START_PC 0x40108c7c
+#define COMPOSITE_END_PC   0x4010926a
+#define COMPOSITE_EXIT_PC  0x4010a06a
 #define MACSR_PAV0     0x100
 #define MACSR_OMC      0x080
 #define MACSR_SU       0x040
@@ -753,6 +757,29 @@ static bool read_memory_u32(uint32_t address, uint32_t *result)
     }
     memcpy(result, value->data, sizeof(*result));
     *result = GUINT32_FROM_BE(*result);
+    return true;
+}
+
+static bool read_memory_u16(uint32_t address, uint16_t *result)
+{
+    g_autoptr(GByteArray) value = g_byte_array_new();
+
+    if (!qemu_plugin_read_memory_vaddr(address, value, 2) || value->len != 2) {
+        return false;
+    }
+    memcpy(result, value->data, sizeof(*result));
+    *result = GUINT16_FROM_BE(*result);
+    return true;
+}
+
+static bool read_memory_u8(uint32_t address, uint8_t *result)
+{
+    g_autoptr(GByteArray) value = g_byte_array_new();
+
+    if (!qemu_plugin_read_memory_vaddr(address, value, 1) || value->len != 1) {
+        return false;
+    }
+    *result = value->data[0];
     return true;
 }
 
@@ -1992,6 +2019,526 @@ static bool accelerate_emac2x4(void)
     return true;
 }
 
+static bool accelerate_emac256(void)
+{
+    InnerState s;
+    InnerState entry;
+    InnerWrites writes = { 0 };
+    size_t applied = 0;
+
+    if (!read_inner_state(&s) || s.d[3] != 8 ||
+        (s.macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
+            (MACSR_OMC | MACSR_FI) || s.mask != UINT32_MAX) {
+        return false;
+    }
+    entry = s;
+
+    for (unsigned outer = 0; outer < 8; outer++) {
+        uint32_t loaded;
+
+        s.a[0] = 0x8000cc3c;
+        if (!inner_read_memory(&writes, s.a[2] & s.mask, &s.d[6])) {
+            return false;
+        }
+        s.a[2] += 4;
+
+        s.macc[0] = (uint64_t)((int64_t)(int32_t)0x80000000U * 256);
+        s.macsr &= ~MACSR_PAV0;
+        inner_mac_clear_flags(&s);
+        inner_mac_set_flags(&s, 0);
+
+        if (!inner_read_memory(&writes, s.a[0] & s.mask, &loaded)) {
+            return false;
+        }
+        transform_mac(&s, 0, s.d[6], s.d[6]);
+        s.d[1] = loaded;
+        s.a[0] += 4;
+
+        s.a[1] += 28;
+        s.d[0] = 32;
+        if (!inner_read_memory(&writes, s.a[1] & s.mask, &s.d[2])) {
+            return false;
+        }
+        s.a[1] += 4;
+        s.d[7] = inner_movclr(&s, 0);
+
+        for (unsigned iteration = 0; iteration < 32; iteration++) {
+            s.d[4] = inner_movclr(&s, 0);
+            if (!inner_queue_write(&writes, s.a[1] - 8, s.d[4])) {
+                return false;
+            }
+
+            s.macc[0] = (uint64_t)((int64_t)(int32_t)s.d[1] * 256);
+            s.macsr &= ~MACSR_PAV0;
+            inner_mac_clear_flags(&s);
+            inner_mac_set_flags(&s, 0);
+            transform_mac(&s, 0, s.d[2], s.d[6]);
+
+            s.d[4] = inner_movclr(&s, 1);
+            if (!inner_queue_write(&writes, s.a[0] - 8, s.d[4]) ||
+                !inner_read_memory(&writes, s.a[0] & s.mask, &loaded)) {
+                return false;
+            }
+            transform_mac(&s, 1, s.d[1], s.d[6]);
+            s.d[1] = loaded;
+            s.a[0] += 4;
+
+            if (!inner_read_memory(&writes, s.a[1] & s.mask, &loaded)) {
+                return false;
+            }
+            transform_mac(&s, 1, s.d[2], s.d[7]);
+            s.d[2] = loaded;
+            s.a[1] += 4;
+            s.d[0]--;
+        }
+
+        s.d[4] = inner_movclr(&s, 0);
+        if (!inner_queue_write(&writes, s.a[1] - 8, s.d[4])) {
+            return false;
+        }
+        s.d[4] = inner_movclr(&s, 1);
+        if (!inner_queue_write(&writes, s.a[0] - 8, s.d[4])) {
+            return false;
+        }
+        s.d[3]--;
+    }
+    s.ps = (s.ps & ~0x1fU) | CCF_Z;
+
+    if (!inner_apply_writes(&writes, &applied)) {
+        inner_rollback_writes(&writes, applied);
+        return false;
+    }
+    if (!write_inner_state(&s)) {
+        bool rollback_ok = inner_rollback_writes(&writes, applied);
+
+        rollback_ok &= write_inner_state(&entry);
+        (void)rollback_ok;
+        return false;
+    }
+    return true;
+}
+
+static bool composite_commit(InnerState *s, InnerWrites *writes)
+{
+    size_t applied = 0;
+
+    if (!inner_apply_writes(writes, &applied)) {
+        inner_rollback_writes(writes, applied);
+        return false;
+    }
+    if (!write_inner_state(s)) {
+        return false;
+    }
+    writes->count = 0;
+    return true;
+}
+
+static bool composite_call(InnerState *s, InnerWrites *writes,
+                           bool (*accelerator)(void))
+{
+    return composite_commit(s, writes) && accelerator() &&
+           read_inner_state(s);
+}
+
+static bool composite_read_regs(InnerWrites *writes, uint32_t address,
+                                uint32_t *const regs[], size_t count)
+{
+    for (size_t i = 0; i < count; i++) {
+        if (!inner_read_memory(writes, address + 4 * i, regs[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool accelerate_composite(void)
+{
+    InnerState s;
+    InnerWrites writes = { 0 };
+    uint32_t entry_sp;
+    uint32_t loaded;
+    uint16_t word;
+    uint8_t byte;
+
+    if (!read_inner_state(&s) ||
+        (s.macsr & (MACSR_OMC | MACSR_SU | MACSR_FI | MACSR_RT)) !=
+            (MACSR_OMC | MACSR_FI) || s.mask != UINT32_MAX) {
+        return false;
+    }
+    entry_sp = s.a[7];
+    s.a[7] -= 60;
+    for (unsigned i = 0; i < 6; i++) {
+        if (!inner_queue_write(&writes, s.a[7] + 4 * i, s.d[2 + i])) {
+            return false;
+        }
+    }
+    for (unsigned i = 0; i < 5; i++) {
+        if (!inner_queue_write(&writes, s.a[7] + 24 + 4 * i, s.a[2 + i])) {
+            return false;
+        }
+    }
+    if (!inner_queue_write(&writes, s.a[7] + 52, 0x80007b44) ||
+        !inner_queue_write(&writes, s.a[7] + 48, 0x80007b44) ||
+        !read_memory_u16(0x8000fbc6, &word)) {
+        return false;
+    }
+    s.d[2] = (uint32_t)(int32_t)(int16_t)word;
+    s.a[0] = 0x40271c24;
+    if (!read_memory_u8(0x8000fbc2, &byte)) {
+        return false;
+    }
+    s.d[0] = (uint32_t)(int32_t)(int8_t)byte;
+    s.d[3] = (uint32_t)((int32_t)s.d[2] >> 6);
+    if (!read_memory_u16(0x8000fbc4, &word) ||
+        !inner_read_memory(&writes, s.a[0] + s.d[0] * 4, &s.d[0])) {
+        return false;
+    }
+    s.d[1] = (uint32_t)(int32_t)(int16_t)word;
+    s.a[0] = 0x40272424;
+    s.a[1] = s.a[0] + s.d[3] * 4;
+    if (!read_memory_u16(0x8000fbc8, &word)) {
+        return false;
+    }
+    s.d[3] = (uint32_t)(int32_t)(int16_t)word;
+    s.d[1] <<= 16;
+    s.d[2] += s.d[3];
+    s.d[2] = (uint32_t)((int32_t)s.d[2] >> 6);
+    s.a[0] += s.d[2] * 4;
+    if (!read_memory_u8(0x8000fbc0, &byte) ||
+        !inner_read_memory(&writes, s.a[1], &loaded) ||
+        !inner_queue_write(&writes, 0x8000cc30, loaded)) {
+        return false;
+    }
+    s.d[2] = (uint32_t)(int32_t)(int8_t)byte;
+    s.a[1] = INT32_MAX - s.d[0];
+    if (!inner_queue_write(&writes, s.a[7] + 44, s.d[2])) {
+        return false;
+    }
+    s.d[2] = (uint32_t)(int32_t)(int16_t)s.d[2];
+    if (!inner_queue_write(&writes, s.a[7] + 56, s.d[2]) ||
+        !read_memory_u16(0x8000fbbe, &word) ||
+        !inner_read_memory(&writes, s.a[0], &loaded) ||
+        !inner_queue_write(&writes, 0x8000cc34, loaded)) {
+        return false;
+    }
+    s.d[2] = (s.d[2] & 0xffff0000U) | word;
+    s.a[0] = 16384;
+    s.d[2] = (uint32_t)((int32_t)(int16_t)s.d[2] *
+                        (int32_t)(int16_t)s.d[2]);
+    s.d[2] += s.d[2];
+    transform_mac(&s, 0, s.a[1], s.d[1]);
+    transform_mac(&s, 1, s.d[2], s.a[0]);
+    s.d[3] = inner_movclr(&s, 0);
+    s.d[1] = inner_movclr(&s, 1);
+    s.d[1] += 37;
+    s.d[2] = s.d[0] + s.d[3];
+    if (!inner_queue_write(&writes, 0x8000ccfc, s.d[2])) {
+        return false;
+    }
+    s.d[2] = s.d[0];
+    s.d[0] -= s.a[1];
+    s.d[2] -= s.d[3];
+    if (!inner_queue_write(&writes, 0x8000cd00, s.d[2]) ||
+        !inner_queue_write(&writes, 0x8000cd04, s.d[0])) {
+        return false;
+    }
+    if ((int32_t)s.a[0] < (int32_t)s.d[1]) {
+        s.d[1] = s.a[0];
+    }
+    if (!inner_queue_write(&writes, 0x8000cd3c, s.d[1])) {
+        return false;
+    }
+    s.a[0] = 0x40271b24;
+    s.a[1] = 0x8000dd50;
+    if (!inner_read_memory(&writes, s.a[7] + 56, &s.d[1])) {
+        return false;
+    }
+    if ((int32_t)s.d[1] > 63) {
+        s.d[5] = 1535450808;
+    } else if (!inner_read_memory(&writes, s.a[0] + s.d[1] * 4, &s.d[5])) {
+        return false;
+    }
+    s.a[0] = 0x8000dd30;
+    if (!inner_read_memory(&writes, s.a[0], &s.d[1])) {
+        return false;
+    }
+    s.a[0] += 4;
+    s.d[0] = 2;
+    if (!composite_call(&s, &writes, accelerate_emac2x4)) {
+        return false;
+    }
+
+    s.a[5] = 0x8000d1f0;
+    if (!inner_read_memory(&writes, s.a[7] + 48, &s.a[6])) {
+        return false;
+    }
+    s.a[4] = 0x8000cc30;
+    if (!inner_read_memory(&writes, s.a[4], &s.a[1]) ||
+        !inner_read_memory(&writes, s.a[4] + 4, &s.a[4])) {
+        return false;
+    }
+    s.d[4] = 0x40000000;
+    s.d[5] = (uint32_t)((int32_t)(0x80000000U + s.a[4]) >> 1);
+    s.d[1] = (uint32_t)((int32_t)s.a[1] >> 1) + s.d[4];
+    s.d[6] = s.d[1];
+    s.a[0] = 0x8000cd08;
+    {
+        uint32_t *regs[] = { &s.d[2], &s.d[3] };
+        if (!composite_read_regs(&writes, s.a[0], regs, 2)) {
+            return false;
+        }
+    }
+    s.a[2] = 0x8000cc3c;
+    s.d[0] = 32;
+    if (!inner_read_memory(&writes, s.a[5], &loaded)) {
+        return false;
+    }
+    transform_mac(&s, 0, s.a[4], s.d[2]);
+    s.a[3] = loaded;
+    if (!composite_call(&s, &writes, accelerate_mix32f)) {
+        return false;
+    }
+    if (!inner_queue_write(&writes, s.a[0], s.d[2]) ||
+        !inner_queue_write(&writes, s.a[0] + 4, s.d[3])) {
+        return false;
+    }
+    s.d[2] = inner_movclr(&s, 0);
+    s.a[1] = 0x8000d804;
+    s.a[2] = 0x8000dd50;
+    s.d[3] = 8;
+    if (!composite_call(&s, &writes, accelerate_emac256)) {
+        return false;
+    }
+
+    s.a[0] = 0x8000d2a0;
+    s.a[2] = s.a[0] + 176;
+    s.a[3] = 0x8000cc3c;
+    s.a[5] = 0x8000ccfc;
+    s.a[6] = 0x8000ccbc;
+    {
+        uint32_t *regs1[] = { &s.d[3], &s.d[4], &s.d[5] };
+        uint32_t *regs2[] = { &s.d[1], &s.d[2], &s.d[6], &s.a[5] };
+        if (!composite_read_regs(&writes, s.a[5], regs1, 3) ||
+            !composite_read_regs(&writes, s.a[6], regs2, 4)) {
+            return false;
+        }
+    }
+    s.a[1] = 0x8000ca10;
+    s.d[7] = INT32_MAX;
+    s.d[0] = 32;
+    if (!composite_call(&s, &writes, accelerate_mix32c)) {
+        return false;
+    }
+    if (!inner_queue_write(&writes, s.a[6], s.d[1]) ||
+        !inner_queue_write(&writes, s.a[6] + 4, s.d[2]) ||
+        !inner_queue_write(&writes, s.a[6] + 8, s.d[6]) ||
+        !inner_queue_write(&writes, s.a[6] + 12, s.a[5])) {
+        return false;
+    }
+
+    s.a[4] = 0x8000cc1c;
+    {
+        uint32_t *regs[] = { &s.d[2], &s.d[3], &s.d[4] };
+        if (!composite_read_regs(&writes, s.a[4], regs, 3)) {
+            return false;
+        }
+    }
+    s.a[0] = 0x8000d4b4 - (s.d[2] << 2);
+    s.a[1] = 0x8000cb90;
+    s.a[2] = 0x40271e24 + (s.d[3] << 5);
+    {
+        uint32_t *regs[] = { &s.d[2], &s.d[3], &s.d[5], &s.d[6],
+                             &s.a[3], &s.a[4], &s.a[5], &s.a[6] };
+        if (!composite_read_regs(&writes, s.a[2], regs, 8) ||
+            !inner_read_memory(&writes, s.a[0], &s.d[7])) {
+            return false;
+        }
+    }
+    s.a[0] += 4;
+    s.d[0] = 32;
+    if (!inner_read_memory(&writes, s.a[0], &loaded)) {
+        return false;
+    }
+    polyphase_mac(&s, 2, s.d[7], s.d[3], true);
+    s.d[1] = loaded;
+    s.a[0] += 4;
+    if (!inner_read_memory(&writes, s.a[0], &loaded)) {
+        return false;
+    }
+    polyphase_mac(&s, 2, s.d[1], s.d[6], true);
+    s.d[7] = loaded;
+    polyphase_mac(&s, 2, s.d[7], s.a[4], true);
+    if (!composite_call(&s, &writes, accelerate_mix32e)) {
+        return false;
+    }
+    s.d[1] = inner_movclr(&s, 2);
+
+    s.a[0] = 0x8000d400;
+    s.a[2] = 0x8000cb10;
+    s.a[5] = 0x8000ccfc;
+    s.a[1] = 0x8000cccc;
+    {
+        uint32_t *regs1[] = { &s.d[3], &s.d[4], &s.d[5] };
+        uint32_t *regs2[] = { &s.d[1], &s.d[2], &s.d[6], &s.a[1] };
+        if (!composite_read_regs(&writes, s.a[5], regs1, 3) ||
+            !composite_read_regs(&writes, s.a[1], regs2, 4)) {
+            return false;
+        }
+    }
+    s.a[4] = 0x8000ca10;
+    if (!inner_read_memory(&writes, s.a[7] + 52, &s.a[3])) {
+        return false;
+    }
+    s.d[7] = INT32_MAX;
+    s.d[0] = 32;
+    if (!composite_call(&s, &writes, accelerate_mix32b)) {
+        return false;
+    }
+    if (!inner_queue_write(&writes, 0x8000cccc, s.d[1]) ||
+        !inner_queue_write(&writes, 0x8000ccd0, s.d[2]) ||
+        !inner_queue_write(&writes, 0x8000ccd4, s.d[6]) ||
+        !inner_queue_write(&writes, 0x8000ccd8, s.a[1]) ||
+        !inner_read_memory(&writes, s.a[7] + 44, &s.d[0])) {
+        return false;
+    }
+    s.d[0] <<= 5;
+    s.a[2] = s.d[0] + 0x401d9ee4;
+    if (!inner_queue_write(&writes, s.a[7] + 44, s.d[0])) {
+        return false;
+    }
+    {
+        uint32_t *regs[] = { &s.d[3], &s.d[4], &s.d[5], &s.d[6] };
+        if (!composite_read_regs(&writes, s.a[2], regs, 4)) {
+            return false;
+        }
+    }
+    s.a[0] = 0x8000d4b0;
+    s.a[1] = 0x8000ca10;
+    if (!inner_read_memory(&writes, s.a[1], &s.d[1])) {
+        return false;
+    }
+    s.a[1] += 4;
+    s.d[0] = 32;
+    if (!composite_call(&s, &writes, accelerate_polyphase32b) ||
+        !composite_call(&s, &writes, accelerate_scalar49) ||
+        !composite_call(&s, &writes, accelerate_mix32c)) {
+        return false;
+    }
+    if (!inner_queue_write(&writes, s.a[6], s.d[1]) ||
+        !inner_queue_write(&writes, s.a[6] + 4, s.d[2]) ||
+        !inner_queue_write(&writes, s.a[6] + 8, s.d[6]) ||
+        !inner_queue_write(&writes, s.a[6] + 12, s.a[5])) {
+        return false;
+    }
+
+    s.a[4] = 0x8000cc1c;
+    {
+        uint32_t *regs[] = { &s.d[2], &s.d[3], &s.d[4] };
+        if (!composite_read_regs(&writes, s.a[4], regs, 3)) {
+            return false;
+        }
+    }
+    s.d[2] <<= 2;
+    s.a[0] = 0x8000d774 - s.d[2];
+    s.a[1] = 0x8000cb90;
+    s.a[2] = 0x40271e24 + (s.d[3] << 5);
+    {
+        uint32_t *regs[] = { &s.d[2], &s.d[3], &s.d[5], &s.d[6],
+                             &s.a[3], &s.a[4], &s.a[5], &s.a[6] };
+        if (!composite_read_regs(&writes, s.a[2], regs, 8) ||
+            !inner_read_memory(&writes, s.a[0], &s.d[7])) {
+            return false;
+        }
+    }
+    s.a[0] += 4;
+    s.d[0] = 32;
+    if (!inner_read_memory(&writes, s.a[0], &loaded)) {
+        return false;
+    }
+    polyphase_mac(&s, 2, s.d[7], s.d[3], true);
+    s.d[1] = loaded;
+    s.a[0] += 4;
+    if (!inner_read_memory(&writes, s.a[0], &loaded)) {
+        return false;
+    }
+    polyphase_mac(&s, 2, s.d[1], s.d[6], true);
+    s.d[7] = loaded;
+    polyphase_mac(&s, 2, s.d[7], s.a[4], true);
+    if (!composite_call(&s, &writes, accelerate_mix32e)) {
+        return false;
+    }
+    s.d[1] = inner_movclr(&s, 2);
+
+    s.a[0] = 0x8000d6c0;
+    s.a[1] = 0x8000cb10;
+    s.a[2] = 0x8000ccfc;
+    {
+        uint32_t *regs[] = { &s.d[3], &s.d[4], &s.d[5] };
+        if (!composite_read_regs(&writes, s.a[2], regs, 3)) {
+            return false;
+        }
+    }
+    s.a[4] = 0x8000ca10;
+    if (!inner_read_memory(&writes, s.a[7] + 52, &s.a[3])) {
+        return false;
+    }
+    s.a[2] = 0x8000ccec;
+    {
+        uint32_t *regs[] = { &s.d[1], &s.d[2], &s.d[6], &s.a[2] };
+        if (!composite_read_regs(&writes, s.a[2], regs, 4)) {
+            return false;
+        }
+    }
+    s.d[7] = INT32_MAX;
+    s.d[0] = 32;
+    if (!composite_call(&s, &writes, accelerate_mix32)) {
+        return false;
+    }
+    if (!inner_queue_write(&writes, 0x8000ccec, s.d[1]) ||
+        !inner_queue_write(&writes, 0x8000ccf0, s.d[2]) ||
+        !inner_queue_write(&writes, 0x8000ccf4, s.d[6]) ||
+        !inner_queue_write(&writes, 0x8000ccf8, s.a[2]) ||
+        !inner_read_memory(&writes, s.a[7] + 44, &s.a[2])) {
+        return false;
+    }
+    s.a[2] += 0x401d9ef4;
+    {
+        uint32_t *regs[] = { &s.d[3], &s.d[4], &s.d[5], &s.d[6] };
+        if (!composite_read_regs(&writes, s.a[2], regs, 4)) {
+            return false;
+        }
+    }
+    s.a[1] = 0x8000d770;
+    s.a[0] = 0x8000ca10;
+    if (!inner_read_memory(&writes, s.a[0], &s.d[1])) {
+        return false;
+    }
+    s.a[0] += 4;
+    s.d[0] = 32;
+    if (!composite_call(&s, &writes, accelerate_polyphase32)) {
+        return false;
+    }
+
+    {
+        uint32_t *dregs[] = { &s.d[2], &s.d[3], &s.d[4],
+                              &s.d[5], &s.d[6], &s.d[7] };
+        uint32_t *aregs[] = { &s.a[2], &s.a[3], &s.a[4], &s.a[5], &s.a[6] };
+        if (!composite_read_regs(&writes, s.a[7], dregs, 6) ||
+            !composite_read_regs(&writes, s.a[7] + 24, aregs, 5)) {
+            return false;
+        }
+    }
+    s.a[7] += 60;
+    if (!inner_read_memory(&writes, s.a[7], &loaded)) {
+        return false;
+    }
+    s.a[7] += 4;
+    if (s.a[7] != entry_sp + 4 || loaded != COMPOSITE_EXIT_PC) {
+        return false;
+    }
+    return composite_commit(&s, &writes);
+}
+
 static void page_state_free(gpointer data)
 {
     PageState *page = data;
@@ -2239,7 +2786,8 @@ static void write_report(bool complete)
                          !candidate_tcg_mix32f && !candidate_mix32g &&
                          !candidate_tcg_mix32g && !candidate_tcg_emac256 &&
                          !candidate_scalar49 && !candidate_tcg_scalar49 &&
-                         !candidate_emac2x4 && !candidate_tcg_emac2x4) ||
+                         !candidate_emac2x4 && !candidate_tcg_emac2x4 &&
+                         !candidate_composite) ||
                         candidate_executed;
     bool pass = complete && !footprint_miss && !snapshot_error &&
                 !restore_error && access_match && register_match && memory_match &&
@@ -2276,6 +2824,7 @@ static void write_report(bool complete)
          candidate_tcg_scalar49 ? "PASS_NATIVE_SCALAR49_TCG" :
          candidate_emac2x4 ? "PASS_NATIVE_EMAC2X4_CANDIDATE" :
          candidate_tcg_emac2x4 ? "PASS_NATIVE_EMAC2X4_TCG" :
+         candidate_composite ? "PASS_NATIVE_HANDOFF_COMPOSITE_CANDIDATE" :
                            "PASS_IDENTICAL_NATIVE_SHADOW") : "FAIL";
 
     fprintf(report_file,
@@ -2330,7 +2879,8 @@ static void write_report(bool complete)
             candidate_scalar49 ? "scalar49" :
             candidate_tcg_scalar49 ? "tcg-scalar49" :
             candidate_emac2x4 ? "emac2x4" :
-            candidate_tcg_emac2x4 ? "tcg-emac2x4" : "native-shadow",
+            candidate_tcg_emac2x4 ? "tcg-emac2x4" :
+            candidate_composite ? "handoff-composite" : "native-shadow",
             candidate_attempted ? "true" : "false",
             candidate_executed ? "true" : "false",
             candidate_fallback ? "true" : "false",
@@ -2338,8 +2888,8 @@ static void write_report(bool complete)
              candidate_emac32 || candidate_polyphase32 ||
              candidate_polyphase32b || candidate_mix32 || candidate_mix32b ||
              candidate_mix32c || candidate_mix32d || candidate_mix32e ||
-            candidate_mix32f || candidate_mix32g || candidate_scalar49 ||
-            candidate_emac2x4) &&
+             candidate_mix32f || candidate_mix32g || candidate_scalar49 ||
+             candidate_emac2x4 || candidate_composite) &&
             candidate_executed ? "false" : "true",
             footprint_miss ? "true" : "false",
             snapshot_error ? "true" : "false",
@@ -2426,7 +2976,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
                 candidate_polyphase32b || candidate_mix32 || candidate_mix32b ||
                 candidate_mix32c || candidate_mix32d || candidate_mix32e ||
                 candidate_mix32f || candidate_mix32g || candidate_scalar49 ||
-                candidate_emac2x4) {
+                candidate_emac2x4 || candidate_composite) {
                 candidate_attempted = true;
                 candidate_executed = candidate_inner ? accelerate_inner() :
                                      candidate_transform ?
@@ -2445,6 +2995,8 @@ static void boundary(unsigned int cpu_index, void *userdata)
                                      accelerate_mix32e() :
                                      candidate_mix32f ? accelerate_mix32f() :
                                      candidate_scalar49 ? accelerate_scalar49() :
+                                     candidate_composite ?
+                                     accelerate_composite() :
                                      accelerate_emac2x4();
                 if (candidate_executed) {
                     redirect_candidate = true;
@@ -2590,7 +3142,7 @@ static void boundary(unsigned int cpu_index, void *userdata)
                          candidate_mix32c || candidate_mix32d ||
                          candidate_mix32e || candidate_mix32f ||
                          candidate_mix32g || candidate_scalar49 ||
-                         candidate_emac2x4) &&
+                         candidate_emac2x4 || candidate_composite) &&
                        candidate_executed ?
                         true : compare_accesses());
         register_match = compare_registers();
@@ -2829,6 +3381,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
             candidate_emac2x4 = true;
         } else if (!strcmp(argv[i], "candidate=tcg-emac2x4")) {
             candidate_tcg_emac2x4 = true;
+        } else if (!strcmp(argv[i], "candidate=handoff-composite")) {
+            candidate_composite = true;
         } else if (!strcmp(argv[i], "runtime=inner")) {
             runtime_inner = true;
         } else {
@@ -2857,7 +3411,8 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
          candidate_mix32e + candidate_tcg_mix32e + candidate_mix32f +
          candidate_tcg_mix32f + candidate_mix32g + candidate_tcg_mix32g +
          candidate_tcg_emac256 + candidate_scalar49 + candidate_tcg_scalar49 +
-         candidate_emac2x4 + candidate_tcg_emac2x4 + runtime_inner) > 1) {
+         candidate_emac2x4 + candidate_tcg_emac2x4 + candidate_composite +
+         runtime_inner) > 1) {
         fprintf(stderr, "candidate and runtime modes are exclusive\n");
         return -1;
     }
@@ -3039,6 +3594,12 @@ QEMU_PLUGIN_EXPORT int qemu_plugin_install(qemu_plugin_id_t id,
         (start_pc != EMAC2X4_START_PC || end_pc != EMAC2X4_END_PC ||
          exit_pc != EMAC2X4_EXIT_PC)) {
         fprintf(stderr, "EMAC2X4 TCG candidate requires its validated PCs\n");
+        return -1;
+    }
+    if (candidate_composite &&
+        (start_pc != COMPOSITE_START_PC || end_pc != COMPOSITE_END_PC ||
+         exit_pc != COMPOSITE_EXIT_PC)) {
+        fprintf(stderr, "handoff composite candidate requires its validated PCs\n");
         return -1;
     }
     report_file = fopen(out_path, "w");

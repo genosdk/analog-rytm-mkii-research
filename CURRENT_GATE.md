@@ -5,38 +5,33 @@ Updated: 2026-09-25 UTC
 ## Verified checkpoint
 
 - Branch: `main`
-- Last completed and remote-aligned commit before this checkpoint: `534a575`
-- Commit: `research: formalize durable project continuity [skip ci]`
+- Last completed and remote-aligned commit before this gate: `3357b1c`
+- Commit: `research: secure verified OS 1.72 recovery metadata [skip ci]`
 - Railway: untouched
 - GitHub Actions: intentionally not run (`[skip ci]` policy)
-- Authoritative result: `research/AR172_QEMU_HANDOFF_POST_EMAC2X4_PROFILE_GATE.json`
+- Authoritative result: `research/AR172_QEMU_HANDOFF_COMPOSITE_GATE.json`
 
 ## What the last experiment established
 
-With all sixteen guarded TCG helpers enabled, 100 vector-191 services left exactly
-18,100 guest instructions: 181 instructions per service across 181 unique PCs. Every
-remaining PC executed exactly once per service. EMAC2x4 removed 13 distinct native PCs,
-but the residual contains no repeated micro-kernel that can provide another
-multiplicative reduction.
+The verifier-only `candidate=handoff-composite` reconstruction now covers the complete
+181-instruction residual leaf. It composes the established helper semantics with the
+remaining single-pass scalar spine and executes with zero candidate guest accesses and
+no fallback.
 
-The selected remaining boundary is the full deterministic handoff composite:
+Same-process replay is exact at both `stable=8` and `stable=40`: all 35 registers and
+every touched byte match the native exit. The boundary remains:
 
 - Entry: `0x40108C7C`
 - Inclusive native window: `0x40108C7C..0x4010926A`
 - Exit: `0x4010A06A`
 - Frequency: once per vector-191 service
-- Residual cost: 181 guest instructions per call
+- Native cost: 181 guest instructions per call
 
 ## Next gate
 
-Build a verifier-only candidate for the complete residual composite. Reuse the sixteen
-established helper models, reconstruct only the remaining single-pass scalar spine, and
-require exact early/late complete-register and touched-memory equality before considering
-a consolidation helper.
-
-This is the final software-only consolidation boundary. If exact replay cannot be
-established from the existing captured contract without introducing unverified runtime
-values or proprietary bytes, stop and record the evidence gap rather than guessing.
+Promote the verified composite to a seventeenth opt-in guarded direct-state TCG helper.
+Require explicit-arm early/late oracle equality, then measure the exact bounded
+instruction reduction and held-audio release behavior before treating it as established.
 
 ## Startup checks
 
